@@ -8,6 +8,11 @@ import pluginReact from "eslint-plugin-react";
 /** @type {import('eslint').Linter.Config[]} */
 export default [
   {
+    settings: {
+      react: { version: '18.3' }
+    }
+  },
+  {
     files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
     plugins: {
       prettier: eslintPluginPrettier
@@ -34,9 +39,9 @@ export default [
           tabWidth: 2,
           endOfLine: 'auto',
           useTabs: false,
-          singleQuote: true,
+          singleQuote: false,
           printWidth: 120,
-          jsxSingleQuote: true,
+          jsxSingleQuote: false,
         }
       ],
     }

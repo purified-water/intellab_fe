@@ -5,9 +5,9 @@
   "tabWidth": 2,
   "endOfLine": "auto",
   "useTabs": false,
-  "singleQuote": true,
+  "singleQuote": false,
   "printWidth": 120,
-  "jsxSingleQuote": true,
+  "jsxSingleQuote": false,
   "react/react-in-jsx-scope": "off",
   "react/jsx-uses-react": "off"
 }
