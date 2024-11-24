@@ -5,9 +5,10 @@ import { LoginPage } from "@/features/Auth/pages/LoginPage";
 import { SignUpPage } from "@/features/Auth/pages/SignUpPage";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
-import { ExplorePage } from "@/pages/ExplorePage";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
+import { ExplorePage } from "@/pages/explore_page/ExplorePage";
+import SectionDetailPage from "./pages/explore_page/SectionDetailPage";
 
 // Layout component to include Navbar
 const Layout = () => (
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
       {
         path: "/explore",
         element: <ExplorePage />
+      },
+      {
+        path: "explore/:section",
+        element: <SectionDetailPage />
       },
       {
         path: "/problems",
