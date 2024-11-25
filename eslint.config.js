@@ -29,6 +29,7 @@ export default [
     rules: {
       'react/react-in-jsx-scope': 'off',
       'react/jsx-uses-react': 'off',
+      'react/no-unescaped-entities': 'off',
       'react/jsx-filename-extension': [1, { "extensions": [".js", ".jsx", ".ts", ".tsx"] }], //should add ".
       'prettier/prettier': [
         'warn',

@@ -3,19 +3,24 @@ import "./App.css";
 import { HomePage } from "@/pages/HomePage";
 import { LoginPage } from "@/features/Auth/pages/LoginPage";
 import { SignUpPage } from "@/features/Auth/pages/SignUpPage";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
 import { ExplorePage } from "@/pages/ExplorePage";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
 
-// Layout component to include Navbar
-const Layout = () => (
-  <>
-    <Navbar />
-    <Outlet /> {/* Renders the current route's component */}
-  </>
-);
+// Layout component to include conditional Navbar
+const Layout = () => {
+  const location = useLocation();
+  const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      <Outlet />
+    </>
+  );
+};
 
 // Router configuration
 const router = createBrowserRouter([
