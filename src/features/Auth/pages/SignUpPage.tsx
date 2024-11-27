@@ -1,8 +1,9 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
-import { FcGoogle } from "rocketicons/fc";
 import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate } from "react-router-dom";
+import { authAPI } from "@/lib/api";
+import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -26,41 +27,59 @@ export const SignUpPage = () => {
 
   const inputValidation = () => {
     let isValid = true;
+    const errors = { username: "", email: "", password: "", confirmPassword: "" };
+
     if (!signUpInfo.username) {
-      setInputErrors({ ...inputErrors, username: "Username is required" });
+      errors.username = "Username is required";
       isValid = false;
     }
     if (!signUpInfo.email) {
-      setInputErrors({ ...inputErrors, email: "Email is required" });
+      errors.email = "Email is required";
       isValid = false;
     }
     if (!signUpInfo.password) {
-      setInputErrors({ ...inputErrors, password: "Password is required" });
+      errors.password = "Password is required";
       isValid = false;
     }
     if (!signUpInfo.confirmPassword) {
-      setInputErrors({ ...inputErrors, confirmPassword: "Confirm Password is required" });
+      errors.confirmPassword = "Confirm password is required";
+      isValid = false;
+    }
+    if (signUpInfo.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
       isValid = false;
     }
     if (signUpInfo.password !== signUpInfo.confirmPassword) {
-      setInputErrors({ ...inputErrors, confirmPassword: "Passwords do not match" });
+      errors.confirmPassword = "Passwords do not match";
       isValid = false;
     }
 
+    setInputErrors(errors);
     return isValid;
   };
 
-  const handleSignUp = (e: React.FormEvent) => {
+  const handleSignUp = async (e: React.FormEvent) => {
+    // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
-    // if(!inputValidation()) return;
 
-    console.log("Signup info:", signUpInfo);
+    if (!inputValidation()) return;
 
-    navigate("/");
-  };
+    // Change to displayName to match the API
+    const displayName = signUpInfo.username;
 
-  const handleGoogleLogin = () => {
-    console.log("Google login");
+    try {
+      const response = await authAPI.signUp(displayName, signUpInfo.email, signUpInfo.password);
+
+      if (response.status === 201 || response.status === 200) {
+        navigate("/login");
+      } else {
+        // TODO Handle errors
+        setInputErrors({ ...inputErrors, username: "Unable to sign up" });
+      }
+    } catch (error) {
+      setInputErrors({ ...inputErrors, username: "Something wrong happened!" });
+      console.log("Sign up error", error);
+    }
   };
 
   return (
@@ -80,6 +99,7 @@ export const SignUpPage = () => {
               id="username"
               value={signUpInfo.username}
               onChange={(e) => setsignUpInfo({ ...signUpInfo, username: e.target.value })}
+              onFocus={() => setInputErrors({ ...inputErrors, username: "" })}
               placeholder="Enter your username"
               className="w-full px-4 py-2 mt-1 bg-white border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-appPrimary"
             />
@@ -95,6 +115,7 @@ export const SignUpPage = () => {
               id="email"
               value={signUpInfo.email}
               onChange={(e) => setsignUpInfo({ ...signUpInfo, email: e.target.value })}
+              onFocus={() => setInputErrors({ ...inputErrors, email: "" })}
               placeholder="Enter your email"
               className="w-full px-4 py-2 mt-1 bg-white border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-appPrimary"
             />
@@ -111,6 +132,7 @@ export const SignUpPage = () => {
                 id="password"
                 value={signUpInfo.password}
                 onChange={(e) => setsignUpInfo({ ...signUpInfo, password: e.target.value })}
+                onFocus={() => setInputErrors({ ...inputErrors, password: "" })}
                 placeholder="Enter your password"
                 className="w-full px-4 py-2 mt-1 bg-white border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-appPrimary"
               />
@@ -120,9 +142,9 @@ export const SignUpPage = () => {
                 className="absolute inset-y-0 flex items-center justify-center text-gray3 right-2 top-1 focus:outline-none"
               >
                 {showPassword ? (
-                  <MdOutlineVisibilityOff className="icon-sm" />
+                  <MdOutlineVisibilityOff className="icon-lg" />
                 ) : (
-                  <MdOutlineVisibility className="icon-sm" />
+                  <MdOutlineVisibility className="icon-lg" />
                 )}
               </button>
             </div>
@@ -139,6 +161,7 @@ export const SignUpPage = () => {
                 id="confirm-password"
                 value={signUpInfo.confirmPassword}
                 onChange={(e) => setsignUpInfo({ ...signUpInfo, confirmPassword: e.target.value })}
+                onFocus={() => setInputErrors({ ...inputErrors, confirmPassword: "" })}
                 placeholder="Re-enter your password"
                 className="w-full px-4 py-2 mt-1 bg-white border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-appPrimary"
               />
@@ -148,9 +171,9 @@ export const SignUpPage = () => {
                 className="absolute inset-y-0 flex items-center justify-center text-gray3 right-2 top-1 focus:outline-none"
               >
                 {showPassword ? (
-                  <MdOutlineVisibilityOff className="icon-sm" />
+                  <MdOutlineVisibilityOff className="icon-lg" />
                 ) : (
-                  <MdOutlineVisibility className="icon-sm" />
+                  <MdOutlineVisibility className="icon-lg" />
                 )}
               </button>
             </div>
@@ -165,13 +188,8 @@ export const SignUpPage = () => {
           </button>
         </form>
 
-        <button
-          className="flex items-center justify-center w-full py-2 mt-4 font-semibold transition border border-gray-300 rounded-lg hover:bg-gray-100"
-          onClick={handleGoogleLogin}
-        >
-          <FcGoogle className="w-5 h-5 mr-2" />
-          <span>Continue with Google</span>
-        </button>
+        <LoginGoogle />
+
         <div className="mt-6 text-center">
           <p className="text-sm">
             Already have an account?{" "}
