@@ -8,6 +8,7 @@ import Navbar from "@/components/Navigation/Navbar";
 import { ExplorePage } from "@/pages/ExplorePage";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
+import { CourseDetailPage } from "./pages/CourseDetailPage/CourseDetailPage";
 
 // Layout component to include Navbar
 const Layout = () => (
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "/signup",
         element: <SignUpPage />
+      },
+      {
+        path: "/course/:id",
+        element: <CourseDetailPage />
       }
     ]
   }
