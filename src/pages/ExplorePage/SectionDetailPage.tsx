@@ -1,8 +1,8 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { CourseComponent } from "./components/CourseComponent";
-import FilterButton from "./components/FilterButton";
-import SearchBar from "./components/SearchBar";
+import FilterButton from "@/pages/ExplorePage/components/FilterButton";
+import SearchBar from "@/pages/ExplorePage/components/SearchBar";
 
 const courses = [
   {
@@ -77,29 +77,32 @@ const SectionDetailPage: React.FC = () => {
   const { section } = useParams<{ section: string }>();
 
   const getSectionCourses = (section: string) => {
-    // Fetch or filter courses based on the section
     if (section === "fundamentals") {
       return courses;
     }
-    // Add more sections as needed
+    if (section === "popular") {
+      return courses;
+    }
     return [];
   };
 
   const sectionCourses = getSectionCourses(section || "");
 
   return (
-    <div className="ml-[101px]">
+    <div className="sm:pl-10">
       {/* Header section with filter button and search bar */}
-      <div className="flex items-center py-10">
+      <div className="flex items-center py-4 sm:py-10">
         <FilterButton onClick={() => {}} />
         <SearchBar />
       </div>
 
       {/* Section title */}
-      <h1 className="mb-8 text-4xl font-bold">{section!.charAt(0).toUpperCase() + section!.slice(1)} Courses</h1>
+      <h1 className="mb-6 text-3xl font-bold tracking-wide sm:text-5xl sm:mb-11 text-appPrimary">
+        {section && section.charAt(0).toUpperCase() + section.slice(1)} Courses
+      </h1>
 
       {/* Courses grid */}
-      <div className="grid grid-cols-1 pr-56 gap-[62px] sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5">
+      <div className="flex flex-wrap gap-7">
         {sectionCourses.map((course) => (
           <CourseComponent
             key={course.id}

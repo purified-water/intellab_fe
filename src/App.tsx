@@ -7,8 +7,10 @@ import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
-import { ExplorePage } from "@/pages/explore_page/ExplorePage";
-import SectionDetailPage from "./pages/explore_page/SectionDetailPage";
+import { ExplorePage } from "@/pages/ExplorePage/ExplorePage";
+import SectionDetailPage from "@/pages/ExplorePage/SectionDetailPage";
+import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
+import { PremiumPage } from "@/features/Premium/PremiumPage";
 
 // Layout component to include Navbar
 const Layout = () => (
@@ -45,12 +47,20 @@ const router = createBrowserRouter([
         element: <CommunityPage />
       },
       {
+        path: "/premium",
+        element: <PremiumPage />
+      },
+      {
         path: "/login",
         element: <LoginPage />
       },
       {
         path: "/signup",
         element: <SignUpPage />
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />
       }
     ]
   }

@@ -38,15 +38,17 @@ const Navbar = () => {
         </div>
 
         <div id="premium" className="flex items-center space-x-4">
-          <button className="px-3 py-1 text-base font-semibold transition bg-[#cbafe0] text-appPrimary rounded-xl hover:bg-appFadedPrimary">
-            Premium
-          </button>
+          <Link to="/premium">
+            <button className="px-3 py-1 text-base font-semibold transition bg-[#cbafe0] text-appPrimary rounded-xl hover:bg-appFadedPrimary">
+              Premium
+            </button>
+          </Link>
           <button className="p-1 text-gray-600 transition hover:text-gray-800">
             <MdNotifications />
           </button>
-          <button className="p-1 text-gray-600 transition hover:text-gray-800">
+          <Link to="/profile" className="p-1 text-gray-600 transition hover:text-gray-800">
             <MdAccountCircle />
-          </button>
+          </Link>
         </div>
       </nav>
     </>
