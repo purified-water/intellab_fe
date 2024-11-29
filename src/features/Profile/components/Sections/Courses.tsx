@@ -13,13 +13,13 @@ export const Courses = () => {
           View All
         </button>
       </div>
-      <div className="mx-6 border-t-2 border-gray-300"></div>
-      <div className="flex flex-col">
+      <div className="mx-6 border-t-2 border-gray5"></div>
+      <div className="flex flex-col mt-6">
         {courseItems.map((course, index) => (
           <div
             key={index}
-            className={`max-w-full h-[62px] rounded-[10px] mx-6 mt-5 flex items-start justify-between ${
-              index % 2 === 0 ? "bg-[#e0e0e0]" : ""
+            className={`max-w-full h-[62px] rounded-[10px] mx-6 flex items-start justify-between ${
+              index % 2 === 0 ? "bg-gray5" : ""
             }`}
           >
             <div className="px-4 pt-4 text-lg font-bold text-[#01000f]">{course.title}</div>

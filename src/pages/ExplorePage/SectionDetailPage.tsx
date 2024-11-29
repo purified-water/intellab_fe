@@ -97,9 +97,9 @@ const SectionDetailPage: React.FC = () => {
       </div>
 
       {/* Section title */}
-      <h1 className="mb-6 text-3xl font-bold tracking-wide sm:text-5xl sm:mb-11 text-appPrimary">
+      <div className="mb-6 text-4xl font-bold tracking-wide sm:text-4xl sm:mb-11 text-appPrimary">
         {section && section.charAt(0).toUpperCase() + section.slice(1)} Courses
-      </h1>
+      </div>
 
       {/* Courses grid */}
       <div className="flex flex-wrap gap-7">

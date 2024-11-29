@@ -10,7 +10,7 @@ import { CommunityPage } from "@/pages/CommunityPage";
 import { ExplorePage } from "@/pages/ExplorePage/ExplorePage";
 import SectionDetailPage from "@/pages/ExplorePage/SectionDetailPage";
 import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
-import { PremiumPage } from "@/features/Premium/PremiumPage";
+import { PricingPage } from "@/features/Pricing/PricingPage";
 
 // Layout component to include Navbar
 const Layout = () => (
@@ -47,8 +47,8 @@ const router = createBrowserRouter([
         element: <CommunityPage />
       },
       {
-        path: "/premium",
-        element: <PremiumPage />
+        path: "/pricing",
+        element: <PricingPage />
       },
       {
         path: "/login",

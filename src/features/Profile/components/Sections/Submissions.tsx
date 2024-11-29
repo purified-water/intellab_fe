@@ -8,13 +8,13 @@ export const Submissions = () => {
   return (
     <div className="w-full h-auto lg:h-[400px] bg-white rounded-[10px] flex flex-col">
       <p className="p-6 text-3xl font-bold text-appPrimary">My Submissions</p>
-      <div className="mx-6 border-t-2 border-gray-300"></div>
-      <div className="flex flex-col">
+      <div className="mx-6 border-t-2 border-gray5"></div>
+      <div className="flex flex-col mt-6">
         {submissionItems.map((submission, index) => (
           <div
             key={index}
-            className={`max-w-full h-[62px] rounded-[10px] mx-6 mt-5 flex items-start justify-between ${
-              index % 2 === 0 ? "bg-[#e0e0e0]" : ""
+            className={`max-w-full h-[62px] rounded-[10px] mx-6 flex items-start justify-between ${
+              index % 2 === 0 ? "bg-gray5" : ""
             }`}
           >
             <div
