@@ -1,60 +1,17 @@
 import React, { useState } from "react";
-import { Header, LessonList } from "./components";
-import { Lesson } from "@/types";
+import { Header, LessonList } from "@/features/Course/components";
+import { fakeLessons } from "@/constants/fakeData";
+import { useParams } from "react-router-dom";
 
-const lessons: Lesson[] = [
-  {
-    id: 1,
-    title: "What is String",
-    description: "String definitions",
-    isCompletedTheory: true,
-    isCompletedPractice: false
-  },
-  {
-    id: 2,
-    title: "Characters",
-    description: "Some examples with string",
-    isCompletedTheory: true,
-    isCompletedPractice: true
-  },
-  {
-    id: 3,
-    title: "Working with string",
-    description: "Some examples with string",
-    isCompletedTheory: true,
-    isCompletedPractice: false
-  },
-  {
-    id: 4,
-    title: "Updating string",
-    description: "More complex insights",
-    isCompletedTheory: false,
-    isCompletedPractice: false
-  },
-  {
-    id: 5,
-    title: "Traversing",
-    description: "Common progress-blocking problems",
-    isCompletedTheory: false,
-    isCompletedPractice: false
-  },
-  {
-    id: 6,
-    title: "Ending",
-    description: "Make it all make sense together",
-    isCompletedTheory: false,
-    isCompletedPractice: false
-  }
-];
-
-export const CourseDetailPage: React.FC = () => {
+export const CourseDetailPage = () => {
+  const { id } = useParams<{ id: string }>();
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("Lessons");
 
   const renderTabContent = () => {
     switch (activeTab) {
       case "Lessons":
-        return <LessonList lessons={lessons} isEnrolled={isEnrolled} />;
+        return <LessonList lessons={fakeLessons} isEnrolled={isEnrolled} />;
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":
@@ -65,14 +22,16 @@ export const CourseDetailPage: React.FC = () => {
   };
 
   return (
-    <div className="gap-5 p-5 mx-auto w-7/10">
+    <div className="mx-auto w-7/10">
       <Header
         title="Introduction to String"
         description="A fundamental course for String data type"
         isEnrolled={isEnrolled}
+        rating={4.5}
+        reviews={15700}
         onEnroll={() => setIsEnrolled(true)}
       />
-      <div className="flex gap-5 p-2.5 text-2xl font-bold">
+      <div className="flex gap-10 text-xl font-bold ml-14 pl-10 mb-4">
         <button
           onClick={() => setActiveTab("Lessons")}
           className={activeTab === "Lessons" ? "text-pink-500 underline" : "text-gray-500"}

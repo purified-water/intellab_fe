@@ -4,9 +4,11 @@ interface ProgressBarProps {
   progress: number;
 }
 
-export const ProgressBar: React.FC<ProgressBarProps> = ({ progress }) => {
+export const ProgressBar = (props: ProgressBarProps) => {
+  const { progress } = props;
+
   return (
-    <div className="relative h-4 mt-4 bg-gray-200 rounded-md">
+    <div className="relative h-4 bg-gray-200 rounded-md">
       <div
         className="h-full duration-300 bg-green-500 rounded-md transition-width ease"
         style={{ width: `${progress}%` }}
