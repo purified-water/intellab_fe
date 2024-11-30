@@ -8,12 +8,12 @@ export const ProgressBar = (props: ProgressBarProps) => {
   const { progress } = props;
 
   return (
-    <div className="relative h-4 bg-gray-200 rounded-md">
+    <div className="h-3 bg-gray-200 rounded-md max-w-xl">
       <div
-        className="h-full duration-300 bg-green-500 rounded-md transition-width ease"
+        className="h-full bg-green-500 rounded-md"
         style={{ width: `${progress}%` }}
       />
-      <span className="mt-2 text-sm font-bold text-green-500">{progress}% completed</span>
+      <span className="mt-2 text-sm">{progress}% completed</span>
     </div>
   );
 };
