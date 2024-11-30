@@ -26,7 +26,7 @@ export const HomePage = () => {
       description: "A fundamental course for Array Data type",
       price: "₫140,000",
       buttonText: "Study now"
-    },
+    }
   ];
   const freeCourses = [
     { title: "DSA 50", description: "50 core concepts in DSA", buttonText: "Study now" },

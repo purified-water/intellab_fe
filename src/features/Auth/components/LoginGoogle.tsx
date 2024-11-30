@@ -4,6 +4,7 @@ import { FcGoogle } from "rocketicons/fc";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import Cookies from "js-cookie";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
@@ -14,10 +15,17 @@ const GoogleLogin = () => {
       const idToken = await result.user.getIdToken();
       const response = await authAPI.continueWithGoogle(idToken);
 
-      console.log("Login with google Successful:", response.data);
-
       if (response.status === 200 || response.status === 201) {
         Cookies.set("accessToken", idToken);
+        const decodedToken = jwtDecode<JwtPayload>(idToken);
+        const userId = decodedToken.sub; // sub is the user id
+
+        if (!userId) {
+          throw new Error("User id not found in token");
+        }
+
+        localStorage.setItem("userId", userId);
+
         navigate("/");
       } else {
         alert("Something went wrong! Please try again.");

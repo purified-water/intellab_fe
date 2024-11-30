@@ -2,16 +2,11 @@ import { Calendar } from "@/components/ui/Calendar";
 import { useState } from "react";
 
 export const Sidebar = () => {
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>(new Date());
 
   return (
     <div className="flex-col items-center space-y-8">
-      <Calendar
-        mode="single"
-        selected={date}
-        onSelect={setDate}
-        className="border rounded-md"
-      />
+      <Calendar mode="single" selected={date} onSelect={setDate} className="border rounded-md" />
 
       {/* Progress */}
       <div className="p-4 border rounded">

@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import Cookies from "js-cookie";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -51,6 +52,15 @@ export const LoginPage = () => {
           sameSite: "Strict", // Mitigate CSRF
           expires: 1 / 24 // Token expiry (1 hour)
         });
+
+        const decodedToken = jwtDecode<JwtPayload>(response.data.accessToken);
+        const userId = decodedToken.sub; // sub is the user id
+
+        if (!userId) {
+          throw new Error("User id not found in token");
+        }
+
+        localStorage.setItem("userId", userId);
 
         navigate("/");
       } else {
