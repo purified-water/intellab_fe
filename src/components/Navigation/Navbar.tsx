@@ -77,17 +77,19 @@ const Navbar = () => {
         </div>
 
         <div id="premium" className="relative flex items-center space-x-4">
-          <button className="px-3 py-1 text-base font-semibold transition bg-[#cbafe0] text-appPrimary rounded-xl hover:bg-appFadedPrimary">
-            Premium
-          </button>
+          <Link to="/premium">
+            <button className="px-3 py-1 text-base font-semibold transition bg-[#cbafe0] text-appPrimary rounded-xl hover:bg-appFadedPrimary">
+              Premium
+            </button>
+          </Link>
           {isLoggedIn ? (
             <>
               <button className="p-1 text-gray-600 transition hover:text-gray-800">
                 <MdNotifications className="icon-xl" />
               </button>
-              <button className="p-1 text-gray-600 transition hover:text-gray-800" onClick={toggleDropdown}>
+              <Link to="/profile" className="p-1 text-gray-600 transition hover:text-gray-800" onClick={toggleDropdown}>
                 <MdAccountCircle className="icon-xl" />
-              </button>
+              </Link>
               {isDropdownOpen && (
                 <div className="absolute right-0 w-56 mt-2 bg-white rounded-lg shadow-md top-10">
                   <div className="flex flex-row items-center px-3">
