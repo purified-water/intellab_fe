@@ -45,9 +45,8 @@ const Navbar = () => {
           </Link>
 
           <div
-            className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-white space-y-6 text-gray-600 lg:static lg:flex lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:w-auto ${
-              isMenuOpen ? "flex" : "hidden"
-            }`}
+            className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-white space-y-6 text-gray-600 lg:static lg:flex lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:w-auto ${isMenuOpen ? "flex" : "hidden"
+              }`}
           >
             <button onClick={() => setIsMenuOpen(false)} className="absolute top-3 right-3 lg:hidden">
               <MdClose className="icon-lg" />
@@ -77,7 +76,7 @@ const Navbar = () => {
         </div>
 
         <div id="premium" className="relative flex items-center space-x-4">
-          <Link to="/premium">
+          <Link to="/pricing">
             <button className="px-3 py-1 text-base font-semibold transition bg-[#cbafe0] text-appPrimary rounded-xl hover:bg-appFadedPrimary">
               Premium
             </button>
@@ -87,9 +86,9 @@ const Navbar = () => {
               <button className="p-1 text-gray-600 transition hover:text-gray-800">
                 <MdNotifications className="icon-xl" />
               </button>
-              <Link to="/profile" className="p-1 text-gray-600 transition hover:text-gray-800" onClick={toggleDropdown}>
+              <div className="p-1 text-gray-600 transition hover:text-gray-800 hover:cursor-pointer" onClick={toggleDropdown}>
                 <MdAccountCircle className="icon-xl" />
-              </Link>
+              </div>
               {isDropdownOpen && (
                 <div className="absolute right-0 w-56 mt-2 bg-white rounded-lg shadow-md top-10">
                   <div className="flex flex-row items-center px-3">
