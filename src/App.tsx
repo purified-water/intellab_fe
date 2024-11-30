@@ -7,7 +7,7 @@ import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-
 import Navbar from "@/components/Navigation/Navbar";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
-import { CourseDetailPage } from "./pages/CourseDetailPage/CourseDetailPage";
+import { CourseDetailPage } from "@/features/Course/pages";
 import { ExplorePage } from "@/pages/ExplorePage/ExplorePage";
 import SectionDetailPage from "@/pages/ExplorePage/SectionDetailPage";
 import { ProfilePage } from "@/features/Profile/pages/ProfilePage";

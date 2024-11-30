@@ -2,6 +2,7 @@ import SearchBar from "@/pages/ExplorePage/components/SearchBar";
 import { Link } from "react-router-dom";
 import FilterButton from "@/pages/ExplorePage/components/FilterButton";
 import { CourseComponent } from "@/pages/ExplorePage/components/CourseComponent";
+import { useNavigate } from "react-router-dom";
 
 // Array of course data
 const courses = [
@@ -85,9 +86,10 @@ const courses = [
 ];
 
 export const ExplorePage = () => {
+  const navigate = useNavigate();
+
   const handleCourseClick = (id: string) => {
-    console.log(`Course clicked: ${id}`);
-    // Add your logic here to handle the course click
+    navigate(`/course/${id}`);
   };
 
   return (
