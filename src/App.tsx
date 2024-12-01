@@ -1,9 +1,9 @@
 import React from "react";
 import "./App.css";
-import { HomePage } from "@/pages/HomePage";
+import { HomePage } from "@/pages/HomePage/pages/HomePage";
 import { LoginPage } from "@/features/Auth/pages/LoginPage";
 import { SignUpPage } from "@/features/Auth/pages/SignUpPage";
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
 import { ProblemsPage } from "@/pages/ProblemsPage";
 import { CommunityPage } from "@/pages/CommunityPage";
@@ -14,19 +14,24 @@ import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
 import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 
-// Layout component to include Navbar
-const Layout = () => (
-  <>
-    <Navbar />
-    <Outlet /> {/* Renders the current route's component */}
-  </>
-);
+// Layout component to include conditional Navbar
+const Layout = () => {
+  const location = useLocation();
+  const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+
+  return (
+    <>
+      {!hideNavbar && <Navbar />}
+      <Outlet />
+    </>
+  );
+};
 
 // Router configuration
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, // Wrap routes with Layout
+    element: <Layout />,
     children: [
       {
         index: true,
@@ -61,16 +66,16 @@ const router = createBrowserRouter([
         element: <SignUpPage />
       },
       {
-        path: "/course/:id",
-        element: <CourseDetailPage />
-      },
-      {
         path: "/profile",
         element: <ProfilePage />
       },
       {
         path: "/lesson/:id",
         element: <LessonDetailPage />
+      },
+      {
+        path: "/course/:id",
+        element: <CourseDetailPage />
       }
     ]
   }
