@@ -62,7 +62,8 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
         style={{
           position: "absolute",
           top: tocTop + defaultTop,
-          width: windowWidth * 0.12
+          width: windowWidth * 0.15,
+          paddingLeft: 10
         }}
       >
         <ul>
