@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Header, LessonList } from "@/features/Course/components";
 import { fakeLessons } from "@/constants/fakeData";
 import { useParams } from "react-router-dom";
@@ -35,8 +35,8 @@ export const CourseDetailPage = () => {
         reviews={15700}
         onEnroll={handleEnroll}
       />
-    )
-  }
+    );
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -51,33 +51,29 @@ export const CourseDetailPage = () => {
     }
   };
 
+  const renderTabButton = (tab: string) => {
+    return (
+      <button
+        onClick={() => setActiveTab(tab)}
+        className={activeTab === tab ? "text-appAccent underline" : "text-gray3"}
+      >
+        {tab}
+      </button>
+    );
+  };
+
   const renderBody = () => {
     return (
       <>
         <div className="flex gap-10 text-xl font-bold ml-14 pl-10 mb-4">
-          <button
-            onClick={() => setActiveTab("Lessons")}
-            className={activeTab === "Lessons" ? "text-pink-500 underline" : "text-gray-500"}
-          >
-            Lessons
-          </button>
-          <button
-            onClick={() => setActiveTab("Comments")}
-            className={activeTab === "Comments" ? "text-pink-500 underline" : "text-gray-500"}
-          >
-            Comments
-          </button>
-          <button
-            onClick={() => setActiveTab("Reviews")}
-            className={activeTab === "Reviews" ? "text-pink-500 underline" : "text-gray-500"}
-          >
-            Reviews
-          </button>
+          {renderTabButton("Lessons")}
+          {renderTabButton("Comments")}
+          {renderTabButton("Reviews")}
         </div>
         <div className="px-6">{renderTabContent()}</div>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <div className="mx-auto w-7/10">
