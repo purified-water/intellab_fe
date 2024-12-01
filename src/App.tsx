@@ -12,6 +12,7 @@ import { ExplorePage } from "@/pages/ExplorePage/ExplorePage";
 import SectionDetailPage from "@/pages/ExplorePage/SectionDetailPage";
 import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
 import { PricingPage } from "@/features/Pricing/PricingPage";
+import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 
 // Layout component to include Navbar
 const Layout = () => (
@@ -66,6 +67,10 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage />
+      },
+      {
+        path: "/lesson/:id",
+        element: <LessonDetailPage />
       }
     ]
   }
