@@ -1,4 +1,4 @@
-import { Course } from "../../../types/Course";
+import { Course } from "@/types/Course";
 import React from "react";
 
 export const CourseComponent: React.FC<Course> = ({
@@ -45,9 +45,9 @@ export const CourseComponent: React.FC<Course> = ({
       </div>
 
       {/* Footer section with button and price */}
-      <div className="flex items-center justify-between px-4">
+      <div className="flex items-center self-end justify-between px-4">
         <button
-          className="w-36 h-[35px] font-semibold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary"
+          className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary"
           onClick={() => onClick(id)}
         >
           Study Now

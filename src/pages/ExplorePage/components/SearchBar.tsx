@@ -1,14 +1,11 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-const SearchBar = () => {
-  const [query, setQuery] = React.useState("");
-
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
-
+interface SearchProps {
+  onSearch: (query: string) => void;
+}
+const SearchBar: React.FC<SearchProps> = ({ onSearch }) => {
   return (
     <div className="flex items-center justify-start w-full p-4 bg-white">
       <div className="relative w-full pr-10 max-w-7xl">
@@ -17,12 +14,15 @@ const SearchBar = () => {
           type="text"
           className="w-full h-[40px] p-2 pl-10 border border-gray-500 rounded-[10px] bg-white"
           placeholder="Search"
-          value={query}
-          onChange={handleInputChange}
+          onChange={(event) => onSearch(event.target.value)}
         />
       </div>
     </div>
   );
+};
+
+SearchBar.propTypes = {
+  onSearch: PropTypes.func.isRequired
 };
 
 export default SearchBar;
