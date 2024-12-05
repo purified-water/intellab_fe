@@ -63,13 +63,16 @@ export const LoginPage = () => {
         localStorage.setItem("userId", userId);
 
         navigate("/");
-      } else {
-        // TODO Handle errors
-        setInputErrors({ ...inputErrors, email: "Invalid email or password" });
       }
-    } catch (error) {
-      setInputErrors({ ...inputErrors, email: "Something wrong happened!" });
-      console.log("Login error", error);
+    } catch (error: any) {
+      if (error.response) {
+        const errorMessage = error.response.data.message || "Invalid email or password";
+        setInputErrors({ ...inputErrors, email: errorMessage });
+      } else {
+        // For other errors (network issues, etc.)
+        setInputErrors({ ...inputErrors, email: "Something went wrong!" });
+      }
+      console.error("Login error", error);
     }
   };
 

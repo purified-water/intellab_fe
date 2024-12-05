@@ -27,8 +27,6 @@ const GoogleLogin = () => {
         localStorage.setItem("userId", userId);
 
         navigate("/");
-      } else {
-        alert("Something went wrong! Please try again.");
       }
     } catch (error) {
       console.log("Login with Google error", error);

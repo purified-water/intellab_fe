@@ -1,6 +1,6 @@
 export interface SmCourseCardType {
-  title: string;
+  id: string;
+  name: string;
   description: string;
   price?: string;
-  buttonText: string;
 }

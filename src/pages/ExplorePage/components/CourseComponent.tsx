@@ -1,4 +1,4 @@
-import { Course } from "../../../types/Course";
+import { Course } from "@/types/Course";
 import React from "react";
 
 export const CourseComponent: React.FC<Course> = ({

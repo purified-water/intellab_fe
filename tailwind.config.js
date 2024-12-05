@@ -20,7 +20,7 @@ export default {
 
         // For button background colors
         appFadedPrimary: "#D8B3F2",
-        appFadedAccent: "#FFE5EA",
+        appFadedAccent: "#FFD5DE",
 
         gray1: "#333333",
         gray2: "#4F4F4F",
