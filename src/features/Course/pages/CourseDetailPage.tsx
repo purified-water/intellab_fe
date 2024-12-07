@@ -1,39 +1,75 @@
 import { useState, useEffect } from "react";
 import { Header, LessonList } from "@/features/Course/components";
-import { fakeLessons } from "@/constants/fakeData";
+// import { fakeLessons } from "@/constants/fakeData";
 import { useParams } from "react-router-dom";
+import { courseAPI } from "@/lib/api";
+import { ICourse, ILesson } from "../types";
+//import { terminal } from "virtual:terminal"; // for debugging
 
 export const CourseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
-  const [isEnrolled, setIsEnrolled] = useState(false);
   const [activeTab, setActiveTab] = useState("Lessons");
+  const [userId, setUserId] = useState("");
+  const [course, setCourse] = useState<ICourse | null>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [lessons, setLessons] = useState<ILesson[]>([]);
 
-  //NOTE: Quoc-29/11/2024: saving the enrolled courses in localStorage for now, calling API later
-  useEffect(() => {
-    const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
-    if (enrolledCourses.includes(id)) {
-      setIsEnrolled(true);
+  const getUserIdFromLocalStorage = () => {
+    const userId = localStorage.getItem("userId");
+    //const userId = "123";
+    if (userId) {
+      setUserId(userId);
     }
-  }, [id]);
+  };
 
-  const handleEnroll = () => {
-    setIsEnrolled(true);
-    const enrolledCourses = JSON.parse(localStorage.getItem("enrolledCourses") || "[]");
-    if (!enrolledCourses.includes(id)) {
-      enrolledCourses.push(id);
-      localStorage.setItem("enrolledCourses", JSON.stringify(enrolledCourses));
+  const getCourseDetail = async () => {
+    const response = await courseAPI.getCourseDetail(id!);
+    const { code, result } = response;
+    const { userEnrolled } = result;
+    setCourse(result);
+    setIsEnrolled(userEnrolled);
+  };
+
+  const getCourseLessons = async () => {
+    const response = await courseAPI.getLessons(id!);
+    const { code, result } = response;
+    setLessons(result);
+  };
+
+  useEffect(() => {
+    getCourseDetail();
+    getUserIdFromLocalStorage();
+    getCourseLessons();
+  }, []);
+
+  const enrollCourse = async () => {
+    const response = await courseAPI.enrollCourse(userId, id!);
+    const { courseIds } = response;
+    if (courseIds.includes(id!)) {
+      alert("Enroll successfully");
+      setIsEnrolled(true);
+    } else {
+      alert("Enroll failed");
+    }
+  };
+
+  const handleEnrollClick = () => {
+    if (userId == null || userId === "") {
+      alert("Please login to enroll this course");
+    } else {
+      enrollCourse();
     }
   };
 
   const renderHeader = () => {
     return (
       <Header
-        title="Introduction to String"
-        description="A fundamental course for String data type"
+        title={course?.name!}
+        description={course?.description!}
         isEnrolled={isEnrolled}
         rating={4.5}
         reviews={15700}
-        onEnroll={handleEnroll}
+        onEnroll={handleEnrollClick}
       />
     );
   };
@@ -41,7 +77,7 @@ export const CourseDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Lessons":
-        return <LessonList lessons={fakeLessons} isEnrolled={isEnrolled} />;
+        return <LessonList lessons={lessons} isEnrolled={isEnrolled} />;
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":
@@ -51,28 +87,24 @@ export const CourseDetailPage = () => {
     }
   };
 
+  const renderTabButton = (tab: string) => {
+    return (
+      <button
+        onClick={() => setActiveTab(tab)}
+        className={activeTab === tab ? "text-appAccent underline" : "text-gray3"}
+      >
+        {tab}
+      </button>
+    );
+  };
+
   const renderBody = () => {
     return (
       <>
-        <div className="flex gap-10 pl-10 mb-4 text-xl font-bold ml-14">
-          <button
-            onClick={() => setActiveTab("Lessons")}
-            className={activeTab === "Lessons" ? "text-appAccent underline" : "text-gray3"}
-          >
-            Lessons
-          </button>
-          <button
-            onClick={() => setActiveTab("Comments")}
-            className={activeTab === "Comments" ? "text-appAccent underline" : "text-gray3"}
-          >
-            Comments
-          </button>
-          <button
-            onClick={() => setActiveTab("Reviews")}
-            className={activeTab === "Reviews" ? "text-appAccent underline" : "text-gray3"}
-          >
-            Reviews
-          </button>
+        <div className="flex gap-10 text-xl font-bold ml-14 pl-10 mb-4">
+          {renderTabButton("Lessons")}
+          {renderTabButton("Comments")}
+          {renderTabButton("Reviews")}
         </div>
         <div className="px-6">{renderTabContent()}</div>
       </>

@@ -1,9 +1,9 @@
-import React from "react";
-import { Lesson } from "@/types";
+import { ILesson } from "../types";
 import LessonListItem from "./LessonListItem";
+// import { terminal } from "virtual:terminal"; // for debugging
 
 interface LessonListProps {
-  lessons: Lesson[];
+  lessons: ILesson[];
   isEnrolled: boolean;
 }
 
