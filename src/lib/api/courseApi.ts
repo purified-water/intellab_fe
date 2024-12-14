@@ -1,41 +1,50 @@
 import { apiClient } from "./apiClient";
 import {
-  IEnrollCourseResponse,
+  IGetCoursesResponse,
   IGetCourseDetailResponse,
   IGetCourseLessonsResponse,
+  IEnrollCourseResponse,
   IGetLessonDetailResponse
-} from "@/features/Course/types";
-//import { terminal } from "virtual:terminal"; // for debugging
+} from "./responseTypes";
 
 export const courseAPI = {
   getCourses: async () => {
-    return apiClient.get("course/courses");
+    const response = await apiClient.get("course/courses");
+    const data: IGetCoursesResponse = response.data;
+    return data;
   },
 
   search: async (keyword: string) => {
-    return apiClient.get("course/courses/search?keyword=" + keyword);
+    const response = await apiClient.get(`course/courses/search?keyword=${keyword}`);
+    const data: IGetCoursesResponse = response.data;
+    return data;
   },
 
   getCourseDetail: async (courseId: string) => {
-    const response: IGetCourseDetailResponse = await apiClient.get(`/course/courses/${courseId}`);
-    return response;
+    const response = await apiClient.get(`/course/courses/${courseId}`);
+    const data: IGetCourseDetailResponse = response.data;
+    return data;
   },
 
   getLessons: async (courseId: string) => {
-    const response: IGetCourseLessonsResponse = await apiClient.get(`/course/courses/${courseId}/lessons`);
-    return response;
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons`);
+    const data: IGetCourseLessonsResponse = response.data;
+    return data;
   },
 
-  enrollCourse: async (useUid: string, courseId: string) => {
-    const response: IEnrollCourseResponse = await apiClient.post(`/course/enroll`, {
-      userUid: useUid,
-      courseId: courseId
-    });
-    return response;
+  enrollCourse: async (userUid: string, courseId: string) => {
+    const postData = {
+      userUid,
+      courseId
+    };
+    const response = await apiClient.post(`/course/courses/enroll`, postData);
+    const data: IEnrollCourseResponse = response?.data;
+    return data;
   },
 
   getLessonDetail: async (lessonId: string) => {
-    const response: IGetLessonDetailResponse = await apiClient.get(`/course/lessons/${lessonId}`);
-    return response;
+    const response = await apiClient.get(`/course/lessons/${lessonId}`);
+    const data: IGetLessonDetailResponse = response.data;
+    return data;
   }
 };
