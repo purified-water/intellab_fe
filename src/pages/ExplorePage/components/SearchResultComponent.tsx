@@ -1,9 +1,10 @@
 import React from "react";
-import { CourseComponent } from "@/pages/ExplorePage/components/CourseComponent";
-import { Course } from "@/types/Course";
+import Spinner from "@/components/ui/Spinner";
+import { ICourse } from "@/features/Course/types";
+import Course from "./Course";
 
 interface CourseProps {
-  courses: Course[];
+  courses: ICourse[];
   query: string;
   loading: boolean;
 }
@@ -15,7 +16,8 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
 
   // Display loading message if loading is true
   if (loading) {
-    return <div className="pl-10 mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">Loading...</div>;
+    //return <div className="pl-10 mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">Loading...</div>;
+    return <Spinner loading={loading} />;
   }
 
   return (
@@ -27,19 +29,7 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
       {/* Courses grid */}
       <div className="flex flex-wrap gap-7">
         {courses.map((course) => (
-          <CourseComponent
-            key={course.id}
-            id={course.id}
-            title={course.title}
-            reviews={course.reviews}
-            rating={course.rating}
-            description={course.description}
-            difficulty={course.difficulty}
-            lessons={course.lessons}
-            price={course.price}
-            imageSrc={course.imageSrc}
-            onClick={() => {}}
-          />
+          <Course course={course} />
         ))}
       </div>
     </div>

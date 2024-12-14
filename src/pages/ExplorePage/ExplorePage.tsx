@@ -1,31 +1,33 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import SearchBar from "@/pages/ExplorePage/components/SearchBar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import FilterButton from "@/pages/ExplorePage/components/FilterButton";
-import { CourseComponent } from "@/pages/ExplorePage/components/CourseComponent";
-import { courseAPI } from "@/lib/api/courseApi"; // Adjust the import path as necessary
-import { Course } from "@/types/Course"; // Adjust the import path as necessary
+import { courseAPI } from "@/lib/api"; // Adjust the import path as necessary
+import { ICourse } from "@/features/Course/types";
 import _ from "lodash";
 import SearchResultComponent from "./components/SearchResultComponent"; // Adjust the import path as necessary
+import Course from "./components/Course";
+import Spinner from "@/components/ui/Spinner";
+
+const SEARCH_WAIT_TIME = 3000;
 
 export const ExplorePage = () => {
-  const [courses, setCourses] = useState<Course[]>([]);
-  const [searchedCourses, setSearchedCourses] = useState<Course[]>([]);
+  const [courses, setCourses] = useState<ICourse[]>([]);
+  const [searchedCourses, setSearchedCourses] = useState<ICourse[]>([]);
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
-  const navigate = useNavigate();
+
+  const fetchCourses = async () => {
+    try {
+      const response = await courseAPI.getCourses();
+      setCourses(response.result);
+    } catch (error) {
+      console.error("Failed to fetch courses:", error);
+    }
+  };
 
   // Fetch courses when the component mounts
   useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const response = await courseAPI.getCourses();
-        setCourses(response.data.result);
-      } catch (error) {
-        console.error("Failed to fetch courses:", error);
-      }
-    };
-
     fetchCourses();
   }, []);
 
@@ -39,14 +41,14 @@ export const ExplorePage = () => {
       }
       try {
         const response = await courseAPI.search(query);
-        setSearchedCourses(response.data.result);
+        setSearchedCourses(response.result);
       } catch (error) {
         console.error("Failed to search courses:", error);
         setSearchedCourses([]);
       } finally {
         setLoading(false);
       }
-    }, 300)
+    }, SEARCH_WAIT_TIME)
   ).current;
 
   // Handle search input
@@ -57,14 +59,6 @@ export const ExplorePage = () => {
       debouncedSearch(inputQuery);
     },
     [debouncedSearch]
-  );
-
-  // Handle course click
-  const handleCourseClick = useCallback(
-    (id: string) => {
-      navigate(`/course/${id}`);
-    },
-    [navigate]
   );
 
   // Determine which courses to display
@@ -98,20 +92,10 @@ export const ExplorePage = () => {
               </Link>
             </div>
             <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
-              {displayedCourses.map((course) => (
-                <CourseComponent
-                  key={course.id}
-                  id={course.id}
-                  title={course.title}
-                  reviews={course.reviews}
-                  rating={course.rating}
-                  description={course.description}
-                  difficulty={course.difficulty}
-                  lessons={course.lessons}
-                  price={course.price}
-                  imageSrc={course.imageSrc}
-                  onClick={() => handleCourseClick(course.id)}
-                />
+              {displayedCourses.map((course, index) => (
+                <div key={index}>
+                  <Course course={course} />
+                </div>
               ))}
             </div>
           </div>
@@ -125,25 +109,16 @@ export const ExplorePage = () => {
               </Link>
             </div>
             <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
-              {displayedCourses.map((course) => (
-                <CourseComponent
-                  key={course.id}
-                  id={course.id}
-                  title={course.title}
-                  reviews={course.reviews}
-                  rating={course.rating}
-                  description={course.description}
-                  difficulty={course.difficulty}
-                  lessons={course.lessons}
-                  price={course.price}
-                  imageSrc={course.imageSrc}
-                  onClick={() => handleCourseClick(course.id)}
-                />
+              {displayedCourses.map((course, index) => (
+                <div key={index}>
+                  <Course course={course} />
+                </div>
               ))}
             </div>
           </div>
         </div>
       )}
+      <Spinner loading={loading} overlay />
     </div>
   );
 };
