@@ -1,0 +1,18 @@
+import React from "react";
+
+interface FilterButtonProps {
+  onClick: () => void;
+}
+
+const FilterButton: React.FC<FilterButtonProps> = ({ onClick }) => {
+  return (
+    <button
+      className="w-[104px] h-10 px-[27px] pt-2 pb-[9px] bg-white rounded-[10px] border border-appPrimary justify-center items-center inline-flex"
+      onClick={onClick}
+    >
+      <div className="text-xl font-semibold leading-snug text-appPrimary">Filter</div>
+    </button>
+  );
+};
+
+export default FilterButton;
