@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Link as ScrollLink } from "react-scroll";
-// import { terminal } from 'virtual:terminal' // log the information to the terminal for debugging
 
 interface MarkdownRenderProps {
   content: string;
@@ -24,7 +23,6 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
       level: parseInt(heading.tagName[1])
     }));
     setToc(tocItems);
-    //terminal.log(tocItems);
   }, [content]);
 
   const splitContent = content.split(/(?=^#{1,6}\s)/gm);
@@ -58,7 +56,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
 
     return (
       <div
-        className="right-0"
+        className="right-0 border-l border-gray4"
         style={{
           position: "absolute",
           top: tocTop + defaultTop,
@@ -86,7 +84,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
 
   return (
     <div className="flex">
-      <div className="border-r border-gray4 pr-6" style={{ width: windowWidth * 0.8 }}>
+      <div className="pr-6" style={{ width: windowWidth * 0.8 }}>
         {splitContent.map((section, index) => {
           const id = index.toString();
           return (

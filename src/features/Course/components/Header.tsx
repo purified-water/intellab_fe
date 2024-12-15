@@ -27,8 +27,8 @@ export const Header = (props: HeaderProps) => {
     <div className="p-4 text-white bg-gradient-to-r from-appPrimary to-appSecondary rounded-lg flex flex-col gap-3 mx-14 my-6 px-7">
       <h1 className="text-4xl font-bold">{title}</h1>
       <p className="mt-2">{description}</p>
+      {/* NOTE: No equivalent information from API so show */}
       {/* {isEnrolled ? <ProgressBar progress={36.4} /> : renderReview()} */}
-      {isEnrolled && <ProgressBar progress={36.4} />}
       {!isEnrolled && (
         <button
           className="px-4 py-2 text-base font-bold text-black bg-white rounded-lg w-28 hover:bg-gray-300 mt-4"

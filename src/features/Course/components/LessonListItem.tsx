@@ -3,7 +3,6 @@ import { BookOpenText, Code } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
-// import { terminal } from "virtual:terminal";
 
 interface LessonListItemProps {
   lesson: ILesson;

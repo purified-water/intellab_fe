@@ -1,3 +1,3 @@
 export * from "./apiClient";
 export * from "./authApi";
-export * from "./courseAPI";
+export * from "./courseApi";
