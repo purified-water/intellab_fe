@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { Header, LessonList } from "@/features/Course/components";
-// import { fakeLessons } from "@/constants/fakeData";
 import { useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ICourse, ILesson } from "../types";
-//import { terminal } from "virtual:terminal"; // for debugging
+import Spinner from "@/components/ui/Spinner";
 
 export const CourseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,27 +12,31 @@ export const CourseDetailPage = () => {
   const [course, setCourse] = useState<ICourse | null>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [lessons, setLessons] = useState<ILesson[]>([]);
+  const [loading, setLoading] = useState(false);
 
   const getUserIdFromLocalStorage = () => {
     const userId = localStorage.getItem("userId");
-    //const userId = "123";
     if (userId) {
       setUserId(userId);
     }
   };
 
   const getCourseDetail = async () => {
+    setLoading(true);
     const response = await courseAPI.getCourseDetail(id!);
     const { code, result } = response;
     const { userEnrolled } = result;
     setCourse(result);
     setIsEnrolled(userEnrolled);
+    setLoading(false);
   };
 
   const getCourseLessons = async () => {
+    setLoading(true);
     const response = await courseAPI.getLessons(id!);
     const { code, result } = response;
     setLessons(result);
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -43,14 +46,16 @@ export const CourseDetailPage = () => {
   }, []);
 
   const enrollCourse = async () => {
+    setLoading(true);
     const response = await courseAPI.enrollCourse(userId, id!);
-    const { courseIds } = response;
+    const { courseIds } = response.result;
     if (courseIds.includes(id!)) {
       alert("Enroll successfully");
       setIsEnrolled(true);
     } else {
       alert("Enroll failed");
     }
+    setLoading(false);
   };
 
   const handleEnrollClick = () => {
@@ -115,6 +120,7 @@ export const CourseDetailPage = () => {
     <div className="mx-auto w-7/10">
       {renderHeader()}
       {renderBody()}
+      <Spinner loading={loading} overlay />
     </div>
   );
 };
