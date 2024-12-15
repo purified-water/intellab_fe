@@ -6,21 +6,21 @@ import { Sidebar } from "@/pages/HomePage/components/Sidebar";
 export const HomePage = () => {
   const yourCourses = [{ name: "Introduction to Array", description: "A fundamental course for Array Data type" }];
   const featuredCourses = [
-    { name: "DSA 50", description: "50 core concepts in DSA", price: "₫140,000" },
+    { name: "DSA 50", description: "50 core concepts in DSA", price: "140,000" },
     {
       name: "Introduction to Array II, YEAH",
       description: "A fundamental course for Array Data type",
-      price: "₫140,000"
+      price: "140,000"
     },
     {
       name: "Introduction to Array",
       description: "A fundamental course for Array Data type",
-      price: "₫140,000"
+      price: "140,000"
     },
     {
       name: "Introduction to Array",
       description: "A fundamental course for Array Data type",
-      price: "₫140,000"
+      price: "140,000"
     }
   ];
   const freeCourses = [
