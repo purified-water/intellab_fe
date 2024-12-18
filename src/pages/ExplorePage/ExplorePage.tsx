@@ -7,7 +7,6 @@ import { ICourse } from "@/features/Course/types";
 import _ from "lodash";
 import SearchResultComponent from "./components/SearchResultComponent"; // Adjust the import path as necessary
 import Course from "./components/Course";
-import Spinner from "@/components/ui/Spinner";
 
 const SEARCH_WAIT_TIME = 3000;
 

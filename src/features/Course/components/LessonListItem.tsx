@@ -1,7 +1,7 @@
 import { ILesson } from "../types";
-import { BookOpenText, Code } from "lucide-react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
+// import { BookOpenText, Code } from "lucide-react";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 
 interface LessonListItemProps {
@@ -28,12 +28,12 @@ export default function LessonListItem(props: LessonListItemProps) {
   //   if (!isEnrolled) return null;
   //   return (
   //     <div className="flex flex-row flex-1 gap-16 text-gray3">
-  //       {lesson.isCompletedTheory ? (
+  //       {true ? (
   //         <FontAwesomeIcon icon={faCircleCheck} className="w-10 h-10" />
   //       ) : (
   //         <BookOpenText className="w-10 h-10 cursor-pointer" />
   //       )}
-  //       {lesson.isCompletedPractice ? (
+  //       {true ? (
   //         <FontAwesomeIcon icon={faCircleCheck} className="w-10 h-10" />
   //       ) : (
   //         <Code className="w-10 h-10 cursor-pointer" />

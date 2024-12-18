@@ -4,11 +4,11 @@ import { useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ICourse, ILesson } from "../types";
 import Spinner from "@/components/ui/Spinner";
+import { DEFAULT_COURSE } from "@/constants/defaultData";
 
 export const CourseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Lessons");
-  const [userId, setUserId] = useState("");
   const [course, setCourse] = useState<ICourse | null>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [lessons, setLessons] = useState<ILesson[]>([]);
@@ -16,15 +16,14 @@ export const CourseDetailPage = () => {
 
   const getUserIdFromLocalStorage = () => {
     const userId = localStorage.getItem("userId");
-    if (userId) {
-      setUserId(userId);
-    }
+    return userId;
   };
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourseDetail(id!);
-    const { code, result } = response;
+    const userId = getUserIdFromLocalStorage();
+    const response = await courseAPI.getCourseDetail(id!, userId!);
+    const { result } = response;
     const { userEnrolled } = result;
     setCourse(result);
     setIsEnrolled(userEnrolled);
@@ -34,22 +33,23 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
-    const { code, result } = response;
+    const { result } = response;
     setLessons(result);
     setLoading(false);
   };
 
   useEffect(() => {
     getCourseDetail();
-    getUserIdFromLocalStorage();
     getCourseLessons();
   }, []);
 
   const enrollCourse = async () => {
     setLoading(true);
-    const response = await courseAPI.enrollCourse(userId, id!);
-    const { courseIds } = response.result;
-    if (courseIds.includes(id!)) {
+    const userId = getUserIdFromLocalStorage();
+    const response = await courseAPI.enrollCourse(userId!, id!);
+    //const { courseIds } = response.result;
+    //if (courseIds.includes(id!)) {
+    if (response.code === 0) {
       alert("Enroll successfully");
       setIsEnrolled(true);
     } else {
@@ -59,6 +59,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleEnrollClick = () => {
+    const userId = getUserIdFromLocalStorage();
     if (userId == null || userId === "") {
       alert("Please login to enroll this course");
     } else {
@@ -66,15 +67,28 @@ export const CourseDetailPage = () => {
     }
   };
 
+  const handleContinueClick = () => {
+    // TODO: handle continue click
+    console.log("--> Continue clicked");
+  };
+
+  const handleViewCertificateClick = () => {
+    // TODO: handle view certificate click
+    console.log("--> View certificate clicked");
+  };
+
   const renderHeader = () => {
     return (
       <Header
-        title={course?.name!}
-        description={course?.description!}
-        isEnrolled={isEnrolled}
-        rating={4.5}
-        reviews={15700}
+        title={course?.courseName ?? DEFAULT_COURSE.courseName}
+        description={course?.description ?? DEFAULT_COURSE.description}
+        isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled}
+        rating={course?.rating ?? DEFAULT_COURSE.rating}
+        reviews={course?.reviews ?? DEFAULT_COURSE.reviews}
+        progress={course?.progress ?? DEFAULT_COURSE.progress}
         onEnroll={handleEnrollClick}
+        onContinue={handleContinueClick}
+        onViewCertificate={handleViewCertificateClick}
       />
     );
   };
@@ -82,7 +96,7 @@ export const CourseDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Lessons":
-        return <LessonList lessons={lessons} isEnrolled={isEnrolled} />;
+        return <LessonList lessons={lessons} isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled} />;
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":

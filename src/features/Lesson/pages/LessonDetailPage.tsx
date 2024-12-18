@@ -1,6 +1,6 @@
-import { MarkdownRender, Quiz } from "../components";
-import { IQuiz } from "@/types";
-import { ChevronRight } from "lucide-react";
+import { MarkdownRender } from "../components";
+// import { IQuiz } from "@/types";
+// import { ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
@@ -12,7 +12,7 @@ export const LessonDetailPage = () => {
 
   const getLessonDetail = async () => {
     const response = await courseAPI.getLessonDetail(id!);
-    const { code, result } = response;
+    const { result } = response;
     setLesson(result);
   };
 
