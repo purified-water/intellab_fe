@@ -17,11 +17,9 @@ export const ExplorePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCourses = async () => {
-    try {
-      const response = await courseAPI.getCourses();
+    const response = await courseAPI.getCourses();
+    if (response) {
       setCourses(response.result);
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
     }
   };
 

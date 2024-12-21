@@ -1,19 +1,23 @@
 import { MarkdownRender } from "../components";
-// import { IQuiz } from "@/types";
-// import { ChevronRight } from "lucide-react";
+//import { IQuiz } from "@/types";
+//import { ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ILesson } from "@/features/Course/types";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const LessonDetailPage = () => {
   const [lesson, setLesson] = useState<ILesson | null>(null);
   const { id } = useParams<{ id: string }>();
 
   const getLessonDetail = async () => {
-    const response = await courseAPI.getLessonDetail(id!);
-    const { result } = response;
-    setLesson(result);
+    const userId = getUserIdFromLocalStorage();
+    if (id && userId) {
+      const response = await courseAPI.getLessonDetail(id, userId);
+      const { result } = response;
+      setLesson(result);
+    }
   };
 
   useEffect(() => {
@@ -23,7 +27,7 @@ export const LessonDetailPage = () => {
   const renderHeader = () => {
     return (
       <div className="border-b border-gray-300 py-4 space-y-2">
-        <p className="text-5xl font-bold">{lesson?.name}</p>
+        <p className="text-5xl font-bold">{lesson?.lessonName}</p>
         <p className="text-gray3">{lesson?.description}</p>
       </div>
     );
@@ -31,7 +35,7 @@ export const LessonDetailPage = () => {
 
   const renderContent = () => {
     if (lesson?.content != null) {
-      return <MarkdownRender content={lesson?.content!} />;
+      return <MarkdownRender content={lesson?.content} />;
     }
   };
 

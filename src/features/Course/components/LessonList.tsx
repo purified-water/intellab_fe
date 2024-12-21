@@ -32,7 +32,7 @@ export const LessonList = (props: LessonListProps) => {
       {/* {isEnrolled && renderHeader()} */}
       <ul className="list-none">
         {lessons.map((lesson, index) => (
-          <LessonListItem key={lesson.id} lesson={lesson} index={index} isEnrolled={isEnrolled} />
+          <LessonListItem key={lesson.lessonId} lesson={lesson} index={index} isEnrolled={isEnrolled} />
         ))}
       </ul>
     </div>

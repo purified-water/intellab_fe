@@ -1,4 +1,4 @@
-import { ICourse } from "@/features/Course/types";
+import { ICourse, ILesson } from "@/features/Course/types";
 import hierarchy from "@/assets/hierarchy.png";
 
 const DEFAULT_COURSE: ICourse = {
@@ -17,4 +17,16 @@ const DEFAULT_COURSE: ICourse = {
   progress: 0
 };
 
-export { DEFAULT_COURSE };
+const DEFAULT_LESSON: ILesson = {
+  lessonId: "lesson_id",
+  lessonOrder: 0,
+  lessonName: "Lesson Name",
+  description: "Lesson Description",
+  content: "Lesson Content",
+  courseId: "course_id",
+  exerciseId: "exercise_id",
+  finishTheory: false,
+  finishExercise: false
+};
+
+export { DEFAULT_COURSE, DEFAULT_LESSON };

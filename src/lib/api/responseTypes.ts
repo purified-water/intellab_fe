@@ -29,3 +29,18 @@ export interface IGetLessonDetailResponse {
   code: number;
   result: ILesson;
 }
+
+export interface IUserCourse {
+  enrollId: {
+    userUid: string;
+    courseId: string;
+  };
+  progressPercent: number;
+  status: string;
+  lastAccessedDate: string;
+}
+
+export interface IGetUserEnrolledCoursesResponse {
+  code: number;
+  result: IUserCourse[];
+}
