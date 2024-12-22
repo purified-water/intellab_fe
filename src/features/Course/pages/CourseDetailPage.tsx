@@ -33,8 +33,8 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
-    const { result } = response;
-    setLessons(result);
+    const { content } = response.result;
+    setLessons(content);
     setLoading(false);
   };
 

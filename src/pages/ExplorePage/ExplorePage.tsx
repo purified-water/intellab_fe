@@ -19,7 +19,7 @@ export const ExplorePage = () => {
   const fetchCourses = async () => {
     const response = await courseAPI.getCourses();
     if (response) {
-      setCourses(response.result);
+      setCourses(response.result.content);
     }
   };
 
@@ -38,7 +38,7 @@ export const ExplorePage = () => {
       }
       try {
         const response = await courseAPI.search(query);
-        setSearchedCourses(response.result);
+        setSearchedCourses(response.result.content);
       } catch (error) {
         console.error("Failed to search courses:", error);
         setSearchedCourses([]);

@@ -25,8 +25,11 @@ const DEFAULT_LESSON: ILesson = {
   content: "Lesson Content",
   courseId: "course_id",
   exerciseId: "exercise_id",
-  finishTheory: false,
-  finishExercise: false
+  isDoneTheory: false,
+  isDonePractice: false,
+  learningId: "learning_id",
+  nextLessonId: "next_lesson_id",
+  nextLessonName: "Next Lesson Name"
 };
 
 export { DEFAULT_COURSE, DEFAULT_LESSON };

@@ -33,8 +33,8 @@ export default function LessonListItem(props: LessonListItemProps) {
     if (!isEnrolled) return null;
     return (
       <div className="flex flex-row flex-1 gap-16 text-gray3">
-        {(lesson.finishTheory ?? DEFAULT_LESSON.finishTheory) ? finishedIcon : unfinishedTheoryIcon}
-        {(lesson.finishExercise ?? DEFAULT_LESSON.finishExercise) ? finishedIcon : unfinishedExerciseIcon}
+        {(lesson.isDoneTheory ?? DEFAULT_LESSON.isDoneTheory) ? finishedIcon : unfinishedTheoryIcon}
+        {(lesson.isDonePractice ?? DEFAULT_LESSON.isDonePractice) ? finishedIcon : unfinishedExerciseIcon}
       </div>
     );
   };

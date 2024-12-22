@@ -13,7 +13,7 @@ export const HomePage = () => {
 
   const getCourses = async () => {
     const response = await courseAPI.getCourses();
-    return response ? response.result : [];
+    return response ? response.result.content : [];
   };
 
   const getFeaturedCourses = async () => {
