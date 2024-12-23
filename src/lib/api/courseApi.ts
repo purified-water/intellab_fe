@@ -20,8 +20,8 @@ export const courseAPI = {
     return data;
   },
 
-  getCourseDetail: async (courseId: string) => {
-    const response = await apiClient.get(`/course/courses/${courseId}`);
+  getCourseDetail: async (courseId: string, userUid: string) => {
+    const response = await apiClient.get(`/course/courses/${courseId}?userUid=${userUid}`);
     const data: IGetCourseDetailResponse = response.data;
     return data;
   },
@@ -42,14 +42,9 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonDetail: async (lessonId: string, userUid: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}/${userUid}`);
+  getLessonDetail: async (lessonId: string) => {
+    const response = await apiClient.get(`/course/lessons/${lessonId}`);
     const data: IGetLessonDetailResponse = response.data;
     return data;
-  },
-
-  getLessonQuiz: async (lessonId: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}/quiz`);
-    return response.data;
   }
 };
