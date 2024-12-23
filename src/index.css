@@ -9,7 +9,7 @@
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #f5f5f5;
 
   font-synthesis: none;
   text-rendering: optimizeLegibility;
@@ -51,7 +51,7 @@ button:hover {
 
 @media (prefers-color-scheme: light) {
   :root {
-    color: #213547;
+    color: #f5f5f5;
     background-color: #ffffff;
   }
   a:hover {
@@ -129,4 +129,10 @@ button:hover {
 
 .markdown > * {
   all: revert;
+}
+.markdown img {
+  max-width: 40rem;
+  width: 100%;
+  height: auto;
+  justify-self: center;
 }

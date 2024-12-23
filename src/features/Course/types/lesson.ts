@@ -1,7 +1,7 @@
 export interface ILesson {
-  id: string;
+  lessonId: string;
   lessonOrder: number;
-  name: string;
+  lessonName: string;
   description: string;
   content: string;
   courseId: string;
