@@ -1,9 +1,22 @@
 import { ICourse } from "../../features/Course/types/course";
 import { ILesson } from "../../features/Course/types/lesson";
+import { IPageable } from "@/types";
 
 export interface IGetCoursesResponse {
   code: number;
-  result: ICourse[];
+  result: {
+    content: ICourse[];
+    pageable: IPageable;
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    size: number;
+    number: number;
+    sort: { property: string; direction: "ASC" | "DESC" }[];
+    numberOfElements: number;
+    first: boolean;
+    empty: boolean;
+  };
 }
 
 export interface IGetCourseDetailResponse {
@@ -13,7 +26,19 @@ export interface IGetCourseDetailResponse {
 
 export interface IGetCourseLessonsResponse {
   code: number;
-  result: ILesson[];
+  result: {
+    content: ILesson[];
+    pageable: IPageable;
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    size: number;
+    number: number;
+    sort: { property: string; direction: "ASC" | "DESC" }[];
+    numberOfElements: number;
+    first: boolean;
+    empty: boolean;
+  };
 }
 
 export interface IEnrollCourseResponse {
@@ -27,5 +52,21 @@ export interface IEnrollCourseResponse {
 
 export interface IGetLessonDetailResponse {
   code: number;
+  message: string;
   result: ILesson;
+}
+
+export interface IUserCourse {
+  enrollId: {
+    userUid: string;
+    courseId: string;
+  };
+  progressPercent: number;
+  status: string;
+  lastAccessedDate: string;
+}
+
+export interface IGetUserEnrolledCoursesResponse {
+  code: number;
+  result: IUserCourse[];
 }

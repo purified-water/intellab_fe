@@ -17,11 +17,9 @@ export const ExplorePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCourses = async () => {
-    try {
-      const response = await courseAPI.getCourses();
-      setCourses(response.result);
-    } catch (error) {
-      console.error("Failed to fetch courses:", error);
+    const response = await courseAPI.getCourses();
+    if (response) {
+      setCourses(response.result.content);
     }
   };
 
@@ -40,7 +38,7 @@ export const ExplorePage = () => {
       }
       try {
         const response = await courseAPI.search(query);
-        setSearchedCourses(response.result);
+        setSearchedCourses(response.result.content);
       } catch (error) {
         console.error("Failed to search courses:", error);
         setSearchedCourses([]);

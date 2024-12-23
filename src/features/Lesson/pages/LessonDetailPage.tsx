@@ -1,10 +1,10 @@
 import { MarkdownRender } from "../components";
-// import { IQuiz } from "@/types";
 import { ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ILesson } from "@/features/Course/types";
+import { getUserIdFromLocalStorage } from "@/utils";
 import { IQuiz } from "../types/QuizType";
 import { LessonQuiz } from "../components";
 
@@ -17,9 +17,12 @@ export const LessonDetailPage = () => {
   const userId = localStorage.getItem("userId");
 
   const getLessonDetail = async () => {
-    const response = await courseAPI.getLessonDetail(id!, userId!);
-    const { result } = response;
-    setLesson(result);
+    const userId = getUserIdFromLocalStorage();
+    if (id && userId) {
+      const response = await courseAPI.getLessonDetail(id, userId);
+      const { result } = response;
+      setLesson(result);
+    }
   };
 
   const getLessonQuiz = async () => {

@@ -4,7 +4,8 @@ import {
   IGetCourseDetailResponse,
   IGetCourseLessonsResponse,
   IEnrollCourseResponse,
-  IGetLessonDetailResponse
+  IGetLessonDetailResponse,
+  IGetUserEnrolledCoursesResponse
 } from "./responseTypes";
 
 export const courseAPI = {
@@ -42,9 +43,15 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonDetail: async (lessonId: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}`);
+  getLessonDetail: async (lessonId: string, userId: string) => {
+    const response = await apiClient.get(`/course/lessons/${lessonId}/${userId}`);
     const data: IGetLessonDetailResponse = response.data;
+    return data;
+  },
+
+  getUserEnrolledCourses: async (userUid: string) => {
+    const response = await apiClient.get(`/course/courses/${userUid}/enrolledCourses`);
+    const data: IGetUserEnrolledCoursesResponse = response.data;
     return data;
   }
 };

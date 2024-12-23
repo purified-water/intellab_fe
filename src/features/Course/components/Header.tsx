@@ -1,4 +1,4 @@
-import { ProgressBar } from "./ProgressBar";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 import { amountTransformer } from "@/utils";
 
 interface HeaderProps {
