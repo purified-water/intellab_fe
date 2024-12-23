@@ -46,7 +46,7 @@ export default function Course(props: CourseProps) {
   };
 
   return (
-    <div className="w-80 bg-white rounded-xl border border-[#b3b3b3]">
+    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
       {/* Header section with background gradient and reviews */}
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
         <div className="flex items-center justify-end px-4 pt-3 mb-5">
@@ -66,28 +66,25 @@ export default function Course(props: CourseProps) {
       </div>
 
       {/* Description section */}
-      <div className="items-center px-4 py-1 w-72">
-        <span className="text-sm font-bold text-black">You’ll learn about: </span>
-        <span className="text-sm font-normal text-black">{description ?? DEFAULT_COURSE.description}</span>
+      <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
+        <span className="text-sm font-normal text-black line-clamp-2">{description ?? DEFAULT_COURSE.description}</span>
       </div>
 
       {/* Difficulty and lessons section */}
-      <div className="px-4 mb-3">
+      <div className="flex-grow px-4 mb-3">
         <span className="w-36 text-[#01000f] text-sm font-bold">{level ?? DEFAULT_COURSE.level}</span>
-        {/* NOTE: No equivalent information from API so show */}
         <span className="mx-2 text-[#01000f] text-sm font-normal">•</span>
         <span className="w-52 text-[#01000f] text-sm font-normal">
           Include {lessonNumber ?? DEFAULT_COURSE.lessonNumber} lessons
         </span>
       </div>
 
-      {/* Footer section with button and price */}
-      <div className="flex items-center self-end justify-between p-4">
+      {/* Footer section */}
+      <div className="flex items-baseline justify-between p-4 mt-auto bg-">
         <button
-          className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary"
+          className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
           onClick={() => handleCourseClick(course.courseId)}
         >
-          {/* NOTE: May have "View certificate" in the future */}
           {userEnrolled ? "Continue" : "Study Now"}
         </button>
         <span className="text-lg font-bold text-appPrimary">{`${price} ${unitPrice}`}</span>

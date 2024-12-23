@@ -40,14 +40,15 @@ export default function LessonListItem(props: LessonListItemProps) {
   };
 
   return (
-    <li key={lesson.lessonId} className="border-b border-gray4 w-full flex-wrap overflow-hidden">
-      <button className="flex flex-row items-center w-full px-9 py-2 gap-10 overflow-hidden" onClick={handleClick}>
+
+    <li key={lesson.lessonId} className="flex-wrap w-full overflow-hidden border-b border-gray4">
+      <button className="flex flex-row items-center w-full gap-10 py-2 overflow-hidden px-9" onClick={handleClick}>
         <h2 className="text-3xl font-bold">{index + 1}</h2>
-        <div className="text-left flex-1 overflow-hidden min-w-[200px]">
-          <h4 className="m-0 font-bold text-xl flex-wrap overflow-hidden text-ellipsis whitespace-nowrap">
+        <div className="text-left flex-col min-w-[200px]">
+          <h4 className="flex-wrap m-0 overflow-hidden text-xl font-bold text-ellipsis whitespace-nowrap">
             {lesson.lessonName}
           </h4>
-          <p className="mt-2 text-gray3 overflow-hidden text-ellipsis whitespace-nowrap">{lesson.description}</p>
+          <p className="mt-2 overflow-hidden text-gray3 text-ellipsis whitespace-nowrap">{lesson.description}</p>
         </div>
         {renderIcons(lesson)}
       </button>

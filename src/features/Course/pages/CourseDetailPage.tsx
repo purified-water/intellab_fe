@@ -21,10 +21,10 @@ export const CourseDetailPage = () => {
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const userId = getUserIdFromLocalStorage();
-    const response = await courseAPI.getCourseDetail(id!, userId!);
+    const response = await courseAPI.getCourseDetail(id!);
     const { result } = response;
     const { userEnrolled } = result;
+
     setCourse(result);
     setIsEnrolled(userEnrolled);
     setLoading(false);
@@ -33,8 +33,11 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
-    const { content } = response.result;
-    setLessons(content);
+    const { result } = response;
+    // Used to sort because the order of lessons in DB is not ascending
+    result.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
+
+    setLessons(result);
     setLoading(false);
   };
 
@@ -120,7 +123,7 @@ export const CourseDetailPage = () => {
   const renderBody = () => {
     return (
       <>
-        <div className="flex gap-10 text-xl font-bold ml-14 pl-10 mb-4">
+        <div className="flex gap-10 pl-10 mb-4 text-xl font-bold ml-14">
           {renderTabButton("Lessons")}
           {renderTabButton("Comments")}
           {renderTabButton("Reviews")}
