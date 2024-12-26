@@ -50,7 +50,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
       <>
         <div>
           <h3 className="text-xl font-bold line-clamp-2">{course?.courseName}</h3>
-          <p className="text-sm line-clamp-1 mb-2">{course?.description}</p>
+          <p className={`text-sm mb-2 ${course?.courseName && course.courseName.length > 20 ? 'line-clamp-1' : 'line-clamp-2'}`}>{course?.description}</p>
           <ProgressBar progress={progress} showText={false} height={5} />
         </div>
 
@@ -61,7 +61,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
           >
             {isFinished ? "View certificate" : "Continue"}
           </button>
-          <p className="self-end mt-2 font-bold">{course?.price ? `đ${course?.price}` : "Free"}</p>
+          <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
         </div>
       </>
     );

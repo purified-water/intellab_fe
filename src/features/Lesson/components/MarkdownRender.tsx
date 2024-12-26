@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeSlug from "rehype-slug";
@@ -14,15 +14,17 @@ import { is } from "unist-util-is";
 
 interface MarkdownRenderProps {
   content: string;
+  setIsScrolledToBottom: (value: boolean) => void;
 }
 
 export const MarkdownRender = (props: MarkdownRenderProps) => {
-  const { content } = props;
+  const { content, setIsScrolledToBottom } = props;
 
   const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
   const [tocTop, setTocTop] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [processedContent, setProcessedContent] = useState(content);
+  const contentRef = useRef<HTMLDivElement | null>(null); // Ref for the Markdown content
   const defaultTop = 350;
 
   const preprocessMarkdown = (content: string) => {
@@ -34,7 +36,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
       if (
         is<Code>(node, {
           type: "code",
-          value: (node as Code).value // Fix the type error
+          value: (node as Code).value // This will fix the type error
         })
       ) {
         const prevNode = ast.children[index - 1];
@@ -91,6 +93,23 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
 
   useEffect(() => {
     const handleScroll = () => {
+      // console.log(contentRef.current);
+      if (contentRef.current) {
+        const { top, bottom, height } = contentRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+
+        // Calculate the visible portion of the content 
+        // as you scroll down, the top with descrease, you have to add the absolute value of top and visible height to get the scrolled height
+        const visibleHeight = Math.min(bottom, viewportHeight) + Math.max(Math.abs(top), 0);
+
+        // Calculate the scrolled percentage
+        const scrolledPercentage = (visibleHeight / height) * 100;
+        if (scrolledPercentage >= 70) {
+          console.log("Scrolled to bottom");
+          setIsScrolledToBottom(true);
+        }
+      }
+
       const scrollTop = window.scrollY;
       setTocTop(scrollTop > defaultTop ? scrollTop - defaultTop : 0);
     };
@@ -154,8 +173,14 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   );
 
   return (
-    <div className="flex mr-1 md:mr-48">
-      <div className="pr-12" style={{ width: windowWidth * 0.8 }}>
+    <div
+      className="flex mr-1 md:mr-48"
+    >
+      <div
+        className="pr-12"
+        style={{ width: windowWidth * 0.8 }}
+        ref={contentRef}
+      >
         <ReactMarkdown
           className="markdown"
           remarkPlugins={[remarkGfm]}

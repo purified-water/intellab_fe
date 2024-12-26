@@ -12,7 +12,7 @@ export const Leaderboard = () => {
   };
 
   return (
-    <div className="p-4 border rounded-lg">
+    <div className="p-4 border border-gray5 rounded-lg">
       <div className="text-xl font-bold text-appPrimary">Leaderboard</div>
 
       <Separator className="my-2" />

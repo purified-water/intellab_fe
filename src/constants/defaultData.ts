@@ -7,7 +7,7 @@ const DEFAULT_COURSE: ICourse = {
   description: "Course Description",
   level: "Beginner",
   price: 0,
-  unitPrice: "đ",
+  unitPrice: "VND",
   courseLogo: hierarchy,
   userUid: "",
   userEnrolled: false,

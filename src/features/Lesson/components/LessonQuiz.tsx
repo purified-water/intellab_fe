@@ -5,10 +5,11 @@ import { courseAPI } from "@/lib/api";
 interface QuizProps {
   quiz: IQuiz;
   lessonId: string;
+  answerCallback: (isCorrect: boolean) => void;
 }
 
 export const LessonQuiz = (props: QuizProps) => {
-  const { quiz, lessonId } = props;
+  const { quiz, lessonId, answerCallback } = props;
 
   const [selectedAnswerOrder, setSelectedAnswerOrder] = useState<number | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -33,9 +34,10 @@ export const LessonQuiz = (props: QuizProps) => {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedAnswerOrder?.toString() == quiz.correctAnswer) {
       setIsCorrect(true);
+      answerCallback(true);
     } else {
       setIsCorrect(false);
       setTimeout(() => {

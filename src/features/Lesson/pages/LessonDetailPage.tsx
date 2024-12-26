@@ -11,16 +11,22 @@ import { LessonQuiz } from "../components";
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<ILesson | null>(null);
+  const [nextLessonOrder, setNextLessonOrder] = useState<number | null>(null);
   const [nextLesson, setNextLesson] = useState<ILesson | null>(null);
   const [quiz, setQuiz] = useState<IQuiz | null>(null);
-  const { id } = useParams<{ id: string }>();
-  const userId = localStorage.getItem("userId");
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState<boolean>(false);
+  const [isLessonDone, setIsLessonDone] = useState<boolean>(false);
+  let { id } = useParams<{ id: string }>();
+  const userId = getUserIdFromLocalStorage();
 
   const getLessonDetail = async () => {
-    const userId = getUserIdFromLocalStorage();
     if (id && userId) {
       const response = await courseAPI.getLessonDetail(id, userId);
       const { result } = response;
+      setNextLessonOrder(result.lessonOrder! + 1);
+
+      // console.log("Lesson detail", result);
       setLesson(result);
     }
   };
@@ -29,25 +35,40 @@ export const LessonDetailPage = () => {
     try {
       const response = await courseAPI.getLessonQuiz(id!);
       const result = response.result;
-
+      console.log("Quiz", result);
       setQuiz(result);
     } catch (error) {
       console.log("Error fetching quiz", error);
     }
   };
 
-  // NOTE: Temporary before API is updated
-  // Get all the lesson from the course and find the next lesson (lessonOrder + 1)
+  const handleLessonDoneCallback = async (isCorrect: boolean) => {
+    setIsCorrect(isCorrect);
+    try {
+      if (isCorrect) {
+        const response = await courseAPI.updateTheoryDone(lesson!.learningId!);
+        setIsLessonDone(true);
+        console.log("Lesson with quiz done", response);
+      }
+    } catch (error) {
+      console.log("Error updating theory done", error);
+    }
+  }
+
   const fetchNextLesson = async () => {
     try {
+      if (nextLessonOrder == null || lesson?.courseId == null) {
+        return;
+      }
+      
       const response = await courseAPI.getLessons(lesson!.courseId!);
       const { result } = response;
-      const nextLessonOrder = lesson!.lessonOrder! + 1;
+      const content = result.content;
 
-      if (nextLessonOrder > result.length) {
+      if (nextLessonOrder > content.length) {
         setNextLesson(null);
       } else {
-        const nextLesson = result.find((lesson: ILesson) => lesson.lessonOrder === nextLessonOrder);
+        const nextLesson = content.find((lesson: ILesson) => lesson.lessonOrder === nextLessonOrder);
         setNextLesson(nextLesson!);
       }
     } catch (error) {
@@ -55,19 +76,36 @@ export const LessonDetailPage = () => {
     }
   };
 
-  // TO DO: Create a callback function in LessonQuiz to update the lesson state
-  // If the quiz is correct, update the lesson state to completed and show the next chapter button
-  // Else dont
-
   const navigateToNextLesson = () => {
     if (nextLesson) {
+      setIsCorrect(null);
+      setIsLessonDone(false);
+      setIsScrolledToBottom(false);
+      setLesson(null);
+      window.scrollTo(0, 0);
       navigate(`/lesson/${nextLesson.lessonId}`);
     }
   };
 
   useEffect(() => {
+    if (quiz) {
+      if (isCorrect === true) {
+        handleLessonDoneCallback(true);
+      } else if (isCorrect === false) {
+        getLessonQuiz();
+      }
+    } else {
+      if (isScrolledToBottom) {
+        console.log("Lesson done without quiz");
+        courseAPI.updateTheoryDone(lesson!.learningId!);
+        setIsLessonDone(true);
+      }
+    }
+  }, [isCorrect, isScrolledToBottom]);
+
+  useEffect(() => {
     getLessonDetail();
-    if (lesson) {
+    if (id) {
       getLessonQuiz();
 
       const timer = setTimeout(() => {
@@ -89,7 +127,7 @@ export const LessonDetailPage = () => {
 
   const renderContent = () => {
     if (lesson && lesson.content != null) {
-      return <MarkdownRender content={lesson!.content!} />;
+      return <MarkdownRender content={lesson!.content!} setIsScrolledToBottom={setIsScrolledToBottom} />;
     }
   };
 
@@ -100,14 +138,14 @@ export const LessonDetailPage = () => {
     return (
       <div className="space-y-4">
         <p className="text-4xl font-bold">Quiz</p>
-        <LessonQuiz quiz={quiz} lessonId={id!} />
+        <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback}/>
       </div>
     );
   };
 
   const renderNextLesson = () => {
     return (
-      nextLesson && (
+      nextLesson && isLessonDone && (
         <div
           className="flex items-center gap-2 px-3 py-3 cursor-pointer border-y border-gray4 max-w-7xl"
           onClick={navigateToNextLesson}

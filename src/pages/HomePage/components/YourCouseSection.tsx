@@ -19,6 +19,8 @@ export const YourCourseSection = () => {
       setUserEnrollCourses(userEnrolledCourses);
       setLoading(false);
     }
+
+    console.log("userEnrollCourses", userEnrollCourses);  
   };
 
   useEffect(() => {

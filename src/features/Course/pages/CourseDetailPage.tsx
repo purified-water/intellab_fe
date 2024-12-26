@@ -5,6 +5,8 @@ import { courseAPI } from "@/lib/api";
 import { ICourse, ILesson } from "../types";
 import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
+import { getUserIdFromLocalStorage } from "@/utils";
+import { useNavigate } from "react-router-dom";
 
 export const CourseDetailPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -13,15 +15,12 @@ export const CourseDetailPage = () => {
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const getUserIdFromLocalStorage = () => {
-    const userId = localStorage.getItem("userId");
-    return userId;
-  };
+  const navigate = useNavigate();
+  const userId = getUserIdFromLocalStorage();
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourseDetail(id!);
+    const response = await courseAPI.getCourseDetail(id!, userId!);
     const { result } = response;
     const { userEnrolled } = result;
 
@@ -34,10 +33,11 @@ export const CourseDetailPage = () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
     const { result } = response;
+    const content = result.content;
     // Used to sort because the order of lessons in DB is not ascending
-    result.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
+    content.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
 
-    setLessons(result);
+    setLessons(content);
     setLoading(false);
   };
 
@@ -71,8 +71,14 @@ export const CourseDetailPage = () => {
   };
 
   const handleContinueClick = () => {
-    // TODO: handle continue click
-    console.log("--> Continue clicked");
+    if (lessons.length > 0 && course?.latestLessonId != null) {
+      navigate(`/lesson/${course.latestLessonId}`);
+    }
+    else {
+      // Redirect to the first lesson
+      const firstLesson = lessons[0];
+      navigate(`/lesson/${firstLesson.lessonId}`);
+    }
   };
 
   const handleViewCertificateClick = () => {
@@ -86,9 +92,9 @@ export const CourseDetailPage = () => {
         title={course?.courseName ?? DEFAULT_COURSE.courseName}
         description={course?.description ?? DEFAULT_COURSE.description}
         isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled}
-        rating={course?.rating ?? DEFAULT_COURSE.rating}
-        reviews={course?.reviews ?? DEFAULT_COURSE.reviews}
-        progress={course?.progress ?? DEFAULT_COURSE.progress}
+        rating={course?.averageRating ?? DEFAULT_COURSE.averageRating}
+        reviews={course?.reviewCount ?? DEFAULT_COURSE.reviewCount}
+        progress={course?.progressPercent ?? DEFAULT_COURSE.progressPercent}
         onEnroll={handleEnrollClick}
         onContinue={handleContinueClick}
         onViewCertificate={handleViewCertificateClick}
@@ -99,7 +105,7 @@ export const CourseDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Lessons":
-        return <LessonList lessons={lessons} isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled} />;
+        return <LessonList lessons={lessons} isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled} lastViewedLessonId={course?.latestLessonId}/>;
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":

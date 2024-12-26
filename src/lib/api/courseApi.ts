@@ -49,6 +49,16 @@ export const courseAPI = {
     return data;
   },
 
+  getLessonQuiz: async (lessonId: string) => {
+    const response = await apiClient.get(`/course/lessons/${lessonId}/quiz`);
+    return response.data;
+  },
+
+  updateTheoryDone: async (learningId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/doneTheory`);
+    return response.data;
+  },
+
   getUserEnrolledCourses: async (userUid: string) => {
     const response = await apiClient.get(`/course/courses/${userUid}/enrolledCourses`);
     const data: IGetUserEnrolledCoursesResponse = response.data;

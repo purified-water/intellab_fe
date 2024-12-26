@@ -4,10 +4,11 @@ import LessonListItem from "./LessonListItem";
 interface LessonListProps {
   lessons: ILesson[];
   isEnrolled: boolean;
+  lastViewedLessonId?: string;
 }
 
 export const LessonList = (props: LessonListProps) => {
-  const { lessons, isEnrolled } = props;
+  const { lessons, isEnrolled, lastViewedLessonId } = props;
 
   // const renderHeader = () => {
   //   return (
@@ -32,7 +33,7 @@ export const LessonList = (props: LessonListProps) => {
       {/* {isEnrolled && renderHeader()} */}
       <ul className="list-none">
         {lessons.map((lesson, index) => (
-          <LessonListItem key={lesson.lessonId} lesson={lesson} index={index} isEnrolled={isEnrolled} />
+          <LessonListItem key={lesson.lessonId} lesson={lesson} index={index} isEnrolled={isEnrolled} lastViewedLessonId={lastViewedLessonId} />
         ))}
       </ul>
     </div>

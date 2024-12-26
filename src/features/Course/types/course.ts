@@ -1,15 +1,16 @@
 export interface ICourse {
+  averageRating: number;
   courseId: string;
+  courseLogo: string;
   courseName: string;
   description: string;
+  latestLessonId: string;
+  lessonCount: number;
   level: string;
   price: number;
+  progressPercent: number;
+  reviewCount: number;
   unitPrice: string;
-  courseLogo: string;
-  userUid: string;
   userEnrolled: boolean;
-  lessonNumber: number;
-  rating: number;
-  reviews: number;
-  progress: number;
+  userUid: string | null;
 }
