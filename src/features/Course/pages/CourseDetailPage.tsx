@@ -83,9 +83,9 @@ export const CourseDetailPage = () => {
         title={course?.courseName ?? DEFAULT_COURSE.courseName}
         description={course?.description ?? DEFAULT_COURSE.description}
         isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled}
-        rating={course?.rating ?? DEFAULT_COURSE.rating}
-        reviews={course?.reviews ?? DEFAULT_COURSE.reviews}
-        progress={course?.progress ?? DEFAULT_COURSE.progress}
+        rating={course?.averageRating ?? DEFAULT_COURSE.averageRating}
+        reviews={course?.reviewCount ?? DEFAULT_COURSE.reviewCount}
+        progress={course?.progressPercent ?? DEFAULT_COURSE.progressPercent}
         onEnroll={handleEnrollClick}
         onContinue={handleContinueClick}
         onViewCertificate={handleViewCertificateClick}
@@ -120,7 +120,7 @@ export const CourseDetailPage = () => {
   const renderBody = () => {
     return (
       <>
-        <div className="flex gap-10 text-xl font-bold ml-14 pl-10 mb-4">
+        <div className="flex gap-10 pl-10 mb-4 text-xl font-bold ml-14">
           {renderTabButton("Lessons")}
           {renderTabButton("Comments")}
           {renderTabButton("Reviews")}

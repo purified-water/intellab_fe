@@ -37,7 +37,7 @@ const SectionDetailPage: React.FC = () => {
         const response = await courseAPI.search(inputQuery);
         await new Promise((resolve) => setTimeout(resolve, 1000));
         setLoading(false);
-        setSearchedCourses(response.result);
+        setSearchedCourses(response.result.content);
       } catch (error) {
         console.error("Failed to search courses:", error);
         setSearchedCourses([]);

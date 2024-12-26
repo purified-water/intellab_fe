@@ -9,8 +9,8 @@ import {
 } from "./responseTypes";
 
 export const courseAPI = {
-  getCourses: async () => {
-    const response = await apiClient.get("course/courses");
+  getCourses: async (userUid: string | null) => {
+    const response = await apiClient.get(`course/courses?userUid=${userUid}`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },
