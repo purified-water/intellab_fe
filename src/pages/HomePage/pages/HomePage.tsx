@@ -1,32 +1,37 @@
+import { useState, useEffect } from "react";
 import { AppFooter } from "@/components/AppFooter";
 import { Header } from "@/pages/HomePage/components/Header";
 import { CourseSection } from "@/pages/HomePage/components/CourseSection";
 import { Sidebar } from "@/pages/HomePage/components/Sidebar";
+import { YourCourseSection } from "../components/YourCouseSection";
+import { courseAPI } from "@/lib/api";
+import { ICourse } from "@/features/Course/types";
 
 export const HomePage = () => {
-  const yourCourses = [{ name: "Introduction to Array", description: "A fundamental course for Array Data type" }];
-  const featuredCourses = [
-    { name: "DSA 50", description: "50 core concepts in DSA", price: "140,000" },
-    {
-      name: "Introduction to Array II, YEAH",
-      description: "A fundamental course for Array Data type",
-      price: "140,000"
-    },
-    {
-      name: "Introduction to Array",
-      description: "A fundamental course for Array Data type",
-      price: "140,000"
-    },
-    {
-      name: "Introduction to Array",
-      description: "A fundamental course for Array Data type",
-      price: "140,000"
-    }
-  ];
-  const freeCourses = [
-    { name: "DSA 50", description: "50 core concepts in DSA" },
-    { name: "DSA 50", description: "50 core concepts in DSA" }
-  ];
+  const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
+  const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
+
+  const getCourses = async () => {
+    const response = await courseAPI.getCourses();
+    return response ? response.result.content : [];
+  };
+
+  const getFeaturedCourses = async () => {
+    const allCourses = await getCourses();
+    // NOTE: filter featured courses
+    setFeaturedCourses(allCourses);
+  };
+
+  const getFreeCourses = async () => {
+    const allCourses = await getCourses();
+    const freeCourses = allCourses.filter((course) => course.price === 0);
+    setFreeCourses(freeCourses);
+  };
+
+  useEffect(() => {
+    getFeaturedCourses();
+    getFreeCourses();
+  }, []);
 
   return (
     <div className="flex flex-col w-full min-h-screen">
@@ -34,9 +39,9 @@ export const HomePage = () => {
         <Header />
         <div id="content" className="flex flex-col gap-4 mt-4 md:flex-row">
           <div id="courses" className="w-full px-4 py-4 border rounded-lg md:w-3/4 border-gray5">
-            <CourseSection name="Your Courses" courses={yourCourses} />
-            <CourseSection name="Featured Courses" courses={featuredCourses} />
-            <CourseSection name="Free Courses" courses={freeCourses} />
+            <YourCourseSection />
+            <CourseSection title="Featured Courses" courses={featuredCourses} />
+            <CourseSection title="Free Courses" courses={freeCourses} />
           </div>
 
           <div id="sidebar" className="w-full md:w-1/4">

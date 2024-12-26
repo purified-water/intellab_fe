@@ -1,2 +1,3 @@
 export * from "./MarkdownRender";
-export * from "./Quiz";
+export * from "./LessonQuiz";
+export * from "./CodeTabs";

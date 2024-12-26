@@ -1,8 +1,14 @@
 export interface ILesson {
-  id: string;
-  lessonOrder: number;
-  name: string;
-  description: string;
+  lessonId: string;
   content: string;
+  description: string;
+  lessonOrder: number;
+  lessonName: string;
   courseId: string;
+  exerciseId: string;
+  learningId: string;
+  nextLessonId: string;
+  nextLessonName: string;
+  isDoneTheory: boolean;
+  isDonePractice: boolean;
 }

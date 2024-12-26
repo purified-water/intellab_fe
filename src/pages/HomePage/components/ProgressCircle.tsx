@@ -19,7 +19,7 @@ export const ProgressCircle = () => {
   const strokeDashOffset = strokeCircumference - (strokeCircumference * totalPercentage) / 100;
 
   return (
-    <div className="flex flex-col p-4 overflow-x-auto border rounded-md">
+    <div className="flex flex-col p-4 overflow-x-auto border border-gray5 rounded-md">
       <div className="text-xl font-bold text-appPrimary">Your Progress</div>
 
       <Separator className="mt-2 mb-5" />

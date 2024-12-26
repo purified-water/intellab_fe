@@ -7,7 +7,6 @@ import { courseAPI } from "@/lib/api";
 import _ from "lodash";
 import SearchResultComponent from "@/pages/ExplorePage/components/SearchResultComponent";
 import Course from "./components/Course";
-import Spinner from "@/components/ui/Spinner";
 
 const SectionDetailPage: React.FC = () => {
   const location = useLocation();
@@ -82,7 +81,7 @@ const SectionDetailPage: React.FC = () => {
     <div className="sm:pl-10">
       {/* Header section with filter button and search bar */}
       <div className="flex items-center py-4 sm:py-10">
-        <FilterButton onClick={() => { }} />
+        <FilterButton onClick={() => {}} />
         <SearchBar onSearch={handleSearch} />
       </div>
 

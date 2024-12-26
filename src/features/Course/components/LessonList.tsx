@@ -4,21 +4,22 @@ import LessonListItem from "./LessonListItem";
 interface LessonListProps {
   lessons: ILesson[];
   isEnrolled: boolean;
+  lastViewedLessonId?: string;
 }
 
 export const LessonList = (props: LessonListProps) => {
-  const { lessons, isEnrolled } = props;
+  const { lessons, isEnrolled, lastViewedLessonId } = props;
 
   // const renderHeader = () => {
   //   return (
   //     <div className="flex flex-row">
-  //       <div className="flex flex-3 w-6/12" />
+  //       <div className="flex w-6/12 flex-3" />
   //       <div className="flex flex-1 overflow-hidden max-w-[500px]">
   //         <div>
-  //           <text className="text-2xl text-gray4 ml-5">Lessons</text>
+  //           <text className="ml-5 text-2xl text-gray4">Lessons</text>
   //         </div>
   //         <div>
-  //           <text className="text-2xl text-gray4 ml-5">Practice</text>
+  //           <text className="ml-5 text-2xl text-gray4">Practice</text>
   //         </div>
 
   //       </div>
@@ -27,12 +28,12 @@ export const LessonList = (props: LessonListProps) => {
   // }
 
   return (
-    <div className="mx-14 overflow-hidden">
+    <div className="overflow-hidden mx-14">
       {/* NOTE: No equivalent information from API so show */}
       {/* {isEnrolled && renderHeader()} */}
       <ul className="list-none">
         {lessons.map((lesson, index) => (
-          <LessonListItem key={lesson.id} lesson={lesson} index={index} isEnrolled={isEnrolled} />
+          <LessonListItem key={lesson.lessonId} lesson={lesson} index={index} isEnrolled={isEnrolled} lastViewedLessonId={lastViewedLessonId} />
         ))}
       </ul>
     </div>

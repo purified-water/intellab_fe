@@ -9,7 +9,7 @@ interface PricingPlanProps {
 }
 
 const PremiumPlan: React.FC<PricingPlanProps> = ({ planName, price, description, privileges }) => {
-  const isFreePlan = price === "đ0";
+  const isFreePlan = price === "0 VND";
 
   return (
     <div
@@ -62,13 +62,13 @@ export const PricingPage: React.FC = () => {
       <div className="flex justify-center w-full space-x-[90px] item-center">
         <PremiumPlan
           planName="Free plan"
-          price="đ0"
+          price="0 VND"
           description="Basic plan for casual learners"
           privileges={freePlanPrivileges}
         />
         <PremiumPlan
           planName="Premium plan"
-          price="đ100,000"
+          price="100,000 VND"
           description="Perfect plan for algorithm enthusiasts"
           privileges={premiumPlanPrivileges}
         />

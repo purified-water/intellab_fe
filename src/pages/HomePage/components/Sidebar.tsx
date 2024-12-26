@@ -8,7 +8,7 @@ export const Sidebar = () => {
 
   return (
     <div className="flex-col items-center space-y-8">
-      <Calendar mode="single" selected={date} onSelect={setDate} className="overflow-auto border rounded-md" />
+      <Calendar mode="single" selected={date} onSelect={setDate} className="overflow-auto border border-gray5 rounded-md" />
       <ProgressCircle />
       <Leaderboard />
     </div>
