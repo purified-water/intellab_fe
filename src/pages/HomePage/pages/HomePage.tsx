@@ -12,8 +12,14 @@ export const HomePage = () => {
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
+  const getUserIdFromLocalStorage = () => {
+    const userId = localStorage.getItem("userId");
+    return userId;
+  };
+
   const getCourses = async () => {
-    const response = await courseAPI.getCourses();
+    const userUid = getUserIdFromLocalStorage();
+    const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     return response ? response.result.content : [];
   };
 

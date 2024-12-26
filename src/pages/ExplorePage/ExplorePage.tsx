@@ -17,9 +17,15 @@ export const ExplorePage = () => {
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
+  const getUserIdFromLocalStorage = () => {
+    const userId = localStorage.getItem("userId");
+    return userId;
+  };
+
   const fetchCourses = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourses();
+    const userUid = getUserIdFromLocalStorage();
+    const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     if (response) {
       setCourses(response.result.content);
     }

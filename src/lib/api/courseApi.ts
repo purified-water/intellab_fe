@@ -10,7 +10,13 @@ import {
 
 export const courseAPI = {
   getCourses: async () => {
-    const response = await apiClient.get("course/courses");
+    const response = await apiClient.get(`course/courses`);
+    const data: IGetCoursesResponse = response.data;
+    return data;
+  },
+
+  getUnEnrollCourses: async (userUid: string) => {
+    const response = await apiClient.get(`course/courses/exceptEnrolled?userUid=${userUid}`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },
