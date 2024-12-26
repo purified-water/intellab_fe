@@ -2,19 +2,20 @@ import { ICourse, ILesson } from "@/features/Course/types";
 import hierarchy from "@/assets/hierarchy.png";
 
 const DEFAULT_COURSE: ICourse = {
+  averageRating: 4.5,
   courseId: "course_id",
+  courseLogo: hierarchy,
   courseName: "Course Name",
   description: "Course Description",
+  latestLessonId: "latest_lesson_id",
+  lessonCount: 0,
   level: "Beginner",
   price: 0,
-  unitPrice: "đ",
-  courseLogo: hierarchy,
-  userUid: "",
+  progressPercent: 25.6,
+  reviewCount: 1000,
+  unitPrice: "VND",
   userEnrolled: false,
-  lessonNumber: 0,
-  rating: 0,
-  reviews: 0,
-  progress: 0
+  userUid: null
 };
 
 const DEFAULT_LESSON: ILesson = {

@@ -15,8 +15,8 @@ export const courseAPI = {
     return data;
   },
 
-  search: async (keyword: string) => {
-    const response = await apiClient.get(`course/courses/search?keyword=${keyword}`);
+  search: async (keyword: string, page: number) => {
+    const response = await apiClient.get(`course/courses/search?keyword=${keyword}&page=${page}`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },

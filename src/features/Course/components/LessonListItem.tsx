@@ -40,7 +40,6 @@ export default function LessonListItem(props: LessonListItemProps) {
   };
 
   return (
-
     <li key={lesson.lessonId} className="flex-wrap w-full overflow-hidden border-b border-gray4">
       <button className="flex flex-row items-center w-full gap-10 py-2 overflow-hidden px-9" onClick={handleClick}>
         <h2 className="text-3xl font-bold">{index + 1}</h2>

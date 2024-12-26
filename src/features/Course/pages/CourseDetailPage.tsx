@@ -5,8 +5,11 @@ import { courseAPI } from "@/lib/api";
 import { ICourse, ILesson } from "../types";
 import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
+import { useNavigate } from "react-router-dom";
 
 export const CourseDetailPage = () => {
+  const navigate = useNavigate();
+
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Lessons");
   const [course, setCourse] = useState<ICourse | null>(null);
@@ -21,7 +24,8 @@ export const CourseDetailPage = () => {
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourseDetail(id!);
+    const userId = getUserIdFromLocalStorage();
+    const response = await courseAPI.getCourseDetail(id!, userId ?? "");
     const { result } = response;
     const { userEnrolled } = result;
 
@@ -33,11 +37,11 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
-    const { result } = response;
+    const lessons = response.result.content;
     // Used to sort because the order of lessons in DB is not ascending
-    result.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
+    lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
 
-    setLessons(result);
+    setLessons(lessons);
     setLoading(false);
   };
 
@@ -71,8 +75,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleContinueClick = () => {
-    // TODO: handle continue click
-    console.log("--> Continue clicked");
+    navigate(`/lesson/${course?.latestLessonId ?? DEFAULT_COURSE.latestLessonId}`);
   };
 
   const handleViewCertificateClick = () => {
@@ -86,9 +89,9 @@ export const CourseDetailPage = () => {
         title={course?.courseName ?? DEFAULT_COURSE.courseName}
         description={course?.description ?? DEFAULT_COURSE.description}
         isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled}
-        rating={course?.rating ?? DEFAULT_COURSE.rating}
-        reviews={course?.reviews ?? DEFAULT_COURSE.reviews}
-        progress={course?.progress ?? DEFAULT_COURSE.progress}
+        rating={course?.averageRating ?? DEFAULT_COURSE.averageRating}
+        reviews={course?.reviewCount ?? DEFAULT_COURSE.reviewCount}
+        progress={course?.progressPercent ?? DEFAULT_COURSE.progressPercent}
         onEnroll={handleEnrollClick}
         onContinue={handleContinueClick}
         onViewCertificate={handleViewCertificateClick}

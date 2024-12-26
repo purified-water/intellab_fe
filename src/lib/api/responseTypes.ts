@@ -68,5 +68,17 @@ export interface IUserCourse {
 
 export interface IGetUserEnrolledCoursesResponse {
   code: number;
-  result: IUserCourse[];
+  result: {
+    content: IUserCourse[];
+    pageable: IPageable;
+    totalPages: number;
+    totalElements: number;
+    last: boolean;
+    size: number;
+    number: number;
+    sort: { property: string; direction: "ASC" | "DESC" }[];
+    numberOfElements: number;
+    first: boolean;
+    empty: boolean;
+  };
 }

@@ -12,7 +12,7 @@ export const ProgressBar = (props: ProgressBarProps) => {
   } = props;
 
   return (
-    <div className="max-w-xl bg-white rounded-md" style={{height: height}}>
+    <div className="max-w-4xl bg-white rounded-md" style={{height: height}}>
       <div className="h-full rounded-md bg-appEasy" style={{ width: `${progress}%` }} />
       {showText && <span className="mt-2 text-sm">
         {progress}% completed

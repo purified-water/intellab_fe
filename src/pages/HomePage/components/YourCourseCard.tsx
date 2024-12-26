@@ -1,48 +1,53 @@
-//import { SmCourseCardType } from "@/pages/HomePage/types/SmCourseCardType";
 import { useState, useEffect } from "react";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
-import Spinner from "@/components/ui/Spinner";
+import { Skeleton } from "@/components/ui/skeleton";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useNavigate } from "react-router-dom";
+import { getAccessToken } from "@/utils";
 
 interface YourCourseCardProps {
   courseId: string;
   userId: string;
   progress: number;
+  skeletonLoading?: boolean;
 }
 
 export const YourCourseCard = (props: YourCourseCardProps) => {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
 
-  const { courseId, userId, progress } = props;
+  const { courseId, userId, progress, skeletonLoading } = props;
 
   const isFinished = progress === 100;
 
   const [course, setCourse] = useState<ICourse | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [apiLoading, setAPILoading] = useState(false);
+
+  const accessToken = getAccessToken();
 
   const getCourseDetail = async () => {
-    setLoading(true);
+    setAPILoading(true);
     const response = await courseAPI.getCourseDetail(courseId, userId);
     setCourse(response.result);
-    setLoading(false);
+    setAPILoading(false);
   };
 
   useEffect(() => {
-    getCourseDetail();
-  }, []);
+    if (!skeletonLoading) {
+      getCourseDetail();
+    }
+  }, [skeletonLoading]);
 
   const handleCourseClicked = () => {
-    if (isFinished) {
-      // View certificate
+    if (accessToken && userId) {
+      if (isFinished) {
+        // View certificate
+      } else {
+        navigate(`/lesson/${course?.latestLessonId}`);
+      }
     } else {
-      navigation(`/course/${courseId}`);
+      alert("Please login to continue");
     }
-  };
-
-  const renderLoading = () => {
-    return <Spinner loading={loading} />;
   };
 
   const renderContent = () => {
@@ -67,9 +72,20 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
     );
   };
 
+  const renderSkeleton = () => {
+    return (
+      <div>
+        <Skeleton className="h-6 mb-2 bg-gray5" />
+        <Skeleton className="h-4 mb-2 bg-gray5" />
+        <Skeleton className="h-4 mb-2 bg-gray5" />
+        <Skeleton className="h-8 mt-5 w-24 bg-gray5" />
+      </div>
+    );
+  };
+
   return (
     <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
-      {loading ? renderLoading() : renderContent()}
+      {skeletonLoading || apiLoading ? renderSkeleton() : renderContent()}
     </div>
   );
 };

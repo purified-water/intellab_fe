@@ -29,7 +29,7 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
       {/* Courses grid */}
       <div className="flex flex-wrap gap-7">
         {courses.map((course, index) => (
-          <Course course={course} key={index} />
+          <Course key={index} course={course} skeletonLoading={loading} />
         ))}
       </div>
     </div>

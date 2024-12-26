@@ -7,6 +7,7 @@ import { ICourse } from "@/features/Course/types";
 import _ from "lodash";
 import SearchResultComponent from "./components/SearchResultComponent"; // Adjust the import path as necessary
 import Course from "./components/Course";
+import { DEFAULT_COURSE } from "@/constants/defaultData";
 
 const SEARCH_WAIT_TIME = 3000;
 
@@ -17,10 +18,12 @@ export const ExplorePage = () => {
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetchCourses = async () => {
+    setLoading(true);
     const response = await courseAPI.getCourses();
     if (response) {
       setCourses(response.result.content);
     }
+    setLoading(false);
   };
 
   // Fetch courses when the component mounts
@@ -37,7 +40,7 @@ export const ExplorePage = () => {
         return;
       }
       try {
-        const response = await courseAPI.search(query);
+        const response = await courseAPI.search(query, 0);
         setSearchedCourses(response.result.content);
       } catch (error) {
         console.error("Failed to search courses:", error);
@@ -60,6 +63,17 @@ export const ExplorePage = () => {
 
   // Determine which courses to display
   const displayedCourses = query ? searchedCourses : courses;
+
+  const renderSkeletonList = () => {
+    const skeletonCount = 6; // Số lượng skeleton cố định
+    return (
+      <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
+        {[...Array(skeletonCount)].map((_, index) => (
+          <Course key={index} course={DEFAULT_COURSE} skeletonLoading={true} />
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-col">
@@ -88,13 +102,17 @@ export const ExplorePage = () => {
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link>
             </div>
-            <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
-              {displayedCourses.map((course, index) => (
-                <div key={index}>
-                  <Course course={course} />
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              renderSkeletonList()
+            ) : (
+              <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
+                {displayedCourses.map((course, index) => (
+                  <div key={index}>
+                    <Course course={course} skeletonLoading={loading} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Section for Popular Courses */}
@@ -105,13 +123,17 @@ export const ExplorePage = () => {
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link>
             </div>
-            <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
-              {displayedCourses.map((course, index) => (
-                <div key={index}>
-                  <Course course={course} />
-                </div>
-              ))}
-            </div>
+            {loading ? (
+              renderSkeletonList()
+            ) : (
+              <div className="flex px-10 overflow-x-auto gap-7 scrollbar-hide">
+                {displayedCourses.map((course, index) => (
+                  <div key={index}>
+                    <Course course={course} skeletonLoading={loading} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       )}
