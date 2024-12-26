@@ -3,13 +3,14 @@ import { AppFooter } from "@/components/AppFooter";
 import { Header } from "@/pages/HomePage/components/Header";
 import { CourseSection } from "@/pages/HomePage/components/CourseSection";
 import { Sidebar } from "@/pages/HomePage/components/Sidebar";
-import { YourCourseSection } from "../components/YourCouseSection";
+import { YourCourseSection } from "../components/YourCourseSection";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
 
 export const HomePage = () => {
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   const getCourses = async () => {
     const response = await courseAPI.getCourses();
@@ -18,7 +19,7 @@ export const HomePage = () => {
 
   const getFeaturedCourses = async () => {
     const allCourses = await getCourses();
-    // NOTE: filter featured courses
+    // TODO: filter featured courses
     setFeaturedCourses(allCourses);
   };
 
@@ -29,8 +30,13 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    getFeaturedCourses();
-    getFreeCourses();
+    const fetchData = async () => {
+      setLoading(true);
+      await getFeaturedCourses();
+      await getFreeCourses();
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   return (
@@ -40,8 +46,8 @@ export const HomePage = () => {
         <div id="content" className="flex flex-col gap-4 mt-4 md:flex-row">
           <div id="courses" className="w-full px-4 py-4 border rounded-lg md:w-3/4 border-gray5">
             <YourCourseSection />
-            <CourseSection title="Featured Courses" courses={featuredCourses} />
-            <CourseSection title="Free Courses" courses={freeCourses} />
+            <CourseSection title="Featured Courses" courses={featuredCourses} loading={loading} />
+            <CourseSection title="Free Courses" courses={freeCourses} loading={loading} />
           </div>
 
           <div id="sidebar" className="w-full md:w-1/4">

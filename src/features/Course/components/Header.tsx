@@ -59,7 +59,7 @@ export const Header = (props: HeaderProps) => {
   };
 
   return (
-    <div className="p-4 text-white bg-gradient-to-r from-appPrimary to-appSecondary rounded-lg flex flex-col gap-3 mx-14 my-6 px-7">
+    <div className="p-4 text-white bg-gradient-to-r from-appPrimary to-appSecondary rounded-lg flex flex-col gap-3 mx-24 my-6 px-7">
       <h1 className="text-4xl font-bold">{title}</h1>
       <p className="mt-2">{description}</p>
       {isEnrolled ? <ProgressBar progress={progress} /> : renderReview()}

@@ -9,13 +9,13 @@ import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 
 export const CourseDetailPage = () => {
+  const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Lessons");
   const [course, setCourse] = useState<ICourse | null>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
   const userId = getUserIdFromLocalStorage();
 
   const getCourseDetail = async () => {
@@ -32,12 +32,11 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async () => {
     setLoading(true);
     const response = await courseAPI.getLessons(id!);
-    const { result } = response;
-    const content = result.content;
+    const lessons = response.result.content;
     // Used to sort because the order of lessons in DB is not ascending
-    content.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
+    lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
 
-    setLessons(content);
+    setLessons(lessons);
     setLoading(false);
   };
 
