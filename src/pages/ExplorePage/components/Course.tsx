@@ -4,8 +4,10 @@ import { useNavigate } from "react-router-dom";
 import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { Skeleton } from "@/components/ui/skeleton";
-import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
+import { getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 interface CourseProps {
   course: ICourse;
@@ -15,48 +17,54 @@ interface CourseProps {
 export default function Course(props: CourseProps) {
   const { course, skeletonLoading } = props;
 
-  const {
-    courseName,
-    description,
-    level,
-    lessonCount,
-    price,
-    unitPrice,
-    reviewCount,
-    averageRating,
-    //userEnrolled,
-    courseLogo
-  } = course ?? DEFAULT_COURSE;
-
-  const [detailCourse, setCourseDetail] = useState<ICourse | null>(null);
+  const [detailCourse, setCourseDetail] = useState<ICourse>();
   const [internalLoading, setInternalLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const userId = getUserIdFromLocalStorage();
-  const accessToken = getAccessToken();
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getCourseDetail = async () => {
     setInternalLoading(true);
-    const response = await courseAPI.getCourseDetail(course.courseId, userId!);
+    const response = await courseAPI.getCourseDetail(course.courseId, userId ?? "∫");
     setCourseDetail(response.result);
     setInternalLoading(false);
   };
 
   useEffect(() => {
-    getCourseDetail();
-  }, []);
-
-  const handleCourseClick = (id: string) => {
-    if (!userId && !accessToken) {
-      alert("Please login to see the detail of this course");
-    } else {
-      if (detailCourse?.userEnrolled) {
-        navigate(`/lesson/${detailCourse.latestLessonId}`);
-      } else {
-        navigate(`/course/${id}`);
-      }
+    if (!skeletonLoading) {
+      getCourseDetail();
     }
+  }, [skeletonLoading]);
+
+  const handleTitleClick = () => {
+    navigate(`/course/${detailCourse?.courseId}`);
+  };
+
+  const handleButtonClick = (id: string) => {
+    if (isAuthenticated) {
+      if (detailCourse?.userEnrolled) {
+        if (detailCourse?.latestLessonId) {
+          navigate(`/lesson/${detailCourse.latestLessonId}`);
+        } else {
+          navigate(`/course/${id}`);
+        }
+      }
+    } else {
+      navigate(`/course/${id}`);
+    }
+  };
+
+  const priceText = (price: number, unitPrice: string) => {
+    let result;
+    if (price == 0) {
+      result = "Free";
+    } else {
+      result = `${price} ${unitPrice}`;
+    }
+    return result;
   };
 
   const renderContent = () => (
@@ -65,31 +73,37 @@ export default function Course(props: CourseProps) {
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
         <div className="flex items-center justify-end px-4 pt-3 mb-5">
           <div className="text-sm font-normal text-white">
-            {reviewCount ? amountTransformer(reviewCount) : amountTransformer(DEFAULT_COURSE.reviewCount)}
+            {detailCourse?.reviewCount
+              ? amountTransformer(detailCourse.reviewCount)
+              : amountTransformer(DEFAULT_COURSE.reviewCount)}
           </div>
           <div className="mx-1 text-sm font-normal text-white">•</div>
           <div className="flex items-center justify-center bg-slate-800 rounded-[9px] w-[58px] h-[25px]">
             <img className="w-4 h-4 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
-            <div className="text-white">{averageRating ?? DEFAULT_COURSE.averageRating}</div>
+            <div className="text-white">{detailCourse?.averageRating ?? DEFAULT_COURSE.averageRating}</div>
           </div>
         </div>
-        <div className="flex justify-between">
-          <h2 className="ml-4 text-2xl font-bold text-white">{courseName}</h2>
-          <img src={courseLogo ?? DEFAULT_COURSE.courseLogo} alt="" className="w-24 h-24" />
+        <div className="flex justify-between cursor-pointer">
+          <h2 className="ml-4 text-2xl font-bold text-white" onClick={handleTitleClick}>
+            {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
+          </h2>
+          <img src={detailCourse?.courseLogo ?? DEFAULT_COURSE.courseLogo} alt="" className="w-24 h-24" />
         </div>
       </div>
 
       {/* Description section */}
       <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
-        <span className="text-sm font-normal text-black line-clamp-2">{description ?? DEFAULT_COURSE.description}</span>
+        <span className="text-sm font-normal text-black line-clamp-2">
+          {detailCourse?.description ?? DEFAULT_COURSE.description}
+        </span>
       </div>
 
       {/* Difficulty and lessons section */}
       <div className="flex-grow px-4 mb-3">
-        <span className="w-36 text-[#01000f] text-sm font-bold">{level ?? DEFAULT_COURSE.level}</span>
+        <span className="w-36 text-[#01000f] text-sm font-bold">{detailCourse?.level ?? DEFAULT_COURSE.level}</span>
         <span className="mx-2 text-[#01000f] text-sm font-normal">•</span>
         <span className="w-52 text-[#01000f] text-sm font-normal">
-          Include {lessonCount ?? DEFAULT_COURSE.lessonCount} lessons
+          Include {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount} lessons
         </span>
       </div>
 
@@ -97,11 +111,13 @@ export default function Course(props: CourseProps) {
       <div className="flex items-baseline justify-between p-4 mt-auto bg-">
         <button
           className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
-          onClick={() => handleCourseClick(course.courseId)}
+          onClick={() => handleButtonClick(detailCourse?.courseId ?? course.courseId)}
         >
           {detailCourse?.userEnrolled ? "Continue" : "Study Now"}
         </button>
-        <span className="text-lg font-bold text-appPrimary">{`${price} ${unitPrice}`}</span>
+        <span className="text-lg font-bold text-appPrimary">
+          {priceText(detailCourse?.price ?? DEFAULT_COURSE.price, detailCourse?.unitPrice ?? DEFAULT_COURSE.unitPrice)}
+        </span>
       </div>
     </div>
   );

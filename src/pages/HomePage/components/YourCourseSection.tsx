@@ -3,6 +3,8 @@ import { YourCourseCard } from "./YourCourseCard";
 import { courseAPI } from "@/lib/api";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
 import { IUserCourse } from "@/lib/api/responseTypes";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const YourCourseSection = () => {
   const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
@@ -10,6 +12,8 @@ export const YourCourseSection = () => {
 
   const userId = getUserIdFromLocalStorage();
   const accessToken = getAccessToken();
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getUserEnrolledCourseIds = async () => {
     if (accessToken && userId) {
@@ -26,21 +30,9 @@ export const YourCourseSection = () => {
     }
   };
 
-  useEffect(
-    () => {
-      // TODO: Add a global state to check if user is logged in
-      // userId and accessToken is not mounted if user logged out
-      //if(isLoggedIn) {
-      getUserEnrolledCourseIds();
-      //}
-      //else{
-      //setUserEnrollCourses([]);
-      //}
-    },
-    [
-      //isLoggedIn
-    ]
-  );
+  useEffect(() => {
+    getUserEnrolledCourseIds();
+  }, [isAuthenticated]);
 
   const renderSkeletonList = () => {
     const skeletonCount = 5;

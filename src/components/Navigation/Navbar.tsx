@@ -12,6 +12,8 @@ import {
   MdLogout
 } from "rocketicons/md";
 import Cookies from "js-cookie";
+import { useDispatch } from "react-redux";
+import { logoutSuccess } from "@/redux/auth/authSlice";
 
 const Navbar = () => {
   const location = useLocation();
@@ -20,6 +22,7 @@ const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileIconRef = useRef<HTMLDivElement>(null);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -50,6 +53,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    dispatch(logoutSuccess());
     Cookies.remove("accessToken");
     localStorage.removeItem("userId");
     setIsLoggedIn(false);
