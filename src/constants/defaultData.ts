@@ -22,7 +22,7 @@ const DEFAULT_LESSON: ILesson = {
   lessonId: "lesson_id",
   lessonOrder: 0,
   lessonName: "Lesson Name",
-  description: "Lesson Description",
+  description: "...",
   content: "Lesson Content",
   courseId: "course_id",
   exerciseId: "exercise_id",

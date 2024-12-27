@@ -43,6 +43,8 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     } else {
       navigate(`/course/${course.courseId}`);
     }
+    // User not logged in can still view course detail
+    navigate(`/course/${course.courseId}`);
   };
 
   useEffect(() => {
@@ -52,10 +54,17 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   }, [skeletonLoading]);
 
   const renderCourseDetail = () => (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+    <div
+      className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg cursor-pointer bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0"
+      onClick={handleCourseClicked}
+    >
       <div>
         <h3 className="text-xl font-bold line-clamp-2">{detailCourse?.courseName}</h3>
-        <p className="mb-2 text-sm line-clamp-1">{detailCourse?.description}</p>
+        <p
+          className={`text-sm mb-2 ${detailCourse?.courseName && detailCourse.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
+        >
+          {detailCourse?.description}
+        </p>
         {detailCourse?.userEnrolled && (
           <ProgressBar progress={detailCourse!.progressPercent} showText={false} height={5} />
         )}

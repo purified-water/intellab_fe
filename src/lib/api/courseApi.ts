@@ -6,7 +6,8 @@ import {
   IEnrollCourseResponse,
   IGetLessonDetailResponse,
   IGetUserEnrolledCoursesResponse
-} from "./responseTypes";
+} from "../../pages/HomePage/types/responseTypes";
+import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
 export const courseAPI = {
   getCourses: async () => {
@@ -39,6 +40,12 @@ export const courseAPI = {
     return data;
   },
 
+  getLessonsAfterEnroll: async (courseId: string, userUid: string) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/${userUid}/lessons`);
+    const data: IGetCourseLessonsResponse = response.data;
+    return data;
+  },
+
   enrollCourse: async (userUid: string, courseId: string) => {
     const postData = {
       userUid,
@@ -60,8 +67,20 @@ export const courseAPI = {
     return response.data;
   },
 
-  updateTheoryDone: async (learningId: string) => {
-    const response = await apiClient.put(`/course/lessons/${learningId}/doneTheory`);
+  updateLessonLearningProgress: async (learningId: string, courseId: string, userId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/updateLearningProgress`, {
+      status: LearningStatus.IN_PROGRESS
+    });
+    return response.data;
+  },
+
+  updateTheoryDone: async (learningId: string, courseId: string, userId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/doneTheory`);
+    return response.data;
+  },
+
+  updatePracticeDone: async (learningId: string, courseId: string, userId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/donePractice`);
     return response.data;
   },
 

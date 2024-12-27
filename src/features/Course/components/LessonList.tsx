@@ -1,8 +1,8 @@
-import { ILesson } from "../types";
+import { ILesson, IEnrolledLesson } from "../types";
 import LessonListItem from "./LessonListItem";
 
 interface LessonListProps {
-  lessons: ILesson[];
+  lessons: ILesson[] | IEnrolledLesson[];
   isEnrolled: boolean;
   lastViewedLessonId?: string;
 }

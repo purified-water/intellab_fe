@@ -1,5 +1,5 @@
-import { ICourse } from "../../features/Course/types/course";
-import { ILesson } from "../../features/Course/types/lesson";
+import { ICourse } from "@/features/Course/types/course";
+import { ILesson } from "@/features/Course/types/lesson";
 import { IPageable } from "@/types";
 
 export interface IGetCoursesResponse {

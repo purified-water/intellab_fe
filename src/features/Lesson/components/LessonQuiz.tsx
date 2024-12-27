@@ -66,7 +66,7 @@ export const LessonQuiz = (props: QuizProps) => {
   return loading ? (
     renderSkeleton()
   ) : (
-    <div className="py-5 bg-orange-200 border rounded-lg px-7 max-w-7xl sm:w-[85%]">
+    <div className="py-5 border rounded-lg px-7 max-w-7xl sm:w-[85%]">
       <p className="mb-4 text-lg font-semibold">{currentQuiz.questionContent}</p>
       <ul className="space-y-2">
         {currentQuiz.options.map((answer) => (

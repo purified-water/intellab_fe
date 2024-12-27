@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { YourCourseCard } from "./YourCourseCard";
 import { courseAPI } from "@/lib/api";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
-import { IUserCourse } from "@/lib/api/responseTypes";
+import { IUserCourse } from "@/pages/HomePage/types/responseTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 

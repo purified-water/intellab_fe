@@ -70,23 +70,23 @@ export default function Course(props: CourseProps) {
   const renderContent = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
       {/* Header section with background gradient and reviews */}
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
-        <div className="flex items-center justify-end px-4 pt-3 mb-5">
-          <div className="text-sm font-normal text-white">
-            {detailCourse?.reviewCount
-              ? amountTransformer(detailCourse.reviewCount)
-              : amountTransformer(DEFAULT_COURSE.reviewCount)}
+      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex items-center justify-between p-2">
+        <h2 className="ml-4 text-2xl font-bold text-white" onClick={handleTitleClick}>
+          {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
+        </h2>
+        <div className="flex flex-col items-center justify-between cursor-pointer">
+          <div className="flex items-center justify-end px-4 pt-3 mb-5">
+            <div className="mx-1 text-sm font-normal text-white">•</div>
+            <div className="text-sm font-normal text-white">
+              {detailCourse?.reviewCount
+                ? amountTransformer(detailCourse.reviewCount)
+                : amountTransformer(DEFAULT_COURSE.reviewCount)}
+            </div>
+            <div className="flex items-center justify-center bg-slate-800 rounded-[9px] w-[58px] h-[25px] ml-2">
+              <img className="w-4 h-4 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
+              <div className="text-white">{detailCourse?.averageRating ?? DEFAULT_COURSE.averageRating}</div>
+            </div>
           </div>
-          <div className="mx-1 text-sm font-normal text-white">•</div>
-          <div className="flex items-center justify-center bg-slate-800 rounded-[9px] w-[58px] h-[25px]">
-            <img className="w-4 h-4 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
-            <div className="text-white">{detailCourse?.averageRating ?? DEFAULT_COURSE.averageRating}</div>
-          </div>
-        </div>
-        <div className="flex justify-between cursor-pointer">
-          <h2 className="ml-4 text-2xl font-bold text-white" onClick={handleTitleClick}>
-            {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
-          </h2>
           <img src={detailCourse?.courseLogo ?? DEFAULT_COURSE.courseLogo} alt="" className="w-24 h-24" />
         </div>
       </div>
@@ -125,9 +125,9 @@ export default function Course(props: CourseProps) {
   const renderSkeleton = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
-        <Skeleton className="h-10 w-40 mb-9 self-end bg-gray5" />
-        <Skeleton className="h-10 w-50 mb-5 bg-gray5" />
-        <Skeleton className="h-20 w-20 self-end bg-gray5" />
+        <Skeleton className="self-end w-40 h-10 mb-9 bg-gray5" />
+        <Skeleton className="h-10 mb-5 w-50 bg-gray5" />
+        <Skeleton className="self-end w-20 h-20 bg-gray5" />
       </div>
       <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
         <Skeleton className="h-4 mb-2 bg-gray5" />
@@ -136,7 +136,7 @@ export default function Course(props: CourseProps) {
         <Skeleton className="h-4 mb-2 bg-gray5" />
       </div>
       <div className="flex items-baseline justify-between p-4 mt-auto bg-">
-        <Skeleton className="h-8 mt-5 w-24 bg-gray5" />
+        <Skeleton className="w-24 h-8 mt-5 bg-gray5" />
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import { MarkdownRender } from "../components";
 import { ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ILesson } from "@/features/Course/types";
 import { getUserIdFromLocalStorage } from "@/utils";
@@ -25,6 +25,10 @@ export const LessonDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  // Get learning id, course id from query params
+  const [searchParams] = useSearchParams();
+  const learningId = searchParams.get("learningId");
+  const courseId = searchParams.get("courseId");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -34,6 +38,13 @@ export const LessonDetailPage = () => {
 
   const getLessonDetail = async () => {
     if (id && userId) {
+      if (learningId && courseId) {
+        try {
+          await courseAPI.updateLessonLearningProgress(learningId, courseId, userId);
+        } catch (error) {
+          console.log("Error updating learning progress", error);
+        }
+      }
       const response = await courseAPI.getLessonDetail(id, userId);
       const { result } = response;
 
@@ -58,7 +69,8 @@ export const LessonDetailPage = () => {
     // setIsCorrect(isCorrect);
     try {
       if (isCorrect || (!quiz && isScrolledToBottom)) {
-        await courseAPI.updateTheoryDone(lesson!.learningId!);
+        await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);
+        await courseAPI.updatePracticeDone(lesson!.learningId!, lesson!.courseId, userId!); // TEMPORARY MARK AS DONE for practice because no practice yet
         setIsLessonDone(true);
       }
     } catch (error) {

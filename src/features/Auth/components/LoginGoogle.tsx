@@ -5,9 +5,12 @@ import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/redux/auth/authSlice";
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleGoogleLogin = async () => {
     try {
@@ -25,7 +28,7 @@ const GoogleLogin = () => {
         }
 
         localStorage.setItem("userId", userId);
-
+        dispatch(loginSuccess());
         navigate("/");
       }
     } catch (error) {
