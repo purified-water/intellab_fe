@@ -64,6 +64,9 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
               if (languageFromParagraph === "C#" || languageFromParagraph === "c#") {
                 languageMap.set(node.value, "csharp");
               }
+              if (languageFromParagraph.toLowerCase().includes("python")) {
+                languageMap.set(node.value, "python");
+              }
             }
           }
         }
@@ -105,7 +108,6 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
         // Calculate the scrolled percentage
         const scrolledPercentage = (visibleHeight / height) * 100;
         if (scrolledPercentage >= 70) {
-          console.log("Scrolled to bottom");
           setIsScrolledToBottom(true);
         }
       }
@@ -133,7 +135,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
 
     return (
       <div
-        className="right-0 border-l border-gray4"
+        className="right-0 mr-4 border-l border-gray4"
         style={{
           position: "absolute",
           top: tocTop + defaultTop + 20,
@@ -166,7 +168,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
       language={language}
       style={dracula}
       showLineNumbers
-      className={`overflow-auto max-h-96 ${language === "text" || language === "plaintext" ? "h-32" : "h-auto"}`}
+      className={`overflow-auto max-h-96 ${language === "text" || language === "plaintext" ? "h-fit max-h-56" : "h-auto"}`}
     >
       {value}
     </SyntaxHighlighter>
