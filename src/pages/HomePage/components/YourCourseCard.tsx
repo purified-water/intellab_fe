@@ -53,15 +53,23 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
 
   const handleViewCourseDetail = () => {
     navigate(`/course/${courseId}`);
-  }
+  };
 
   const renderContent = () => {
     return (
       <>
         <div onClick={handleViewCourseDetail} className="cursor-pointer">
           <h3 className="text-xl font-bold line-clamp-2">{course?.courseName}</h3>
-          <p className={`text-sm mb-2 ${course?.courseName && course.courseName.length > 20 ? 'line-clamp-1' : 'line-clamp-2'}`}>{course?.description}</p>
-          <ProgressBar progress={course ? course.progressPercent : DEFAULT_COURSE.progressPercent} showText={false} height={5} />
+          <p
+            className={`text-sm mb-2 ${course?.courseName && course.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
+          >
+            {course?.description}
+          </p>
+          <ProgressBar
+            progress={course ? course.progressPercent : DEFAULT_COURSE.progressPercent}
+            showText={false}
+            height={5}
+          />
         </div>
 
         <div className="flex justify-between mt-2">
