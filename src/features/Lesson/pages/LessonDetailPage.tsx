@@ -7,6 +7,8 @@ import { ILesson } from "@/features/Course/types";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { IQuiz } from "../types/QuizType";
 import { LessonQuiz } from "../components";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -17,8 +19,15 @@ export const LessonDetailPage = () => {
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState<boolean>(false);
   const [isLessonDone, setIsLessonDone] = useState<boolean>(false);
-  let { id } = useParams<{ id: string }>();
+  const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, []);
 
   const getLessonDetail = async () => {
     if (id && userId) {
@@ -53,14 +62,14 @@ export const LessonDetailPage = () => {
     } catch (error) {
       console.log("Error updating theory done", error);
     }
-  }
+  };
 
   const fetchNextLesson = async () => {
     try {
       if (nextLessonOrder == null || lesson?.courseId == null) {
         return;
       }
-      
+
       const response = await courseAPI.getLessons(lesson!.courseId!);
       const { result } = response;
       const content = result.content;
@@ -138,14 +147,15 @@ export const LessonDetailPage = () => {
     return (
       <div className="space-y-4">
         <p className="text-4xl font-bold">Quiz</p>
-        <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback}/>
+        <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback} />
       </div>
     );
   };
 
   const renderNextLesson = () => {
     return (
-      nextLesson && isLessonDone && (
+      nextLesson &&
+      isLessonDone && (
         <div
           className="flex items-center gap-2 px-3 py-3 cursor-pointer border-y border-gray4 max-w-7xl"
           onClick={navigateToNextLesson}

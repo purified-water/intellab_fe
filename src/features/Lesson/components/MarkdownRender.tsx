@@ -98,7 +98,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
         const { top, bottom, height } = contentRef.current.getBoundingClientRect();
         const viewportHeight = window.innerHeight;
 
-        // Calculate the visible portion of the content 
+        // Calculate the visible portion of the content
         // as you scroll down, the top with descrease, you have to add the absolute value of top and visible height to get the scrolled height
         const visibleHeight = Math.min(bottom, viewportHeight) + Math.max(Math.abs(top), 0);
 
@@ -173,14 +173,8 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   );
 
   return (
-    <div
-      className="flex mr-1 md:mr-48"
-    >
-      <div
-        className="pr-12"
-        style={{ width: windowWidth * 0.8 }}
-        ref={contentRef}
-      >
+    <div className="flex mr-1 md:mr-48">
+      <div className="pr-12" style={{ width: windowWidth * 0.8 }} ref={contentRef}>
         <ReactMarkdown
           className="markdown"
           remarkPlugins={[remarkGfm]}

@@ -24,7 +24,7 @@ export const CourseSection = (props: CourseSectionProps) => {
 
   return (
     <section className="mb-8">
-      <h2 className="text-3xl font-bold">{title}</h2>
+      {courses.length > 0 && <h2 className="text-3xl font-bold">{title}</h2>}
       <div className="relative w-full mt-4 overflow-x-scroll scroll-smooth scrollbar-hide">
         {loading ? (
           renderSkeletonList()
