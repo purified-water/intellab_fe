@@ -1,23 +1,25 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import SearchBar from "@/pages/ExplorePage/components/SearchBar";
-//import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import FilterButton from "@/pages/ExplorePage/components/FilterButton";
 import { courseAPI } from "@/lib/api"; // Adjust the import path as necessary
 import { ICourse } from "@/features/Course/types";
-import _ from "lodash";
+// import _ from "lodash";
 import SearchResultComponent from "./components/SearchResultComponent"; // Adjust the import path as necessary
 import Course from "./components/Course";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 
-const SEARCH_WAIT_TIME = 3000;
+// const SEARCH_WAIT_TIME = 3000;
 
 export const ExplorePage = () => {
   const [courses, setCourses] = useState<ICourse[]>([]);
   const [searchedCourses, setSearchedCourses] = useState<ICourse[]>([]);
   const [query, setQuery] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
+  const navigate = useNavigate();
+  const location = useLocation();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getUserIdFromLocalStorage = () => {
@@ -40,25 +42,32 @@ export const ExplorePage = () => {
     fetchCourses();
   }, [isAuthenticated]);
 
+  // Fetch search results based on query parameter in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const keyword = params.get("keyword");
+    if (keyword) {
+      handleSearch(keyword);
+    }
+  }, [location.search]);
+
   // Debounced search function
-  const debouncedSearch = useRef(
-    _.debounce(async (query: string) => {
-      if (query === "") {
-        setSearchedCourses([]);
-        setLoading(false);
-        return;
-      }
-      try {
-        const response = await courseAPI.search(query, 0);
-        setSearchedCourses(response.result.content);
-      } catch (error) {
-        console.error("Failed to search courses:", error);
-        setSearchedCourses([]);
-      } finally {
-        setLoading(false);
-      }
-    }, SEARCH_WAIT_TIME)
-  ).current;
+  const debouncedSearch = useRef(async (query: string) => {
+    if (query === "") {
+      setSearchedCourses([]);
+      setLoading(false);
+      return;
+    }
+    try {
+      const response = await courseAPI.search(query, 0);
+      setSearchedCourses(response.result.content);
+    } catch (error) {
+      console.error("Failed to search courses:", error);
+      setSearchedCourses([]);
+    } finally {
+      setLoading(false);
+    }
+  }).current;
 
   // Handle search input
   const handleSearch = useCallback(
@@ -66,6 +75,7 @@ export const ExplorePage = () => {
       setQuery(inputQuery);
       setLoading(true);
       debouncedSearch(inputQuery);
+      navigate(`/explore?keyword=${inputQuery}`);
     },
     [debouncedSearch]
   );
@@ -102,7 +112,7 @@ export const ExplorePage = () => {
       {/* Header section with filter button and search bar */}
       <div className="flex items-center py-10 pl-10">
         <FilterButton onClick={() => {}} />
-        <SearchBar onSearch={handleSearch} />
+        <SearchBar value={query} onSearch={handleSearch} />
       </div>
 
       {/* Display search results if a query is present */}
