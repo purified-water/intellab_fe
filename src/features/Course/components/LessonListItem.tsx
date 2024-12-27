@@ -43,13 +43,14 @@ export default function LessonListItem(props: LessonListItemProps) {
   return (
     <li
       key={lesson.lessonId}
-      className={`flex-wrap w-full overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? 'bg-gray5' : ''}`}
+      className={`flex-wrap w-full overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""}`}
     >
       <button className="flex flex-row items-center w-full gap-10 py-2 overflow-hidden px-9" onClick={handleClick}>
         <h2 className="text-3xl font-bold">{index + 1}</h2>
         <div className="text-left flex-col min-w-[200px] w-full">
           <h4 className="flex-wrap m-0 overflow-hidden text-xl font-bold text-ellipsis whitespace-nowrap">
-            {lesson.lessonName} <span className="text-base font-normal">{lastViewedLessonId === lesson.lessonId && " • Last viewed"}</span>
+            {lesson.lessonName}{" "}
+            <span className="text-base font-normal">{lastViewedLessonId === lesson.lessonId && " • Last viewed"}</span>
           </h4>
           <p className="mt-2 overflow-hidden text-gray3 text-ellipsis whitespace-nowrap">{lesson.description}</p>
         </div>

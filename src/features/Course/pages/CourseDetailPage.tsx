@@ -72,8 +72,7 @@ export const CourseDetailPage = () => {
   const handleContinueClick = () => {
     if (lessons.length > 0 && course?.latestLessonId != null) {
       navigate(`/lesson/${course.latestLessonId}`);
-    }
-    else {
+    } else {
       // Redirect to the first lesson
       const firstLesson = lessons[0];
       navigate(`/lesson/${firstLesson.lessonId}`);
@@ -104,7 +103,13 @@ export const CourseDetailPage = () => {
   const renderTabContent = () => {
     switch (activeTab) {
       case "Lessons":
-        return <LessonList lessons={lessons} isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled} lastViewedLessonId={course?.latestLessonId}/>;
+        return (
+          <LessonList
+            lessons={lessons}
+            isEnrolled={isEnrolled ?? DEFAULT_COURSE.userEnrolled}
+            lastViewedLessonId={course?.latestLessonId}
+          />
+        );
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":
