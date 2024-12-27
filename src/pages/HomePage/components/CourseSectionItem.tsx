@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 interface CourseSectionCardProps {
   course: ICourse;
@@ -21,6 +23,8 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   const accessToken = getAccessToken();
   const userId = getUserIdFromLocalStorage();
 
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
   const getCourseDetail = async () => {
     setInternalLoading(true);
     if (userId) {
@@ -31,16 +35,13 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   };
 
   const handleCourseClicked = () => {
-    // TODO: Need a global state to know if user is logged in
-    if (accessToken && userId) {
+    if (isAuthenticated) {
       if (detailCourse)
         if (detailCourse.userEnrolled) {
           navigate(`/lesson/${detailCourse?.latestLessonId}`);
-        } else {
-          navigate(`/course/${detailCourse.courseId}`);
         }
     } else {
-      alert("Please login to continue");
+      navigate(`/course/${course.courseId}`);
     }
   };
 

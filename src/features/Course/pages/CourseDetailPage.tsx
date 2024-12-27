@@ -7,6 +7,8 @@ import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -17,6 +19,7 @@ export const CourseDetailPage = () => {
   const [lessons, setLessons] = useState<ILesson[]>([]);
   const [loading, setLoading] = useState(false);
   const userId = getUserIdFromLocalStorage();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getCourseDetail = async () => {
     setLoading(true);
@@ -43,7 +46,7 @@ export const CourseDetailPage = () => {
   useEffect(() => {
     getCourseDetail();
     getCourseLessons();
-  }, []);
+  }, [isAuthenticated]);
 
   const enrollCourse = async () => {
     setLoading(true);
@@ -61,11 +64,10 @@ export const CourseDetailPage = () => {
   };
 
   const handleEnrollClick = () => {
-    const userId = getUserIdFromLocalStorage();
-    if (userId == null || userId === "") {
-      alert("Please login to enroll this course");
-    } else {
+    if (isAuthenticated) {
       enrollCourse();
+    } else {
+      alert("Please login to enroll this course");
     }
   };
 

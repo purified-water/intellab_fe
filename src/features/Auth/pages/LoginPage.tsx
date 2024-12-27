@@ -6,12 +6,15 @@ import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
+import { useDispatch } from "react-redux";
+import { loginSuccess } from "@/redux/auth/authSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [inputErrors, setInputErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -61,8 +64,8 @@ export const LoginPage = () => {
         }
 
         localStorage.setItem("userId", userId);
-
-        navigate("/");
+        dispatch(loginSuccess());
+        navigate(-1); // Go back to previous page
       }
     } catch (error: any) {
       if (error.response) {

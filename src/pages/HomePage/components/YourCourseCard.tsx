@@ -21,7 +21,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
 
   const isFinished = progress === 100;
 
-  const [course, setCourse] = useState<ICourse | null>(null);
+  const [courseDetail, setCourseDetail] = useState<ICourse | null>(null);
   const [apiLoading, setAPILoading] = useState(false);
 
   const accessToken = getAccessToken();
@@ -29,7 +29,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const getCourseDetail = async () => {
     setAPILoading(true);
     const response = await courseAPI.getCourseDetail(courseId, userId);
-    setCourse(response.result);
+    setCourseDetail(response.result);
     setAPILoading(false);
   };
 
@@ -44,7 +44,11 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
       if (isFinished) {
         // View certificate
       } else {
-        navigate(`/lesson/${course?.latestLessonId}`);
+        if (courseDetail?.latestLessonId) {
+          navigate(`/lesson/${courseDetail?.latestLessonId}`);
+        } else {
+          navigate(`/course/${courseId}`);
+        }
       }
     } else {
       alert("Please login to continue");
@@ -59,14 +63,14 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
     return (
       <>
         <div onClick={handleViewCourseDetail} className="cursor-pointer">
-          <h3 className="text-xl font-bold line-clamp-2">{course?.courseName}</h3>
+          <h3 className="text-xl font-bold line-clamp-2">{courseDetail?.courseName}</h3>
           <p
-            className={`text-sm mb-2 ${course?.courseName && course.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
+            className={`text-sm mb-2 ${courseDetail?.courseName && courseDetail.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
           >
-            {course?.description}
+            {courseDetail?.description}
           </p>
           <ProgressBar
-            progress={course ? course.progressPercent : DEFAULT_COURSE.progressPercent}
+            progress={courseDetail ? courseDetail.progressPercent : DEFAULT_COURSE.progressPercent}
             showText={false}
             height={5}
           />
@@ -79,7 +83,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
           >
             {isFinished ? "View certificate" : "Continue"}
           </button>
-          <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
+          <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
         </div>
       </>
     );

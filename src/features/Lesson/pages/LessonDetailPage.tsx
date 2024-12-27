@@ -7,6 +7,8 @@ import { ILesson } from "@/features/Course/types";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { IQuiz } from "../types/QuizType";
 import { LessonQuiz } from "../components";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const LessonDetailPage = () => {
@@ -22,6 +24,13 @@ export const LessonDetailPage = () => {
   const [isLessonDone, setIsLessonDone] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate("/");
+    }
+  }, []);
 
   const getLessonDetail = async () => {
     if (id && userId) {

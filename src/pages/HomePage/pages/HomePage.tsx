@@ -6,11 +6,14 @@ import { Sidebar } from "@/pages/HomePage/components/Sidebar";
 import { YourCourseSection } from "../components/YourCourseSection";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const HomePage = () => {
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getUserIdFromLocalStorage = () => {
     const userId = localStorage.getItem("userId");
@@ -43,7 +46,7 @@ export const HomePage = () => {
       setLoading(false);
     };
     fetchData();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <div className="flex flex-col w-full min-h-screen">
