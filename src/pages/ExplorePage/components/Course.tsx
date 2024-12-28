@@ -26,6 +26,8 @@ export default function Course(props: CourseProps) {
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
+  const isFinished = detailCourse?.progressPercent === 100;
+
   const getCourseDetail = async () => {
     setInternalLoading(true);
     const response = await courseAPI.getCourseDetail(course.courseId, userId ?? "∫");
@@ -44,13 +46,12 @@ export default function Course(props: CourseProps) {
   };
 
   const handleButtonClick = (id: string) => {
-    if (isAuthenticated) {
-      if (detailCourse?.userEnrolled) {
-        if (detailCourse?.latestLessonId) {
-          navigate(`/lesson/${detailCourse.latestLessonId}`);
-        } else {
-          navigate(`/course/${id}`);
-        }
+    if (isAuthenticated && detailCourse?.userEnrolled && detailCourse?.latestLessonId) {
+      if (isFinished) {
+        // TODO: Implement certificate page
+        alert("Upcoming feature");
+      } else {
+        navigate(`/lesson/${detailCourse.latestLessonId}`);
       }
     } else {
       navigate(`/course/${id}`);
@@ -67,14 +68,28 @@ export default function Course(props: CourseProps) {
     return result;
   };
 
+  const buttonText = () => {
+    let text;
+    if (detailCourse?.userEnrolled) {
+      if (isFinished) {
+        text = "View Certificate";
+      } else {
+        text = "Continue";
+      }
+    } else {
+      text = "Study Now";
+    }
+    return text;
+  };
+
   const renderContent = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
       {/* Header section with background gradient and reviews */}
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex items-center justify-between p-2">
-        <h2 className="ml-4 text-2xl font-bold text-white" onClick={handleTitleClick}>
+        <h2 className="ml-4 text-2xl font-bold text-white cursor-pointer" onClick={handleTitleClick}>
           {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
         </h2>
-        <div className="flex flex-col items-center justify-between cursor-pointer">
+        <div className="flex flex-col items-center justify-between">
           <div className="flex items-center justify-end px-4 pt-3 mb-5">
             <div className="mx-1 text-sm font-normal text-white">•</div>
             <div className="text-sm font-normal text-white">
@@ -113,7 +128,7 @@ export default function Course(props: CourseProps) {
           className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
           onClick={() => handleButtonClick(detailCourse?.courseId ?? course.courseId)}
         >
-          {detailCourse?.userEnrolled ? "Continue" : "Study Now"}
+          {buttonText()}
         </button>
         <span className="text-lg font-bold text-appPrimary">
           {priceText(detailCourse?.price ?? DEFAULT_COURSE.price, detailCourse?.unitPrice ?? DEFAULT_COURSE.unitPrice)}

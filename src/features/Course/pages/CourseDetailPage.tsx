@@ -112,7 +112,8 @@ export const CourseDetailPage = () => {
   };
 
   const handleViewCertificateClick = () => {
-    console.log("--> View certificate clicked");
+    // TODO: Implement certificate page
+    alert("Upcoming feature");
   };
 
   const renderHeader = () => {
