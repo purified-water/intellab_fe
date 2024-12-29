@@ -1,6 +1,10 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import SearchBar from "@/pages/ExplorePage/components/SearchBar";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import {
+  //Link,
+  useLocation,
+  useNavigate
+} from "react-router-dom";
 import FilterButton from "@/pages/ExplorePage/components/FilterButton";
 import { courseAPI } from "@/lib/api"; // Adjust the import path as necessary
 import { ICourse } from "@/features/Course/types";

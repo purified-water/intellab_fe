@@ -34,7 +34,7 @@ export const LessonDetailPage = () => {
     if (!isAuthenticated) {
       navigate("/");
     }
-  }, []);
+  }, [isAuthenticated]);
 
   const getLessonDetail = async () => {
     if (id && userId) {

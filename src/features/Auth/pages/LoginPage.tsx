@@ -65,7 +65,7 @@ export const LoginPage = () => {
 
         localStorage.setItem("userId", userId);
         dispatch(loginSuccess());
-        navigate(-1); // Go back to previous page
+        navigate("/");
       }
     } catch (error: any) {
       if (error.response) {
