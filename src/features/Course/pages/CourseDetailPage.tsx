@@ -30,7 +30,6 @@ export const CourseDetailPage = () => {
     setLoading(true);
     const response = await courseAPI.getCourseDetail(id!, userId!);
     const { result } = response;
-    console.log("Course detail", result);
 
     // If the user already enrolled in the course, update the Redux store to get the correct lessons type
     if (result.userEnrolled) {
@@ -43,6 +42,7 @@ export const CourseDetailPage = () => {
 
   const getCourseLessons = async () => {
     setLoading(true);
+
     const courseData = courses ? courses.find((course) => course.courseId === id) : null; // Find the course from Redux store
     const userEnrolled = courseData ? courseData.userEnrolled : false;
 
@@ -50,8 +50,8 @@ export const CourseDetailPage = () => {
       try {
         const response = await courseAPI.getLessonsAfterEnroll(id!, userId!);
         const lessons = response.result.content;
-        console.log("Lessons after enroll", lessons);
-        setLessons(lessons); // ERROR: Type 'ILesson[]' is not assignable to type 'IEnrolledLesson[]'
+        // console.log("Lessons after enroll", lessons);
+        setLessons(lessons);
         setLoading(false);
       } catch (error) {
         console.log("Error fetching lessons", error);
@@ -62,7 +62,7 @@ export const CourseDetailPage = () => {
         const response = await courseAPI.getLessons(id!);
         const lessons = response.result.content;
         lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
-        console.log("Lessons before enroll", lessons);
+        // console.log("Lessons before enroll", lessons);
         setLessons(lessons);
         setLoading(false);
       } catch (error) {
@@ -78,7 +78,6 @@ export const CourseDetailPage = () => {
   }, [isAuthenticated, courses]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
-    console.log(isAuthenticated);
     if (isAuthenticated) {
       enrollCourseHandler();
     } else {

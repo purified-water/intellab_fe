@@ -14,7 +14,7 @@ const courseSlice = createSlice({
 
     // Update or add a course's enrollment status based on courseId
     updateUserEnrolled: (state, action: PayloadAction<{ courseId: string; isEnrolled: boolean }>) => {
-      console.log("courses before", state.courses);
+
       const { courseId, isEnrolled } = action.payload;
       const existingCourse = state.courses ? state.courses.find((course) => course.courseId === courseId) : null;
 
