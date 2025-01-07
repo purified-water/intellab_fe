@@ -1,15 +1,15 @@
 import { MarkdownRender } from "../components";
-import { ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
-import { ILesson } from "@/features/Course/types";
+import { ILesson, ICourse } from "@/features/Course/types";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { IQuiz } from "../types/QuizType";
 import { LessonQuiz } from "../components";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -29,12 +29,26 @@ export const LessonDetailPage = () => {
   const [searchParams] = useSearchParams();
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
+  const [course, setCourse] = useState<ICourse | null>(null);
 
   useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
     }
   }, [isAuthenticated]);
+
+  const getCourseDetail = async () => {
+    if (courseId) {
+      try {
+        const response = await courseAPI.getCourseDetail(courseId, userId!);
+        const { result } = response;
+
+        setCourse(result);
+      } catch (error) {
+        console.log("Error fetching course detail", error);
+      }
+    }
+  };
 
   const getLessonDetail = async () => {
     if (id && userId) {
@@ -84,7 +98,7 @@ export const LessonDetailPage = () => {
         return;
       }
 
-      const response = await courseAPI.getLessons(lesson!.courseId!);
+      const response = await courseAPI.getLessons(lesson!.courseId!, 100);
       const { result } = response;
       const content = result.content;
 
@@ -116,6 +130,12 @@ export const LessonDetailPage = () => {
     navigate(`/course/${lesson?.courseId}`);
   };
 
+  const navigateToProblem = () => {
+    navigate(
+      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${lesson!.courseId}&courseName=${"FAKE_COURSE_NAME"}`
+    );
+  };
+
   useEffect(() => {
     if (lesson) {
       getLessonQuiz();
@@ -124,6 +144,7 @@ export const LessonDetailPage = () => {
   }, [lesson]);
 
   useEffect(() => {
+    getCourseDetail();
     getLessonDetail();
   }, [id]);
 
@@ -132,6 +153,17 @@ export const LessonDetailPage = () => {
       handleLessonDoneCallback(true); // If no quiz, mark lesson as done when scrolled to bottom
     }
   }, [quiz, isScrolledToBottom]);
+
+  const renderCourseName = () => {
+    if (course) {
+      return (
+        <div className="flex items-center gap-2 cursor-pointer" onClick={navigateToCourse}>
+          <ChevronLeft className="text-appPrimary" size={22} />
+          <p className="text-2xl text-appPrimary font-bold">{course.courseName}</p>
+        </div>
+      );
+    }
+  };
 
   const renderHeader = () => (
     <div className="py-4 space-y-2 border-b border-gray4">
@@ -154,6 +186,27 @@ export const LessonDetailPage = () => {
         <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback} />
       </div>
     );
+  };
+
+  const renderProblem = () => {
+    let content = null;
+    if (
+      //lesson?.problemId &&
+      isLessonDone
+    ) {
+      content = (
+        <div
+          className="flex items-center gap-2 px-3 py-3 cursor-pointer border-y border-gray4 max-w-7xl"
+          onClick={navigateToProblem}
+        >
+          <p>Solve this lesson's problem</p>
+          <div className="ml-auto">
+            <ChevronRight style={{ color: "gray" }} size={22} />
+          </div>
+        </div>
+      );
+    }
+    return content;
   };
 
   const renderNextLesson = () => {
@@ -205,9 +258,11 @@ export const LessonDetailPage = () => {
         renderSkeleton()
       ) : (
         <>
+          {renderCourseName()}
           {renderHeader()}
           {renderContent()}
           {renderQuiz()}
+          {renderProblem()}
           {renderNextLesson()}
           {renderFinishLesson()}
         </>

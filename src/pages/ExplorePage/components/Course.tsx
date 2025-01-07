@@ -3,7 +3,7 @@ import { ICourse } from "@/features/Course/types";
 import { useNavigate } from "react-router-dom";
 import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";

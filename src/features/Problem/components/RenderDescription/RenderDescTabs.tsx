@@ -1,7 +1,15 @@
 import { useState } from "react";
 import { ProblemDescription } from "./ProblemDescription";
 
-export const RenderDescTabs = () => {
+interface RenderDescTabsProps {
+  courseId: string | null;
+  courseName: string | null;
+  lessonId: string | null;
+  lessonName: string | null;
+}
+
+export const RenderDescTabs = (props: RenderDescTabsProps) => {
+  const { courseId, courseName, lessonId, lessonName } = props;
   const [desActive, setDesActive] = useState("Description");
 
   const renderDescriptionTabButton = (tabName: string) => {
@@ -22,7 +30,9 @@ export const RenderDescTabs = () => {
   const renderDescriptionTabContent = () => {
     switch (desActive) {
       case "Description":
-        return <ProblemDescription />;
+        return (
+          <ProblemDescription courseId={courseId} courseName={courseName} lessonId={lessonId} lessonName={lessonName} />
+        );
       case "Comments":
         return <div>Comments</div>;
       case "Submissions":

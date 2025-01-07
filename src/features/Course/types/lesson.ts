@@ -6,6 +6,7 @@ export interface ILesson {
   lessonName: string;
   courseId: string;
   exerciseId: string;
+  problemId: string;
   learningId: string;
   nextLessonId: string;
   nextLessonName: string;
