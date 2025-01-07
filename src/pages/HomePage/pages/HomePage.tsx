@@ -8,20 +8,16 @@ import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const HomePage = () => {
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-
-  const getUserIdFromLocalStorage = () => {
-    const userId = localStorage.getItem("userId");
-    return userId;
-  };
+  const userUid = getUserIdFromLocalStorage();
 
   const getCourses = async () => {
-    const userUid = getUserIdFromLocalStorage();
     const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     return response ? response.result.content : [];
   };

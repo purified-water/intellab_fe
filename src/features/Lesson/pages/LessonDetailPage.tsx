@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ILesson } from "@/features/Course/types";
-import { getUserIdFromLocalStorage } from "@/utils";
+import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { IQuiz } from "../types/QuizType";
 import { LessonQuiz } from "../components";
 import { useSelector } from "react-redux";
@@ -70,6 +70,9 @@ export const LessonDetailPage = () => {
     try {
       if (isCorrect || (!quiz && isScrolledToBottom)) {
         await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);
+        // Remove bookmark after lesson is done
+        clearBookmark(userId!, lesson!.lessonId!);
+
         await courseAPI.updatePracticeDone(lesson!.learningId!, lesson!.courseId, userId!); // TEMPORARY MARK AS DONE for practice because no practice yet
         setIsLessonDone(true);
       }
@@ -133,16 +136,16 @@ export const LessonDetailPage = () => {
     }
   }, [quiz, isScrolledToBottom]);
 
-  const renderHeader = () => (
-    <div className="py-4 space-y-2 border-b border-gray4">
-      <p className="text-5xl font-bold">{lesson?.lessonName}</p>
-      <p className="text-gray3 line-clamp-4">{lesson?.description}</p>
-    </div>
-  );
+  // const renderHeader = () => (
+  //   <div className="py-4 space-y-2 border-b border-gray4">
+  //     <p className="text-5xl font-bold">{lesson?.lessonName}</p>
+  //     <p className="text-gray3 line-clamp-4">{lesson?.description}</p>
+  //   </div>
+  // );
 
   const renderContent = () => {
     if (lesson && lesson.content != null) {
-      return <MarkdownRender content={lesson.content} setIsScrolledToBottom={setIsScrolledToBottom} />;
+      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
     }
   };
 
@@ -205,7 +208,7 @@ export const LessonDetailPage = () => {
         renderSkeleton()
       ) : (
         <>
-          {renderHeader()}
+          {/* {renderHeader()} */}
           {renderContent()}
           {renderQuiz()}
           {renderNextLesson()}

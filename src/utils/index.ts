@@ -1,3 +1,4 @@
 export * from "./number";
-export * from "./localStorage";
+export * from "./userLocalStorage";
 export * from "./cookies";
+export * from "./bookmarkLocalStorage";
