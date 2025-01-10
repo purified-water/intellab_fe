@@ -21,15 +21,17 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
   }
 
   return (
-    <div className="sm:pl-10">
+    <div className="">
       {/* Display the search results title or "Not found" if no courses match the query */}
-      <div className="mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">
-        {query && courses.length === 0 ? "Not found" : "Search results"}
-      </div>
+      {query !== "" && (
+        <div className="mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">
+          {query && courses.length === 0 ? "Not found" : "Search results"}
+        </div>
+      )}
       {/* Courses grid */}
       <div className="flex flex-wrap gap-7">
-        {courses.map((course, index) => (
-          <Course key={index} course={course} skeletonLoading={loading} />
+        {courses.map((course) => (
+          <Course key={course.courseId} course={course} skeletonLoading={loading} />
         ))}
       </div>
     </div>
