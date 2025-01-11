@@ -11,6 +11,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { AppDispatch } from "@/redux/store";
 import { updateUserEnrolled } from "@/redux/course/courseSlice";
+import Pagination from "@/components/ui/Pagination";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -20,6 +21,8 @@ export const CourseDetailPage = () => {
   const [lessons, setLessons] = useState<ILesson[] | IEnrolledLesson[]>([]);
   const [loading, setLoading] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -40,7 +43,7 @@ export const CourseDetailPage = () => {
     setLoading(false);
   };
 
-  const getCourseLessons = async () => {
+  const getCourseLessons = async (page: number) => {
     setLoading(true);
 
     const courseData = courses ? courses.find((course) => course.courseId === id) : null; // Find the course from Redux store
@@ -48,22 +51,26 @@ export const CourseDetailPage = () => {
 
     if (userEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(id!, userId!);
+        const response = await courseAPI.getLessonsAfterEnroll(id!, userId!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
         setLoading(false);
+        setCurrentPage(response.result.number);
+        setTotalPages(response.result.totalPages);
       } catch (error) {
         console.log("Error fetching lessons", error);
         setLoading(false);
       }
     } else {
       try {
-        const response = await courseAPI.getLessons(id!);
+        const response = await courseAPI.getLessons(id!, page);
         const lessons = response.result.content;
         lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
         // console.log("Lessons before enroll", lessons);
         setLessons(lessons);
+        setCurrentPage(response.result.number);
+        setTotalPages(response.result.totalPages);
         setLoading(false);
       } catch (error) {
         console.log("Error fetching lessons", error);
@@ -74,7 +81,7 @@ export const CourseDetailPage = () => {
 
   useEffect(() => {
     getCourseDetail();
-    getCourseLessons();
+    getCourseLessons(0);
   }, [isAuthenticated, courses]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
@@ -103,10 +110,10 @@ export const CourseDetailPage = () => {
 
   const handleContinueClick = () => {
     if (lessons.length > 0 && course?.latestLessonId != null) {
-      navigate(`/lesson/${course.latestLessonId}`);
+      navigate(`/lesson/${course.latestLessonId}?courseId=${course.courseId}`);
     } else {
       const firstLesson = lessons[0];
-      navigate(`/lesson/${firstLesson.lessonId}`);
+      navigate(`/lesson/${firstLesson.lessonId}?courseId=${course!.courseId}`);
     }
   };
 
@@ -135,11 +142,20 @@ export const CourseDetailPage = () => {
     switch (activeTab) {
       case "Lessons":
         return (
-          <LessonList
-            lessons={lessons}
-            isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
-            lastViewedLessonId={course?.latestLessonId}
-          />
+          <div>
+            <LessonList
+              lessons={lessons}
+              isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
+              lastViewedLessonId={course?.latestLessonId}
+            />
+            {totalPages != 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => getCourseLessons(page)}
+              />
+            )}
+          </div>
         );
       case "Comments":
         return <div>Comments content goes here</div>;

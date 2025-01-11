@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "@/utils";
@@ -46,7 +46,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
         alert("Upcoming feature");
       } else {
         if (courseDetail?.latestLessonId) {
-          navigate(`/lesson/${courseDetail?.latestLessonId}`);
+          navigate(`/lesson/${courseDetail.latestLessonId}?courseId=${courseDetail.courseId}`);
         } else {
           navigate(`/course/${courseId}`);
         }

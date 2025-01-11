@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { IQuiz } from "../types/QuizType";
 import { courseAPI } from "@/lib/api";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 interface QuizProps {
   quiz: IQuiz;

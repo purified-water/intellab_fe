@@ -9,6 +9,8 @@ import {
 } from "../../pages/HomePage/types/responseTypes";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
+const DEFAULT_PAGE_SIZE = 20;
+
 export const courseAPI = {
   getCourses: async () => {
     const response = await apiClient.get(`course/courses`);
@@ -34,14 +36,24 @@ export const courseAPI = {
     return data;
   },
 
-  getLessons: async (courseId: string) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/lessons`);
+  getLessons: async (courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons`, {
+      params: {
+        page,
+        size
+      }
+    });
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
 
-  getLessonsAfterEnroll: async (courseId: string, userUid: string) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/${userUid}/lessons`);
+  getLessonsAfterEnroll: async (courseId: string, userUid: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/${userUid}/lessons`, {
+      params: {
+        page,
+        size
+      }
+    });
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
