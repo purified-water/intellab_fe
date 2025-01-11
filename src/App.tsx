@@ -15,6 +15,7 @@ import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { Toaster } from "./components/ui/toaster";
+import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 
 // Layout component to include conditional Navbar
 const Layout = () => {
@@ -83,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: "/course/:id",
         element: <CourseDetailPage />
+      },
+      {
+        path: "/lesson/:id/quiz/:quizId",
+        element: <LessonQuiz />
       }
     ]
   }

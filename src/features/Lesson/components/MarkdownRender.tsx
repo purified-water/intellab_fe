@@ -14,6 +14,7 @@ import { is } from "unist-util-is";
 import { LessonHeader } from "./LessonHeader";
 import { ILesson } from "@/features/Course/types";
 import { addBookmark, getUserIdFromLocalStorage, getBookmark } from "@/utils";
+import { TableOfContents } from "./TableOfContents";
 
 interface MarkdownRenderProps {
   lesson: ILesson;
@@ -164,38 +165,15 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   }, [lesson.lessonId]);
 
   const renderTOC = () => {
-    if (windowWidth <= 1000) {
-      return null;
-    }
-
     return (
-      <div
-        className="right-0 mr-4 border-l border-gray4"
-        style={{
-          position: "absolute",
-          top: tocTop + defaultTop + 20,
-          width: windowWidth * 0.18
-        }}
-      >
-        <ul>
-          {toc.map((item) => (
-            <li key={item.id} style={{ marginLeft: item.level * 10 }}>
-              <ScrollLink
-                to={item.id}
-                smooth={true}
-                duration={500}
-                className={`overflow-hidden text-sm cursor-pointer hover:text-gray1 ${activeTocItem === item.id ? "text-black" : "text-gray3"}`}
-                onClick={() => {
-                  setActiveTocItem(item.id); // Set the clicked item as active
-                  window.location.hash = item.id;
-                }}
-              >
-                {item.text}
-              </ScrollLink>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <TableOfContents
+        toc={toc}
+        activeTocItem={activeTocItem}
+        setActiveTocItem={setActiveTocItem}
+        tocTop={tocTop}
+        defaultTop={defaultTop}
+        windowWidth={windowWidth}
+      />
     );
   };
 
@@ -211,7 +189,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   );
 
   return (
-    <div className={`flex ${windowWidth < 1000 ? "mr-1" : "mr-48"}`}>
+    <div className={`flex ${windowWidth < 1000 ? "mr-1" : windowWidth > 1500 ? "mr-64" : "mr-48"}`}>
       <div className="pr-6" style={{ width: windowWidth * 0.8 }} ref={contentRef}>
         <LessonHeader lesson={lesson} />
         <ReactMarkdown
