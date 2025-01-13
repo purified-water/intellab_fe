@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/Resizable";
 import { RenderDescTabs } from "../components/RenderDescription/RenderDescTabs";
 import { RenderPGTabs } from "../components/RenderPlayground/RenderPlaygroundTabs";
@@ -7,16 +7,32 @@ import { Button } from "@/components/ui/Button";
 import { MdList } from "rocketicons/md";
 import { FaPlay, FaUpload } from "rocketicons/fa6";
 import { RenderAllProblems } from "../components/RenderAllProblems/RenderAllProblemsList";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { problemApi } from "@/lib/api/problemApi";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchParams] = useSearchParams();
-  //const problemId = searchParams.get("id");
-  const courseId = searchParams.get("courseId");
-  const courseName = searchParams.get("courseName");
-  const lessonId = searchParams.get("lessonId");
-  const lessonName = searchParams.get("lessonName");
+  const [problemDescription, setProblemDescription] = useState("");
+  const { problemId } = useParams<{ problemId: string }>();
+  const courseId = "";
+  const courseName = "";
+  const lessonId = "";
+  const lessonName = "";
+
+  const fetchProblemDetail = async () => {
+    console.log("Problem ID", problemId);
+    try {
+      const problemDetail = await problemApi.getProblemDetail(problemId!);
+      setProblemDescription(problemDetail.description);
+    } catch (error) {
+      console.error("Failed to fetch problem detail", error);
+    }
+    console.log("Problem description", problemDescription);
+  };
+
+  useEffect(() => {
+    fetchProblemDetail();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -27,7 +43,13 @@ export const ProblemDetail = () => {
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
           <ResizablePanel defaultSize={40} minSize={20} id="description" className="bg-white rounded-t-lg">
-            <RenderDescTabs courseId={courseId} courseName={courseName} lessonId={lessonId} lessonName={lessonName} />
+            <RenderDescTabs
+              problemDescription={problemDescription}
+              courseId={courseId}
+              courseName={courseName}
+              lessonId={lessonId}
+              lessonName={lessonName}
+            />
           </ResizablePanel>
 
           <ResizableHandle withHandle className="w-2 bg-gray5" />

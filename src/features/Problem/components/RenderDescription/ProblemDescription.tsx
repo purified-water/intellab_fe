@@ -4,6 +4,7 @@ import { testMD } from "../../constants/testMD";
 import BreadCrump, { IBreadCrumpItem } from "@/components/ui/BreadCrump";
 
 interface ProblemDescriptionProps {
+  problemDescription: string;
   courseId: string | null;
   courseName: string | null;
   lessonId: string | null;
@@ -11,7 +12,7 @@ interface ProblemDescriptionProps {
 }
 
 export const ProblemDescription = (props: ProblemDescriptionProps) => {
-  const { courseId, courseName, lessonId, lessonName } = props;
+  const { problemDescription, courseId, courseName, lessonId, lessonName } = props;
 
   const breadCrumpItems: IBreadCrumpItem[] = [
     {
@@ -40,7 +41,7 @@ export const ProblemDescription = (props: ProblemDescriptionProps) => {
   };
 
   return (
-    <div className="h-full my-4 ml-6 mr-4 overflow-y-auto scrollbar-hide">
+    <div className="h-full pb-12 my-4 ml-6 mr-4 overflow-y-auto scrollbar-hide">
       {renderTitle()}
       <h1 className="mt-2 text-xl font-semibold">1. Two Sum</h1>
       <MarkdownRender content={testMD} />

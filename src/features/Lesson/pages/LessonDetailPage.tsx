@@ -5,11 +5,10 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/features/Course/types";
 import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
-import { IQuiz } from "../types/QuizType";
-import { LessonQuiz } from "../components";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { Button } from "@/components/ui/shadcn/button";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -17,7 +16,8 @@ export const LessonDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [nextLessonOrder, setNextLessonOrder] = useState<number | null>(null);
   const [nextLesson, setNextLesson] = useState<ILesson | null>(null);
-  const [quiz, setQuiz] = useState<IQuiz | null>(null);
+  const [hasQuiz, setHasQuiz] = useState<boolean>(false);
+
   // Leave this here in case test case where there are questions in 2 consecutive lessons
   // const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState<boolean>(false);
@@ -42,7 +42,6 @@ export const LessonDetailPage = () => {
       try {
         const response = await courseAPI.getCourseDetail(courseId, userId!);
         const { result } = response;
-
         setCourse(result);
       } catch (error) {
         console.log("Error fetching course detail", error);
@@ -64,25 +63,30 @@ export const LessonDetailPage = () => {
 
       setNextLessonOrder(result.lessonOrder! + 1);
       setLesson(result);
+
+      if (lesson?.exerciseId) {
+        setHasQuiz(true);
+      }
+
       setLoading(false);
     }
   };
 
-  const getLessonQuiz = async () => {
-    try {
-      const response = await courseAPI.getLessonQuiz(id!);
-      const result = response.result;
+  // const getLessonQuiz = async () => {
+  //   try {
+  //     const response = await courseAPI.getLessonQuiz(id!);
+  //     const result = response.result;
 
-      setQuiz(result); // If no quiz, this will remain `null`
-    } catch (error) {
-      console.log("Error fetching quiz", error);
-    }
-  };
+  //     setQuiz(result); // If no quiz, this will remain `null`
+  //   } catch (error) {
+  //     console.log("Error fetching quiz", error);
+  //   }
+  // };
 
   const handleLessonDoneCallback = async (isCorrect: boolean) => {
     // setIsCorrect(isCorrect);
     try {
-      if (isCorrect || (!quiz && isScrolledToBottom)) {
+      if (isCorrect || (!hasQuiz && isScrolledToBottom)) {
         await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);
         // Remove bookmark after lesson is done
         clearBookmark(userId!, lesson!.lessonId!);
@@ -141,7 +145,7 @@ export const LessonDetailPage = () => {
 
   useEffect(() => {
     if (lesson) {
-      getLessonQuiz();
+      // getLessonQuiz();
       fetchNextLesson();
     }
   }, [lesson]);
@@ -152,28 +156,21 @@ export const LessonDetailPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!quiz && isScrolledToBottom) {
+    if (!hasQuiz && isScrolledToBottom) {
       handleLessonDoneCallback(true); // If no quiz, mark lesson as done when scrolled to bottom
     }
-  }, [quiz, isScrolledToBottom]);
+  }, [hasQuiz, isScrolledToBottom]);
 
   const renderCourseName = () => {
     if (course) {
       return (
         <div className="flex items-center gap-2 cursor-pointer" onClick={navigateToCourse}>
           <ChevronLeft className="text-appPrimary" size={22} />
-          <p className="text-2xl font-bold text-appPrimary">{course.courseName}</p>
+          <p className="text-xl font-bold text-appPrimary">{course.courseName}</p>
         </div>
       );
     }
   };
-
-  const renderHeader = () => (
-    <div className="py-4 space-y-2 border-b border-gray4">
-      <p className="text-5xl font-bold">{lesson?.lessonName}</p>
-      <p className="text-gray3 line-clamp-4">{lesson?.description}</p>
-    </div>
-  );
 
   const renderContent = () => {
     if (lesson && lesson.content != null) {
@@ -181,15 +178,15 @@ export const LessonDetailPage = () => {
     }
   };
 
-  const renderQuiz = () => {
-    if (!quiz) return null;
-    return (
-      <div className="space-y-4">
-        <p className="text-4xl font-bold">Quiz</p>
-        <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback} />
-      </div>
-    );
-  };
+  // const renderQuiz = () => {
+  //   if (!quiz) return null;
+  //   return (
+  //     <div className="space-y-4">
+  //       <p className="text-4xl font-bold">Quiz</p>
+  //       <LessonQuiz quiz={quiz} lessonId={id!} answerCallback={handleLessonDoneCallback} />
+  //     </div>
+  //   );
+  // };
 
   const renderProblem = () => {
     let content = null;
@@ -231,6 +228,7 @@ export const LessonDetailPage = () => {
 
   const renderFinishLesson = () => {
     if (nextLesson) return null;
+    console.log("Next lesson", nextLesson);
     return (
       <div
         className="flex items-center gap-2 px-3 py-3 cursor-pointer border-y border-gray4 max-w-7xl"
@@ -255,6 +253,22 @@ export const LessonDetailPage = () => {
     );
   };
 
+  const renderQuizPage = () => {
+    return (
+      <div className="flex-col items-center justify-center">
+        <div className="text-lg font-bold">This lesson has some quizzes. Finish them to complete this lesson.</div>
+        <Button
+          className="mt-4 bg-appPrimary"
+          onClick={() =>
+            navigate(`quiz/${lesson?.exerciseId}?learningId=${lesson?.learningId}&courseId=${lesson?.courseId}`)
+          }
+        >
+          Go to quiz page
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="p-5 px-6 space-y-8 sm:px-20">
       {loading ? (
@@ -262,9 +276,8 @@ export const LessonDetailPage = () => {
       ) : (
         <>
           {renderCourseName()}
-          {renderHeader()}
           {renderContent()}
-          {renderQuiz()}
+          {renderQuizPage()}
           {renderProblem()}
           {renderNextLesson()}
           {renderFinishLesson()}

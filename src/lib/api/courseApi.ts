@@ -47,13 +47,14 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonsAfterEnroll: async (courseId: string, userUid: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/${userUid}/lessons`, {
+  getLessonsAfterEnroll: async (courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me`, {
       params: {
         page,
         size
       }
     });
+    console.log("response", response);
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
@@ -74,8 +75,10 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonQuiz: async (lessonId: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}/quiz`);
+  getLessonQuiz: async (lessonId: string, numberOfQuestion: number = 10, isGetAssignment: boolean = false) => {
+    const response = await apiClient.get(
+      `/course/lessons/${lessonId}/quiz?numberOfQuestions=${numberOfQuestion}&isGetAssignment=${isGetAssignment}`
+    );
     return response.data;
   },
 

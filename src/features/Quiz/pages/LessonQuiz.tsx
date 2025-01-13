@@ -1,159 +1,114 @@
 import { useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { ChevronLeft } from "lucide-react";
 import { QuizResult } from "../components/QuizResult";
 import { Button } from "@/components/ui/Button";
-
-const sampleQuizzes = [
-  {
-    questionId: "1",
-    questionContent: "What Kubernetes object adds or deletes pods for scaling and redundancy?",
-    correctAnswer: "2",
-    options: [
-      { order: 1, content: "A Secret" },
-      { order: 2, content: "A ReplicaSet" },
-      { order: 3, content: "A DaemonSet" },
-      { order: 4, content: "A ConfigMap" },
-    ],
-    feedback: "A ReplicaSet is the correct object for scaling and redundancy.",
-  },
-  {
-    questionId: "2",
-    questionContent: "What are the autoscaling types in Kubernetes?",
-    correctAnswer: "4",
-    options: [
-      { order: 1, content: "Horizontal, Vertical, Node" },
-      { order: 2, content: "Deployment, Node, and Pod" },
-      { order: 3, content: "Horizontal and Vertical" },
-      { order: 4, content: "Horizontal, Vertical, and Cluster" },
-    ],
-    feedback: "Cluster Autoscaler (CA) is a third type of autoscaling in Kubernetes.",
-  },
-  {
-    questionId: "3",
-    questionContent: "What is the default service type in Kubernetes?",
-    correctAnswer: "1",
-    options: [
-      { order: 1, content: "ClusterIP" },
-      { order: 2, content: "NodePort" },
-      { order: 3, content: "LoadBalancer" },
-      { order: 4, content: "ExternalName" },
-    ],
-    feedback: "ClusterIP is the default service type in Kubernetes.",
-  },
-  {
-    questionId: "4",
-    questionContent: "Which command is used to create a new namespace in Kubernetes?",
-    correctAnswer: "3",
-    options: [
-      { order: 1, content: "kubectl create ns" },
-      { order: 2, content: "kubectl new namespace" },
-      { order: 3, content: "kubectl create namespace" },
-      { order: 4, content: "kubectl namespace create" },
-    ],
-    feedback: "The correct command is 'kubectl create namespace'.",
-  },
-  {
-    questionId: "5",
-    questionContent: "What is the purpose of a ConfigMap in Kubernetes?",
-    correctAnswer: "2",
-    options: [
-      { order: 1, content: "To store sensitive information" },
-      { order: 2, content: "To store non-confidential data in key-value pairs" },
-      { order: 3, content: "To manage container images" },
-      { order: 4, content: "To define network policies" },
-    ],
-    feedback: "ConfigMap is used to store non-confidential data in key-value pairs.",
-  },
-  {
-    questionId: "6",
-    questionContent: "Which Kubernetes object is used to run a single instance of a pod indefinitely?",
-    correctAnswer: "4",
-    options: [
-      { order: 1, content: "ReplicaSet" },
-      { order: 2, content: "StatefulSet" },
-      { order: 3, content: "DaemonSet" },
-      { order: 4, content: "Deployment" },
-    ],
-    feedback: "A Deployment is used to run a single instance of a pod indefinitely.",
-  },
-  {
-    questionId: "7",
-    questionContent: "What is the purpose of a Kubernetes Ingress?",
-    correctAnswer: "3",
-    options: [
-      { order: 1, content: "To manage storage volumes" },
-      { order: 2, content: "To schedule pods on nodes" },
-      { order: 3, content: "To expose HTTP and HTTPS routes to services" },
-      { order: 4, content: "To define resource limits for containers" },
-    ],
-    feedback: "Ingress is used to expose HTTP and HTTPS routes to services.",
-  },
-  {
-    questionId: "8",
-    questionContent: "Which command is used to view the logs of a pod in Kubernetes?",
-    correctAnswer: "1",
-    options: [
-      { order: 1, content: "kubectl logs" },
-      { order: 2, content: "kubectl get logs" },
-      { order: 3, content: "kubectl describe logs" },
-      { order: 4, content: "kubectl show logs" },
-    ],
-    feedback: "The correct command to view pod logs is 'kubectl logs'.",
-  },
-  {
-    questionId: "9",
-    questionContent: "What is a StatefulSet in Kubernetes used for?",
-    correctAnswer: "2",
-    options: [
-      { order: 1, content: "To manage stateless applications" },
-      { order: 2, content: "To manage stateful applications" },
-      { order: 3, content: "To manage batch jobs" },
-      { order: 4, content: "To manage network policies" },
-    ],
-    feedback: "StatefulSet is used to manage stateful applications.",
-  },
-  {
-    questionId: "10",
-    questionContent: "Which Kubernetes object is used to define a set of network rules?",
-    correctAnswer: "4",
-    options: [
-      { order: 1, content: "Service" },
-      { order: 2, content: "Pod" },
-      { order: 3, content: "ConfigMap" },
-      { order: 4, content: "NetworkPolicy" },
-    ],
-    feedback: "NetworkPolicy is used to define a set of network rules.",
-  },
-];
-
+import { useEffect } from "react";
+import { courseAPI } from "@/lib/api";
+import { useParams } from "react-router-dom";
+import { IQuiz } from "../types/QuizType";
+import { QuizHeader } from "../components/QuizHeader";
+import { useNavigate } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
+import { saveQuizDraft, loadQuizDraft, clearQuizDraft } from "@/utils/courseLocalStorage";
 
 export const LessonQuiz = () => {
-  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>(
-    Object.fromEntries(sampleQuizzes.map((quiz) => [quiz.questionId, null]))
-  );
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>();
+  const [quizzes, setQuizzes] = useState<IQuiz[]>([]);
   const [submittedAnswers, setSubmittedAnswers] = useState<Record<string, boolean>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const lessonId = useParams<{ lessonId: string }>().lessonId;
+  const [searchParams] = useSearchParams();
+  const courseId = searchParams.get("courseId");
+  const learningId = searchParams.get("learningId");
+  const navigate = useNavigate();
+  const NUMBER_OF_QUESTIONS = 10;
 
   const handleAnswerSelection = (questionId: string, order: number) => {
-    setSelectedAnswers((prev) => ({ ...prev, [questionId]: order }));
+    setSelectedAnswers((prev) => {
+      const updatedAnswers = { ...prev, [questionId]: order };
+      if (lessonId) {
+        saveQuizDraft(lessonId, updatedAnswers); // Save using the utility
+      }
+      return updatedAnswers;
+    });
+  };
+
+  const fetchQuizzes = async () => {
+    setIsLoading(true);
+    try {
+      if (!lessonId) return;
+      const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, false); // False to get quiz first time
+      const result = response.result;
+
+      setQuizzes(result);
+      const savedDraft = loadQuizDraft(lessonId);
+      if (savedDraft && Object.keys(savedDraft).length > 0) {
+        setSelectedAnswers(savedDraft);
+      } else {
+        setSelectedAnswers(Object.fromEntries(result.map((quiz: IQuiz) => [quiz.questionId, null])));
+      }
+    } catch (error) {
+      console.log("Error fetching quizzes", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleSubmit = () => {
     const results: Record<string, boolean> = {};
-    sampleQuizzes.forEach((quiz) => {
-      results[quiz.questionId] = selectedAnswers[quiz.questionId]?.toString() === quiz.correctAnswer;
+    quizzes.forEach((quiz) => {
+      results[quiz.questionId] = (selectedAnswers?.[quiz.questionId] ?? "").toString() == quiz.correctAnswer;
     });
     setSubmittedAnswers(results);
 
-    if (Object.values(results).every((result) => result)) {
-      setIsSubmitted(true);
+    const correctAnswersCount = Object.values(results).filter((result) => result).length;
+    setIsSubmitted(true);
+    if (correctAnswersCount / quizzes.length >= 0.7) {
+      setIsCorrect(true);
+      // Call done theory here
+    } else {
+      setIsCorrect(false);
+    }
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleRetryOrFinish = () => {
+    if (isCorrect) {
+      // Navigate to next lesson
+      // navigate(-1);
+    } else {
+      setIsSubmitted(false);
+      setSubmittedAnswers({});
+      setSelectedAnswers(Object.fromEntries(quizzes.map((quiz: IQuiz) => [quiz.questionId, null])));
+      clearQuizDraft(lessonId!);
+
+      fetchQuizzes();
     }
   };
 
-  const handleRetry = () => {
-    console.log("retry");
-  }
+  useEffect(() => {
+    fetchQuizzes();
+
+    const savedDraft = loadQuizDraft(lessonId!);
+    console.log("savedDraft", savedDraft);
+    if (savedDraft) {
+      setSelectedAnswers(savedDraft);
+    }
+  }, []);
+
+  const renderReturnToLesson = () => {
+    if (!lessonId) return;
+
+    return (
+      <div className="flex items-center gap-2 mx-8 mt-4 cursor-pointer" onClick={() => navigate(-1)}>
+        <ChevronLeft className="text-appPrimary" size={22} />
+        <div className="text-xl font-bold text-appPrimary">Return to lesson</div>
+      </div>
+    );
+  };
 
   const renderSkeleton = () => {
     return (
@@ -184,15 +139,14 @@ export const LessonQuiz = () => {
     );
   };
 
-
   const renderQuizContent = () => {
     return (
       <>
-        {isSubmitted && <QuizResult isCorrect={true} onClick={handleRetry} />}
+        {isSubmitted ? <QuizResult isCorrect={isCorrect} onClick={handleRetryOrFinish} /> : <QuizHeader />}
         <div className="w-full max-w-3xl p-6">
           {/* Questions */}
           <div className="">
-            {sampleQuizzes.map((quiz, index) => (
+            {quizzes.map((quiz, index) => (
               <div key={quiz.questionId} className="mb-12">
                 <p className="mb-3 text-base font-semibold">
                   {index + 1}. {quiz.questionContent}
@@ -205,7 +159,7 @@ export const LessonQuiz = () => {
                         id={`quiz-${quiz.questionId}-option-${option.order}`}
                         name={`quiz-${quiz.questionId}`}
                         value={option.order}
-                        checked={selectedAnswers[quiz.questionId] === option.order}
+                        checked={selectedAnswers?.[quiz.questionId] === option.order}
                         onChange={() => handleAnswerSelection(quiz.questionId, option.order)}
                         className="w-4 h-4 rounded-full appearance-none cursor-pointer bg-gray5 checked:bg-appPrimary"
                       />
@@ -217,15 +171,15 @@ export const LessonQuiz = () => {
                 </ul>
                 {submittedAnswers[quiz.questionId] !== undefined && (
                   <div
-                    className={`my-2 px-4 py-2 rounded-lg text-sm ${submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
-                      }`}
+                    className={`my-2 px-4 py-2 rounded-lg text-sm ${
+                      submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
+                    }`}
                   >
                     {submittedAnswers[quiz.questionId] ? (
-                      "Correct"
+                      <span className="font-bold">Correct</span>
                     ) : (
                       <>
-                        <span className="font-bold">Incorrect. </span>
-                        {quiz.feedback}
+                        <span className="font-bold">Incorrect</span>
                       </>
                     )}
                   </div>
@@ -238,7 +192,7 @@ export const LessonQuiz = () => {
           <div className="flex items-center mt-6 space-x-4">
             <Button
               onClick={handleSubmit}
-              disabled={Object.values(selectedAnswers).some((answer) => answer === null)}
+              disabled={Object.values(selectedAnswers ?? {}).some((answer) => answer == null)}
               className="h-10 px-6 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80 disabled:bg-gray5 disabled:text-gray3"
             >
               Submit
@@ -250,13 +204,15 @@ export const LessonQuiz = () => {
           </div>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   return (
-    <div className="flex flex-col items-center justify-center py-8">
-      {isLoading ? renderSkeleton() : renderQuizContent()}
-    </div>
+    <>
+      {renderReturnToLesson()}
+      <div className="flex flex-col items-center justify-center py-6">
+        {isLoading ? renderSkeleton() : renderQuizContent()}
+      </div>
+    </>
   );
 };
-
