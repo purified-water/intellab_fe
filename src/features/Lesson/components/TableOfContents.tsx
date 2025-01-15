@@ -37,8 +37,9 @@ export const TableOfContents = ({
               to={item.id}
               smooth={true}
               duration={500}
-              className={`overflow-hidden text-sm cursor-pointer hover:text-gray1 ${activeTocItem === item.id ? "text-black" : "text-gray3"
-                }`}
+              className={`overflow-hidden text-sm cursor-pointer hover:text-gray1 ${
+                activeTocItem === item.id ? "text-black" : "text-gray3"
+              }`}
               onClick={() => setActiveTocItem(item.id)}
             >
               {item.text}

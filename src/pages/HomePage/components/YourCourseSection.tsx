@@ -35,7 +35,7 @@ export const YourCourseSection = () => {
   }, [isAuthenticated]);
 
   const renderSkeletonList = () => {
-    const skeletonCount = 5;
+    const skeletonCount = 2;
     return (
       <section>
         <h1 className="text-3xl font-bold">Your Courses</h1>

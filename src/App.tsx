@@ -54,7 +54,7 @@ const router = createBrowserRouter([
         element: <ProblemsPage />
       },
       {
-        path: "/problems/:id",
+        path: "/problems/:problemId",
         element: <ProblemDetail />
       },
       {
@@ -86,7 +86,7 @@ const router = createBrowserRouter([
         element: <CourseDetailPage />
       },
       {
-        path: "/lesson/:id/quiz/:quizId",
+        path: "/lesson/:lessonId/quiz/:quizId",
         element: <LessonQuiz />
       }
     ]

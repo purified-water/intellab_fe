@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
 import { MarkdownRender } from "../MarkdownRender";
-import { testMD } from "../../constants/testMD";
 import BreadCrump, { IBreadCrumpItem } from "@/components/ui/BreadCrump";
-
+import { ProblemType } from "@/types/ProblemType";
+import { LevelCard } from "./LevelCard";
 interface ProblemDescriptionProps {
+  problemDetail: ProblemType | null;
   courseId: string | null;
   courseName: string | null;
   lessonId: string | null;
@@ -11,7 +12,7 @@ interface ProblemDescriptionProps {
 }
 
 export const ProblemDescription = (props: ProblemDescriptionProps) => {
-  const { courseId, courseName, lessonId, lessonName } = props;
+  const { problemDetail, courseId, courseName, lessonId, lessonName } = props;
 
   const breadCrumpItems: IBreadCrumpItem[] = [
     {
@@ -40,10 +41,11 @@ export const ProblemDescription = (props: ProblemDescriptionProps) => {
   };
 
   return (
-    <div className="h-full my-4 ml-6 mr-4 overflow-y-auto scrollbar-hide">
+    <div className="flex-wrap h-full pb-12 my-4 ml-6 mr-4 overflow-y-auto scrollbar-hide">
       {renderTitle()}
-      <h1 className="mt-2 text-xl font-semibold">1. Two Sum</h1>
-      <MarkdownRender content={testMD} />
+      <h1 className="mt-2 text-2xl font-bold">{problemDetail?.problemName}</h1>
+      <LevelCard level={problemDetail?.problemLevel || ""} />
+      <MarkdownRender content={problemDetail?.description || ""} />
     </div>
   );
 };

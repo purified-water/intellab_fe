@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/Resizable";
 import { RenderDescTabs } from "../components/RenderDescription/RenderDescTabs";
 import { RenderPGTabs } from "../components/RenderPlayground/RenderPlaygroundTabs";
@@ -7,16 +7,43 @@ import { Button } from "@/components/ui/Button";
 import { MdList } from "rocketicons/md";
 import { FaPlay, FaUpload } from "rocketicons/fa6";
 import { RenderAllProblems } from "../components/RenderAllProblems/RenderAllProblemsList";
-import { useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
+import { problemApi } from "@/lib/api/problemApi";
+import { ProblemType } from "@/types/ProblemType";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [searchParams] = useSearchParams();
-  //const problemId = searchParams.get("id");
-  const courseId = searchParams.get("courseId");
-  const courseName = searchParams.get("courseName");
-  const lessonId = searchParams.get("lessonId");
-  const lessonName = searchParams.get("lessonName");
+  // const [problemDescription, setProblemDescription] = useState("");
+  const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
+  const { problemId } = useParams<{ problemId: string }>();
+  const [code, setCode] = useState("");
+  const [language, setLanguage] = useState("");
+  const courseId = "";
+  const courseName = "";
+  const lessonId = "";
+  const lessonName = "";
+
+  const fetchProblemDetail = async () => {
+    try {
+      const problemDetail = await problemApi.getProblemDetail(problemId!);
+
+      if (problemDetail) {
+        setProblemDetail(problemDetail);
+      }
+    } catch (error) {
+      console.error("Failed to fetch problem detail", error);
+    }
+  };
+
+  const handleRunCode = () => {
+    // TO DO: Implement this function
+    console.log("code and language", code, language);
+    // TO DO: MATCH THE LANGUAGE WITH THE JUDGE0 LANGUAGE
+  };
+
+  useEffect(() => {
+    fetchProblemDetail();
+  }, []);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -27,7 +54,13 @@ export const ProblemDetail = () => {
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
           <ResizablePanel defaultSize={40} minSize={20} id="description" className="bg-white rounded-t-lg">
-            <RenderDescTabs courseId={courseId} courseName={courseName} lessonId={lessonId} lessonName={lessonName} />
+            <RenderDescTabs
+              problemDetail={problemDetail}
+              courseId={courseId}
+              courseName={courseName}
+              lessonId={lessonId}
+              lessonName={lessonName}
+            />
           </ResizablePanel>
 
           <ResizableHandle withHandle className="w-2 bg-gray5" />
@@ -41,7 +74,10 @@ export const ProblemDetail = () => {
           >
             <ResizablePanelGroup direction="vertical" className="h-full">
               <ResizablePanel defaultSize={60} minSize={40} className="bg-white">
-                <RenderPGTabs />
+                <RenderPGTabs setLanguagePackage={(lang, code) => {
+                  setLanguage(lang);
+                  setCode(code);
+                }} />
               </ResizablePanel>
 
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
@@ -65,7 +101,10 @@ export const ProblemDetail = () => {
         </Button>
 
         <div className="flex space-x-4">
-          <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4">
+          <Button
+            className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4"
+            onClick={handleRunCode}
+          >
             <FaPlay className="inline-block icon-sm icon-gray3" />
             Run Code
           </Button>
