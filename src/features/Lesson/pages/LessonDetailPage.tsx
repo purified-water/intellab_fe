@@ -1,4 +1,4 @@
-import { MarkdownRender } from "../components";
+// import { MarkdownRender } from "../components";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Button } from "@/components/ui/shadcn/button";
+import {MarkdownRender} from "../components/MarkdownRender2";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ export const LessonDetailPage = () => {
       try {
         const response = await courseAPI.getCourseDetail(courseId, userId!);
         const { result } = response;
+
         setCourse(result);
       } catch (error) {
         console.log("Error fetching course detail", error);
@@ -60,7 +62,7 @@ export const LessonDetailPage = () => {
       }
       const response = await courseAPI.getLessonDetail(id, userId);
       const { result } = response;
-
+      console.log("Lesson detail", result);
       setNextLessonOrder(result.lessonOrder! + 1);
       setLesson(result);
 
@@ -172,9 +174,16 @@ export const LessonDetailPage = () => {
     }
   };
 
+  // const renderContent = () => {
+  //   if (lesson && lesson.content != null) {
+  //     return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
+  //   }
+  // };
+
+  // TESTING
   const renderContent = () => {
     if (lesson && lesson.content != null) {
-      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
+      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom}/>;
     }
   };
 

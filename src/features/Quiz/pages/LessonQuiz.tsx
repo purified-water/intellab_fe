@@ -11,7 +11,10 @@ import { QuizHeader } from "../components/QuizHeader";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { saveQuizDraft, loadQuizDraft, clearQuizDraft } from "@/utils/courseLocalStorage";
-
+// TO DO: Muốn hiển thị result thôi thì nên truyền isTheoryDone vào nữa, nếu done rồi thì không cho submit nữa
+// IsTheoryDone Null là chưa có làm j hết
+// True là có làm và đạt
+// False là có làm mà chưa xong hoặc chưa đạt
 export const LessonQuiz = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>();
   const [quizzes, setQuizzes] = useState<IQuiz[]>([]);
@@ -42,7 +45,7 @@ export const LessonQuiz = () => {
       if (!lessonId) return;
       const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, false); // False to get quiz first time
       const result = response.result;
-
+      console.log("Quizzes", result);
       setQuizzes(result);
       const savedDraft = loadQuizDraft(lessonId);
       if (savedDraft && Object.keys(savedDraft).length > 0) {

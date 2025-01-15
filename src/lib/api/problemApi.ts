@@ -7,5 +7,21 @@ export const problemApi = {
     const response = await apiClient.get(`problem/problems/${problemId}`);
     const data: ProblemType = response.data;
     return data;
+  },
+  createSubmission: async (
+    submitOrder: number = 1,
+    code: string,
+    programmingLanguage: string,
+    problemId: string,
+    userUid: string
+  ) => {
+    const response = await apiClient.post(`problem/submissions`, {
+      submit_order: submitOrder,
+      code: code,
+      programming_langugage: programmingLanguage,
+      problem: { problemId },
+      userUid
+    });
+    return response.data;
   }
 };

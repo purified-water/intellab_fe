@@ -4,7 +4,6 @@
  * @param selectedAnswers - The user's selected answers
  */
 export const saveQuizDraft = (lessonId: string, selectedAnswers: Record<string, number | null>) => {
-  console.log("lessonid and answers", lessonId, selectedAnswers);
   if (!lessonId) return;
   localStorage.setItem(`quizDraft_${lessonId}`, JSON.stringify(selectedAnswers));
 };

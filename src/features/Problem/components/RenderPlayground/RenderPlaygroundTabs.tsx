@@ -14,10 +14,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/DropdownMenu";
+import { LanguageCodes } from "../../constants/LanguageCodes";
 
-export const RenderPGTabs = () => {
+interface RenderPGTabsProps {
+  setLanguagePackage: (lang: SupportedLanguages, code: string) => void;
+}
+
+export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Solution");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Javascript);
+  const [code, setCode] = useState("");
+
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
+    const languageNameJudge0 = LanguageCodes.find(lang => lang.name.includes(language))?.name as SupportedLanguages;
+    if (languageNameJudge0) {
+      setLanguagePackage(languageNameJudge0, newCode);
+    }
+  };
 
   const renderPlaygroundTabButton = (tabName: string) => {
     const getIcon = () => {
@@ -35,9 +49,8 @@ export const RenderPGTabs = () => {
     return (
       <button
         onClick={() => setPlaygroundActive(tabName)}
-        className={`flex items-center ${
-          playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
-        }`}
+        className={`flex items-center ${playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
+          }`}
       >
         {getIcon()}
         {tabName}
@@ -50,7 +63,7 @@ export const RenderPGTabs = () => {
       case "Solution":
         return (
           <div className="flex-grow overflow-hidden">
-            <Playground language={language} />
+            <Playground language={language} code={code} onCodeChange={handleCodeChange} />
           </div>
         );
       case "Chatbot":

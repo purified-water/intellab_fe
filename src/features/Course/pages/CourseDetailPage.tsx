@@ -7,12 +7,9 @@ import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { AppDispatch } from "@/redux/store";
-import { updateUserEnrolled } from "@/redux/course/courseSlice";
 import Pagination from "@/components/ui/Pagination";
-import { set } from "lodash";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -21,7 +18,6 @@ export const CourseDetailPage = () => {
   const [course, setCourse] = useState<ICourse | null>(null);
   const [lessons, setLessons] = useState<ILesson[] | IEnrolledLesson[]>([]);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
