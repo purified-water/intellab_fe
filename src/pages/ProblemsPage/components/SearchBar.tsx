@@ -1,28 +1,45 @@
-import React from "react";
+import PropTypes from "prop-types";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useEffect, useState } from "react";
 
-const SearchBar = () => {
-  const [query, setQuery] = React.useState("");
+interface SearchProps {
+  value: string;
+  onSearch: (query: string) => void;
+}
+const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
+  const [query, setQuery] = useState(value);
 
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      onSearch(query);
+    }
   };
 
   return (
     <div className="flex items-center justify-start w-full p-4 bg-white">
-      <div className="relative w-full pr-10 max-w-7xl">
+      <div className="relative w-full pr-10 max-w-9xl">
         <FontAwesomeIcon icon={faSearch} className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2" />
         <input
+          value={query}
           type="text"
           className="w-full h-[40px] p-2 pl-10 border border-gray-500 rounded-[10px] bg-white"
           placeholder="Search"
-          value={query}
-          onChange={handleInputChange}
+          onChange={(event) => setQuery(event.target.value)}
+          onKeyDown={handleKeyPress}
         />
       </div>
     </div>
   );
+};
+
+SearchBar.propTypes = {
+  value: PropTypes.string.isRequired,
+  onSearch: PropTypes.func.isRequired
 };
 
 export default SearchBar;
