@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { QuizResult } from "../components/QuizResult";
 import { Button } from "@/components/ui/Button";
 
@@ -12,9 +12,9 @@ const sampleQuizzes = [
       { order: 1, content: "A Secret" },
       { order: 2, content: "A ReplicaSet" },
       { order: 3, content: "A DaemonSet" },
-      { order: 4, content: "A ConfigMap" },
+      { order: 4, content: "A ConfigMap" }
     ],
-    feedback: "A ReplicaSet is the correct object for scaling and redundancy.",
+    feedback: "A ReplicaSet is the correct object for scaling and redundancy."
   },
   {
     questionId: "2",
@@ -24,9 +24,9 @@ const sampleQuizzes = [
       { order: 1, content: "Horizontal, Vertical, Node" },
       { order: 2, content: "Deployment, Node, and Pod" },
       { order: 3, content: "Horizontal and Vertical" },
-      { order: 4, content: "Horizontal, Vertical, and Cluster" },
+      { order: 4, content: "Horizontal, Vertical, and Cluster" }
     ],
-    feedback: "Cluster Autoscaler (CA) is a third type of autoscaling in Kubernetes.",
+    feedback: "Cluster Autoscaler (CA) is a third type of autoscaling in Kubernetes."
   },
   {
     questionId: "3",
@@ -36,9 +36,9 @@ const sampleQuizzes = [
       { order: 1, content: "ClusterIP" },
       { order: 2, content: "NodePort" },
       { order: 3, content: "LoadBalancer" },
-      { order: 4, content: "ExternalName" },
+      { order: 4, content: "ExternalName" }
     ],
-    feedback: "ClusterIP is the default service type in Kubernetes.",
+    feedback: "ClusterIP is the default service type in Kubernetes."
   },
   {
     questionId: "4",
@@ -48,9 +48,9 @@ const sampleQuizzes = [
       { order: 1, content: "kubectl create ns" },
       { order: 2, content: "kubectl new namespace" },
       { order: 3, content: "kubectl create namespace" },
-      { order: 4, content: "kubectl namespace create" },
+      { order: 4, content: "kubectl namespace create" }
     ],
-    feedback: "The correct command is 'kubectl create namespace'.",
+    feedback: "The correct command is 'kubectl create namespace'."
   },
   {
     questionId: "5",
@@ -60,9 +60,9 @@ const sampleQuizzes = [
       { order: 1, content: "To store sensitive information" },
       { order: 2, content: "To store non-confidential data in key-value pairs" },
       { order: 3, content: "To manage container images" },
-      { order: 4, content: "To define network policies" },
+      { order: 4, content: "To define network policies" }
     ],
-    feedback: "ConfigMap is used to store non-confidential data in key-value pairs.",
+    feedback: "ConfigMap is used to store non-confidential data in key-value pairs."
   },
   {
     questionId: "6",
@@ -72,9 +72,9 @@ const sampleQuizzes = [
       { order: 1, content: "ReplicaSet" },
       { order: 2, content: "StatefulSet" },
       { order: 3, content: "DaemonSet" },
-      { order: 4, content: "Deployment" },
+      { order: 4, content: "Deployment" }
     ],
-    feedback: "A Deployment is used to run a single instance of a pod indefinitely.",
+    feedback: "A Deployment is used to run a single instance of a pod indefinitely."
   },
   {
     questionId: "7",
@@ -84,9 +84,9 @@ const sampleQuizzes = [
       { order: 1, content: "To manage storage volumes" },
       { order: 2, content: "To schedule pods on nodes" },
       { order: 3, content: "To expose HTTP and HTTPS routes to services" },
-      { order: 4, content: "To define resource limits for containers" },
+      { order: 4, content: "To define resource limits for containers" }
     ],
-    feedback: "Ingress is used to expose HTTP and HTTPS routes to services.",
+    feedback: "Ingress is used to expose HTTP and HTTPS routes to services."
   },
   {
     questionId: "8",
@@ -96,9 +96,9 @@ const sampleQuizzes = [
       { order: 1, content: "kubectl logs" },
       { order: 2, content: "kubectl get logs" },
       { order: 3, content: "kubectl describe logs" },
-      { order: 4, content: "kubectl show logs" },
+      { order: 4, content: "kubectl show logs" }
     ],
-    feedback: "The correct command to view pod logs is 'kubectl logs'.",
+    feedback: "The correct command to view pod logs is 'kubectl logs'."
   },
   {
     questionId: "9",
@@ -108,9 +108,9 @@ const sampleQuizzes = [
       { order: 1, content: "To manage stateless applications" },
       { order: 2, content: "To manage stateful applications" },
       { order: 3, content: "To manage batch jobs" },
-      { order: 4, content: "To manage network policies" },
+      { order: 4, content: "To manage network policies" }
     ],
-    feedback: "StatefulSet is used to manage stateful applications.",
+    feedback: "StatefulSet is used to manage stateful applications."
   },
   {
     questionId: "10",
@@ -120,12 +120,11 @@ const sampleQuizzes = [
       { order: 1, content: "Service" },
       { order: 2, content: "Pod" },
       { order: 3, content: "ConfigMap" },
-      { order: 4, content: "NetworkPolicy" },
+      { order: 4, content: "NetworkPolicy" }
     ],
-    feedback: "NetworkPolicy is used to define a set of network rules.",
-  },
+    feedback: "NetworkPolicy is used to define a set of network rules."
+  }
 ];
-
 
 export const LessonQuiz = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>(
@@ -153,7 +152,7 @@ export const LessonQuiz = () => {
 
   const handleRetry = () => {
     console.log("retry");
-  }
+  };
 
   const renderSkeleton = () => {
     return (
@@ -183,7 +182,6 @@ export const LessonQuiz = () => {
       </div>
     );
   };
-
 
   const renderQuizContent = () => {
     return (
@@ -217,8 +215,9 @@ export const LessonQuiz = () => {
                 </ul>
                 {submittedAnswers[quiz.questionId] !== undefined && (
                   <div
-                    className={`my-2 px-4 py-2 rounded-lg text-sm ${submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
-                      }`}
+                    className={`my-2 px-4 py-2 rounded-lg text-sm ${
+                      submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
+                    }`}
                   >
                     {submittedAnswers[quiz.questionId] ? (
                       "Correct"
@@ -250,8 +249,8 @@ export const LessonQuiz = () => {
           </div>
         </div>
       </>
-    )
-  }
+    );
+  };
 
   return (
     <div className="flex flex-col items-center justify-center py-8">
@@ -259,4 +258,3 @@ export const LessonQuiz = () => {
     </div>
   );
 };
-
