@@ -3,8 +3,13 @@ import { TestCases } from "./TestCases";
 import { BsCode } from "rocketicons/bs";
 import { MdCheckBox } from "rocketicons/md";
 import { Separator } from "@/components/ui/Separator";
+import { TestCaseType } from "../../types/TestCaseType";
 
-export const RenderTCTabs = () => {
+interface RenderTCTabsProps {
+  testCases: TestCaseType[];
+}
+
+export const RenderTCTabs = ({ testCases }: RenderTCTabsProps) => {
   const [testCaseActive, setTestCaseActive] = useState("Testcase");
 
   const renderPlaygroundTabButton = (tabName: string) => {
@@ -38,7 +43,7 @@ export const RenderTCTabs = () => {
       case "Testcase":
         return (
           <div className="flex-grow overflow-hidden">
-            <TestCases />
+            <TestCases testCases={testCases} />
           </div>
         );
       case "Output":

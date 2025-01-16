@@ -8,4 +8,5 @@ export interface CourseState {
   courses: ReduxCourse[];
   exploreCourses: ICourse[];
   originalExploreCourses: ICourse[];
+  hasFilter: boolean;
 }

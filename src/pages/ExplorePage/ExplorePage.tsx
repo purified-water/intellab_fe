@@ -16,7 +16,7 @@ import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import FilterComponent from "./components/FilterComponent";
-import { getExploreCourse } from "@/redux/course/courseSlice";
+import { getExploreCourse, resetFilters } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 
 // const SEARCH_WAIT_TIME = 3000;
@@ -30,6 +30,7 @@ export const ExplorePage = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const exploreCourses = useSelector((state: RootState) => state.course.exploreCourses);
+  const hasFilter = useSelector((state: RootState) => state.course.hasFilter);
   const getUserIdFromLocalStorage = () => {
     const userId = localStorage.getItem("userId");
     return userId;
@@ -41,6 +42,7 @@ export const ExplorePage = () => {
     const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     if (response) {
       dispatch(getExploreCourse(response.result.content));
+      dispatch(resetFilters());
     }
     setLoading(false);
   };
@@ -115,6 +117,15 @@ export const ExplorePage = () => {
       ))}
     </div>
   );
+
+  const renderGridCourses = () => (
+    <div className="flex flex-wrap gap-7 sm:pl-10">
+      {displayedCourses.map((course) => (
+        <Course key={course.courseId} course={course} skeletonLoading={loading} />
+      ))}
+    </div>
+  );
+
   return (
     <div className="flex flex-col">
       {/* Header section with filter button and search bar */}
@@ -157,6 +168,20 @@ export const ExplorePage = () => {
               <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">Welcome to Intellab explore!</div>
               <div>Find new and exciting courses here!</div>
             </div>
+            {!hasFilter ? (
+              <div>
+                {/* Section for Fundamentals For Beginner */}
+                <div className="flex flex-col mb-[78px]">
+                  <div className="flex items-center justify-between w-full mb-[44px] pl-10">
+                    <div className="text-4xl font-bold text-black">Fundamentals For Beginner</div>
+                    {/* NOTE: 26/12/2024 temporarily hide this this button */}
+                    <Link to="/explore/fundamentals" state={{ courses: displayedCourses, section: "fundamentals" }}>
+                      <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
+                    </Link>
+                  </div>
+                  {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
+                  {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+                </div>
 
             {/* Section for Fundamentals For Beginner */}
             <div className="flex flex-col mb-[78px]">
@@ -179,7 +204,12 @@ export const ExplorePage = () => {
                 {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link> */}
+                  </div>
+                  {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
+                  {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+                </div>
               </div>
+
               {!loading && displayedCourses && displayedCourses.length === 0 && renderEmptyCourse()}
               {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
             </div>

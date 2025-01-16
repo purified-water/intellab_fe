@@ -14,11 +14,13 @@ import { useSearchParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { TestCaseType } from "../types/TestCaseType";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // const [problemDescription, setProblemDescription] = useState("");
   const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
+  const [testCases, setTestCases] = useState<TestCaseType[]>([]);
   const { problemId } = useParams<{ problemId: string }>();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("");
@@ -34,9 +36,13 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
+      console.log("problemDetail", problemDetail);
 
       if (problemDetail) {
         setProblemDetail(problemDetail);
+        setTestCases(problemDetail.testCases);
+
+        console.log("Test cases", testCases);
       }
     } catch (error) {
       console.error("Failed to fetch problem detail", error);
@@ -92,8 +98,8 @@ export const ProblemDetail = () => {
             <ResizablePanelGroup direction="vertical" className="h-full">
               <ResizablePanel defaultSize={60} minSize={40} className="bg-white">
                 <RenderPGTabs
-                  setLanguagePackage={(lang, code) => {
-                    setLanguage(lang);
+                  setLanguagePackage={(langJudge0, code) => {
+                    setLanguage(langJudge0.name);
                     setCode(code);
                   }}
                 />
@@ -102,7 +108,7 @@ export const ProblemDetail = () => {
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
 
               <ResizablePanel id="test-cases" defaultSize={40} minSize={20} className="overflow-y-auto bg-white">
-                <RenderTCTabs />
+                <RenderTCTabs testCases={testCases} />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
