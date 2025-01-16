@@ -65,5 +65,5 @@ export const LanguageCodes: LanguageCodeType[] = [
     id: 101,
     name: "TypeScript (5.6.2)",
     is_archived: false
-  },
+  }
 ];

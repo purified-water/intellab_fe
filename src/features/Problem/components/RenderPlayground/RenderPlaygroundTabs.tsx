@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Playground } from "./Playground";
 import { SupportedLanguages } from "@/features/Problem/constants/SupportedLanguages";
 import { BsCode } from "rocketicons/bs";
@@ -15,22 +15,40 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/DropdownMenu";
 import { LanguageCodes } from "../../constants/LanguageCodes";
+import { LanguageCodeType } from "../../types/LanguageCodeType";
 
 interface RenderPGTabsProps {
-  setLanguagePackage: (lang: SupportedLanguages, code: string) => void;
+  setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
 }
 
 export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Solution");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Javascript);
+  const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>({
+    id: 97,
+    name: "JavaScript (Node.js 20.17.0)",
+    is_archived: false
+  });
   const [code, setCode] = useState("");
+
+  useEffect(() => {
+    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.includes(language));
+    if (languageNameJudge0) {
+      setLanguagePackage(languageNameJudge0, code);
+    }
+  }, [language]);
+
+  const matchLanguage = (language: SupportedLanguages) => {
+    const matchingLanguage = LanguageCodes.find((lang) => lang.name.includes(language));
+    if (matchingLanguage) {
+      setMatchingLanguage(matchingLanguage);
+    }
+  };
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
-    const languageNameJudge0 = LanguageCodes.find(lang => lang.name.includes(language))?.name as SupportedLanguages;
-    if (languageNameJudge0) {
-      setLanguagePackage(languageNameJudge0, newCode);
-    }
+    matchLanguage(language);
+    setLanguagePackage(matchingLanguage, newCode);
   };
 
   const renderPlaygroundTabButton = (tabName: string) => {
@@ -49,8 +67,9 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     return (
       <button
         onClick={() => setPlaygroundActive(tabName)}
-        className={`flex items-center ${playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
-          }`}
+        className={`flex items-center ${
+          playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
+        }`}
       >
         {getIcon()}
         {tabName}

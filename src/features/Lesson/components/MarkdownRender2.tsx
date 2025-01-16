@@ -79,7 +79,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
           components={{
             code({ children, className }) {
               return null; // Prevent direct rendering of code blocks
-            },
+            }
           }}
         >
           {lesson.content}
@@ -87,7 +87,14 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
         {Object.keys(groupedCodeBlocks).length > 0 && <CodeTabs />}
       </div>
       {toc.length > 0 && (
-        <TableOfContents toc={toc} activeTocItem="" setActiveTocItem={() => { }} tocTop={tocTop} defaultTop={100} windowWidth={windowWidth} />
+        <TableOfContents
+          toc={toc}
+          activeTocItem=""
+          setActiveTocItem={() => {}}
+          tocTop={tocTop}
+          defaultTop={100}
+          windowWidth={windowWidth}
+        />
       )}
     </div>
   );

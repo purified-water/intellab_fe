@@ -14,7 +14,8 @@ export const Playground = ({ language, code, onCodeChange }: PlaygroundProps) =>
 
   return (
     <CodeMirror
-      value={`// Write your ${language} code here \n${code}`} // Placeholder for boilerplate code
+      value={code}
+      placeholder={`// Write your ${language} code here`}
       theme={vscodeLight}
       extensions={extension ? [extension] : []}
       style={{ fontSize: "14px", height: "100%", overflowY: "auto" }}
