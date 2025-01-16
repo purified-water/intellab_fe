@@ -7,10 +7,8 @@ import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { AppDispatch } from "@/redux/store";
-import { updateUserEnrolled } from "@/redux/course/courseSlice";
 import Pagination from "@/components/ui/Pagination";
 
 export const CourseDetailPage = () => {
@@ -20,9 +18,9 @@ export const CourseDetailPage = () => {
   const [course, setCourse] = useState<ICourse | null>(null);
   const [lessons, setLessons] = useState<ILesson[] | IEnrolledLesson[]>([]);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -36,7 +34,10 @@ export const CourseDetailPage = () => {
 
     // If the user already enrolled in the course, update the Redux store to get the correct lessons type
     if (result.userEnrolled) {
-      dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+      // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+      setIsEnrolled(true);
+    } else {
+      setIsEnrolled(false);
     }
 
     setCourse(result);
@@ -46,12 +47,9 @@ export const CourseDetailPage = () => {
   const getCourseLessons = async (page: number) => {
     setLoading(true);
 
-    const courseData = courses ? courses.find((course) => course.courseId === id) : null; // Find the course from Redux store
-    const userEnrolled = courseData ? courseData.userEnrolled : false;
-
-    if (userEnrolled && isAuthenticated) {
+    if (isEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(id!, userId!, page);
+        const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
@@ -82,7 +80,7 @@ export const CourseDetailPage = () => {
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
-  }, [isAuthenticated, courses]); // Re-fetch when `userEnrolled` changes or `courses` changes
+  }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
     if (isAuthenticated) {
@@ -97,9 +95,11 @@ export const CourseDetailPage = () => {
     try {
       const response = await courseAPI.enrollCourse(userId!, id!);
       if (response.code === 0) {
-        dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+        // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+        setIsEnrolled(true);
         alert("Enroll successfully");
       } else {
+        setIsEnrolled(false);
         alert("Enroll failed");
       }
     } catch (error) {

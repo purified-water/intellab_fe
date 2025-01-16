@@ -7,6 +7,7 @@ import {
   IGetLessonDetailResponse,
   IGetUserEnrolledCoursesResponse
 } from "../../pages/HomePage/types/responseTypes";
+import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
 const DEFAULT_PAGE_SIZE = 20;
@@ -47,13 +48,14 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonsAfterEnroll: async (courseId: string, userUid: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/${userUid}/lessons`, {
+  getLessonsAfterEnroll: async (courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me`, {
       params: {
         page,
         size
       }
     });
+    console.log("response", response);
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
@@ -74,8 +76,23 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonQuiz: async (lessonId: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}/quiz`);
+  getLessonQuiz: async (lessonId: string, numberOfQuestion: number = 10, isGetAssignment: boolean = false) => {
+    const response = await apiClient.get(
+      `/course/lessons/${lessonId}/quiz?numberOfQuestions=${numberOfQuestion}&isGetAssignment=${isGetAssignment}`
+    );
+    return response.data;
+  },
+
+  postSubmitQuiz: async (
+    lessonId: string,
+    { score, exerciseId, learningId, assignmentDetailRequests }: SubmitQuizType
+  ) => {
+    const response = await apiClient.post(`/course/lessons/${lessonId}/submitquiz`, {
+      score,
+      exerciseId,
+      learningId,
+      assignmentDetailRequests
+    });
     return response.data;
   },
 
