@@ -8,8 +8,8 @@ import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { Button } from "@/components/ui/shadcn/button";
-import {MarkdownRender} from "../components/MarkdownRender2";
+import { Button } from "@/components/ui/shadcn/Button";
+import { MarkdownRender } from "../components/MarkdownRender2";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -141,7 +141,7 @@ export const LessonDetailPage = () => {
 
   const navigateToProblem = () => {
     navigate(
-      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${lesson!.courseId}&courseName=${"FAKE_COURSE_NAME"}`
+      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${course!.courseId}&courseName=${course!.courseName}`
     );
   };
 
@@ -183,7 +183,7 @@ export const LessonDetailPage = () => {
   // TESTING
   const renderContent = () => {
     if (lesson && lesson.content != null) {
-      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom}/>;
+      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
     }
   };
 
@@ -199,10 +199,7 @@ export const LessonDetailPage = () => {
 
   const renderProblem = () => {
     let content = null;
-    if (
-      //lesson?.problemId &&
-      isLessonDone
-    ) {
+    if (lesson?.problemId && isLessonDone) {
       content = (
         <div
           className="flex items-center gap-2 px-3 py-3 cursor-pointer border-y border-gray4 max-w-7xl"

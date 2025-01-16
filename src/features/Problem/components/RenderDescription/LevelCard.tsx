@@ -7,17 +7,17 @@ interface LevelCardProps {
 
 export const LevelCard: React.FC<LevelCardProps> = ({ level }) => {
   if (!level) return null;
-  
+
   const getColor = () => {
     switch (level.toLowerCase()) {
       case ProblemLevels.EASY:
-        return 'text-appEasy';
+        return "text-appEasy";
       case ProblemLevels.MEDIUM:
-        return 'text-appMedium';
+        return "text-appMedium";
       case ProblemLevels.HARD:
-        return 'text-appHard';
+        return "text-appHard";
       default:
-        return 'text-black';
+        return "text-black";
     }
   };
 

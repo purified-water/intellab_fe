@@ -147,6 +147,7 @@ export const CourseDetailPage = () => {
               lessons={lessons}
               isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
               lastViewedLessonId={course?.latestLessonId}
+              course={course!}
             />
             {totalPages != 0 && (
               <Pagination
@@ -191,7 +192,7 @@ export const CourseDetailPage = () => {
   };
 
   return (
-    <div className="pb-8 mx-auto w-7/10">
+    <div className="pb-8 mx-auto max-w-7xl">
       {renderHeader()}
       {renderBody()}
       <Spinner loading={loading} overlay />

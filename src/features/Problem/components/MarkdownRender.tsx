@@ -8,7 +8,6 @@ interface MarkdownRenderProps {
 export const MarkdownRender = (props: MarkdownRenderProps) => {
   const { content } = props;
 
-
   return (
     <ReactMarkdown className="mb-12 text-justify markdown" remarkPlugins={[remarkGfm]}>
       {content}

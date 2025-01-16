@@ -1,14 +1,15 @@
-import { ILesson, IEnrolledLesson } from "../types";
+import { ILesson, IEnrolledLesson, ICourse } from "../types";
 import LessonListItem from "./LessonListItem";
 
 interface LessonListProps {
   lessons: ILesson[] | IEnrolledLesson[];
   isEnrolled: boolean;
   lastViewedLessonId?: string;
+  course: ICourse;
 }
 
 export const LessonList = (props: LessonListProps) => {
-  const { lessons, isEnrolled, lastViewedLessonId } = props;
+  const { lessons, isEnrolled, lastViewedLessonId, course } = props;
 
   // const renderHeader = () => {
   //   return (
@@ -39,6 +40,7 @@ export const LessonList = (props: LessonListProps) => {
             index={index}
             isEnrolled={isEnrolled}
             lastViewedLessonId={lastViewedLessonId}
+            course={course}
           />
         ))}
       </ul>

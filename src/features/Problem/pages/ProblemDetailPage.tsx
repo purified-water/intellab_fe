@@ -8,8 +8,12 @@ import { MdList } from "rocketicons/md";
 import { FaPlay, FaUpload } from "rocketicons/fa6";
 import { RenderAllProblems } from "../components/RenderAllProblems/RenderAllProblemsList";
 import { useParams } from "react-router-dom";
-import { problemApi } from "@/lib/api/problemApi";
+import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -18,14 +22,18 @@ export const ProblemDetail = () => {
   const { problemId } = useParams<{ problemId: string }>();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("");
-  const courseId = "";
-  const courseName = "";
-  const lessonId = "";
-  const lessonName = "";
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const courseId = searchParams.get("courseId");
+  const courseName = searchParams.get("courseName");
+  const lessonId = searchParams.get("lessonId");
+  const lessonName = searchParams.get("lessonName");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const fetchProblemDetail = async () => {
     try {
-      const problemDetail = await problemApi.getProblemDetail(problemId!);
+      const problemDetail = await problemAPI.getProblemDetail(problemId!);
 
       if (problemDetail) {
         setProblemDetail(problemDetail);
@@ -42,8 +50,17 @@ export const ProblemDetail = () => {
   };
 
   useEffect(() => {
-    fetchProblemDetail();
-  }, []);
+    //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
+    if (problemId != null && problemId !== "null") {
+      fetchProblemDetail();
+    }
+  }, [problemId]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(`/course/${courseId}`);
+    }
+  }, [isAuthenticated]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -74,10 +91,12 @@ export const ProblemDetail = () => {
           >
             <ResizablePanelGroup direction="vertical" className="h-full">
               <ResizablePanel defaultSize={60} minSize={40} className="bg-white">
-                <RenderPGTabs setLanguagePackage={(lang, code) => {
-                  setLanguage(lang);
-                  setCode(code);
-                }} />
+                <RenderPGTabs
+                  setLanguagePackage={(lang, code) => {
+                    setLanguage(lang);
+                    setCode(code);
+                  }}
+                />
               </ResizablePanel>
 
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
@@ -101,10 +120,7 @@ export const ProblemDetail = () => {
         </Button>
 
         <div className="flex space-x-4">
-          <Button
-            className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4"
-            onClick={handleRunCode}
-          >
+          <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={handleRunCode}>
             <FaPlay className="inline-block icon-sm icon-gray3" />
             Run Code
           </Button>

@@ -27,7 +27,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
 
   const handleCodeChange = (newCode: string) => {
     setCode(newCode);
-    const languageNameJudge0 = LanguageCodes.find(lang => lang.name.includes(language))?.name as SupportedLanguages;
+    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.includes(language))?.name as SupportedLanguages;
     if (languageNameJudge0) {
       setLanguagePackage(languageNameJudge0, newCode);
     }
@@ -49,8 +49,9 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     return (
       <button
         onClick={() => setPlaygroundActive(tabName)}
-        className={`flex items-center ${playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
-          }`}
+        className={`flex items-center ${
+          playgroundActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
+        }`}
       >
         {getIcon()}
         {tabName}

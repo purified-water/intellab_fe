@@ -167,7 +167,7 @@ export const ExplorePage = () => {
                   <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
                 </Link>
               </div>
-              {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
+              {!loading && displayedCourses && displayedCourses.length === 0 && renderEmptyCourse()}
               {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
             </div>
 
@@ -180,7 +180,7 @@ export const ExplorePage = () => {
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link> */}
               </div>
-              {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
+              {!loading && displayedCourses && displayedCourses.length === 0 && renderEmptyCourse()}
               {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
             </div>
           </div>
