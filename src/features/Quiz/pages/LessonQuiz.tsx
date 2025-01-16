@@ -23,6 +23,7 @@ export const LessonQuiz = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const lessonId = useParams<{ lessonId: string }>().lessonId;
+  const quizId = useParams<{ quizId: string }>().quizId;
   const [searchParams] = useSearchParams();
   const courseId = searchParams.get("courseId");
   const learningId = searchParams.get("learningId");
@@ -45,7 +46,7 @@ export const LessonQuiz = () => {
       if (!lessonId) return;
       const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, false); // False to get quiz first time
       const result = response.result;
-      console.log("Quizzes", result);
+      // console.log("Quizzes", result);
       setQuizzes(result);
       const savedDraft = loadQuizDraft(lessonId);
       if (savedDraft && Object.keys(savedDraft).length > 0) {
@@ -60,6 +61,33 @@ export const LessonQuiz = () => {
     }
   };
 
+  const handlePostSubmitQuiz = async (correctAnswersCount: number) => {
+    if (!lessonId || !learningId) return;
+
+    const assignmentDetailRequests = Object.entries(selectedAnswers ?? {}).map(([questionId, answer]) => {
+      return {
+        answer: answer?.toString() ?? "",
+        unitScore: 1,
+        questionId
+      };
+    });
+
+    // console.log("assignmentDetailRequests", assignmentDetailRequests);
+    try {
+      const response = await courseAPI.postSubmitQuiz(lessonId, {
+        score: correctAnswersCount,
+        exerciseId: quizId ?? "",
+        learningId: learningId,
+        assignmentDetailRequests
+      });
+
+      console.log("response after submit", response);
+    } catch (error) {
+      console.error("Failed to submit quiz", error);
+    }
+    // console.log("response", response);
+  };
+
   const handleSubmit = () => {
     const results: Record<string, boolean> = {};
     quizzes.forEach((quiz) => {
@@ -71,7 +99,8 @@ export const LessonQuiz = () => {
     setIsSubmitted(true);
     if (correctAnswersCount / quizzes.length >= 0.7) {
       setIsCorrect(true);
-      // Call done theory here
+      handlePostSubmitQuiz(correctAnswersCount);
+      // Call update theory done here
     } else {
       setIsCorrect(false);
     }

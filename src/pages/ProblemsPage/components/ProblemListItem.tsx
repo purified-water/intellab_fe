@@ -1,6 +1,7 @@
 import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown } from "rocketicons/md";
 import { useState } from "react";
 import { Problem } from "../types/resonseType";
+import { useNavigate } from "react-router-dom";
 
 type ProblemListItemProps = {
   problems: Problem[];
@@ -12,6 +13,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
     key: null,
     order: "asc"
   });
+  const navigate = useNavigate();
 
   const handleSort = (key: keyof Problem) => {
     setSortConfig((prevConfig) =>
@@ -29,6 +31,10 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
     }
     return 0;
   });
+
+  const handleProblemListItemClicked = (problemId: string) => {
+    navigate(`/problems/${problemId}`);
+  };
 
   return (
     <div className="overflow-x-auto">
@@ -61,7 +67,11 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
         </thead>
         <tbody>
           {sortedData.map((row, index) => (
-            <tr key={index} className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}>
+            <tr
+              key={index}
+              className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+              onClick={() => handleProblemListItemClicked(row.problemId)}
+            >
               {/* <td className="w-12 px-4 py-2 text-center">
                 {row.status === "solved" ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td> */}
