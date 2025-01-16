@@ -20,7 +20,7 @@ export const ProblemDescription = (props: ProblemDescriptionProps) => {
       title: courseName!
     },
     {
-      path: `/lesson/${lessonId}`,
+      path: `/lesson/${lessonId}?courseId=${courseId}`,
       title: lessonName!
     }
   ];

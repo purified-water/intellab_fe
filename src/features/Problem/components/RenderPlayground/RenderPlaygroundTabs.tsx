@@ -33,6 +33,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
 
   useEffect(() => {
     const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.includes(language));
+
     if (languageNameJudge0) {
       setLanguagePackage(languageNameJudge0, code);
     }

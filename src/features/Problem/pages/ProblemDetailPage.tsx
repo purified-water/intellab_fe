@@ -10,6 +10,10 @@ import { RenderAllProblems } from "../components/RenderAllProblems/RenderAllProb
 import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
+import { useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 import { TestCaseType } from "../types/TestCaseType";
 
 export const ProblemDetail = () => {
@@ -20,10 +24,14 @@ export const ProblemDetail = () => {
   const { problemId } = useParams<{ problemId: string }>();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("");
-  const courseId = "";
-  const courseName = "";
-  const lessonId = "";
-  const lessonName = "";
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const courseId = searchParams.get("courseId");
+  const courseName = searchParams.get("courseName");
+  const lessonId = searchParams.get("lessonId");
+  const lessonName = searchParams.get("lessonName");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const fetchProblemDetail = async () => {
     try {
@@ -48,8 +56,17 @@ export const ProblemDetail = () => {
   };
 
   useEffect(() => {
-    fetchProblemDetail();
-  }, []);
+    //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
+    if (problemId != null && problemId !== "null") {
+      fetchProblemDetail();
+    }
+  }, [problemId]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      navigate(`/course/${courseId}`);
+    }
+  }, [isAuthenticated]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

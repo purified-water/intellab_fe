@@ -8,7 +8,9 @@ import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { MarkdownRender } from "../components/MarkdownRender";
+import { Button } from "@/components/ui/shadcn/Button";
+import { MarkdownRender } from "../components/MarkdownRender2";
+// import { MarkdownRender } from "../components/MarkdownRender";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -122,7 +124,7 @@ export const LessonDetailPage = () => {
 
   const navigateToProblem = () => {
     navigate(
-      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${lesson!.courseId}&courseName=${"FAKE_COURSE_NAME"}`
+      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${course!.courseId}&courseName=${course!.courseName}`
     );
   };
 
@@ -170,10 +172,7 @@ export const LessonDetailPage = () => {
 
   const renderProblem = () => {
     let content = null;
-    if (
-      //lesson?.problemId &&
-      isLessonDone
-    ) {
+    if (lesson?.problemId && isLessonDone) {
       content = (
         <div
           className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"

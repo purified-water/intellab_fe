@@ -183,12 +183,25 @@ export const ExplorePage = () => {
                   {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
                 </div>
 
-                {/* Section for Popular Courses */}
-                <div className="flex flex-col mb-[78px]">
-                  <div className="flex items-center justify-between w-full mb-[44px] pl-10">
-                    <div className="text-4xl font-bold text-black">Popular Courses</div>
-                    {/* NOTE: 26/12/2024 temporarily hide this this button */}
-                    {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
+            {/* Section for Fundamentals For Beginner */}
+            <div className="flex flex-col mb-[78px]">
+              <div className="flex items-center justify-between w-full mb-[44px] pl-10">
+                <div className="text-4xl font-bold text-black">Fundamentals For Beginner</div>
+                {/* NOTE: 26/12/2024 temporarily hide this this button */}
+                <Link to="/explore/fundamentals" state={{ courses: displayedCourses, section: "fundamentals" }}>
+                  <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
+                </Link>
+              </div>
+              {!loading && displayedCourses && displayedCourses.length === 0 && renderEmptyCourse()}
+              {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+            </div>
+
+            {/* Section for Popular Courses */}
+            <div className="flex flex-col mb-[78px]">
+              <div className="flex items-center justify-between w-full mb-[44px] pl-10">
+                <div className="text-4xl font-bold text-black">Popular Courses</div>
+                {/* NOTE: 26/12/2024 temporarily hide this this button */}
+                {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link> */}
                   </div>
@@ -196,11 +209,10 @@ export const ExplorePage = () => {
                   {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
                 </div>
               </div>
-            ) : displayedCourses.length !== 0 ? (
-              renderGridCourses()
-            ) : (
-              renderEmptyCourse()
-            )}
+
+              {!loading && displayedCourses && displayedCourses.length === 0 && renderEmptyCourse()}
+              {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+            </div>
           </div>
         )}
       </motion.div>

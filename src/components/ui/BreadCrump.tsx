@@ -1,7 +1,7 @@
 import {
   BreadcrumbPage,
   //BreadcrumbSeparator,
-} from "@/components/ui/shadcn/breadcrumb";
+} from "@/components/ui/shadcn/Breadcrumb";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react"
 

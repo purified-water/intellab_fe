@@ -14,7 +14,6 @@ import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
 import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
-import { Toaster } from "./components/ui/toaster";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 
 // Layout component to include conditional Navbar
@@ -26,7 +25,6 @@ const Layout = () => {
     <>
       {!hideNavbar && <Navbar />}
       <Outlet />
-      <Toaster /> {/* Using Toast from shadcn */}
     </>
   );
 };

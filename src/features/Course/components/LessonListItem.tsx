@@ -1,4 +1,4 @@
-import { IEnrolledLesson, ILesson } from "../types";
+import { ICourse, IEnrolledLesson, ILesson } from "../types";
 import { BookOpenText, Code } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
@@ -10,10 +10,11 @@ interface LessonListItemProps {
   index: number;
   isEnrolled: boolean;
   lastViewedLessonId?: string;
+  course: ICourse;
 }
 
 export default function LessonListItem(props: LessonListItemProps) {
-  const { lesson, isEnrolled, lastViewedLessonId } = props;
+  const { lesson, isEnrolled, lastViewedLessonId, course } = props;
 
   const navigate = useNavigate();
 
@@ -28,7 +29,7 @@ export default function LessonListItem(props: LessonListItemProps) {
   const handleProblemClick = () => {
     if (isEnrolled) {
       navigate(
-        `/problems/${lesson.problemId}?lessonId=${lesson.lessonId}&lessonName=${lesson.lessonName}&courseId=${lesson.courseId}&courseName=${"FAKE_COURSE_NAME"}`
+        `/problems/${lesson.problemId}?lessonId=${lesson.lessonId}&lessonName=${lesson.lessonName}&courseId=${course.courseId}&courseName=${course.courseName}`
       );
     } else {
       alert("Please enroll the course to access this lesson");
@@ -45,11 +46,7 @@ export default function LessonListItem(props: LessonListItemProps) {
     return (
       <div className="flex flex-row flex-1 gap-16 text-gray3">
         {(lesson.isDoneTheory ?? DEFAULT_LESSON.isDoneTheory) ? finishedIcon : unfinishedTheoryIcon}
-        {
-          //lesson.problemId ?
-          lesson.isDonePractice ? finishedIcon : unfinishedProblemIcon
-          //: <div></div>
-        }
+        {lesson.problemId ? lesson.isDonePractice ? finishedIcon : unfinishedProblemIcon : <div></div>}
       </div>
     );
   };
@@ -57,7 +54,7 @@ export default function LessonListItem(props: LessonListItemProps) {
   return (
     <li
       key={lesson.lessonId}
-      className={`pl-8 py-4 flex-wrap overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""}`}
+      className={`px-8 py-4 flex-wrap overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""}`}
     >
       <div className="flex flex-row max-w-screen-2xl  justify-center items-center overflow-hidden">
         <h2 className="text-3xl font-bold">{lesson.lessonOrder}</h2>
