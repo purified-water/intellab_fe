@@ -13,7 +13,7 @@ import FilterComponent from "@/pages/ProblemsPage/components/FilterComponent";
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const problems = useSelector((state: RootState) => state.problem.problems);
   const status = useSelector((state: RootState) => state.problem.status);
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export const ProblemsPage = () => {
   useEffect(() => {
     console.log("USE EFFECT");
     dispatch(fetchPaginatedProblems({ keyword: "", page: 0, size: 20 })); // Fetch first page initially
-  }, [dispatch, isAuthenticated]);
+  }, [dispatch]);
 
   // Fetch search results based on query parameter in URL
   useEffect(() => {

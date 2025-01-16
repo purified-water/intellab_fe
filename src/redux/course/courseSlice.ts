@@ -6,7 +6,8 @@ import { PriceRange } from "@/pages/ExplorePage/components/FilterComponent";
 const initialState: CourseState = {
   courses: [],
   exploreCourses: [],
-  originalExploreCourses: []
+  originalExploreCourses: [],
+  hasFilter: false
 };
 
 // Slice definition
@@ -47,6 +48,7 @@ const courseSlice = createSlice({
 
     resetFilters: (state) => {
       state.exploreCourses = state.originalExploreCourses; // Reset to the original list
+      state.hasFilter = false;
     },
 
     filterCourses: (
@@ -92,6 +94,11 @@ const courseSlice = createSlice({
           });
         return matchCategories && matchRating && matchLevels && matchPrices;
       });
+      if (state.exploreCourses.length === state.originalExploreCourses.length) {
+        state.hasFilter = false;
+      } else {
+        state.hasFilter = true;
+      }
     }
   }
 });

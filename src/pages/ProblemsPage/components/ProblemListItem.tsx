@@ -1,6 +1,7 @@
 import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown } from "rocketicons/md";
 import { useState } from "react";
 import { Problem } from "../types/resonseType";
+import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 import { useNavigate } from "react-router-dom";
 
 type ProblemListItemProps = {
@@ -41,7 +42,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
       <table className="min-w-full table-auto">
         <thead className="border-b">
           <tr>
-            {["Title", "Hints", "Level", "Category"].map((header, index) => (
+            {["Status", "Title", "Hints", "Level", "Category"].map((header, index) => (
               <th
                 key={index}
                 className="px-4 py-2 text-left cursor-pointer text-gray2"
@@ -67,24 +68,24 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
         </thead>
         <tbody>
           {sortedData.map((row, index) => (
-            <tr
-              key={index}
+            <tr 
+              key={index} 
               className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
               onClick={() => handleProblemListItemClicked(row.problemId)}
-            >
-              {/* <td className="w-12 px-4 py-2 text-center">
-                {row.status === "solved" ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
-              </td> */}
+              >
+              <td className="w-12 py-2 pl-8 text-center">
+                {row.done === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+              </td>
               <td className="w-2/6 px-4 py-2 font-semibold">{row.problemName}</td>
               <td className="w-20 px-4 py-2 font-semibold text-center">
                 {row.hintCount > 0 ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
               <td
                 className={`px-4 py-2 w-28 font-semibold ${
-                  row.level === "Easy" ? "text-appEasy" : row.level === "Medium" ? "text-appMedium" : "text-appHard"
+                  row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"
                 }`}
               >
-                {row.level}
+                {capitalizeFirstLetter(row.level)}
               </td>
               <td className="w-2/5 px-4 py-2">{row.categories.join(", ")}</td>
             </tr>
