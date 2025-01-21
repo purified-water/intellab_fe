@@ -34,6 +34,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
   });
 
   const handleProblemListItemClicked = (problemId: string) => {
+    console.log("Problem ID", problemId);
     navigate(`/problems/${problemId}`);
   };
 

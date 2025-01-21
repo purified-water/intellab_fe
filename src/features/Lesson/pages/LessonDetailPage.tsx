@@ -8,8 +8,7 @@ import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { Button } from "@/components/ui/shadcn/Button";
-import { MarkdownRender } from "../components/MarkdownRender2";
+import { MarkdownRender } from "../components/MarkdownRender";
 // import { MarkdownRender } from "../components/MarkdownRender";
 
 export const LessonDetailPage = () => {
@@ -74,11 +73,14 @@ export const LessonDetailPage = () => {
     }
   };
 
-  const handleLessonDoneCallback = async (isCorrect: boolean) => {
+  const updateTheoryDone = async () => {
     // setIsCorrect(isCorrect);
     try {
-      if (isCorrect || (!hasQuiz && isScrolledToBottom)) {
+      console.log("Has quiz", hasQuiz);
+      // if not quiz, mark as done when scrolled to bottom
+      if (!hasQuiz && isScrolledToBottom) {
         await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);
+        console.log("Mark as done");
         // Remove bookmark after lesson is done
         clearBookmark(userId!, lesson!.lessonId!);
 
@@ -108,7 +110,9 @@ export const LessonDetailPage = () => {
   // };
 
   const navigateToNextLesson = () => {
+
     if (lesson?.nextLessonId) {
+      console.log("Has next lesson");
       // setIsCorrect(null);
       setIsLessonDone(false);
       setIsScrolledToBottom(false);
@@ -141,9 +145,7 @@ export const LessonDetailPage = () => {
   }, [id]);
 
   useEffect(() => {
-    if (!hasQuiz && isScrolledToBottom) {
-      handleLessonDoneCallback(true); // If no quiz, mark lesson as done when scrolled to bottom
-    }
+    updateTheoryDone();
   }, [hasQuiz, isScrolledToBottom]);
 
   const renderCourseName = () => {
@@ -233,6 +235,8 @@ export const LessonDetailPage = () => {
   };
 
   const renderQuizPage = () => {
+    if (!lesson?.exerciseId) return null;
+
     return (
       <div className="flex-col items-center justify-center">
         <div className="mb-6 text-2xl font-bold">Pass the quiz to complete this theory lesson</div>

@@ -14,7 +14,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/DropdownMenu";
-import { LanguageCodes } from "../../constants/LanguageCodes";
+import { DEFAULT_LANGUAGE_CODE, LanguageCodes } from "../../constants/LanguageCodes";
 import { LanguageCodeType } from "../../types/LanguageCodeType";
 
 interface RenderPGTabsProps {
@@ -23,12 +23,8 @@ interface RenderPGTabsProps {
 
 export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Solution");
-  const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Javascript);
-  const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>({
-    id: 97,
-    name: "JavaScript (Node.js 20.17.0)",
-    is_archived: false
-  });
+  const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
+  const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
   const [code, setCode] = useState("");
 
   useEffect(() => {

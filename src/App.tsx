@@ -15,6 +15,7 @@ import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
+import { Toaster } from "@/components/ui/shadcn/toaster";
 
 // Layout component to include conditional Navbar
 const Layout = () => {
@@ -95,6 +96,7 @@ function App() {
   return (
     <React.StrictMode>
       <RouterProvider router={router} />
+      <Toaster />
     </React.StrictMode>
   );
 }

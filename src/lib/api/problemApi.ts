@@ -19,12 +19,12 @@ export const problemAPI = {
     code: string,
     programmingLanguage: string,
     problemId: string,
-    userUid: string
+    userUid: string = "6eaea212-5351-45c3-3a53-9c9b9a407e1e" // TEMPORARY waiting to change to userId
   ) => {
-    const response = await apiClient.post(`problem/submissions`, {
+    const response = await apiClient.post(`problem/problem-submissions`, {
       submit_order: submitOrder,
       code: code,
-      programming_langugage: programmingLanguage,
+      programming_language: programmingLanguage,
       problem: { problemId },
       userUid
     });

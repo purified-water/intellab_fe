@@ -1,5 +1,11 @@
 import { LanguageCodeType } from "../types/LanguageCodeType";
 
+export const DEFAULT_LANGUAGE_CODE = {
+  id: 71,
+  name: "Python (3.8.1)",
+  is_archived: false
+};
+
 export const LanguageCodes: LanguageCodeType[] = [
   // {
   //   id: 104,

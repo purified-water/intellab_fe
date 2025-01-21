@@ -48,8 +48,8 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonsAfterEnroll: async (courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me`, {
+  getLessonsAfterEnroll: async (userId: string, courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me/${userId}`, {
       params: {
         page,
         size

@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { TestCaseType } from "../types/TestCaseType";
+import { useToast } from "@/hooks/use-toast";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -32,6 +34,8 @@ export const ProblemDetail = () => {
   const lessonId = searchParams.get("lessonId");
   const lessonName = searchParams.get("lessonName");
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const userId = getUserIdFromLocalStorage();
+  const { toast } = useToast();
 
   const fetchProblemDetail = async () => {
     try {
@@ -48,11 +52,25 @@ export const ProblemDetail = () => {
       console.error("Failed to fetch problem detail", error);
     }
   };
-
-  const handleRunCode = () => {
+  const handleRunCode = async () => {
+    console.log("code and language", code, language);
+  }
+  const handleSubmitCode = async () => {
     // TO DO: Implement this function
     console.log("code and language", code, language);
-    // TO DO: MATCH THE LANGUAGE WITH THE JUDGE0 LANGUAGE
+    try {
+      if (problemId && userId) {
+        const reponse = await problemAPI.createSubmission(1, code, language, problemId!);
+        console.log("response after submit", reponse);
+      }
+    } catch (error) {
+      console.log("Failed to run code", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to run code",
+      })
+
+    }
   };
 
   useEffect(() => {
@@ -62,11 +80,12 @@ export const ProblemDetail = () => {
     }
   }, [problemId]);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate(`/course/${courseId}`);
-    }
-  }, [isAuthenticated]);
+  // WAIT for isPrivate problem to redirect user, now problem is open to all
+  // useEffect(() => {
+  //   if (!isAuthenticated) {
+  //     navigate(`/course/${courseId}`);
+  //   }
+  // }, [isAuthenticated]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -131,7 +150,9 @@ export const ProblemDetail = () => {
             Run Code
           </Button>
 
-          <Button className="font-semibold text-appAccent bg-appFadedAccent gap-x-1 hover:opacity-80 hover:bg-appFadedAccent">
+          <Button
+            onClick={handleSubmitCode}
+            className="font-semibold text-appAccent bg-appFadedAccent gap-x-1 hover:opacity-80 hover:bg-appFadedAccent">
             <FaUpload className="inline-block icon-sm icon-appAccent" />
             Submit
           </Button>
