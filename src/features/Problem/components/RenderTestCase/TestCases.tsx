@@ -34,7 +34,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
 
     return (
       <div className="test-case-content">
-        <div className="flex flex-col mb-2" key={"hi"}>
+        <div className="flex flex-col mb-2" key={selectedTestCase.testCaseId}>
           <div className="mb-1 text-sm">Inputs =</div>
           <div className="w-full px-4 py-1 rounded-lg bg-gray5">
             <pre className="text-base">{selectedTestCase.input}</pre>

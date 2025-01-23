@@ -76,7 +76,9 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonQuiz: async (lessonId: string, numberOfQuestion: number = 10, isGetAssignment: boolean = false) => {
+  getLessonQuiz: async (lessonId: string, numberOfQuestion: number = 10, isGetAssignment: number | null) => {
+    // isGetAssignment = 1 to get quiz with options that has passed or failed
+    // isGetAssignment = 0 | null to get quiz first time
     const response = await apiClient.get(
       `/course/lessons/${lessonId}/quiz?numberOfQuestions=${numberOfQuestion}&isGetAssignment=${isGetAssignment}`
     );

@@ -6,16 +6,14 @@ import { Button } from "@/components/ui/Button";
 import { useEffect } from "react";
 import { courseAPI } from "@/lib/api";
 import { useParams } from "react-router-dom";
-import { IQuiz } from "../types/QuizType";
+import { IQuiz, IQuizResponse } from "../types/QuizType";
 import { QuizHeader } from "../components/QuizHeader";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { saveQuizDraft, loadQuizDraft, clearQuizDraft } from "@/utils/courseLocalStorage";
 import { getUserIdFromLocalStorage } from "@/utils";
-// TO DO: Muốn hiển thị result thôi thì nên truyền isTheoryDone vào nữa, nếu done rồi thì không cho submit nữa
-// IsTheoryDone Null là chưa có làm j hết
-// True là có làm và đạt
-// False là có làm mà chưa xong hoặc chưa đạt
+import { calculateUserScore } from "../utils/CalculateQuizScore";
+
 export const LessonQuiz = () => {
   const [selectedAnswers, setSelectedAnswers] = useState<Record<string, number | null>>();
   const [quizzes, setQuizzes] = useState<IQuiz[]>([]);
@@ -28,31 +26,47 @@ export const LessonQuiz = () => {
   const [searchParams] = useSearchParams();
   const courseId = searchParams.get("courseId");
   const learningId = searchParams.get("learningId");
+  const isDone = searchParams.get("isDone");
   const navigate = useNavigate();
   const NUMBER_OF_QUESTIONS = 10;
   const userId = getUserIdFromLocalStorage();
+  const [userGrade, setUserGrade] = useState<number | null>(null);
 
   const handleAnswerSelection = (questionId: string, order: number) => {
     setSelectedAnswers((prev) => {
       const updatedAnswers = { ...prev, [questionId]: order };
-      if (lessonId) {
-        saveQuizDraft(lessonId, updatedAnswers); // Save using the utility
-      }
+      saveQuizDraft(lessonId!, updatedAnswers);
       return updatedAnswers;
     });
+    console.log("selectedAnswers", selectedAnswers);
   };
 
-  const fetchQuizzes = async () => {
+  const fetchQuizzes = async (isDone: number | null) => {
     setIsLoading(true);
     try {
       if (!lessonId) return;
-      const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, false); // False to get quiz first time
+      const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, isDone); // False to get quiz first time
       const result = response.result;
-      // console.log("Quizzes", result);
+      console.log("Quizzes", result);
       setQuizzes(result);
-      const savedDraft = loadQuizDraft(lessonId);
-      if (savedDraft && Object.keys(savedDraft).length > 0) {
-        setSelectedAnswers(savedDraft);
+
+      // Handle when fix the error of options order is null when isDone is true
+      // if (isDone !== null) {
+      //   setSubmittedAnswers(Object.fromEntries(result.map((quiz: IQuizResponse) => [quiz.questionId, quiz.answer])));
+      // }
+      // Handle when havent fixed the error
+      // const savedDraft = loadQuizDraft(lessonId);
+      // if (savedDraft && Object.keys(savedDraft).length > 0) {
+      //   setSelectedAnswers(savedDraft);
+      // }
+
+      if (isDone !== null) {
+        console.log("isDone is not null, processing result:", result);
+        const updatedAnswers = Object.fromEntries(
+          result.map((quiz: IQuizResponse) => [quiz.questionId.toString(), parseInt(quiz.answer)])
+        );
+
+        setSelectedAnswers(updatedAnswers);
       } else {
         setSelectedAnswers(Object.fromEntries(result.map((quiz: IQuiz) => [quiz.questionId, null])));
       }
@@ -74,42 +88,46 @@ export const LessonQuiz = () => {
       };
     });
 
-    // console.log("assignmentDetailRequests", assignmentDetailRequests);
+    console.log("assignmentDetailRequests", assignmentDetailRequests);
     try {
-      const response = await courseAPI.postSubmitQuiz(lessonId, {
+      await courseAPI.postSubmitQuiz(lessonId, {
         score: correctAnswersCount,
         exerciseId: quizId ?? "",
         learningId: learningId,
         assignmentDetailRequests
       });
-
-      console.log("response after submit", response);
     } catch (error) {
       console.error("Failed to submit quiz", error);
     }
-    // console.log("response", response);
   };
 
   const handleSubmit = () => {
-    const results: Record<string, boolean> = {};
-    quizzes.forEach((quiz) => {
-      results[quiz.questionId] = (selectedAnswers?.[quiz.questionId] ?? "").toString() == quiz.correctAnswer;
-    });
-    setSubmittedAnswers(results);
+    console.log("Selected answers", selectedAnswers);
+    const { userGrade, correctAnswersCount, results } = calculateUserScore(selectedAnswers ?? {}, quizzes);
 
-    const correctAnswersCount = Object.values(results).filter((result) => result).length;
+    setSubmittedAnswers(results);
+    setUserGrade(userGrade);
     setIsSubmitted(true);
+
     if (correctAnswersCount / quizzes.length >= 0.7) {
       setIsCorrect(true);
       handlePostSubmitQuiz(correctAnswersCount);
-      // Call update theory done here
 
       // Update theory done
       courseAPI.updateTheoryDone(learningId!, courseId!, userId!);
     } else {
       setIsCorrect(false);
+      handlePostSubmitQuiz(correctAnswersCount);
     }
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const loadDraft = () => {
+    const savedDraft = loadQuizDraft(lessonId!);
+
+    if (savedDraft) {
+      setSelectedAnswers(savedDraft);
+    }
   };
 
   const handleRetryOrFinish = () => {
@@ -121,35 +139,47 @@ export const LessonQuiz = () => {
       setSelectedAnswers(Object.fromEntries(quizzes.map((quiz: IQuiz) => [quiz.questionId, null])));
       clearQuizDraft(lessonId!);
 
-      fetchQuizzes();
+      fetchQuizzes(0);
     }
   };
 
   useEffect(() => {
-    fetchQuizzes();
-
-    const savedDraft = loadQuizDraft(lessonId!);
-    console.log("savedDraft", savedDraft);
-    if (savedDraft) {
-      setSelectedAnswers(savedDraft);
+    // Implement after fixing the error: options order is null when fetching quizzes after user has passed it
+    if (isDone === "true") {
+      fetchQuizzes(1);
+    } else if (isDone === "false") {
+      fetchQuizzes(1);
+    } else {
+      fetchQuizzes(0);
+      loadDraft();
     }
-  }, []);
+  }, [isDone]);
+
+  useEffect(() => {
+    if (selectedAnswers && isDone === "true") {
+      const { userGrade, correctAnswersCount, results } = calculateUserScore(selectedAnswers, quizzes);
+      setSubmittedAnswers(results);
+      if (correctAnswersCount / quizzes.length >= 0.7) {
+        setIsSubmitted(true);
+        setIsCorrect(true);
+        setUserGrade(userGrade);
+      }
+    }
+  }, [selectedAnswers, isDone]);
 
   const renderReturnToLesson = () => {
     if (!lessonId) return;
 
     return (
-      <div className="flex items-center gap-2 mx-8 mt-4 cursor-pointer" onClick={() => {
-        navigate(`/course/${courseId}`);
-        console.log("Return to lesson");
-        }}>
+      <div
+        className="flex items-center gap-2 mx-8 mt-4 cursor-pointer"
+        onClick={() => {
+          navigate(`/course/${courseId}`);
+        }}
+      >
         <ChevronLeft className="text-appPrimary" size={22} />
-        <div
-          className="text-xl font-bold text-appPrimary"
-        >
-          Return to lesson
-        </div>
-      </div >
+        <div className="text-xl font-bold text-appPrimary">Return to lesson</div>
+      </div>
     );
   };
 
@@ -185,7 +215,11 @@ export const LessonQuiz = () => {
   const renderQuizContent = () => {
     return (
       <>
-        {isSubmitted ? <QuizResult isCorrect={isCorrect} onClick={handleRetryOrFinish} /> : <QuizHeader />}
+        {isSubmitted ? (
+          <QuizResult isCorrect={isCorrect} onClick={handleRetryOrFinish} grade={userGrade} />
+        ) : (
+          <QuizHeader />
+        )}
         <div className="w-full max-w-3xl p-6">
           {/* Questions */}
           <div className="">
@@ -205,6 +239,7 @@ export const LessonQuiz = () => {
                         checked={selectedAnswers?.[quiz.questionId] === option.order}
                         onChange={() => handleAnswerSelection(quiz.questionId, option.order)}
                         className="w-4 h-4 rounded-full appearance-none cursor-pointer bg-gray5 checked:bg-appPrimary"
+                        disabled={isSubmitted}
                       />
                       <label htmlFor={`quiz-${quiz.questionId}-option-${option.order}`} className="cursor-pointer">
                         {option.content}
@@ -212,10 +247,12 @@ export const LessonQuiz = () => {
                     </li>
                   ))}
                 </ul>
-                {submittedAnswers[quiz.questionId] !== undefined && (
+
+                {submittedAnswers[quiz.questionId] !== undefined && submittedAnswers[quiz.questionId] !== null && (
                   <div
-                    className={`my-2 px-4 py-2 rounded-lg text-sm ${submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
-                      }`}
+                    className={`my-2 px-4 py-2 rounded-lg text-sm ${
+                      submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
+                    }`}
                   >
                     {submittedAnswers[quiz.questionId] ? (
                       <span className="font-bold">Correct</span>
@@ -231,19 +268,17 @@ export const LessonQuiz = () => {
           </div>
 
           {/* Submit Button */}
-          <div className="flex items-center mt-6 space-x-4">
-            <Button
-              onClick={handleSubmit}
-              disabled={Object.values(selectedAnswers ?? {}).some((answer) => answer == null)}
-              className="h-10 px-6 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80 disabled:bg-gray5 disabled:text-gray3"
-            >
-              Submit
-            </Button>
-
-            <Button className="h-10 bg-white border rounded-lg border-appPrimary text-appPrimary hover:bg-appPrimary hover:text-white">
-              Save as draft
-            </Button>
-          </div>
+          {isDone !== "true" && (
+            <div className="flex items-center mt-6 space-x-4">
+              <Button
+                onClick={handleSubmit}
+                disabled={Object.values(selectedAnswers ?? {}).some((answer) => answer == null)}
+                className="h-10 px-6 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80 disabled:bg-gray5 disabled:text-gray3"
+              >
+                Submit
+              </Button>
+            </div>
+          )}
         </div>
       </>
     );
