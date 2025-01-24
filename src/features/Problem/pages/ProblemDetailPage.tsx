@@ -84,6 +84,7 @@ export const ProblemDetail = () => {
         variant: "destructive",
         description: "Failed to run code"
       });
+
       setIsSubmitting(false);
     }
   };

@@ -5,7 +5,6 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "@/utils";
-import { DEFAULT_COURSE } from "@/constants/defaultData";
 
 interface YourCourseCardProps {
   courseId: string;
@@ -70,21 +69,18 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
           >
             {courseDetail?.description}
           </p>
-          <ProgressBar
-            progress={courseDetail ? courseDetail.progressPercent : DEFAULT_COURSE.progressPercent}
-            showText={false}
-            height={5}
-          />
         </div>
-
-        <div className="flex justify-between mt-2">
-          <button
-            className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
-            onClick={handleContinueCourse}
-          >
-            {isFinished ? "View certificate" : "Continue"}
-          </button>
-          <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
+        <div>
+          {courseDetail && <ProgressBar progress={courseDetail.progressPercent} showText={false} height={5} />}
+          <div className="flex justify-between mt-2">
+            <button
+              className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
+              onClick={handleContinueCourse}
+            >
+              {isFinished ? "View certificate" : "Continue"}
+            </button>
+            <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
+          </div>
         </div>
       </>
     );

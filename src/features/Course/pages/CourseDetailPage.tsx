@@ -124,17 +124,14 @@ export const CourseDetailPage = () => {
 
   const renderHeader = () => {
     return (
-      <Header
-        title={course?.courseName ?? DEFAULT_COURSE.courseName}
-        description={course?.description ?? DEFAULT_COURSE.description}
-        isEnrolled={course?.userEnrolled ?? DEFAULT_COURSE.userEnrolled}
-        rating={course?.averageRating ?? DEFAULT_COURSE.averageRating}
-        reviews={course?.reviewCount ?? DEFAULT_COURSE.reviewCount}
-        progress={course?.progressPercent ?? DEFAULT_COURSE.progressPercent}
-        onEnroll={handleEnrollClick}
-        onContinue={handleContinueClick}
-        onViewCertificate={handleViewCertificateClick}
-      />
+      course && (
+        <Header
+          course={course!}
+          onEnroll={handleEnrollClick}
+          onContinue={handleContinueClick}
+          onViewCertificate={handleViewCertificateClick}
+        />
+      )
     );
   };
 
