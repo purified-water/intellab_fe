@@ -54,7 +54,7 @@ export const ProblemDetail = () => {
   };
   const handleRunCode = async () => {
     console.log("code and language", code, language);
-  }
+  };
   const handleSubmitCode = async () => {
     // TO DO: Implement this function
     console.log("code and language", code, language);
@@ -67,9 +67,8 @@ export const ProblemDetail = () => {
       console.log("Failed to run code", error);
       toast({
         variant: "destructive",
-        description: "Failed to run code",
-      })
-
+        description: "Failed to run code"
+      });
     }
   };
 
@@ -152,7 +151,8 @@ export const ProblemDetail = () => {
 
           <Button
             onClick={handleSubmitCode}
-            className="font-semibold text-appAccent bg-appFadedAccent gap-x-1 hover:opacity-80 hover:bg-appFadedAccent">
+            className="font-semibold text-appAccent bg-appFadedAccent gap-x-1 hover:opacity-80 hover:bg-appFadedAccent"
+          >
             <FaUpload className="inline-block icon-sm icon-appAccent" />
             Submit
           </Button>

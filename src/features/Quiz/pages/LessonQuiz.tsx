@@ -139,17 +139,16 @@ export const LessonQuiz = () => {
     if (!lessonId) return;
 
     return (
-      <div className="flex items-center gap-2 mx-8 mt-4 cursor-pointer" onClick={() => {
-        navigate(`/course/${courseId}`);
-        console.log("Return to lesson");
-        }}>
+      <div
+        className="flex items-center gap-2 mx-8 mt-4 cursor-pointer"
+        onClick={() => {
+          navigate(`/course/${courseId}`);
+          console.log("Return to lesson");
+        }}
+      >
         <ChevronLeft className="text-appPrimary" size={22} />
-        <div
-          className="text-xl font-bold text-appPrimary"
-        >
-          Return to lesson
-        </div>
-      </div >
+        <div className="text-xl font-bold text-appPrimary">Return to lesson</div>
+      </div>
     );
   };
 
@@ -214,8 +213,9 @@ export const LessonQuiz = () => {
                 </ul>
                 {submittedAnswers[quiz.questionId] !== undefined && (
                   <div
-                    className={`my-2 px-4 py-2 rounded-lg text-sm ${submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
-                      }`}
+                    className={`my-2 px-4 py-2 rounded-lg text-sm ${
+                      submittedAnswers[quiz.questionId] ? "bg-green-50 text-appEasy" : "bg-red-50 text-appHard"
+                    }`}
                   >
                     {submittedAnswers[quiz.questionId] ? (
                       <span className="font-bold">Correct</span>

@@ -1,15 +1,11 @@
 import { Separator } from "@/components/ui/Separator";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { Progress } from "@/types";
 
 export const ProgressCircle = () => {
-  // NOTE: Fetch user's progress
-  const totalQuestions = 100;
-  const easySolved = 10;
-  const mediumSolved = 10;
-  const hardSolved = 5;
-
-  const easyMax = 50;
-  const mediumMax = 30;
-  const hardMax = 20;
+  const progress = useSelector((state: RootState) => state.user.progress) as Progress; // Type casting to make sure it's not null
+  const { totalQuestions, easySolved, mediumSolved, hardSolved, easyMax, mediumMax, hardMax } = progress;
 
   const totalSolved = easySolved + mediumSolved + hardSolved;
   const totalPercentage = Math.round((totalSolved / totalQuestions) * 100);

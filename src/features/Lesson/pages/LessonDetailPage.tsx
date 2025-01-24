@@ -110,7 +110,6 @@ export const LessonDetailPage = () => {
   // };
 
   const navigateToNextLesson = () => {
-
     if (lesson?.nextLessonId) {
       console.log("Has next lesson");
       // setIsCorrect(null);

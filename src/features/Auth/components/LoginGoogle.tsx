@@ -2,15 +2,30 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/features/Auth/firebase/firebaseAuth";
 import { FcGoogle } from "rocketicons/fc";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "@/lib/api";
+import { authAPI, userAPI } from "@/lib/api";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
+import { setUser, setProgress } from "@/redux/user/userSlice";
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const handleGetUser = async (userId: string) => {
+    const user = await userAPI.getUser(userId);
+    if (user) {
+      dispatch(setUser(user));
+    }
+  };
+
+  const handleGetProgress = async (userId: string) => {
+    const progress = await userAPI.getProgress(userId);
+    if (progress) {
+      dispatch(setProgress(progress));
+    }
+  };
 
   const handleGoogleLogin = async () => {
     try {
@@ -28,6 +43,8 @@ const GoogleLogin = () => {
         }
 
         localStorage.setItem("userId", userId);
+        await handleGetUser(userId);
+        await handleGetProgress(userId);
         dispatch(loginSuccess());
         navigate("/");
       }

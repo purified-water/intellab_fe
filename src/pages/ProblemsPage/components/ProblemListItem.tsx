@@ -69,11 +69,11 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
         </thead>
         <tbody>
           {sortedData.map((row, index) => (
-            <tr 
-              key={index} 
+            <tr
+              key={index}
               className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
               onClick={() => handleProblemListItemClicked(row.problemId)}
-              >
+            >
               <td className="w-12 py-2 pl-8 text-center">
                 {row.done === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
