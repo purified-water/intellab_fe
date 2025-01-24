@@ -7,7 +7,7 @@ interface TestCasesProps {
 
 export const TestCases = ({ testCases }: TestCasesProps) => {
   const [activeTab, setActiveTab] = useState(0); // Track the active tab
-  console.log("testCases in Testcases", testCases);
+  // console.log("testCases in Testcases", testCases);
   const renderTabs = () => {
     return (
       <div className="flex mb-4 gap-x-2 text-gray3 hover:cursor-pointer">
@@ -30,7 +30,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
     }
     const selectedTestCase = testCases[activeTab];
 
-    console.log("selectedTestCase", selectedTestCase);
+    // console.log("selectedTestCase", selectedTestCase);
 
     return (
       <div className="test-case-content">

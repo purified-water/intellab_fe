@@ -1,16 +1,21 @@
 import { useState } from "react";
 import { ProblemDescription } from "./ProblemDescription";
 import { ProblemType } from "@/types/ProblemType";
+import { TestCaseType } from "../../types/TestCaseType";
+import { SubmissionInformation } from "./SubmissionInformation";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
   courseId: string | null;
   courseName: string | null;
   lessonId: string | null;
   lessonName: string | null;
+  testCases?: TestCaseType[];
+  testCasesOutput?: TestCaseType[];
+  isPassed?: boolean | null;
 }
 
 export const RenderDescTabs = (props: RenderDescTabsProps) => {
-  const { problemDetail, courseId, courseName, lessonId, lessonName } = props;
+  const { problemDetail, courseId, courseName, lessonId, lessonName, isPassed } = props;
   const [desActive, setDesActive] = useState("Description");
 
   const renderDescriptionTabButton = (tabName: string) => {
@@ -46,6 +51,10 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         return <div>Submissions</div>;
       case "Hints":
         return <div>Hints</div>;
+      case "Failed":
+        return <SubmissionInformation isPassed={false} />;
+      case "Passed":
+        return <SubmissionInformation isPassed={true} />;
     }
   };
 
@@ -59,6 +68,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         {renderDescriptionTabButton("Comments")}
         {renderDescriptionTabButton("Submissions")}
         {renderDescriptionTabButton("Hints")}
+        {isPassed !== null && (isPassed ? renderDescriptionTabButton("Passed") : renderDescriptionTabButton("Failed"))}
       </div>
       {renderDescriptionTabContent()}
     </>

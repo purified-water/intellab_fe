@@ -7,3 +7,8 @@ export interface ProblemState {
   totalPages: number;
   pageSize: number; // Default page size
 }
+export interface UserCodeState {
+  codeByProblemId: {
+    [problemId: string]: { code: string; language: string };
+  };
+}

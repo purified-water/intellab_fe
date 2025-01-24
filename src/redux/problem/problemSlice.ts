@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { ProblemState } from "./problemType";
+import { ProblemState, UserCodeState } from "./problemType";
 import { problemAPI } from "@/lib/api/problemApi";
-
 // Async thunk for fetching paginated problems
 interface FetchPaginatedProblemsParams {
   keyword: string;
@@ -57,5 +56,28 @@ const problemSlice = createSlice({
   }
 });
 
+const initialUserCodeState: UserCodeState = {
+  codeByProblemId: {} // Structure: { problemId: { code: "userCode", language: "language" } }
+};
+
+// New slice for user code
+const userCodeSlice = createSlice({
+  name: "userCode",
+  initialState: initialUserCodeState,
+  reducers: {
+    saveCode: (state, action) => {
+      const { problemId, code, language } = action.payload;
+      state.codeByProblemId[problemId] = { code, language };
+    }
+  }
+});
+
+// Selector to retrieve the code by problemId
+export const selectCodeByProblemId = (state: { userCode: UserCodeState }, problemId: string) =>
+  state.userCode.codeByProblemId[problemId] || { code: "", language: "" };
+
 export const { setPage } = problemSlice.actions;
+export const { saveCode } = userCodeSlice.actions;
+export const userCodeReducer = userCodeSlice.reducer;
+
 export default problemSlice.reducer;
