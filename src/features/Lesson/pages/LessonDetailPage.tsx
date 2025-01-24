@@ -62,13 +62,14 @@ export const LessonDetailPage = () => {
       const { result } = response;
 
       console.log("Lesson detail", result);
-      // setNextLessonOrder(result.lessonOrder! + 1);
-      setLesson(result);
-
-      if (lesson?.exerciseId) {
+      if (result.exerciseId) {
         setHasQuiz(true);
       }
-
+      if (result.isDoneTheory) {
+        setIsLessonDone(true);
+      }
+      // setNextLessonOrder(result.lessonOrder! + 1);
+      setLesson(result);
       setLoading(false);
     }
   };
@@ -242,10 +243,12 @@ export const LessonDetailPage = () => {
         <div
           className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
           onClick={() =>
-            navigate(`quiz/${lesson?.exerciseId}?learningId=${lesson?.learningId}&courseId=${lesson?.courseId}`)
+            navigate(
+              `quiz/${lesson?.exerciseId}?learningId=${lesson?.learningId}&courseId=${lesson?.courseId}&isDone=${lesson?.isDoneTheory}`
+            )
           }
         >
-          <p>Continue to the quiz page</p>
+          {lesson.isDoneTheory ? <p>View your quiz result</p> : <p>Continue to the quiz page</p>}
           <div className="ml-auto">
             <ChevronRight style={{ color: "gray" }} size={22} />
           </div>
@@ -263,7 +266,7 @@ export const LessonDetailPage = () => {
           {renderCourseName()}
           {renderContent()}
           {renderQuizPage()}
-          <div className="text-2xl font-bold">What's next?</div>
+          {isLessonDone && <div className="text-2xl font-bold">What's next?</div>}
           {renderProblem()}
           {renderNextLesson()}
           {renderFinishLesson()}

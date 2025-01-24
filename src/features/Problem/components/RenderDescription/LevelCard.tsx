@@ -5,7 +5,7 @@ interface LevelCardProps {
   level: string;
 }
 
-export const LevelCard: React.FC<LevelCardProps> = ({ level }) => {
+export const LevelCard = ({ level }: LevelCardProps) => {
   if (!level) return null;
 
   const getColor = () => {

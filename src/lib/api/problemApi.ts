@@ -29,5 +29,17 @@ export const problemAPI = {
       userUid
     });
     return response.data;
+  },
+  getUpdateSubmission: async (submissionId: string) => {
+    const response = await apiClient.post(`problem/problem-submissions/update/${submissionId}`);
+    return response.data;
+  },
+  getProblemTestCases: async (problemId: string) => {
+    const response = await apiClient.get(`problem/test-case/problem/${problemId}`);
+    return response.data;
+  },
+  getTestCaseDetail: async (testCaseId: string) => {
+    const response = await apiClient.get(`problem/test-case/${testCaseId}`);
+    return response.data;
   }
 };
