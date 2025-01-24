@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
-import { filterCourses, resetFilters } from "@/redux/course/courseSlice";
+import { fetchExploreCourses, filterCourses, resetFilters } from "@/redux/course/courseSlice";
+import { useAppDispatch } from "@/redux/hooks";
 
 export interface PriceRange {
   min: number;
@@ -13,32 +13,36 @@ const FilterComponent: React.FC = () => {
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<PriceRange>({ min: 1, max: 1000000 });
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const categories = [
-    "Sorting",
-    "Search",
-    "Graph",
-    "Dynamic Programming",
-    "Greedy",
-    "Backtracking",
-    "Divide and Conquer",
-    "Recursion",
-    "Machine Learning",
-    "Deep Learning",
-    "Genetic Algorithms",
-    "Pathfinding",
-    "String Matching",
-    "Compression",
-    "Hashing",
-    "Clustering",
-    "Recommendation Systems",
-    "Reinforcement Learning",
-    "Simulated Annealing",
-    "Monte Carlo",
+    "Recursive",
     "Queue",
-    "Stack",
-    "Linked List"
+    "Data Structure",
+    "Problem Solving",
+    "Matrix",
+    "Algorithm",
+    "Array",
+    "Dynamic Programming"
   ];
+  // const categories = [
+  //   "Sorting",
+  //   "Search",
+  //   "Graph",
+  //   "Dynamic Programming",
+  //   "Greedy",
+  //   "Backtracking",
+  //   "Divide and Conquer",
+  //   "Recursion",
+  //   "Genetic Algorithms",
+  //   "Pathfinding",
+  //   "String Matching",
+  //   "Compression",
+  //   "Hashing",
+  //   "Clustering",
+  //   "Queue",
+  //   "Stack",
+  //   "Linked List"
+  // ];
 
   const ratings = [
     { label: "All", value: "0", count: 0 },
@@ -68,6 +72,7 @@ const FilterComponent: React.FC = () => {
   };
 
   const handleFilter = () => {
+    dispatch(fetchExploreCourses(selectedCategories));
     dispatch(filterCourses({ selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange }));
   };
 

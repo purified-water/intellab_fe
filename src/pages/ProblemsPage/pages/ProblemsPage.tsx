@@ -10,11 +10,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Spinner from "@/components/ui/Spinner";
 import { motion } from "framer-motion";
 import FilterComponent from "@/pages/ProblemsPage/components/FilterComponent";
+import Pagination from "@/components/ui/Pagination";
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();
   // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const problems = useSelector((state: RootState) => state.problem.problems);
+  const currentPage = useSelector((state: RootState) => state.problem.currentPage);
+  const totalPages = useSelector((state: RootState) => state.problem.totalPages);
   const status = useSelector((state: RootState) => state.problem.status);
   const navigate = useNavigate();
   const location = useLocation();
@@ -117,7 +120,18 @@ export const ProblemsPage = () => {
                 <div>Improve your problem solving skills here!</div>
               </div>
             )}
-            <div className="w-full px-10">{<ProblemListItem problems={problems} />}</div>
+            <div className="flex flex-col w-full px-10">
+              <ProblemListItem problems={problems} />
+              {totalPages != 0 && (
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={(page: number) =>
+                    dispatch(fetchPaginatedProblems({ keyword: "", page: page, size: 20 }))
+                  }
+                />
+              )}
+            </div>
           </div>
         )}
       </motion.div>

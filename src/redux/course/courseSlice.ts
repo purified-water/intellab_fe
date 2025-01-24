@@ -1,7 +1,8 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CourseState, ReduxCourse } from "./courseType";
 import { ICourse } from "@/features/Course/types";
 import { PriceRange } from "@/pages/ExplorePage/components/FilterComponent";
+import { apiClient } from "@/lib/api/apiClient";
 
 const initialState: CourseState = {
   courses: [],
@@ -9,6 +10,28 @@ const initialState: CourseState = {
   originalExploreCourses: [],
   hasFilter: false
 };
+
+// Async thunk để gọi API
+export const fetchExploreCourses = createAsyncThunk(
+  "course/fetchExploreCourses",
+  async (selectedCourseIds: string[], { dispatch }) => {
+    try {
+      // Gọi API với danh sách courseId được chọn
+      const response = await apiClient.get("course/courses", {
+        params: { category: selectedCourseIds.join(",") } // Định dạng tham số truy vấn
+      });
+
+      // Kết quả trả về
+      const courses = response.data.result.content;
+      console.log("COURSES", courses);
+      // Lưu vào state
+      dispatch(courseSlice.actions.setExploreCourses(courses));
+    } catch (error) {
+      console.error("Lỗi khi gọi API fetchExploreCourses:", error);
+      throw error;
+    }
+  }
+);
 
 // Slice definition
 const courseSlice = createSlice({
@@ -49,6 +72,10 @@ const courseSlice = createSlice({
     resetFilters: (state) => {
       state.exploreCourses = state.originalExploreCourses; // Reset to the original list
       state.hasFilter = false;
+    },
+
+    setExploreCourses: (state, action: PayloadAction<ICourse[]>) => {
+      state.originalExploreCourses = action.payload;
     },
 
     filterCourses: (

@@ -8,29 +8,14 @@ export interface PriceRange {
 const FilterComponent: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const categories = [
-    "Sorting",
-    "Search",
-    "Graph",
-    "Dynamic Programming",
-    "Greedy",
-    "Backtracking",
-    "Divide and Conquer",
-    "Recursion",
-    "Machine Learning",
-    "Deep Learning",
-    "Genetic Algorithms",
-    "Pathfinding",
-    "String Matching",
-    "Compression",
-    "Hashing",
-    "Clustering",
-    "Recommendation Systems",
-    "Reinforcement Learning",
-    "Simulated Annealing",
-    "Monte Carlo",
+    "Recursive",
     "Queue",
-    "Stack",
-    "Linked List"
+    "Data Structure",
+    "Problem Solving",
+    "Matrix",
+    "Algorithm",
+    "Array",
+    "Dynamic Programming"
   ];
 
   const handleCategoryClick = (topic: string) => {
