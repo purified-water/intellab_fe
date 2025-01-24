@@ -1,4 +1,4 @@
-import { TestCaseType, TestCaseOutputType } from "./TestCaseType";
+import { TestCaseType, TestCaseResultWithIO, TestCaseAfterSubmit } from "./TestCaseType";
 export interface ProblemType {
   problemId: string;
   problemName: string;
@@ -32,7 +32,7 @@ export interface SendSubmissionType {
   score_achieved: number;
   problem: ProblemType;
   userUid: string;
-  testCases_output: TestCaseOutputType[];
+  testCases_output: TestCaseResultWithIO[];
 }
 
 export interface SubmissionTypeNoProblem {
@@ -42,5 +42,5 @@ export interface SubmissionTypeNoProblem {
   programming_language: string;
   score_achieved: number;
   userUid: string;
-  testCases_output: TestCaseOutputType[];
+  testCases_output: TestCaseAfterSubmit[];
 }

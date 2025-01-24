@@ -19,7 +19,7 @@ export const Submissions = () => {
           >
             <div
               className={`px-4 pt-4 text-lg font-bold ${
-                submission.status === "accepted" ? "text-green-500" : "text-red-500"
+                submission.status === "accepted" ? "text-appEasy" : "text-appHard"
               }`}
             >
               {submission.title}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ProblemDescription } from "./ProblemDescription";
 import { ProblemType } from "@/types/ProblemType";
 import { TestCaseType } from "../../types/TestCaseType";
@@ -16,7 +16,14 @@ interface RenderDescTabsProps {
 
 export const RenderDescTabs = (props: RenderDescTabsProps) => {
   const { problemDetail, courseId, courseName, lessonId, lessonName, isPassed } = props;
-  const [desActive, setDesActive] = useState("Description");
+  const initialTab = isPassed !== null ? (isPassed ? "Passed" : "Failed") : "Description";
+  const [desActive, setDesActive] = useState(initialTab);
+
+  useEffect(() => {
+    if (isPassed !== null) {
+      setDesActive(isPassed ? "Passed" : "Failed");
+    }
+  }, [isPassed]);
 
   const renderDescriptionTabButton = (tabName: string) => {
     return (

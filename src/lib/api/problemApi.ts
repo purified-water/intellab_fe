@@ -31,7 +31,7 @@ export const problemAPI = {
     return response.data;
   },
   getUpdateSubmission: async (submissionId: string) => {
-    const response = await apiClient.post(`problem/problem-submissions/update/${submissionId}`);
+    const response = await apiClient.get(`problem/problem-submissions/${submissionId}`);
     return response.data;
   },
   getProblemTestCases: async (problemId: string) => {

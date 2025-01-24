@@ -28,15 +28,14 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [code, setCode] = useState("");
 
   useEffect(() => {
-    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.includes(language));
-
+    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
     if (languageNameJudge0) {
       setLanguagePackage(languageNameJudge0, code);
     }
   }, [language]);
 
   const matchLanguage = (language: SupportedLanguages) => {
-    const matchingLanguage = LanguageCodes.find((lang) => lang.name.includes(language));
+    const matchingLanguage = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
     if (matchingLanguage) {
       setMatchingLanguage(matchingLanguage);
     }
@@ -112,7 +111,11 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup
                 value={language}
-                onValueChange={(value) => setLanguage(value as SupportedLanguages)}
+                onValueChange={(value) => {
+                  setLanguage(value as SupportedLanguages);
+                  // clear the playground
+                  setCode("");
+                }}
               >
                 {Object.values(SupportedLanguages).map((lang) => (
                   <DropdownMenuRadioItem key={lang} value={lang}>

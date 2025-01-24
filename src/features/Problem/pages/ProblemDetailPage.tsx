@@ -14,7 +14,7 @@ import { useSearchParams } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/rootReducer";
-import { TestCaseSubmitOutput, TestCaseType } from "../types/TestCaseType";
+import { TestCaseAfterSubmit, TestCaseType } from "../types/TestCaseType";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { SubmissionTypeNoProblem } from "../types/SubmissionType";
@@ -60,10 +60,18 @@ export const ProblemDetail = () => {
       console.error("Failed to fetch problem detail", error);
     }
   };
+
   const handleRunCode = async () => {
     console.log("code and language", code, language);
   };
+
   const handleSubmitCode = async () => {
+    if (!userId) {
+      toast({
+        variant: "destructive",
+        description: "Please log in to submit your code!"
+      });
+    }
     setIsSubmitting(true);
 
     try {
@@ -74,7 +82,6 @@ export const ProblemDetail = () => {
         console.log("Submission response", response);
 
         if (response?.submission_id) {
-          console.log("Submission ID", response.submission_id);
           pollSubmissionStatus(response.submission_id);
         }
       }
@@ -90,12 +97,12 @@ export const ProblemDetail = () => {
   };
 
   const handleSubmissionResult = (submission: SubmissionTypeNoProblem) => {
-    const testCases_output = submission.testCases_output as any;
+    const testCases_output = submission.testCases_output as TestCaseAfterSubmit[];
     // Save the submission result to the state
     if (!problemId) return;
     dispatch(saveSubmission({ problemId, updateResponse: submission }));
     // Check if all test cases are passed
-    const isPassed = testCases_output.every((testCase: TestCaseSubmitOutput) => testCase.result_status === "Accepted");
+    const isPassed = testCases_output.every((testCase: TestCaseAfterSubmit) => testCase.result_status === "Accepted");
 
     setIsSubmissionPassed(isPassed);
     setIsSubmitting(false);
@@ -115,17 +122,14 @@ export const ProblemDetail = () => {
         console.log("Submission update response", response);
         if (response) {
           const updateResponse = response;
-          console.log("Submission update:", updateResponse);
 
           // Check if all test case results have `result_status` not equal to "null" or "In Queue"
           const allResultsAvailable = updateResponse.testCases_output.every(
-            (testCase: TestCaseSubmitOutput) =>
+            (testCase: TestCaseAfterSubmit) =>
               testCase.result_status &&
               testCase.result_status !== "In Queue" &&
               testCase.result_status !== "Progressing"
           );
-
-          console.log("All results available:", allResultsAvailable);
 
           if (allResultsAvailable || elapsedTime >= maxTimeout) {
             clearInterval(interval); // Stop polling

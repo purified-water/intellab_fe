@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
-import { TestCaseOutputType } from "../../types/TestCaseType";
-import { MdCheckCircleOutline } from "rocketicons/md";
+import { TestCaseResultWithIO, TestCaseAfterSubmit } from "../../types/TestCaseType";
+import { MdCheckCircleOutline, MdOutlineCancel } from "rocketicons/md";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
@@ -14,172 +14,34 @@ import { selectCodeByProblemId } from "@/redux/problem/problemSlice";
 import { useParams } from "react-router-dom";
 import { UserCodeState } from "@/redux/problem/problemType";
 import { RootState } from "@/redux/rootReducer";
+import { problemAPI } from "@/lib/api";
 
-const testCases: TestCaseOutputType[] = [
-  {
-    testcaseId: "93cfd193-1620-4e60-8c84-983041d205f0",
-    input: "0 1 0",
-    output: "1",
-    order: 1,
-    userId: null,
-    submitOutputs: [
-      {
-        testCaseOutputID: {
-          submission_id: "9edcc8ef-3450-428f-9dfb-ff827a95d530",
-          testcase_id: "93cfd193-1620-4e60-8c84-983041d205f0"
-        },
-        token: "d08a4e51-46c5-4c78-87c5-3f400abb28d0",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      },
-      {
-        testCaseOutputID: {
-          submission_id: "02274f3d-7f85-4ae9-8d3d-d80a7a52acb7",
-          testcase_id: "93cfd193-1620-4e60-8c84-983041d205f0"
-        },
-        token: "66768d78-5f11-493b-9991-49fdc0e1275a",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      }
-    ]
-  },
-  {
-    testcaseId: "fad6d724-b8ce-4b6b-a1fb-f5a1e8b7e003",
-    input: "1",
-    output: "1",
-    order: 2,
-    userId: null,
-    submitOutputs: [
-      {
-        testCaseOutputID: {
-          submission_id: "9edcc8ef-3450-428f-9dfb-ff827a95d530",
-          testcase_id: "fad6d724-b8ce-4b6b-a1fb-f5a1e8b7e003"
-        },
-        token: "d49298ea-bfab-4ed1-8e20-0ce056e51462",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      },
-      {
-        testCaseOutputID: {
-          submission_id: "02274f3d-7f85-4ae9-8d3d-d80a7a52acb7",
-          testcase_id: "fad6d724-b8ce-4b6b-a1fb-f5a1e8b7e003"
-        },
-        token: "52768e51-dec1-4c76-9e73-81a8cad38bca",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      }
-    ]
-  },
-  {
-    testcaseId: "f8e22dda-b2cf-473e-b10f-ca1069fd5630",
-    input: "4 1 2 1 2",
-    output: "4",
-    order: 3,
-    userId: null,
-    submitOutputs: [
-      {
-        testCaseOutputID: {
-          submission_id: "9edcc8ef-3450-428f-9dfb-ff827a95d530",
-          testcase_id: "f8e22dda-b2cf-473e-b10f-ca1069fd5630"
-        },
-        token: "cd77436b-af8d-4db0-9f56-96af7856d604",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      },
-      {
-        testCaseOutputID: {
-          submission_id: "02274f3d-7f85-4ae9-8d3d-d80a7a52acb7",
-          testcase_id: "f8e22dda-b2cf-473e-b10f-ca1069fd5630"
-        },
-        token: "a5069122-fcd4-4ab3-9e81-da4ecdfc66e2",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      }
-    ]
-  },
-  {
-    testcaseId: "4343cfa0-4508-4157-b986-23e04fc60069",
-    input: "3 3 7 8 8",
-    output: "7",
-    order: 4,
-    userId: null,
-    submitOutputs: [
-      {
-        testCaseOutputID: {
-          submission_id: "9edcc8ef-3450-428f-9dfb-ff827a95d530",
-          testcase_id: "4343cfa0-4508-4157-b986-23e04fc60069"
-        },
-        token: "03db5044-548b-4bd2-81ae-c31ebf27142e",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      },
-      {
-        testCaseOutputID: {
-          submission_id: "02274f3d-7f85-4ae9-8d3d-d80a7a52acb7",
-          testcase_id: "4343cfa0-4508-4157-b986-23e04fc60069"
-        },
-        token: "7d703b0d-970f-4bec-8b39-fadd40c27d59",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      }
-    ]
-  },
-  {
-    testcaseId: "e15bef99-a6dd-46a1-bbb0-af5ed9d06e09",
-    input: "2 2 1",
-    output: "1",
-    order: 5,
-    userId: null,
-    submitOutputs: [
-      {
-        testCaseOutputID: {
-          submission_id: "9edcc8ef-3450-428f-9dfb-ff827a95d530",
-          testcase_id: "e15bef99-a6dd-46a1-bbb0-af5ed9d06e09"
-        },
-        token: "2c2fd40e-409b-4288-a5a7-7e3dc178ae3c",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      },
-      {
-        testCaseOutputID: {
-          submission_id: "02274f3d-7f85-4ae9-8d3d-d80a7a52acb7",
-          testcase_id: "e15bef99-a6dd-46a1-bbb0-af5ed9d06e09"
-        },
-        token: "504ad583-3c5f-4ae5-afc8-02eeed867524",
-        runtime: 0,
-        submission_output: "null",
-        result_status: "In Queue"
-      }
-    ]
-  }
-];
-
-const selectedTestCase = testCases[0];
-
-const ViewTestCaseDetail = ({ testCase, onBack }: ViewTestCaseDetailProps) => {
+const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
+  if (!testCaseDetail) return;
   return (
     <div className="flex-col px-4">
       <div className="flex items-center my-2 cursor-pointer text-gray3" onClick={onBack}>
         <ChevronLeft />
-        <div className="text-lg">Back</div>
+        <div className="text-lg font-medium">Back</div>
       </div>
-      <div className="flex flex-col mb-2" key={testCase.testcaseId}>
+      <div className="flex flex-col mb-2" key={testCaseDetail.testcaseId}>
         <div className="mb-1 text-sm">Inputs =</div>
         <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-          <pre className="text-base">{testCase.input}</pre>
+          <pre className="text-base">{testCaseDetail.input}</pre>
         </div>
-        <div className="mt-4 mb-1 text-sm">Outputs =</div>
+        <div className="mt-4 mb-1 text-sm">Expected Outputs =</div>
         <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-          <pre className="text-base">{testCase.output}</pre>
+          <pre className="text-base">{testCaseDetail.output}</pre>
+        </div>
+
+        <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
+        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
+          <pre className="text-base">
+            {
+              testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1]
+                .submission_output
+            }
+          </pre>
         </div>
       </div>
     </div>
@@ -191,7 +53,7 @@ const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewA
     <div className="flex-col px-4 overflow-y-scroll">
       <div className="flex items-center my-2 cursor-pointer text-gray3" onClick={onBack}>
         <ChevronLeft className="" />
-        <div className="text-lg">Back</div>
+        <div className="text-lg font-medium">Back</div>
       </div>
 
       <div className="text-xl font-bold text-appPrimary">All test cases</div>
@@ -199,13 +61,19 @@ const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewA
       <div className="overflow-y-scroll h-96">
         {testCases.map((testCase, index) => (
           <div
-            className={`flex justify-between py-1 cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
-            key={testCase.testcaseId}
+            className={`flex justify-between items-center cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+            key={testCase.testCaseOutputID.testcase_id}
             onClick={() => onTestCaseClick(testCase)}
           >
-            <div className="flex items-center gap-x-2">
-              <MdCheckCircleOutline className="icon-appEasy" />
-              <div>Test case {index + 1}</div>
+            <div className="flex items-center px-2 py-2 gap-x-2">
+              {testCase.result_status === "Accepted" ? (
+                <MdCheckCircleOutline className="icon-appEasy" />
+              ) : (
+                <MdOutlineCancel className="icon-appHard" />
+              )}
+              <div className={`font-medium ${testCase.result_status === "Accepted" ? "text-appEasy" : "text-appHard"}`}>
+                Test case {index + 1}
+              </div>
             </div>
             <ChevronRight className="text-gray3" />
           </div>
@@ -219,16 +87,45 @@ export const SubmissionResults = ({
   isPassed,
   onViewAllTestCases,
   submittedCode,
-  language
+  language,
+  submissionResult
 }: SubmissionResultsProps) => {
+  const testCases = submissionResult.testCases_output as TestCaseAfterSubmit[];
+  const totalTestCasesCount = testCases.length;
+  const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
+
+  const firstFailedTestCase = testCases.find(
+    // One test case may have many submission outputs, so we get the last submission output to check the result status
+    (testCase) => testCase.result_status !== "Accepted"
+  );
+  const selectedTestCase = firstFailedTestCase || submissionResult.testCases_output[0];
+
+  const [selectedTestCaseDetail, setSelectedTestCaseDetail] = useState<TestCaseResultWithIO | null>(null);
+
+  useEffect(() => {
+    const fetchTestCaseDetail = async () => {
+      try {
+        const response = await problemAPI.getTestCaseDetail(selectedTestCase.testCaseOutputID.testcase_id);
+        console.log("Test case detail", response);
+        setSelectedTestCaseDetail(response);
+      } catch (error) {
+        console.log("Error getting test case detail", error);
+      }
+    };
+
+    fetchTestCaseDetail();
+  }, [selectedTestCase]);
+
   return (
     <div className="flex-col px-6 py-2">
       <div id="result_header" className="flex items-center justify-between">
-        <div className="flex flex-row items-center justify-center gap-x-2">
-          <div className={`text-center text-xl font-medium ${isPassed ? "text-green-500" : "text-red-500"}`}>
+        <div className="flex flex-row items-center gap-x-2">
+          <div className={`text-center text-xl font-medium ${isPassed ? "text-appEasy" : "text-appHard"}`}>
             {isPassed ? "Accepted" : "Wrong Answer"}
           </div>
-          <div className="text-sm text-gray3">1/5 test cases passed</div>
+          <div className="text-sm text-center text-gray3">
+            {acceptedTestCasesCount}/{totalTestCasesCount} test cases passed
+          </div>
         </div>
 
         <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={onViewAllTestCases}>
@@ -238,20 +135,25 @@ export const SubmissionResults = ({
 
       {!isPassed ? (
         <div className="test-case-content">
-          <div className="flex flex-col mb-2" key={selectedTestCase.testcaseId}>
+          <div className="flex flex-col mb-2" key={selectedTestCaseDetail?.testcaseId}>
             <div className="mb-1 text-sm">Inputs =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCase.input}</pre>
+              <pre className="text-base">{selectedTestCaseDetail?.input}</pre>
             </div>
 
-            <div className="mt-4 mb-1 text-sm">Expected outputs =</div>
+            <div className="mt-4 mb-1 text-sm">Expected Outputs =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCase.output}</pre>
+              <pre className="text-base">{selectedTestCaseDetail?.output}</pre>
             </div>
 
-            <div className="mt-4 mb-1 text-sm">Outputs =</div>
-            <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCase.submitOutputs[0].submission_output}</pre>
+            <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
+            <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
+              <pre className="text-base">
+                {
+                  selectedTestCaseDetail?.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1]
+                    .submission_output
+                }
+              </pre>
             </div>
           </div>
         </div>
@@ -260,13 +162,15 @@ export const SubmissionResults = ({
           <div className="flex flex-col mb-2">
             <div className="mb-1 text-sm">Run time =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCase.input}</pre>
+              <pre className="text-base">
+                {selectedTestCaseDetail?.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].runtime}ms
+              </pre>
             </div>
 
-            <div className="mt-4 mb-1 text-sm">Memory =</div>
+            {/* <div className="mt-4 mb-1 text-sm">Memory =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCase.output}</pre>
-            </div>
+              <pre className="text-base">{selectedTestCaseDetail?.input}</pre>
+            </div> */}
 
             <div className="mt-4 mb-1 text-sm">Code | {language}</div>
             <div className="w-full px-4 py-2 overflow-x-auto rounded-lg bg-gray5">
@@ -281,21 +185,26 @@ export const SubmissionResults = ({
 
 export const SubmissionInformation = ({ isPassed }: SubmissionInformationProps) => {
   const [currentPanel, setCurrentPanel] = useState<string>("result");
-  const [selectedTestCase, setSelectedTestCase] = useState<TestCaseOutputType | null>(null);
+  const [selectedTestCaseDetail, setSelectedTestCaseDetail] = useState<TestCaseResultWithIO | null>(null);
 
   const { problemId } = useParams<{ problemId: string }>(); // Get the problemId from the URL
   if (!problemId) return null;
   const savedCodeData = useSelector((state: { userCode: UserCodeState }) => selectCodeByProblemId(state, problemId!)); // Retrieve saved code
   const submissionResult = useSelector((state: RootState) => state.submission.submissions[problemId]);
-  const testCases = submissionResult.testCases_output;
+  const testCases = submissionResult.testCases_output as TestCaseAfterSubmit[];
 
-  console.log("Submission get from redux", submissionResult);
   const { code, language } = savedCodeData || { code: "", language: "" }; // Destructure saved code and language
 
   const handleViewAllTestCases = () => setCurrentPanel("allTestCases");
 
-  const handleViewTestCaseDetail = (testCase: TestCaseOutputType) => {
-    setSelectedTestCase(testCase);
+  const handleViewTestCaseDetail = async (testCase: TestCaseAfterSubmit) => {
+    // Get test case detail
+    try {
+      const response = await problemAPI.getTestCaseDetail(testCase.testCaseOutputID.testcase_id);
+      setSelectedTestCaseDetail(response);
+    } catch (error) {
+      console.log("Error in getting test case detail", error);
+    }
     setCurrentPanel("testCaseDetail");
   };
 
@@ -315,6 +224,7 @@ export const SubmissionInformation = ({ isPassed }: SubmissionInformationProps) 
           onViewAllTestCases={handleViewAllTestCases}
           submittedCode={code}
           language={language}
+          submissionResult={submissionResult}
         />
       )}
       {currentPanel === "allTestCases" && (
@@ -324,8 +234,8 @@ export const SubmissionInformation = ({ isPassed }: SubmissionInformationProps) 
           onBack={handleBack}
         />
       )}
-      {currentPanel === "testCaseDetail" && selectedTestCase && (
-        <ViewTestCaseDetail testCase={selectedTestCase} onBack={handleBack} />
+      {currentPanel === "testCaseDetail" && selectedTestCaseDetail && (
+        <ViewTestCaseDetail testCaseDetail={selectedTestCaseDetail} onBack={handleBack} />
       )}
     </div>
   );
