@@ -10,7 +10,7 @@ import {
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
-const DEFAULT_PAGE_SIZE = 20;
+const DEFAULT_PAGE_SIZE = 5;
 
 export const courseAPI = {
   getCourses: async () => {

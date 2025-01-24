@@ -10,7 +10,7 @@ const rootReducer = combineReducers({
   auth: authReducer,
   course: courseReducer,
   problem: problemReducer,
-  user: userReducer
+  user: userReducer,
   userCode: userCodeReducer,
   submission: submissionReducer
 });
