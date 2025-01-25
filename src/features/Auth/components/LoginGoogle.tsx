@@ -13,8 +13,8 @@ const GoogleLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const handleGetUser = async (userId: string) => {
-    const user = await userAPI.getUser(userId);
+  const handleGetUser = async (accessToken: string) => {
+    const user = await userAPI.getUser(accessToken);
     if (user) {
       dispatch(setUser(user));
     }
@@ -43,7 +43,7 @@ const GoogleLogin = () => {
         }
 
         localStorage.setItem("userId", userId);
-        await handleGetUser(userId);
+        await handleGetUser(idToken);
         await handleGetProgress(userId);
         dispatch(loginSuccess());
         navigate("/");

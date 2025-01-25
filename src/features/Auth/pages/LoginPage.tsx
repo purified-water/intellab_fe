@@ -39,8 +39,8 @@ export const LoginPage = () => {
     return isValid;
   };
 
-  const handleGetUser = async (userId: string) => {
-    const user = await userAPI.getUser(userId);
+  const handleGetUser = async (accessToken: string) => {
+    const user = await userAPI.getUser(accessToken);
     if (user) {
       dispatch(setUser(user));
     }
@@ -79,7 +79,7 @@ export const LoginPage = () => {
         }
 
         localStorage.setItem("userId", userId);
-        await handleGetUser(userId);
+        await handleGetUser(response.data.accessToken);
         await handleGetProgress(userId);
         dispatch(loginSuccess());
         navigate("/");

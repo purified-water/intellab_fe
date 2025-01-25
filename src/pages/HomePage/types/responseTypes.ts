@@ -1,6 +1,6 @@
 import { ICourse } from "@/features/Course/types/course";
 import { ILesson } from "@/features/Course/types/lesson";
-import { IPageable, Progress } from "@/types";
+import { IPageable } from "@/types";
 
 export interface IGetCoursesResponse {
   code: number;
@@ -81,11 +81,6 @@ export interface IGetUserEnrolledCoursesResponse {
     first: boolean;
     empty: boolean;
   };
-}
-
-export interface IGetProgressResponse {
-  code: number;
-  result: Progress;
 }
 
 export interface ILeaderboardRank {

@@ -7,10 +7,10 @@ type StatsSectionProps = {
 export const StatsSection = (props: StatsSectionProps) => {
   const { progress } = props;
 
-  const { easySolved, mediumSolved, hardSolved } = progress;
+  const { easy, medium, hard } = progress;
 
   const stats = [
-    { label: "Problems Solved", value: easySolved + mediumSolved + hardSolved },
+    { label: "Problems Solved", value: easy.solved + medium.solved + hard.solved },
     { label: "Completed Courses", value: "15" },
     { label: "Login Streak", value: "15 days" }
   ];
