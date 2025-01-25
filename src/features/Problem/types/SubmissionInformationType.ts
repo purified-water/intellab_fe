@@ -1,13 +1,14 @@
-import { TestCaseOutputType, TestCaseSubmitOutput } from "./TestCaseType";
+import { SubmissionTypeNoProblem } from "./SubmissionType";
+import { TestCaseResultWithIO, TestCaseAfterSubmit } from "./TestCaseType";
 
 export interface ViewTestCaseDetailProps {
-  testCase: TestCaseOutputType;
+  testCaseDetail: TestCaseResultWithIO;
   onBack: () => void;
 }
 
 export interface ViewAllTestCaseResultListProps {
-  testCases: TestCaseOutputType[];
-  onTestCaseClick: (testCase: TestCaseOutputType) => void;
+  testCases: TestCaseAfterSubmit[];
+  onTestCaseClick: (testCase: TestCaseAfterSubmit) => void;
   onBack: () => void;
 }
 
@@ -16,6 +17,7 @@ export interface SubmissionResultsProps {
   onViewAllTestCases: () => void;
   submittedCode: string;
   language: string;
+  submissionResult: SubmissionTypeNoProblem;
 }
 
 export interface SubmissionInformationProps {

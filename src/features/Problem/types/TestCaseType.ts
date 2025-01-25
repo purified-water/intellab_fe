@@ -1,4 +1,5 @@
 export interface TestCaseType {
+  // For getting normal test cases to show in Test case tab
   testCaseId: string;
   input: string;
   output: string;
@@ -6,16 +7,17 @@ export interface TestCaseType {
   userId: string | null;
   submitOutputs: string[];
 }
-export interface TestCaseOutputType {
+export interface TestCaseResultWithIO {
   testcaseId: string;
   input: string;
   output: string;
   order: number;
   userId: string | null;
-  submitOutputs: TestCaseSubmitOutput[];
+  submitOutputs: TestCaseAfterSubmit[];
 }
 
-export interface TestCaseSubmitOutput {
+export interface TestCaseAfterSubmit {
+  // When submitting code, this is the output of the test case
   testCaseOutputID: TestCaseOutputID;
   token: string;
   runtime: number;
@@ -24,6 +26,7 @@ export interface TestCaseSubmitOutput {
 }
 
 export interface TestCaseOutputID {
+  // For getting the output of the test case
   submission_id: string;
   testcase_id: string;
 }
