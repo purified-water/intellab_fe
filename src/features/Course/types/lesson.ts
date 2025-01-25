@@ -10,6 +10,6 @@ export interface ILesson {
   learningId: string;
   nextLessonId: string;
   nextLessonName: string;
-  isDoneTheory: boolean;
+  isDoneTheory: boolean | null;
   isDonePractice: boolean;
 }

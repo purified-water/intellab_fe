@@ -48,13 +48,10 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-      console.log("problemDetail", problemDetail);
 
       if (problemDetail) {
         setProblemDetail(problemDetail);
         setTestCases(problemDetail.testCases);
-
-        console.log("Test cases", testCases);
       }
     } catch (error) {
       console.error("Failed to fetch problem detail", error);
@@ -66,6 +63,14 @@ export const ProblemDetail = () => {
   };
 
   const handleSubmitCode = async () => {
+    if (!code) {
+      toast({
+        variant: "destructive",
+        description: "Please write some code to submit!"
+      });
+      return;
+    }
+
     if (!userId) {
       toast({
         variant: "destructive",
@@ -79,7 +84,6 @@ export const ProblemDetail = () => {
         dispatch(saveCode({ problemId, code, language }));
 
         const response = await problemAPI.createSubmission(1, code, language, problemId!);
-        console.log("Submission response", response);
 
         if (response?.submission_id) {
           pollSubmissionStatus(response.submission_id);
@@ -139,6 +143,7 @@ export const ProblemDetail = () => {
                 variant: "destructive",
                 description: "Submission timeout. Please try again later."
               });
+              setIsSubmitting(false);
             } else {
               toast({
                 description: "Submission completed! Check the results."
