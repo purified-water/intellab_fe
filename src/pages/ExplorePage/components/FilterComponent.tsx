@@ -7,7 +7,10 @@ export interface PriceRange {
   max: number;
 }
 
-const FilterComponent: React.FC = () => {
+interface SearchKeyword {
+  keyword: string;
+}
+const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<string | null>("0");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
@@ -71,9 +74,9 @@ const FilterComponent: React.FC = () => {
     });
   };
 
-  const handleFilter = () => {
-    dispatch(fetchExploreCourses(selectedCategories));
-    dispatch(filterCourses({ selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange }));
+  const handleFilter = async () => {
+    await dispatch(fetchExploreCourses({ keyword, selectedCategories, selectedRating, selectedPrices }));
+    dispatch(filterCourses({ selectedLevels, selectedPrices, priceRange }));
   };
 
   return (

@@ -14,11 +14,21 @@ const initialState: CourseState = {
 // Async thunk để gọi API
 export const fetchExploreCourses = createAsyncThunk(
   "course/fetchExploreCourses",
-  async (selectedCourseIds: string[], { dispatch }) => {
+  async (
+    payload: { keyword: string; selectedCategories: string[]; selectedRating: string | null; selectedPrices: string[] },
+
+    { dispatch }
+  ) => {
     try {
+      const { keyword, selectedCategories, selectedRating, selectedPrices } = payload;
       // Gọi API với danh sách courseId được chọn
-      const response = await apiClient.get("course/courses", {
-        params: { category: selectedCourseIds.join(",") } // Định dạng tham số truy vấn
+      const response = await apiClient.get("course/courses/search", {
+        params: {
+          keyword: keyword,
+          categories: selectedCategories.join(","),
+          ratings: selectedRating ? (parseFloat(selectedRating) > 0 ? parseFloat(selectedRating) : null) : null,
+          price: selectedPrices.length === 1 && selectedPrices.some((value) => value === "Paid")
+        } // Định dạng tham số truy vấn
       });
 
       // Kết quả trả về
@@ -75,7 +85,9 @@ const courseSlice = createSlice({
     },
 
     setExploreCourses: (state, action: PayloadAction<ICourse[]>) => {
-      state.originalExploreCourses = action.payload;
+      // state.originalExploreCourses = action.payload;
+      state.exploreCourses = action.payload; // Display the same data initially
+      console.log("Set Explore courses length", state.exploreCourses.length);
     },
 
     filterCourses: (
@@ -83,9 +95,9 @@ const courseSlice = createSlice({
       action: PayloadAction<{
         // selectedType: string;
         // selectedStatus: string;
-        selectedCategories: string[];
+        // selectedCategories: string[];
         // showCertificationPrep: boolean;
-        selectedRating: string | null;
+        // selectedRating: string | null;
         selectedLevels: string[];
         selectedPrices: string[];
         priceRange: PriceRange;
@@ -94,16 +106,18 @@ const courseSlice = createSlice({
       {
         /* NOTE 3/11/2024: Code comments will be utilized later on */
       }
-      const { selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange } = action.payload;
-      state.exploreCourses = state.originalExploreCourses.filter((course) => {
-        const matchCategories =
-          selectedCategories.length === 0 ||
-          selectedCategories.some((category) => {
-            console.log("check", category, course.courseName, course.courseName.includes(category));
-            return course.courseName.includes(category);
-          });
+      // const { selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange } = action.payload;
+      const { selectedLevels, selectedPrices, priceRange } = action.payload;
+      console.log("Explore Courses State:", state.exploreCourses);
+      state.exploreCourses = state.exploreCourses.filter((course) => {
+        // const matchCategories =
+        //   selectedCategories.length === 0 ||
+        //   selectedCategories.some((category) => {
+        //     console.log("check", category, course.courseName, course.courseName.includes(category));
+        //     return course.courseName.includes(category);
+        //   });
         // const matchCertification = !showCertificationPrep || course.isCertificationPrep;
-        const matchRating = !selectedRating || course.averageRating >= parseFloat(selectedRating);
+        // const matchRating = !selectedRating || course.averageRating >= parseFloat(selectedRating);
         const matchLevels = selectedLevels.length === 0 || selectedLevels.includes(course.level);
         const matchPrices =
           selectedPrices.length === 0 ||
@@ -119,10 +133,16 @@ const courseSlice = createSlice({
             }
             return course.price >= 0;
           });
-        return matchCategories && matchRating && matchLevels && matchPrices;
+        // return matchCategories && matchRating && matchLevels && matchPrices;
+        return matchLevels && matchPrices;
       });
-      if (state.exploreCourses.length === state.originalExploreCourses.length) {
+      if (
+        state.exploreCourses.length === state.originalExploreCourses.length
+        // state.originalExploreCourses.length !== 0
+      ) {
         state.hasFilter = false;
+        console.log("Explore courses length", state.exploreCourses.length);
+        console.log("Original courses length", state.originalExploreCourses.length);
       } else {
         state.hasFilter = true;
       }
