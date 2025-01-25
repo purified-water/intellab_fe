@@ -13,7 +13,7 @@ const submissionSlice = createSlice({
   name: "submission",
   initialState,
   reducers: {
-    saveSubmission: (state, action: PayloadAction<{ problemId: string; updateResponse: any }>) => {
+    saveSubmission: (state, action: PayloadAction<{ problemId: string; updateResponse: SubmissionTypeNoProblem }>) => {
       const { problemId, updateResponse } = action.payload;
       state.submissions[problemId] = updateResponse;
     },

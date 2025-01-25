@@ -77,7 +77,6 @@ export const LessonDetailPage = () => {
   const updateTheoryDone = async () => {
     // setIsCorrect(isCorrect);
     try {
-      console.log("Has quiz", hasQuiz);
       // if not quiz, mark as done when scrolled to bottom
       if (!hasQuiz && isScrolledToBottom) {
         await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);

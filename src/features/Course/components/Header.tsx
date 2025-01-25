@@ -54,7 +54,7 @@ export const Header = (props: HeaderProps) => {
 
     return (
       <button
-        className="py-1 px-6 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
+        className="px-6 py-1 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >
         {buttonText}
@@ -86,7 +86,7 @@ export const Header = (props: HeaderProps) => {
 
   const renderButtons = () => {
     return (
-      <div className="flex mt-6 gap-8">
+      <div className="flex gap-8 mt-6">
         {renderLeftButton()}
         {isFinished && renderRightButton()}
       </div>

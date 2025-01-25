@@ -31,7 +31,7 @@ export const ProblemDescription = (props: ProblemDescriptionProps) => {
       content = <BreadCrump items={breadCrumpItems} />;
     } else {
       content = (
-        <Link to="/problems" className="font-medium underline text-appAccent">
+        <Link to="/problems" className="text-base font-bold cursor-pointer text-appPrimary hover:underline">
           Public
         </Link>
       );

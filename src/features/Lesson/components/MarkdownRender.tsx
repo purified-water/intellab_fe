@@ -169,7 +169,13 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
       <TableOfContents
         toc={toc}
         activeTocItem={activeTocItem}
-        setActiveTocItem={setActiveTocItem}
+        setActiveTocItem={(slug) => {
+          setActiveTocItem(slug);
+          // Add slug to the URL without reloading the page
+          if (slug) {
+            window.history.pushState(null, "", `#${slug}`);
+          }
+        }}
         tocTop={tocTop}
         defaultTop={defaultTop}
         windowWidth={windowWidth}

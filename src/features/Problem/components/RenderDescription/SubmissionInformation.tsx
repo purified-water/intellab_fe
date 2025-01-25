@@ -37,10 +37,7 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
         <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
         <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
           <pre className="text-base">
-            {
-              testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1]
-                .submission_output
-            }
+            {testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1].submission_output}
           </pre>
         </div>
       </div>
