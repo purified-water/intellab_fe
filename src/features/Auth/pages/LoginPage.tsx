@@ -8,7 +8,7 @@ import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
-import { setUser, setProgress } from "@/redux/user/userSlice";
+import { setUser } from "@/redux/user/userSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -46,13 +46,6 @@ export const LoginPage = () => {
     }
   };
 
-  const handleGetProgress = async (userId: string) => {
-    const progress = await userAPI.getProgress(userId);
-    if (progress) {
-      dispatch(setProgress(progress));
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
@@ -80,7 +73,6 @@ export const LoginPage = () => {
 
         localStorage.setItem("userId", userId);
         await handleGetUser(response.data.accessToken);
-        await handleGetProgress(userId);
         dispatch(loginSuccess());
         navigate("/");
       }

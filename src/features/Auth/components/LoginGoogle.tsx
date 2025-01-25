@@ -7,7 +7,7 @@ import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
-import { setUser, setProgress } from "@/redux/user/userSlice";
+import { setUser } from "@/redux/user/userSlice";
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
@@ -17,13 +17,6 @@ const GoogleLogin = () => {
     const user = await userAPI.getUser(accessToken);
     if (user) {
       dispatch(setUser(user));
-    }
-  };
-
-  const handleGetProgress = async (userId: string) => {
-    const progress = await userAPI.getProgress(userId);
-    if (progress) {
-      dispatch(setProgress(progress));
     }
   };
 
@@ -44,7 +37,6 @@ const GoogleLogin = () => {
 
         localStorage.setItem("userId", userId);
         await handleGetUser(idToken);
-        await handleGetProgress(userId);
         dispatch(loginSuccess());
         navigate("/");
       }
