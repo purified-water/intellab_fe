@@ -1,9 +1,15 @@
 export type Progress = {
-  totalQuestions: number;
-  easySolved: number;
-  mediumSolved: number;
-  hardSolved: number;
-  easyMax: number;
-  mediumMax: number;
-  hardMax: number;
+  totalProblems: number;
+  easy: {
+    solved: number;
+    max: number;
+  };
+  medium: {
+    solved: number;
+    max: number;
+  };
+  hard: {
+    solved: number;
+    max: number;
+  };
 };

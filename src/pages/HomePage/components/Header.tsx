@@ -11,7 +11,7 @@ export const Header = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      const userName = user?.username;
+      const userName = user?.name;
       if (userName) {
         setGreeting(`Welcome back, ${userName}!`);
       }

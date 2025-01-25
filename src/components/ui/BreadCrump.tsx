@@ -1,7 +1,7 @@
 import {
   BreadcrumbPage,
   //BreadcrumbSeparator,
-} from "@/components/ui/shadcn/Breadcrumb";
+} from "@/components/ui/shadcn/breadcrumb";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight } from "lucide-react"
 
@@ -34,7 +34,7 @@ export default function BreadCrump(props: BreadCrumpProps) {
       {items.map((item, index) => (
         <span key={index} className="flex items-center">
           <BreadcrumbPage
-            className="text-appPrimary hover:underline cursor-pointer text-2xl font-bold"
+            className="text-appPrimary hover:underline cursor-pointer text-base font-bold truncate"
             onClick={() => handleClick(item.path)}
           >
             {item.title}

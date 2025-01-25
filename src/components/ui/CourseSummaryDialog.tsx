@@ -3,31 +3,34 @@ import { MarkdownRender } from '@/features/Problem/components/MarkdownRender';
 import { useToast } from '@/hooks/use-toast';
 import { FaFilePdf } from 'rocketicons/fa';
 import { aiAPI } from '@/lib/api';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 
 interface CourseSummaryDialogProps {
+  courseName: string,
   isOpen: boolean;
   summaryContent: string;
   onClose: () => void;
 }
 
 export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
-  const { isOpen, summaryContent, onClose } = props;
+  const { courseName, isOpen, summaryContent, onClose } = props;
   const { toast } = useToast();
 
   if (!isOpen) return null;
 
   const renderHeader = () => {
     return (
-      <div className='flex text-black text-2xl justify-between py-4 px-8 border-b border-[#999999]'>
+      <div className='flex text-black text-2xl justify-between items-center py-4 px-8 border-b border-gray5'>
         <p className='font-bold '>Course Summary</p>
-        <p className='cursor-pointer text-[#999999]' onClick={onClose} >X</p>
+        <FontAwesomeIcon icon={faX} className="cursor-pointer text-xl text-gray4" onClick={onClose} />
       </div>
     )
   }
 
   const renderBody = () => {
     return (
-      <div className='h-[700px] px-8 py-3 text-black overflow-y-auto'>
+      <div className='h-[600px] px-8 py-3 text-black overflow-y-auto'>
         <MarkdownRender content={summaryContent} />
       </div>
     )
@@ -44,7 +47,7 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "summary.pdf"; // Specify the filename
+      a.download = `${courseName}_ai_summary.pdf`; // Specify the filename
       document.body.appendChild(a);
       a.click();
 
@@ -76,7 +79,7 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
   const renderFooter = () => {
     return (
       <div className='flex justify-between text-black text-base py-4 px-8'>
-        <button className='flex items-center py-2 px-10 font-bold border border-appPrimary rounded-xl hover:bg-slate-200' onClick={handleSaveAsPDF}>
+        <button className='flex items-center py-2 px-10 text-gray1 font-bold border border-appPrimary rounded-xl hover:bg-slate-200' onClick={handleSaveAsPDF}>
           <FaFilePdf className='mr-2' />
           <p>Save as PDF</p>
         </button>

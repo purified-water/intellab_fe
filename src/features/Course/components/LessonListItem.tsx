@@ -59,7 +59,7 @@ export default function LessonListItem(props: LessonListItemProps) {
     let theoryIcon = EMPTY_SPACE;
     let problemIcon = EMPTY_SPACE;
 
-    if (lesson.exerciseId && lesson.exerciseId !== "") {
+    if (lesson.content && lesson.content !== "") {
       if (lesson.isDoneTheory) {
         theoryIcon = renderFinishedIcon(handleExerciseClick);
       } else {

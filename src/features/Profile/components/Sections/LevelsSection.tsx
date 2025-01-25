@@ -7,12 +7,12 @@ export type LevelsSectionProps = {
 export const LevelsSection = (props: LevelsSectionProps) => {
   const { progress } = props;
 
-  const { easySolved, mediumSolved, hardSolved } = progress;
+  const { easy, medium, hard } = progress;
 
   const levels = [
-    { level: "Hard", solved: `${hardSolved} Problems Solved` },
-    { level: "Medium", solved: `${mediumSolved} Problems Solved` },
-    { level: "Easy", solved: `${easySolved} Problems Solved` }
+    { level: "Hard", solved: `${hard.solved} Problems Solved` },
+    { level: "Medium", solved: `${medium.solved} Problems Solved` },
+    { level: "Easy", solved: `${easy.solved} Problems Solved` }
   ];
 
   return (

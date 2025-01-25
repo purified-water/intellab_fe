@@ -73,6 +73,18 @@ export default {
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))"
         }
+      },
+      backgroundImage: {
+        "gradient-conic": "conic-gradient(var(--tw-gradient-stops))"
+      },
+      keyframes: {
+        disco: {
+          "0%": { transform: "translateY(-50%) rotate(0deg)" },
+          "100%": { transform: "translateY(-50%) rotate(360deg)" }
+        }
+      },
+      animation: {
+        disco: "disco 1.5s linear infinite"
       }
     }
   },
@@ -95,10 +107,8 @@ export default {
         "4xl": "size-10",
         "5xl": "size-11",
         "6xl": "size-12",
-        "7xl": "size-14",
-      },
-    },
-  },
-}
-
-
+        "7xl": "size-14"
+      }
+    }
+  }
+};

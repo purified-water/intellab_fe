@@ -5,10 +5,10 @@ import { Progress } from "@/types";
 
 export const ProgressCircle = () => {
   const progress = useSelector((state: RootState) => state.user.progress) as Progress; // Type casting to make sure it's not null
-  const { totalQuestions, easySolved, mediumSolved, hardSolved, easyMax, mediumMax, hardMax } = progress;
+  const { totalProblems, easy, medium, hard } = progress;
 
-  const totalSolved = easySolved + mediumSolved + hardSolved;
-  const totalPercentage = Math.round((totalSolved / totalQuestions) * 100);
+  const totalSolved = easy.solved + medium.solved + hard.solved;
+  const totalPercentage = Math.round((totalSolved / totalProblems) * 100);
 
   const radius = 45; // 45% of the viewbox
   const strokeCircumference = 2 * Math.PI * radius;
@@ -57,25 +57,25 @@ export const ProgressCircle = () => {
           <div className="flex justify-between text-sm">
             <span className="font-semibold">Solved:</span>
             <span>
-              {totalSolved}/{totalQuestions}
+              {totalSolved}/{totalProblems}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="font-semibold text-appEasy">Easy:</span>
             <span>
-              {easySolved}/{easyMax}
+              {easy.solved}/{easy.max}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="font-semibold text-appMedium">Medium:</span>
             <span>
-              {mediumSolved}/{mediumMax}
+              {medium.solved}/{medium.max}
             </span>
           </div>
           <div className="flex justify-between text-sm">
             <span className="font-semibold text-appHard">Hard:</span>
             <span>
-              {hardSolved}/{hardMax}
+              {hard.solved}/{hard.max}
             </span>
           </div>
         </div>

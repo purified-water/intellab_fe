@@ -6,6 +6,7 @@ import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import Spinner from "@/components/ui/Spinner";
+import AnimatedButton from "@/components/ui/AnimatedButton";
 
 interface HeaderProps {
   course: ICourse;
@@ -20,6 +21,8 @@ export const Header = (props: HeaderProps) => {
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
   const [loading, setLoading] = useState(false);
+
+  const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
   const isFinished = course.progressPercent == 100;
 
@@ -51,7 +54,7 @@ export const Header = (props: HeaderProps) => {
 
     return (
       <button
-        className="min-w-[200px] py-2 text-xl font-bold text-black bg-white rounded-xl hover:bg-gray-300 "
+        className="py-1 px-6 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >
         {buttonText}
@@ -63,8 +66,7 @@ export const Header = (props: HeaderProps) => {
     setLoading(true);
     try {
       // remove the special characters and the space at start and end from the course name
-      const courseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
-      const response = await aiAPI.getSummaryContent(courseName, course.courseId, "false");
+      const response = await aiAPI.getSummaryContent(formattedCourseName, course.courseId, "false");
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
@@ -79,21 +81,12 @@ export const Header = (props: HeaderProps) => {
   };
 
   const renderRightButton = () => {
-    return (
-      <div
-        className="min-w-[200px] flex rounded-xl bg-gradient-to-r from-[#E1D0FA] to-appAccent p-0.5 hover:bg-gray-300"
-        onClick={handleSummaryClick}
-      >
-        <button className="flex-1 text-xl font-bold  text-black bg-white py-1 rounded-xl hover:bg-gray-300">
-          AI Summary
-        </button>
-      </div>
-    );
+    return <AnimatedButton label="AI Summary" onClick={handleSummaryClick} />;
   };
 
   const renderButtons = () => {
     return (
-      <div className="flex mt-6  gap-8">
+      <div className="flex mt-6 gap-8">
         {renderLeftButton()}
         {isFinished && renderRightButton()}
       </div>
@@ -107,6 +100,7 @@ export const Header = (props: HeaderProps) => {
       {course.userEnrolled ? <ProgressBar progress={course.progressPercent} /> : renderReview()}
       {renderButtons()}
       <CourseSummaryDialog
+        courseName={formattedCourseName}
         isOpen={showSummaryDialog}
         summaryContent={summaryContent}
         onClose={() => setShowSummaryDialog(false)}
