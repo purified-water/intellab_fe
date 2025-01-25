@@ -148,7 +148,7 @@ export const ExplorePage = () => {
           style={{ overflow: "hidden" }}
           className="py-2"
         >
-          <FilterComponent />
+          <FilterComponent keyword={query} />
         </motion.div>
       }
       {/* Display search results if a query is present */}
