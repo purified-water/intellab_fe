@@ -174,7 +174,7 @@ export const LessonQuiz = () => {
       <div
         className="flex items-center gap-2 mx-8 mt-4 cursor-pointer"
         onClick={() => {
-          navigate(`/lesson/${lessonId}&courseId=${courseId}&learningId=${learningId}`);
+          navigate(`/lesson/${lessonId}?courseId=${courseId}&learningId=${learningId}`);
         }}
       >
         <ChevronLeft className="text-appPrimary" size={22} />
