@@ -10,6 +10,6 @@ export interface IEnrolledLesson {
   status: string;
   lastAccessedDate: string;
   learningId: string;
-  isDoneTheory: boolean;
-  isDonePractice: boolean;
+  isDoneTheory: boolean | null;
+  isDonePractice: boolean | null;
 }
