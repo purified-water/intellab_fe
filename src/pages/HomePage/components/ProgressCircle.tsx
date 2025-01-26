@@ -1,25 +1,70 @@
+import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui/Separator";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
 import { Progress } from "@/types";
+import { userAPI } from "@/lib/api";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 export const ProgressCircle = () => {
-  const progress = useSelector((state: RootState) => state.user.progress) as Progress; // Type casting to make sure it's not null
-  const { totalProblems, easy, medium, hard } = progress;
+  const [progress, setProgress] = useState<Progress | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const totalSolved = easy.solved + medium.solved + hard.solved;
-  const totalPercentage = Math.round((totalSolved / totalProblems) * 100);
+  const handleGetProgress = async (userId: string) => {
+    const progress = await userAPI.getProgress(userId);
+    if (progress) {
+      setProgress(progress);
+    }
+  };
 
-  const radius = 45; // 45% of the viewbox
-  const strokeCircumference = 2 * Math.PI * radius;
-  const strokeDashOffset = strokeCircumference - (strokeCircumference * totalPercentage) / 100;
+  useEffect(() => {
+    setLoading(true);
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      handleGetProgress(userId);
+    }
+    setLoading(false);
+  }, []);
 
-  return (
-    <div className="flex flex-col p-4 overflow-x-auto border border-gray5 rounded-md">
-      <div className="text-xl font-bold text-appPrimary">Your Progress</div>
+  const renderSkeleton = () => {
+    return (
+      <div className="flex flex-col items-center gap-4 md:flex-row md:justify-around">
+        <div className="relative w-32 h-32 min-w-fit">
+          <Skeleton className="w-full h-full" />
+        </div>
 
-      <Separator className="mt-2 mb-5" />
+        <div className="w-full space-y-2 text-left md:w-72">
+          <div className="flex justify-between text-sm gap-2">
+            <Skeleton className="w-64 h-4" />
+            <Skeleton className="w-64 h-4" />
+          </div>
+          <div className="flex justify-between text-sm gap-2">
+            <Skeleton className="w-64 h-4" />
+            <Skeleton className="w-64 h-4" />
+          </div>
+          <div className="flex justify-between text-sm gap-2">
+            <Skeleton className="w-64 h-4" />
+            <Skeleton className="w-64 h-4" />
+          </div>
+          <div className="flex justify-between text-sm gap-2">
+            <Skeleton className="w-64 h-4" />
+            <Skeleton className="w-64 h-4" />
+          </div>
+        </div>
+      </div>
+    );
+  };
 
+  const renderContent = () => {
+    if (progress === null) return null;
+
+    const { easy, medium, hard, totalProblems } = progress;
+    const totalSolved = easy.solved + medium.solved + hard.solved;
+    const totalPercentage = Math.round((totalSolved / totalProblems) * 100);
+
+    const radius = 45; // 45% of the viewbox
+    const strokeCircumference = 2 * Math.PI * radius;
+    const strokeDashOffset = strokeCircumference - (strokeCircumference * totalPercentage) / 100;
+
+    return (
       <div id="progress" className="flex flex-col items-center gap-4 md:flex-row md:justify-around">
         <div className="relative w-20 h-20 min-w-fit">
           <svg
@@ -80,6 +125,14 @@ export const ProgressCircle = () => {
           </div>
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="flex flex-col p-4 overflow-x-auto border border-gray5 rounded-md">
+      <div className="text-xl font-bold text-appPrimary">Your Progress</div>
+      <Separator className="mt-2 mb-5" />
+      {loading ? renderSkeleton() : renderContent()}
     </div>
   );
 };

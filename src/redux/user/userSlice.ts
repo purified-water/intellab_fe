@@ -3,6 +3,7 @@ import { UserState } from "./userType";
 
 const initialState: UserState = {
   user: null,
+  // NOTE: Might remove all progress related code later
   progress: null
 };
 
