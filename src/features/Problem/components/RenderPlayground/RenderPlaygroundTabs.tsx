@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Playground } from "./Playground";
 import { SupportedLanguages } from "@/features/Problem/constants/SupportedLanguages";
 import { BsCode } from "rocketicons/bs";
@@ -14,10 +14,38 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/DropdownMenu";
+import { DEFAULT_LANGUAGE_CODE, LanguageCodes } from "../../constants/LanguageCodes";
+import { LanguageCodeType } from "../../types/LanguageCodeType";
 
-export const RenderPGTabs = () => {
+interface RenderPGTabsProps {
+  setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
+}
+
+export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Solution");
-  const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Javascript);
+  const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
+  const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
+  const [code, setCode] = useState("");
+
+  useEffect(() => {
+    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
+    if (languageNameJudge0) {
+      setLanguagePackage(languageNameJudge0, code);
+    }
+  }, [language]);
+
+  const matchLanguage = (language: SupportedLanguages) => {
+    const matchingLanguage = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
+    if (matchingLanguage) {
+      setMatchingLanguage(matchingLanguage);
+    }
+  };
+
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
+    matchLanguage(language);
+    setLanguagePackage(matchingLanguage, newCode);
+  };
 
   const renderPlaygroundTabButton = (tabName: string) => {
     const getIcon = () => {
@@ -50,7 +78,7 @@ export const RenderPGTabs = () => {
       case "Solution":
         return (
           <div className="flex-grow overflow-hidden">
-            <Playground language={language} />
+            <Playground language={language} code={code} onCodeChange={handleCodeChange} />
           </div>
         );
       case "Chatbot":
@@ -83,7 +111,11 @@ export const RenderPGTabs = () => {
               <DropdownMenuSeparator />
               <DropdownMenuRadioGroup
                 value={language}
-                onValueChange={(value) => setLanguage(value as SupportedLanguages)}
+                onValueChange={(value) => {
+                  setLanguage(value as SupportedLanguages);
+                  // clear the playground
+                  setCode("");
+                }}
               >
                 {Object.values(SupportedLanguages).map((lang) => (
                   <DropdownMenuRadioItem key={lang} value={lang}>

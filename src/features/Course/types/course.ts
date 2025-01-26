@@ -1,7 +1,6 @@
 export interface ICourse {
   averageRating: number;
   courseId: string;
-  courseLogo: string;
   courseName: string;
   description: string;
   latestLessonId: string;

@@ -1,6 +1,16 @@
-export const StatsSection = () => {
+import { Progress } from "@/types";
+
+type StatsSectionProps = {
+  progress: Progress;
+};
+
+export const StatsSection = (props: StatsSectionProps) => {
+  const { progress } = props;
+
+  const { easy, medium, hard } = progress;
+
   const stats = [
-    { label: "Problems Solved", value: "30" },
+    { label: "Problems Solved", value: easy.solved + medium.solved + hard.solved },
     { label: "Completed Courses", value: "15" },
     { label: "Login Streak", value: "15 days" }
   ];

@@ -5,27 +5,33 @@ import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { Link as ScrollLink } from "react-scroll";
+// import { Link as ScrollLink } from "react-scroll";
 // For getting paragraph tag for language name in code block
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import { Root, Code, Paragraph } from "mdast";
 import { is } from "unist-util-is";
+import { LessonHeader } from "./LessonHeader";
+import { ILesson } from "@/features/Course/types";
+import { addBookmark, getUserIdFromLocalStorage, getBookmark } from "@/utils";
+import { TableOfContents } from "./TableOfContents";
 
 interface MarkdownRenderProps {
-  content: string;
+  lesson: ILesson;
   setIsScrolledToBottom: (value: boolean) => void;
 }
 
 export const MarkdownRender = (props: MarkdownRenderProps) => {
-  const { content, setIsScrolledToBottom } = props;
+  const { lesson, setIsScrolledToBottom } = props;
 
   const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
   const [tocTop, setTocTop] = useState(0);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [processedContent, setProcessedContent] = useState(content);
+  const [processedContent, setProcessedContent] = useState(lesson.content);
+  const [activeTocItem, setActiveTocItem] = useState("");
   const contentRef = useRef<HTMLDivElement | null>(null); // Ref for the Markdown content
-  const defaultTop = 350;
+  const defaultTop = 100;
+  const userId = getUserIdFromLocalStorage(); // support bookmarking
 
   const preprocessMarkdown = (content: string) => {
     const processor = unified().use(remarkParse);
@@ -78,10 +84,10 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   const [languageMap, setLanguageMap] = useState(new Map<string, string>());
 
   useEffect(() => {
-    const { languageMap } = preprocessMarkdown(content);
+    const { languageMap } = preprocessMarkdown(lesson.content);
     setLanguageMap(languageMap);
-    setProcessedContent(content); // Use the preprocessed content if needed.
-  }, [content]);
+    setProcessedContent(lesson.content); // Use the preprocessed content if needed.
+  }, [lesson.content]);
 
   useEffect(() => {
     const headings = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6"));
@@ -92,7 +98,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
     }));
     // extractLanguages();
     setToc(tocItems);
-  }, [content]);
+  }, [lesson.content]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -112,6 +118,20 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
         }
       }
 
+      const headings = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6"));
+      // const scrollPosition = window.scrollY;
+
+      headings.forEach((heading) => {
+        const { top } = heading.getBoundingClientRect();
+        if (top <= 200 && top > -200) {
+          setActiveTocItem(heading.id); // Update active TOC item (id is the same as heading id)
+
+          if (userId) {
+            addBookmark(userId, lesson.lessonId, heading.id); // Bookmark is specific to user and lessons
+          }
+        }
+      });
+
       const scrollTop = window.scrollY;
       setTocTop(scrollTop > defaultTop ? scrollTop - defaultTop : 0);
     };
@@ -128,38 +148,38 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
     };
   }, []);
 
-  const renderTOC = () => {
-    if (windowWidth <= 1200) {
-      return null;
+  useEffect(() => {
+    let lastViewedSection = null;
+
+    if (userId) {
+      lastViewedSection = getBookmark(userId, lesson.lessonId);
     }
 
+    if (lastViewedSection) {
+      const targetElement = document.getElementById(lastViewedSection);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: "smooth" });
+        setActiveTocItem(lastViewedSection);
+      }
+    }
+  }, [lesson.lessonId]);
+
+  const renderTOC = () => {
     return (
-      <div
-        className="right-0 mr-4 border-l border-gray4"
-        style={{
-          position: "absolute",
-          top: tocTop + defaultTop + 20,
-          width: windowWidth * 0.18
+      <TableOfContents
+        toc={toc}
+        activeTocItem={activeTocItem}
+        setActiveTocItem={(slug) => {
+          setActiveTocItem(slug);
+          // Add slug to the URL without reloading the page
+          if (slug) {
+            window.history.pushState(null, "", `#${slug}`);
+          }
         }}
-      >
-        <ul>
-          {toc.map((item) => (
-            <li key={item.id} style={{ marginLeft: item.level * 10 }}>
-              <ScrollLink
-                to={item.id}
-                smooth={true}
-                duration={500}
-                className="overflow-hidden underline cursor-pointer text-appPrimary"
-                onClick={() => {
-                  window.location.hash = item.id;
-                }}
-              >
-                {item.text}
-              </ScrollLink>
-            </li>
-          ))}
-        </ul>
-      </div>
+        tocTop={tocTop}
+        defaultTop={defaultTop}
+        windowWidth={windowWidth}
+      />
     );
   };
 
@@ -175,8 +195,9 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   );
 
   return (
-    <div className="flex mr-1 md:mr-48">
-      <div className="pr-12" style={{ width: windowWidth * 0.8 }} ref={contentRef}>
+    <div className={`flex ${windowWidth < 1000 ? "mr-1" : windowWidth > 1500 ? "mr-64" : "mr-48"}`}>
+      <div className="pr-6" style={{ width: windowWidth * 0.8 }} ref={contentRef}>
+        <LessonHeader lesson={lesson} />
         <ReactMarkdown
           className="markdown"
           remarkPlugins={[remarkGfm]}

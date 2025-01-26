@@ -82,3 +82,16 @@ export interface IGetUserEnrolledCoursesResponse {
     empty: boolean;
   };
 }
+
+export interface ILeaderboardRank {
+  rank: number;
+  name: string;
+  score: number;
+}
+
+export interface IGetLeaderboardResponse {
+  code: number;
+  result: {
+    content: ILeaderboardRank[];
+  };
+}

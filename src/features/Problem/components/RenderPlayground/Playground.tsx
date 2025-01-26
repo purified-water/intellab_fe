@@ -1,22 +1,25 @@
+// Playground.tsx
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeLight } from "@uiw/codemirror-theme-vscode";
 import { SupportedLanguages, languageExtensions } from "@/features/Problem/constants/SupportedLanguages";
 
 interface PlaygroundProps {
   language: SupportedLanguages;
+  code: string;
+  onCodeChange: (code: string) => void;
 }
 
-export const Playground = ({ language }: PlaygroundProps) => {
+export const Playground = ({ language, code, onCodeChange }: PlaygroundProps) => {
   const extension = languageExtensions[language];
 
   return (
-    <div className="h-full m-4 overflow-y-auto">
-      <CodeMirror
-        value={`// Write your ${language} code here`}
-        theme={vscodeLight}
-        extensions={extension ? [extension] : []}
-        style={{ fontSize: "14px", height: "100%", overflowY: "auto" }}
-      />
-    </div>
+    <CodeMirror
+      value={code}
+      placeholder={`// Write your ${language} code here`}
+      theme={vscodeLight}
+      extensions={extension ? [extension] : []}
+      style={{ fontSize: "14px", height: "100%", overflowY: "auto" }}
+      onChange={(value) => onCodeChange(value)}
+    />
   );
 };

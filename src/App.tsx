@@ -14,7 +14,8 @@ import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
 import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
-import { Toaster } from "./components/ui/toaster";
+import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
+import { Toaster } from "@/components/ui/shadcn/toaster";
 
 // Layout component to include conditional Navbar
 const Layout = () => {
@@ -25,7 +26,6 @@ const Layout = () => {
     <>
       {!hideNavbar && <Navbar />}
       <Outlet />
-      <Toaster /> {/* Using Toast from shadcn */}
     </>
   );
 };
@@ -53,7 +53,7 @@ const router = createBrowserRouter([
         element: <ProblemsPage />
       },
       {
-        path: "/problems/:id",
+        path: "/problems/:problemId",
         element: <ProblemDetail />
       },
       {
@@ -83,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "/course/:id",
         element: <CourseDetailPage />
+      },
+      {
+        path: "/lesson/:lessonId/quiz/:quizId",
+        element: <LessonQuiz />
       }
     ]
   }
@@ -92,6 +96,7 @@ function App() {
   return (
     <React.StrictMode>
       <RouterProvider router={router} />
+      <Toaster />
     </React.StrictMode>
   );
 }

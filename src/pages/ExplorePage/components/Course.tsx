@@ -3,7 +3,7 @@ import { ICourse } from "@/features/Course/types";
 import { useNavigate } from "react-router-dom";
 import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
@@ -85,10 +85,7 @@ export default function Course(props: CourseProps) {
   const renderContent = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
       {/* Header section with background gradient and reviews */}
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex items-center justify-between p-2">
-        <h2 className="ml-4 text-2xl font-bold text-white cursor-pointer" onClick={handleTitleClick}>
-          {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
-        </h2>
+      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col items-end justify-between p-2">
         <div className="flex flex-col items-center justify-between">
           <div className="flex items-center justify-end px-4 pt-3 mb-5">
             <div className="mx-1 text-sm font-normal text-white">•</div>
@@ -102,8 +99,10 @@ export default function Course(props: CourseProps) {
               <div className="text-white">{detailCourse?.averageRating ?? DEFAULT_COURSE.averageRating}</div>
             </div>
           </div>
-          <img src={detailCourse?.courseLogo ?? DEFAULT_COURSE.courseLogo} alt="" className="w-24 h-24" />
         </div>
+        <h2 className="w-full pl-2 mb-10 text-2xl font-bold text-white cursor-pointer" onClick={handleTitleClick}>
+          {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
+        </h2>
       </div>
 
       {/* Description section */}
@@ -142,7 +141,7 @@ export default function Course(props: CourseProps) {
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
         <Skeleton className="self-end w-40 h-10 mb-9 bg-gray5" />
         <Skeleton className="h-10 mb-5 w-50 bg-gray5" />
-        <Skeleton className="self-end w-20 h-20 bg-gray5" />
+        {/* <Skeleton className="self-end w-20 h-20 bg-gray5" /> */}
       </div>
       <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
         <Skeleton className="h-4 mb-2 bg-gray5" />

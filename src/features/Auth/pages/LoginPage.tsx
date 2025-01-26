@@ -2,12 +2,13 @@ import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate } from "react-router-dom";
-import { authAPI } from "@/lib/api";
+import { authAPI, userAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
+import { setUser } from "@/redux/user/userSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -38,6 +39,13 @@ export const LoginPage = () => {
     return isValid;
   };
 
+  const handleGetUser = async (accessToken: string) => {
+    const user = await userAPI.getUser(accessToken);
+    if (user) {
+      dispatch(setUser(user));
+    }
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
@@ -64,6 +72,7 @@ export const LoginPage = () => {
         }
 
         localStorage.setItem("userId", userId);
+        await handleGetUser(response.data.accessToken);
         dispatch(loginSuccess());
         navigate("/");
       }

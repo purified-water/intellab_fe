@@ -14,12 +14,16 @@ import {
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
+import { clearUser } from "@/redux/user/userSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 const Navbar = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileIconRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
@@ -53,6 +57,7 @@ const Navbar = () => {
   };
 
   const handleLogout = () => {
+    dispatch(clearUser());
     dispatch(logoutSuccess());
     Cookies.remove("accessToken");
     localStorage.removeItem("userId");
@@ -138,7 +143,7 @@ const Navbar = () => {
                     <MdAccountCircle className="icon-3xl" />
 
                     <div className="flex flex-col px-4 py-2">
-                      <div className="text-lg font-semibold">Username</div>
+                      <div className="text-lg font-semibold">{user?.name}</div>
                       <div className="text-sm text-gray-500">100 points</div>
                     </div>
                   </div>

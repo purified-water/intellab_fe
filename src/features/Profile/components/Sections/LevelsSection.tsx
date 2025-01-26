@@ -1,8 +1,18 @@
-export const LevelsSection = () => {
+import { Progress } from "@/types";
+
+export type LevelsSectionProps = {
+  progress: Progress;
+};
+
+export const LevelsSection = (props: LevelsSectionProps) => {
+  const { progress } = props;
+
+  const { easy, medium, hard } = progress;
+
   const levels = [
-    { level: "Hard", solved: "1 Problem Solved" },
-    { level: "Medium", solved: "15 Problems Solved" },
-    { level: "Easy", solved: "15 Problems Solved" }
+    { level: "Hard", solved: `${hard.solved} Problems Solved` },
+    { level: "Medium", solved: `${medium.solved} Problems Solved` },
+    { level: "Easy", solved: `${easy.solved} Problems Solved` }
   ];
 
   return (

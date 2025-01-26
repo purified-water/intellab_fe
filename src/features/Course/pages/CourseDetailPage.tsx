@@ -7,10 +7,9 @@ import Spinner from "@/components/ui/Spinner";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { AppDispatch } from "@/redux/store";
-import { updateUserEnrolled } from "@/redux/course/courseSlice";
+import Pagination from "@/components/ui/Pagination";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -19,7 +18,9 @@ export const CourseDetailPage = () => {
   const [course, setCourse] = useState<ICourse | null>(null);
   const [lessons, setLessons] = useState<ILesson[] | IEnrolledLesson[]>([]);
   const [loading, setLoading] = useState(false);
-  const dispatch = useDispatch<AppDispatch>();
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [totalPages, setTotalPages] = useState<number>(1);
+  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -33,37 +34,41 @@ export const CourseDetailPage = () => {
 
     // If the user already enrolled in the course, update the Redux store to get the correct lessons type
     if (result.userEnrolled) {
-      dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+      // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+      setIsEnrolled(true);
+    } else {
+      setIsEnrolled(false);
     }
 
     setCourse(result);
     setLoading(false);
   };
 
-  const getCourseLessons = async () => {
+  const getCourseLessons = async (page: number) => {
     setLoading(true);
 
-    const courseData = courses ? courses.find((course) => course.courseId === id) : null; // Find the course from Redux store
-    const userEnrolled = courseData ? courseData.userEnrolled : false;
-
-    if (userEnrolled && isAuthenticated) {
+    if (isEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(id!, userId!);
+        const response = await courseAPI.getLessonsAfterEnroll(userId!, id!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
         setLoading(false);
+        setCurrentPage(response.result.number);
+        setTotalPages(response.result.totalPages);
       } catch (error) {
         console.log("Error fetching lessons", error);
         setLoading(false);
       }
     } else {
       try {
-        const response = await courseAPI.getLessons(id!);
+        const response = await courseAPI.getLessons(id!, page);
         const lessons = response.result.content;
         lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
         // console.log("Lessons before enroll", lessons);
         setLessons(lessons);
+        setCurrentPage(response.result.number);
+        setTotalPages(response.result.totalPages);
         setLoading(false);
       } catch (error) {
         console.log("Error fetching lessons", error);
@@ -74,8 +79,8 @@ export const CourseDetailPage = () => {
 
   useEffect(() => {
     getCourseDetail();
-    getCourseLessons();
-  }, [isAuthenticated, courses]); // Re-fetch when `userEnrolled` changes or `courses` changes
+    getCourseLessons(0);
+  }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
     if (isAuthenticated) {
@@ -90,9 +95,11 @@ export const CourseDetailPage = () => {
     try {
       const response = await courseAPI.enrollCourse(userId!, id!);
       if (response.code === 0) {
-        dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+        // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
+        setIsEnrolled(true);
         alert("Enroll successfully");
       } else {
+        setIsEnrolled(false);
         alert("Enroll failed");
       }
     } catch (error) {
@@ -103,10 +110,10 @@ export const CourseDetailPage = () => {
 
   const handleContinueClick = () => {
     if (lessons.length > 0 && course?.latestLessonId != null) {
-      navigate(`/lesson/${course.latestLessonId}`);
+      navigate(`/lesson/${course.latestLessonId}?courseId=${course.courseId}`);
     } else {
       const firstLesson = lessons[0];
-      navigate(`/lesson/${firstLesson.lessonId}`);
+      navigate(`/lesson/${firstLesson.lessonId}?courseId=${course!.courseId}`);
     }
   };
 
@@ -117,17 +124,14 @@ export const CourseDetailPage = () => {
 
   const renderHeader = () => {
     return (
-      <Header
-        title={course?.courseName ?? DEFAULT_COURSE.courseName}
-        description={course?.description ?? DEFAULT_COURSE.description}
-        isEnrolled={course?.userEnrolled ?? DEFAULT_COURSE.userEnrolled}
-        rating={course?.averageRating ?? DEFAULT_COURSE.averageRating}
-        reviews={course?.reviewCount ?? DEFAULT_COURSE.reviewCount}
-        progress={course?.progressPercent ?? DEFAULT_COURSE.progressPercent}
-        onEnroll={handleEnrollClick}
-        onContinue={handleContinueClick}
-        onViewCertificate={handleViewCertificateClick}
-      />
+      course && (
+        <Header
+          course={course!}
+          onEnroll={handleEnrollClick}
+          onContinue={handleContinueClick}
+          onViewCertificate={handleViewCertificateClick}
+        />
+      )
     );
   };
 
@@ -135,11 +139,21 @@ export const CourseDetailPage = () => {
     switch (activeTab) {
       case "Lessons":
         return (
-          <LessonList
-            lessons={lessons}
-            isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
-            lastViewedLessonId={course?.latestLessonId}
-          />
+          <div>
+            <LessonList
+              lessons={lessons}
+              isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
+              lastViewedLessonId={course?.latestLessonId}
+              course={course!}
+            />
+            {totalPages != 0 && (
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={(page) => getCourseLessons(page)}
+              />
+            )}
+          </div>
         );
       case "Comments":
         return <div>Comments content goes here</div>;
@@ -175,7 +189,7 @@ export const CourseDetailPage = () => {
   };
 
   return (
-    <div className="pb-8 mx-auto w-7/10">
+    <div className="pb-8 mx-auto max-w-7xl">
       {renderHeader()}
       {renderBody()}
       <Spinner loading={loading} overlay />

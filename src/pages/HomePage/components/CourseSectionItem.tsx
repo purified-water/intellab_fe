@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ICourse } from "@/features/Course/types";
 import { useNavigate } from "react-router-dom";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
