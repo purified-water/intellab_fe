@@ -118,8 +118,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleViewCertificateClick = () => {
-    // TODO: Implement certificate page
-    alert("Upcoming feature");
+    navigate(`/certificate?courseId=${course!.courseId}`);
   };
 
   const renderHeader = () => {

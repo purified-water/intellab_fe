@@ -16,6 +16,7 @@ import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 import { Toaster } from "@/components/ui/shadcn/toaster";
+import { CertificatePage } from "./features/Certificate/pages";
 
 // Layout component to include conditional Navbar
 const Layout = () => {
@@ -87,6 +88,10 @@ const router = createBrowserRouter([
       {
         path: "/lesson/:lessonId/quiz/:quizId",
         element: <LessonQuiz />
+      },
+      {
+        path: "/certificate",
+        element: <CertificatePage />
       }
     ]
   }

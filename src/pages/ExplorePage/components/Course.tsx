@@ -48,8 +48,7 @@ export default function Course(props: CourseProps) {
   const handleButtonClick = (id: string) => {
     if (isAuthenticated && detailCourse?.userEnrolled && detailCourse?.latestLessonId) {
       if (isFinished) {
-        // TODO: Implement certificate page
-        alert("Upcoming feature");
+        navigate(`/certificate?courseId=${course.courseId}`);
       } else {
         navigate(`/lesson/${detailCourse.latestLessonId}`);
       }

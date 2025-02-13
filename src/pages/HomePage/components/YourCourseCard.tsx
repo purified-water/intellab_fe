@@ -41,8 +41,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const handleContinueCourse = () => {
     if (accessToken && userId) {
       if (isFinished) {
-        // TODO: Implement certificate page
-        alert("Upcoming feature");
+        navigate(`/certificate?courseId=${courseId}`);
       } else {
         if (courseDetail?.latestLessonId) {
           navigate(`/lesson/${courseDetail.latestLessonId}?courseId=${courseDetail.courseId}`);
