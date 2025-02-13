@@ -40,6 +40,7 @@ export const ExplorePage = () => {
     setLoading(true);
     const userUid = getUserIdFromLocalStorage();
     const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
+    // const response = await courseAPI.getCourses();
     if (response) {
       dispatch(getExploreCourse(response.result.content));
       dispatch(resetFilters());

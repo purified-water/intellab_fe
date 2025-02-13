@@ -95,3 +95,13 @@ export interface IGetLeaderboardResponse {
     content: ILeaderboardRank[];
   };
 }
+
+export interface IGetCategories {
+  code: number;
+  result: ICategory[];
+}
+
+export interface ICategory {
+  categoryId: number;
+  name: string;
+}

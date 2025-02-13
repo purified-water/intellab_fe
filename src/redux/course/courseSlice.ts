@@ -3,6 +3,7 @@ import { CourseState, ReduxCourse } from "./courseType";
 import { ICourse } from "@/features/Course/types";
 import { PriceRange } from "@/pages/ExplorePage/components/FilterComponent";
 import { apiClient } from "@/lib/api/apiClient";
+import { ICategory } from "@/pages/HomePage/types/responseTypes";
 
 const initialState: CourseState = {
   courses: [],
@@ -15,17 +16,23 @@ const initialState: CourseState = {
 export const fetchExploreCourses = createAsyncThunk(
   "course/fetchExploreCourses",
   async (
-    payload: { keyword: string; selectedCategories: string[]; selectedRating: string | null; selectedPrices: string[] },
+    payload: {
+      keyword: string;
+      selectedCategories: ICategory[];
+      selectedRating: string | null;
+      selectedPrices: string[];
+    },
 
     { dispatch }
   ) => {
     try {
       const { keyword, selectedCategories, selectedRating, selectedPrices } = payload;
+      const categoryIds = selectedCategories.map((category) => category.categoryId);
       // Gọi API với danh sách courseId được chọn
       const response = await apiClient.get("course/courses/search", {
         params: {
           keyword: keyword,
-          categories: selectedCategories.join(","),
+          categories: categoryIds.join(","),
           ratings: selectedRating ? (parseFloat(selectedRating) > 0 ? parseFloat(selectedRating) : null) : null,
           price: selectedPrices.length === 1 && selectedPrices.some((value) => value === "Paid")
         } // Định dạng tham số truy vấn
