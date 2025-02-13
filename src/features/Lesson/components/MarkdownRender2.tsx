@@ -1,101 +1,135 @@
-import React, { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
-import rehypeSlug from "rehype-slug";
-import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { dracula } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { LessonHeader } from "./LessonHeader";
-import { ILesson } from "@/features/Course/types";
-import { TableOfContents } from "./TableOfContents";
+import { tomorrow as theme } from "react-syntax-highlighter/dist/esm/styles/prism";
 
-interface MarkdownRenderProps {
-  lesson: ILesson;
-  setIsScrolledToBottom: (value: boolean) => void;
+// Type definition for a code block
+interface CodeBlock {
+  language: string;
+  content: string;
 }
 
-export const MarkdownRender = (props: MarkdownRenderProps) => {
-  const { lesson, setIsScrolledToBottom } = props;
+// NOTE: thử gán các code tabs là 1 id riêng 1 2 3, sau khi 1 consecutive code blocks hết thì
+// xóa hết mấy cái code block cũ để gán cái mới?
+// rồi hỏi thử tại sao cái code block nó lại cứ hiện sau cùng
 
-  const [toc, setToc] = useState<{ id: string; text: string; level: number }[]>([]);
-  const [tocTop, setTocTop] = useState(0);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [activeTab, setActiveTab] = useState<string>("plaintext");
-  const [groupedCodeBlocks, setGroupedCodeBlocks] = useState<{ [language: string]: string[] }>({});
-  const contentRef = useRef<HTMLDivElement | null>(null);
+// Function to parse markdown and group consecutive code blocks
+const parseMarkdown = (markdown: string): (string | { type: string; title: string; blocks: CodeBlock[] })[] => {
+  const lines = markdown.split("\n");
+  const elements: (string | { type: string; title: string; blocks: CodeBlock[] })[] = [];
+  let currentTitle = "";
+  let currentBlocks: CodeBlock[] = [];
+  let currentLanguage = "";
+  let isInCodeBlock = false;
 
-  useEffect(() => {
-    const preprocessMarkdown = (content: string) => {
-      const blocks: { [language: string]: string[] } = {};
-      const matches = content.match(/```(\w+)[\s\S]*?```/g) || [];
+  lines.forEach((line) => {
+    const match = line.match(/^([A-Za-z#\+\-]+)$/); // Match language names as headings
+    const codeMatch = line.match(/^```(\w+)/); // Match code block language
 
-      matches.forEach((block) => {
-        const languageMatch = block.match(/```(\w+)/);
-        const language = languageMatch ? languageMatch[1] : "plaintext";
-        const code = block.replace(/```(\w+)|```/g, "").trim();
+    if (match && !isInCodeBlock) {
+      // If we're inside a code block, add the last group
+      if (currentBlocks.length > 0) {
+        elements.push({
+          type: "codeGroup",
+          title: currentTitle,
+          blocks: currentBlocks
+        });
+        currentBlocks = [];
+      }
+      currentTitle = match[1]; // Capture language name
+      elements.push(line); // Add the title (e.g., "C++", "Java")
+    } else if (codeMatch) {
+      isInCodeBlock = true;
+      currentLanguage = codeMatch[1]; // Capture language
+    } else if (line.startsWith("```") && isInCodeBlock) {
+      // Closing code block
+      isInCodeBlock = false;
+      currentLanguage = "";
+    } else if (isInCodeBlock && currentLanguage) {
+      // Inside a code block
+      currentBlocks.push({ language: currentLanguage, content: line });
+    } else {
+      // Regular markdown text
+      elements.push(line);
+    }
+  });
 
-        if (!blocks[language]) blocks[language] = [];
-        blocks[language].push(code);
-      });
+  // Push the last block if exists
+  if (currentBlocks.length > 0) {
+    elements.push({
+      type: "codeGroup",
+      title: currentTitle,
+      blocks: currentBlocks
+    });
+  }
 
-      setGroupedCodeBlocks(blocks);
-      setActiveTab(Object.keys(blocks)[0] || "plaintext");
-    };
+  return elements;
+};
 
-    preprocessMarkdown(lesson.content);
-  }, [lesson.content]);
+interface MarkdownEditorProps {
+  markdown: string;
+}
 
-  const CodeTabs = () => (
-    <div className="mt-4">
-      <div className="flex bg-gray-100 border-b">
-        {Object.keys(groupedCodeBlocks).map((language) => (
-          <button
-            key={language}
-            className={`py-2 px-4 ${activeTab === language ? "bg-blue-500 text-white" : "text-gray-700"}`}
-            onClick={() => setActiveTab(language)}
-          >
-            {language}
-          </button>
-        ))}
-      </div>
-      <div className="p-4 overflow-auto font-mono text-white bg-gray-900">
-        {groupedCodeBlocks[activeTab]?.map((code, idx) => (
-          <SyntaxHighlighter key={idx} language={activeTab} style={dracula} showLineNumbers>
-            {code}
-          </SyntaxHighlighter>
-        ))}
-      </div>
-    </div>
-  );
+export default function MarkdownEditor({ markdown }: MarkdownEditorProps) {
+  if (!markdown) return null;
+
+  const [selectedTab, setSelectedTab] = useState<{ [key: string]: string }>({});
+
+  const parsedContent = parseMarkdown(markdown);
 
   return (
-    <div className={`flex ${windowWidth < 1000 ? "mr-1" : windowWidth > 1500 ? "mr-64" : "mr-48"}`}>
-      <div className="pr-6" style={{ width: windowWidth * 0.8 }} ref={contentRef}>
-        <LessonHeader lesson={lesson} />
-        <ReactMarkdown
-          className="markdown"
-          remarkPlugins={[remarkGfm]}
-          rehypePlugins={[rehypeSlug, rehypeAutolinkHeadings]}
-          components={{
-            code({ children, className }) {
-              return null; // Prevent direct rendering of code blocks
-            }
-          }}
-        >
-          {lesson.content}
-        </ReactMarkdown>
-        {Object.keys(groupedCodeBlocks).length > 0 && <CodeTabs />}
+    <div className="flex flex-col items-center min-h-screen p-4 bg-gray-100">
+      {/* Markdown Preview */}
+      <div className="w-full max-w-3xl p-6 bg-white rounded-lg shadow-md">
+        {parsedContent.map((element, index) => {
+          if (typeof element === "string") {
+            return (
+              <ReactMarkdown key={index} className="mb-4">
+                {element}
+              </ReactMarkdown>
+            );
+          }
+
+          if (element.type === "codeGroup") {
+            const languages = Array.from(new Set(element.blocks.map((b) => b.language)));
+            const selectedLanguage = selectedTab[element.title] || languages[0];
+
+            return (
+              <div key={index} className="mt-6 overflow-hidden border rounded-lg">
+                {/* Tabs */}
+                <div className="flex bg-gray-200 border-b">
+                  {languages.map((lang) => (
+                    <button
+                      key={lang}
+                      className={`px-4 py-2 text-sm ${
+                        selectedLanguage === lang
+                          ? "bg-white border-t border-x border-gray-300 font-bold"
+                          : "text-gray-600"
+                      }`}
+                      onClick={() => setSelectedTab((prev) => ({ ...prev, [element.title]: lang }))}
+                    >
+                      {lang}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Code Display */}
+                <div className="p-4 bg-gray-50">
+                  <SyntaxHighlighter style={theme} language={selectedLanguage} PreTag="div">
+                    {element.blocks
+                      .filter((b) => b.language === selectedLanguage)
+                      .map((b) => b.content)
+                      .join("\n")}
+                  </SyntaxHighlighter>
+                </div>
+              </div>
+            );
+          }
+
+          return null;
+        })}
       </div>
-      {toc.length > 0 && (
-        <TableOfContents
-          toc={toc}
-          activeTocItem=""
-          setActiveTocItem={() => {}}
-          tocTop={tocTop}
-          defaultTop={100}
-          windowWidth={windowWidth}
-        />
-      )}
     </div>
   );
-};
+}

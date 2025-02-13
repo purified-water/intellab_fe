@@ -49,7 +49,7 @@ export const CourseDetailPage = () => {
 
     if (isEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(userId!, id!, page);
+        const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);

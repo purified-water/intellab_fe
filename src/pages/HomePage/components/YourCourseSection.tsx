@@ -19,7 +19,7 @@ export const YourCourseSection = () => {
     if (accessToken && userId) {
       setLoading(true);
       try {
-        const response = await courseAPI.getUserEnrolledCourses(userId!);
+        const response = await courseAPI.getUserEnrolledCourses();
         const userEnrolledCourses = response.result.content;
         setUserEnrollCourses(userEnrolledCourses);
       } catch (e) {

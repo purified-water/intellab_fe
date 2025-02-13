@@ -8,6 +8,7 @@ export interface TestCaseType {
   submitOutputs: string[];
 }
 export interface TestCaseResultWithIO {
+  // To get the test case detail
   testcaseId: string;
   input: string;
   output: string;

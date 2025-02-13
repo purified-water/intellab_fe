@@ -1,16 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TestCases } from "./TestCases";
 import { BsCode } from "rocketicons/bs";
 import { MdCheckBox } from "rocketicons/md";
 import { Separator } from "@/components/ui/Separator";
 import { TestCaseType } from "../../types/TestCaseType";
+import { Output } from "./Output";
+import { RunCodeResponseType } from "../../types/RunCodeType";
 
 interface RenderTCTabsProps {
   testCases: TestCaseType[];
+  runCodeResult?: RunCodeResponseType | null;
 }
 
-export const RenderTCTabs = ({ testCases }: RenderTCTabsProps) => {
-  const [testCaseActive, setTestCaseActive] = useState("Testcase");
+export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) => {
+  const initialTab = runCodeResult ? "Output" : "Testcase";
+  const [testCaseActive, setTestCaseActive] = useState(initialTab);
+
+  useEffect(() => {
+    if (runCodeResult !== null) {
+      setTestCaseActive("Output");
+    }
+  }, [runCodeResult]);
 
   const renderPlaygroundTabButton = (tabName: string) => {
     const getIcon = () => {
@@ -47,7 +57,7 @@ export const RenderTCTabs = ({ testCases }: RenderTCTabsProps) => {
           </div>
         );
       case "Output":
-        return <div>Output':</div>;
+        return <Output runCodeResult={runCodeResult ?? null} />;
     }
   };
 

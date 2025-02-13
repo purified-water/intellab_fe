@@ -21,10 +21,12 @@ import { SubmissionTypeNoProblem } from "../types/SubmissionType";
 import { saveCode } from "@/redux/problem/problemSlice";
 import { useDispatch } from "react-redux";
 import { saveSubmission } from "@/redux/problem/submissionSlice";
+import { courseAPI } from "@/lib/api";
+import { LanguageCodes } from "../constants/LanguageCodes";
+import { RunCodeResponseType, RunCodeTestCase } from "../types/RunCodeType";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  // const [problemDescription, setProblemDescription] = useState("");
   const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
   const [testCases, setTestCases] = useState<TestCaseType[]>([]);
   const { problemId } = useParams<{ problemId: string }>();
@@ -32,6 +34,8 @@ export const ProblemDetail = () => {
   const [language, setLanguage] = useState("");
   const [isSubmissionPassed, setIsSubmissionPassed] = useState<boolean | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [runCodeResult, setRunCodeResult] = useState<RunCodeResponseType | null>(null);
+  const [isRunningCode, setIsRunningCode] = useState(false);
 
   // const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -39,36 +43,19 @@ export const ProblemDetail = () => {
   const courseName = searchParams.get("courseName");
   const lessonId = searchParams.get("lessonId");
   const lessonName = searchParams.get("lessonName");
+  const learningId = searchParams.get("learningId");
   // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
 
-  const dispatch = useDispatch();
-
-  const fetchProblemDetail = async () => {
-    try {
-      const problemDetail = await problemAPI.getProblemDetail(problemId!);
-
-      if (problemDetail) {
-        setProblemDetail(problemDetail);
-        setTestCases(problemDetail.testCases);
-      }
-    } catch (error) {
-      console.error("Failed to fetch problem detail", error);
-    }
-  };
-
-  const handleRunCode = async () => {
-    console.log("code and language", code, language);
-  };
-
-  const handleSubmitCode = async () => {
+  const submissionValidation = () => {
+    console.log("code in validation", code);
     if (!code) {
       toast({
         variant: "destructive",
         description: "Please write some code to submit!"
       });
-      return;
+      return false;
     }
 
     if (!userId) {
@@ -76,14 +63,122 @@ export const ProblemDetail = () => {
         variant: "destructive",
         description: "Please log in to submit your code!"
       });
+      return false;
     }
+    return true;
+  };
+
+  const dispatch = useDispatch();
+  console.log("user id from local storage", userId);
+  const fetchProblemDetail = async () => {
+    try {
+      const problemDetail = await problemAPI.getProblemDetail(problemId!);
+
+      if (problemDetail) {
+        setProblemDetail(problemDetail);
+        setTestCases(problemDetail.testCases.slice(0, 3));
+      }
+    } catch (error) {
+      console.error("Failed to fetch problem detail", error);
+    }
+  };
+
+  const handleRunCode = async () => {
+    if (!submissionValidation()) return;
+    setIsRunningCode(true);
+
+    const languageId = LanguageCodes.find((lang) => lang.name === language)?.id;
+
+    try {
+      if (problemId && languageId) {
+        const response = await problemAPI.postRunCode(code, languageId, problemId);
+        const result = response.result;
+        console.log("Run code response", result);
+        if (result) {
+          pollRunCode(result.runCodeId);
+        }
+      }
+    } catch (error) {
+      console.error("Failed to run code", error);
+      toast({
+        variant: "destructive",
+        description: "Failed to run code"
+      });
+
+      setIsRunningCode(false);
+    }
+  };
+
+  const pollRunCode = async (runCodeId: string) => {
+    console.log("Polling run code", runCodeId);
+    let elapsedTime = 0;
+    const maxTimeout = 12000; // 12s
+
+    const interval = setInterval(async () => {
+      elapsedTime += 4000;
+
+      try {
+        const response = await problemAPI.getRunCodeUpdate(runCodeId);
+        console.log("Run code update response", response);
+        if (response) {
+          const updateResponse = response.result;
+
+          // Check if all test case results have `result_status` not equal to "null" or "In Queue"
+          const allResultsAvailable = updateResponse.testcases.every(
+            (testCase: RunCodeTestCase) =>
+              testCase.status && testCase.status !== "In Queue" && testCase.status !== "Progressing"
+          );
+
+          if (allResultsAvailable || elapsedTime >= maxTimeout) {
+            clearInterval(interval); // Stop polling
+
+            if (elapsedTime >= maxTimeout && !allResultsAvailable) {
+              toast({
+                variant: "destructive",
+                description: "Run code timeout. Please try again later."
+              });
+              setIsRunningCode(false);
+            } else {
+              toast({
+                description: "Run code completed!"
+              });
+
+              // Handle final results
+              setRunCodeResult(updateResponse);
+              setIsRunningCode(false);
+            }
+          }
+        } else {
+          console.error(`Error in polling: ${response.status} ${response.statusText}`);
+          clearInterval(interval);
+        }
+      } catch (error) {
+        console.error("Failed to fetch submission update:", error);
+        clearInterval(interval);
+      }
+    }, 4000);
+  };
+
+  // If the user is logged in and the problem is belong to a lesson (has learning ID), update the learning progress
+  const updatePracticeDone = async () => {
+    if (learningId && userId && courseId) {
+      try {
+        await courseAPI.updatePracticeDone(learningId, courseId);
+      } catch (error) {
+        console.error("Failed to update learning progress", error);
+      }
+    }
+  };
+
+  const handleSubmitCode = async () => {
+    if (!submissionValidation()) return;
     setIsSubmitting(true);
 
     try {
       if (problemId && userId) {
         dispatch(saveCode({ problemId, code, language }));
 
-        const response = await problemAPI.createSubmission(1, code, language, problemId!);
+        const response = await problemAPI.createSubmission(1, code, language, problemId!, userId);
 
         if (response?.submission_id) {
           pollSubmissionStatus(response.submission_id);
@@ -115,9 +210,6 @@ export const ProblemDetail = () => {
   const pollSubmissionStatus = async (submissionId: string) => {
     let elapsedTime = 0;
     const maxTimeout = 60000; // 60 seconds
-
-    // const response = await problemAPI.getUpdateSubmission(submissionId);
-    // console.log("Submission update response", response);
     const interval = setInterval(async () => {
       elapsedTime += 5000; // Increment elapsed time by 5 seconds
 
@@ -151,6 +243,8 @@ export const ProblemDetail = () => {
 
               // Handle final results
               handleSubmissionResult(updateResponse);
+              // Update learning progress if the problem is in a lesson
+              updatePracticeDone();
             }
           }
         } else {
@@ -186,7 +280,7 @@ export const ProblemDetail = () => {
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-          <ResizablePanel defaultSize={40} minSize={20} id="description" className="bg-white rounded-t-lg">
+          <ResizablePanel defaultSize={40} minSize={40} id="description" className="bg-white rounded-t-lg">
             <RenderDescTabs
               problemDetail={problemDetail}
               courseId={courseId}
@@ -219,7 +313,7 @@ export const ProblemDetail = () => {
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
 
               <ResizablePanel id="test-cases" defaultSize={40} minSize={20} className="overflow-y-auto bg-white">
-                <RenderTCTabs testCases={testCases} />
+                <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
@@ -237,22 +331,30 @@ export const ProblemDetail = () => {
         </Button>
 
         <div className="flex space-x-4">
-          <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={handleRunCode}>
-            <FaPlay className="inline-block icon-sm icon-gray3" />
+          <Button
+            className={`font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4 ${isRunningCode ? "cursor-not-allowed" : ""}`}
+            onClick={handleRunCode}
+            disabled={isRunningCode}
+          >
+            {isRunningCode ? (
+              <FaSpinner className="inline-block icon-sm animate-spin icon-gray3" />
+            ) : (
+              <FaPlay className="inline-block icon-sm icon-gray3" />
+            )}
             Run Code
           </Button>
 
           <Button
             onClick={handleSubmitCode}
-            className={`font-semibold text-appAccent bg-appFadedAccent gap-x-1 hover:bg-appFadedAccent/80 ${
+            className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${
               isSubmitting ? "cursor-not-allowed" : ""
             }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? (
-              <FaSpinner className="inline-block icon-sm animate-spin icon-appAccent" />
+              <FaSpinner className="inline-block icon-sm animate-spin icon-white" />
             ) : (
-              <FaUpload className="inline-block icon-sm icon-appAccent" />
+              <FaUpload className="inline-block icon-sm icon-white" />
             )}
             Submit
           </Button>

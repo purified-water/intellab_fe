@@ -1,4 +1,3 @@
-// import { MarkdownRender } from "../components";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -9,7 +8,9 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { MarkdownRender } from "../components/MarkdownRender";
-// import { MarkdownRender } from "../components/MarkdownRender";
+import { Button } from "@/components/ui/Button";
+// import MarkdownEditor from "../components/MarkdownRender2";
+// import { testData } from "../components/testData";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -53,12 +54,12 @@ export const LessonDetailPage = () => {
     if (id && userId) {
       if (learningId && courseId) {
         try {
-          await courseAPI.updateLessonLearningProgress(learningId, courseId, userId);
+          await courseAPI.updateLessonLearningProgress(learningId, courseId);
         } catch (error) {
           console.log("Error updating learning progress", error);
         }
       }
-      const response = await courseAPI.getLessonDetail(id, userId);
+      const response = await courseAPI.getLessonDetail(id);
       const { result } = response;
 
       console.log("Lesson detail", result);
@@ -68,46 +69,25 @@ export const LessonDetailPage = () => {
       if (result.isDoneTheory) {
         setIsLessonDone(true);
       }
-      // setNextLessonOrder(result.lessonOrder! + 1);
       setLesson(result);
       setLoading(false);
     }
   };
 
   const updateTheoryDone = async () => {
-    // setIsCorrect(isCorrect);
     try {
       // if not quiz, mark as done when scrolled to bottom
       if (!hasQuiz && isScrolledToBottom) {
-        await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!, userId!);
+        await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!);
         console.log("Mark as done");
         // Remove bookmark after lesson is done
         clearBookmark(userId!, lesson!.lessonId!);
-
-        await courseAPI.updatePracticeDone(lesson!.learningId!, lesson!.courseId, userId!); // TEMPORARY MARK AS DONE for practice because no practice yet
         setIsLessonDone(true);
       }
     } catch (error) {
       console.log("Error updating theory done", error);
     }
   };
-
-  // const fetchNextLesson = async () => {
-  //   try {
-  //     if (lesson?.nextLessonId == null || lesson?.courseId == null) {
-  //       return;
-  //     }
-
-  //     const response = await courseAPI.getLessons(lesson!.courseId!, 100);
-  //     const { result } = response;
-  //     const content = result.content;
-
-  //     const nextLesson = content.find((les: ILesson) => les.lessonId === lesson?.nextLessonId);
-  //     setNextLesson(nextLesson!);
-  //   } catch (error) {
-  //     console.log("Error fetching next lesson", error);
-  //   }
-  // };
 
   const navigateToNextLesson = () => {
     if (lesson?.nextLessonId) {
@@ -127,16 +107,9 @@ export const LessonDetailPage = () => {
 
   const navigateToProblem = () => {
     navigate(
-      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${course!.courseId}&courseName=${course!.courseName}`
+      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${course!.courseId}&courseName=${course!.courseName}&learningId=${lesson!.learningId}`
     );
   };
-
-  // useEffect(() => {
-  //   if (lesson) {
-  //     // getLessonQuiz();
-  //     // fetchNextLesson();
-  //   }
-  // }, [lesson]);
 
   useEffect(() => {
     getCourseDetail();
@@ -168,6 +141,7 @@ export const LessonDetailPage = () => {
   const renderContent = () => {
     if (lesson && lesson.content != null) {
       return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
+      // return <MarkdownEditor markdown={testData} />;
     }
   };
 
@@ -239,19 +213,16 @@ export const LessonDetailPage = () => {
     return (
       <div className="flex-col items-center justify-center">
         <div className="mb-6 text-2xl font-bold">Pass the quiz to complete this theory lesson</div>
-        <div
-          className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
+        <Button
+          className="h-10 px-6 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80 disabled:bg-gray5 disabled:text-gray3"
           onClick={() =>
             navigate(
               `quiz/${lesson?.exerciseId}?learningId=${lesson?.learningId}&courseId=${lesson?.courseId}&isDone=${lesson?.isDoneTheory}`
             )
           }
         >
-          {lesson.isDoneTheory ? <p>View your quiz result</p> : <p>Continue to the quiz page</p>}
-          <div className="ml-auto">
-            <ChevronRight style={{ color: "gray" }} size={22} />
-          </div>
-        </div>
+          {lesson.isDoneTheory ? <p>View your quiz result</p> : <p>Continue to quiz page</p>}
+        </Button>
       </div>
     );
   };
