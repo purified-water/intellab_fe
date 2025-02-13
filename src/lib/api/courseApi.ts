@@ -5,8 +5,10 @@ import {
   IGetCourseLessonsResponse,
   IEnrollCourseResponse,
   IGetLessonDetailResponse,
-  IGetUserEnrolledCoursesResponse
+  IGetUserEnrolledCoursesResponse,
+  IGetCategories
 } from "../../pages/HomePage/types/responseTypes";
+import { IReviewsResponse } from "../../pages/HomePage/types/reviewResponse";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
@@ -22,6 +24,18 @@ export const courseAPI = {
   getUnEnrollCourses: async (userUid: string) => {
     const response = await apiClient.get(`course/courses/exceptEnrolled?userUid=${userUid}`);
     const data: IGetCoursesResponse = response.data;
+    return data;
+  },
+
+  getCategories: async () => {
+    const response = await apiClient.get(`course/courses/categories`);
+    const data: IGetCategories = response.data;
+    return data;
+  },
+
+  getReviews: async (courseId: string) => {
+    const response = await apiClient.get(`course/courses/${courseId}/reviews`);
+    const data: IReviewsResponse = response.data;
     return data;
   },
 

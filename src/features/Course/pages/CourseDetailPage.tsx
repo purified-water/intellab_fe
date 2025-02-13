@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import Pagination from "@/components/ui/Pagination";
+import Reviews from "../components/Reviews";
+import RatingModal from "../components/RatingModal";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -26,6 +28,11 @@ export const CourseDetailPage = () => {
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const courses = useSelector((state: RootState) => state.course.courses);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const getCourseDetail = async () => {
     setLoading(true);
@@ -80,6 +87,9 @@ export const CourseDetailPage = () => {
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
+    if (course?.progressPercent == 100) {
+      openModal();
+    }
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
@@ -152,12 +162,21 @@ export const CourseDetailPage = () => {
                 onPageChange={(page) => getCourseLessons(page)}
               />
             )}
+            {isModalOpen && (
+              <RatingModal
+                closeModal={closeModal}
+                courseTitle={course?.courseName ?? ""}
+                courseId={course?.courseId ?? ""}
+                isReviewTab={false}
+              />
+            )}
           </div>
         );
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":
-        return <div>Reviews content goes here</div>;
+        // return <div>Reviews content goes here</div>;
+        return <Reviews courseTitle={course?.courseName ?? ""} courseId={course?.courseId ?? ""}></Reviews>;
       default:
         return null;
     }
