@@ -3,6 +3,7 @@ import { ProblemDescription } from "./ProblemDescription";
 import { ProblemType } from "@/types/ProblemType";
 import { TestCaseType } from "../../types/TestCaseType";
 import { SubmissionInformation } from "./SubmissionInformation";
+import { SubmissionHistory } from "./SubmissionHistory";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
   courseId: string | null;
@@ -32,7 +33,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         className={
           desActive === tabName
             ? "text-appAccent font-semibold text-sm md:text-base"
-            : "text-gray3 font-semibold text-sm md:text-base"
+            : "text-gray3 font-semibold text-sm md:text-base hover:text-appAccent/80"
         }
       >
         {tabName}
@@ -55,7 +56,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
       case "Comments":
         return <div>Comments</div>;
       case "Submissions":
-        return <div>Submissions</div>;
+        return <SubmissionHistory />;
       case "Hints":
         return <div>Hints</div>;
       case "Failed":

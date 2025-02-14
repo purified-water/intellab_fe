@@ -41,8 +41,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const handleContinueCourse = () => {
     if (accessToken && userId) {
       if (isFinished) {
-        // TODO: Implement certificate page
-        alert("Upcoming feature");
+        navigate(`/certificate?courseId=${courseId}`);
       } else {
         if (courseDetail?.latestLessonId) {
           navigate(`/lesson/${courseDetail.latestLessonId}?courseId=${courseDetail.courseId}`);
@@ -98,7 +97,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
       {skeletonLoading || apiLoading ? renderSkeleton() : renderContent()}
     </div>
   );

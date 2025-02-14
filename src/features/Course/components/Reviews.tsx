@@ -1,51 +1,12 @@
 import { Card } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/shadcn/Button";
 import { Star } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import RatingModal from "./RatingModal";
-import { IReview } from "@/pages/HomePage/types/reviewResponse";
+import { IReview, ReviewStatsResult } from "@/pages/HomePage/types/reviewResponse";
 import { courseAPI } from "@/lib/api/courseApi";
-
-const allReviews = [
-  //   {
-  //     name: "Tuan Nguyen",
-  //     rating: 5,
-  //     date: "Jan 25, 2025",
-  //     text: "Nunc enim lectus, pharetra ut blandit sed, convallis sit amet felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas."
-  //   },
-  {
-    name: "Tuan Nguyen",
-    rating: 5,
-    date: "Jan 25, 2025",
-    text: "Nunc enim lectus, pharetra ut blandit sed, convallis sit amet felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Proin est eros, semper lacinia sollicitudin at, dapibus vitae ex. Proin sed sagittis nisi, et tempus nisl. Integer vel est tellus. In sagittis orci eu augue dignissim gravida eu et dolor. Donec maximus arcu lorem, ac posuere lectus maximus sed. Vestibulum blandit quis metus...s"
-  },
-  {
-    name: "Tuan Nguyen",
-    rating: 4,
-    date: "Jan 25, 2025",
-    text: "Nunc enim lectus, pharetra ut blandit sed, convallis sit amet felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas."
-  },
-  {
-    name: "Tuan Nguyen",
-    rating: 3,
-    date: "Jan 25, 2025",
-    text: "Nunc enim lectus, pharetra ut blandit sed, convallis sit amet felis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas."
-  },
-  {
-    name: "Tuan Nguyen",
-    rating: 5,
-    date: "Jan 26, 2025",
-    text: "Proin est eros, semper lacinia sollicitudin at, dapibus vitae ex. Proin sed sagittis nisi, et tempus nisl. Integer vel est tellus."
-  },
-  {
-    name: "Tuan Nguyen",
-    rating: 4,
-    date: "Jan 26, 2025",
-    text: "In sagittis orci eu augue dignissim gravida eu et dolor. Donec maximus arcu lorem, ac posuere lectus maximus sed. Vestibulum blandit quis metus."
-  }
-  // Add more reviews as necessary
-];
+import Spinner from "@/components/ui/Spinner";
 
 export default function Reviews({
   courseTitle,
@@ -56,32 +17,64 @@ export default function Reviews({
   courseId: string;
   hasCompleted: boolean;
 }) {
-  const [reviewsToShow, setReviewsToShow] = useState(3);
+  const [totalElements, setTotalElements] = useState(0);
   const [expandedReview, setExpandedReview] = useState<number | null>(null); // Track which review is expanded
   const [reviews, setReviews] = useState<IReview[]>([]);
-
-  const handleViewMore = () => {
-    setReviewsToShow((prev) => prev + 3); // Load 3 more reviews each time
-  };
-
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const size = 3; // number of reviews per page
+  const hasFetched = useRef(false);
+  const [reviewStats, setReviewStats] = useState<ReviewStatsResult | null>(null);
   const handleShowMore = (index: number) => {
     // Toggle the expanded review state
     setExpandedReview((prev) => (prev === index ? null : index));
   };
 
-  const fetchReviews = async () => {
+  const fetchReviews = async (
+    isIncrease: boolean = true,
+    numOfElements: number = size,
+    expectedPage: number = page,
+    refetch: boolean = false
+  ) => {
     try {
-      const response = await courseAPI.getReviews(courseId); // calls your getReviews function
-      // Assuming response.result.content is your reviews array
-      setReviews(response.result.content || []);
-      console.log("REVIEWS", response.result.content);
+      setLoading(true);
+      if (refetch) {
+        const response = await courseAPI.getReviews(courseId, 0, numOfElements);
+        setReviews([...response.result.content]);
+        setPage(1);
+        setTotalElements(response.result.totalElements);
+        return;
+      }
+      const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements);
+
+      // Assuming response.result.content is the reviews array
+      if (numOfElements === 1) {
+        setReviews((prev) => [...response.result.content, ...prev]);
+      } else {
+        setReviews((prev) => [...prev, ...response.result.content]);
+      }
+      if (isIncrease) {
+        setPage((prevPage) => prevPage + 1);
+      }
+      setTotalElements(response.result.totalElements);
     } catch (error) {
       console.error("Error fetching reviews:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  const fetchReviewStats = async () => {
+    const response = await courseAPI.getReviewStats(courseId);
+    setReviewStats(response.result);
+  };
+
   useEffect(() => {
-    fetchReviews();
+    if (!hasFetched.current) {
+      fetchReviews();
+      fetchReviewStats();
+      hasFetched.current = true;
+    }
   }, []);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -89,42 +82,45 @@ export default function Reviews({
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const ratings = [
-    { stars: 5, percentage: 60 },
-    { stars: 4, percentage: 36 },
-    { stars: 3, percentage: 3 },
-    { stars: 2, percentage: 0 },
-    { stars: 1, percentage: 1 }
-  ];
-
   return (
     <div className="mx-20 mt-6 overflow-hidden">
       <div className="flex items-start">
         <div className="flex flex-col flex-1 w-full">
           <div className="flex items-end space-x-2 text-xl font-bold">
             <span className="text-yellow-500">★</span>
-            <span>4.5</span>
-            <span className="text-sm text-gray-500">1,000 reviews</span>
+            <span>{reviewStats?.averageRating.toFixed(1) ?? 0}</span>
+            <span className="text-sm text-gray-500">{reviewStats?.totalReviews ?? 0}</span>
           </div>
           <div>
-            {ratings.map((rating, index) => (
+            {[
+              reviewStats?.percentageFiveStar,
+              reviewStats?.percentageFourStar,
+              reviewStats?.percentageThreeStar,
+              reviewStats?.percentageTwoStar,
+              reviewStats?.percentageOneStar
+            ].map((rating, index) => (
               <div key={index} className="inline-flex items-center mt-3 space-x-2 w-72">
-                <span className="font-bold">{rating.stars} stars</span>
+                <span className="font-bold">{5 - index} stars</span>
                 <div className="w-40 h-2 overflow-hidden bg-gray-200 rounded">
                   <motion.div
                     className="h-full rounded bg-appPrimary"
                     initial={{ width: 0 }}
-                    animate={{ width: `${rating.percentage}%` }}
+                    animate={{ width: `${rating}%` }}
                     transition={{ duration: 1, ease: "easeInOut" }}
                   ></motion.div>
                 </div>
-                <span>{[60, 36, 3, 0, 1][index]}%</span>
+                <span>{rating?.toFixed(1)}%</span>
               </div>
             ))}
           </div>
         </div>
+        {loading && (
+          <div className="w-full">
+            <Spinner loading={loading}></Spinner>
+          </div>
+        )}
         <div className="flex flex-col items-start grow-0">
-          {hasCompleted && (
+          {hasCompleted && !loading && (
             <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
               Add Review
             </Button>
@@ -135,16 +131,20 @@ export default function Reviews({
               courseTitle={courseTitle}
               courseId={courseId}
               isReviewTab={true}
-              onReviewSubmitted={() => fetchReviews()}
+              onReviewSubmitted={() => fetchReviews(true, size, page, true)}
             />
           )}
           <div className="mt-2 space-y-4 overflow-y-auto max-h-[500px]">
             {reviews.map((review, index) => (
               <Card key={review.reviewId} className="w-full p-4 mt-4 border border-gray4">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full" />
+                  <div className="w-10 h-10 bg-gray-300 rounded-full">
+                    {review.photoUrl ? (
+                      <img src={review.photoUrl} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+                    ) : null}
+                  </div>
                   <div>
-                    <h4 className="font-semibold">{review.userUid}</h4>
+                    <h4 className="font-semibold">{review.displayName}</h4>
                     <div className="flex items-center space-x-1 text-gray-500">
                       <div className="flex items-center">
                         <div className="text-yellow-500">
@@ -153,7 +153,13 @@ export default function Reviews({
                         <span className="pl-1 text-xs font-bold text-black">{review.rating}</span>
                       </div>
                       <span>·</span>
-                      <span className="text-xs text-gray-500">25 Jan, 2025</span>
+                      <span className="text-xs text-gray-500">
+                        {new Date(review.createAt).toLocaleDateString("en-US", {
+                          day: "2-digit",
+                          month: "short",
+                          year: "numeric"
+                        })}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -169,37 +175,9 @@ export default function Reviews({
                 )}
               </Card>
             ))}
-            {allReviews.slice(0, reviewsToShow).map((review, index) => (
-              <Card key={index} className="w-full p-4 mt-4 border border-gray4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full" />
-                  <div>
-                    <h4 className="font-semibold">{review.name}</h4>
-                    <div className="flex items-center space-x-1 text-gray-500">
-                      <div className="flex items-center">
-                        <div className="text-yellow-500">
-                          <Star size={14} fill="currentColor" stroke="none" />
-                        </div>
-                        <span className="pl-1 text-xs font-bold text-black">{review.rating}</span>
-                      </div>
-                      <span>·</span>
-                      <span className="text-xs text-gray-500">{review.date}</span>
-                    </div>
-                  </div>
-                </div>
-                <p className={`mt-2 text-gray-700 text-sm ${expandedReview === index ? "" : "line-clamp-3"}`}>
-                  {review.text}
-                </p>
-                {review.text.length > 200 && (
-                  <button className="mt-2 text-xs text-appPrimary" onClick={() => handleShowMore(index)}>
-                    {expandedReview === index ? "Show Less" : "Show More"}
-                  </button>
-                )}
-              </Card>
-            ))}
           </div>
-          {reviewsToShow < allReviews.length && (
-            <button className="mt-4 text-sm underline text-appPrimary" onClick={handleViewMore}>
+          {reviews.length < totalElements && (
+            <button className="mt-4 text-sm underline text-appPrimary" onClick={() => fetchReviews(true)}>
               View more...
             </button>
           )}

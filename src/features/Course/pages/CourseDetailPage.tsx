@@ -60,7 +60,7 @@ export const CourseDetailPage = () => {
 
     if (isEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(userId!, id!, page);
+        const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
@@ -89,29 +89,40 @@ export const CourseDetailPage = () => {
   };
 
   // Function to check if we should show the review prompt
-  const shouldShowReviewPrompt = () => {
+  const shouldShowReviewPrompt = (courseId: string, userUid: string) => {
+    // Retrieve existing review prompt data from localStorage
     const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}");
 
-    if (storedData[course?.courseId ?? ""]) {
-      const { lastPromptDate, dismissCount, reviewed } = storedData[course?.courseId ?? ""];
+    // Get the data specific to the current course and user
+    const courseData = storedData[courseId]?.[userUid] || { lastPromptDate: null, dismissCount: 0, reviewed: false };
 
-      if (reviewed) return false; // Don't show if already reviewed
-      if (dismissCount >= MAX_DISMISSALS) return false; // Don't show if dismissed too many times
+    // Destructure the necessary data
+    const { lastPromptDate, dismissCount, reviewed } = courseData;
 
-      // Check if enough days have passed
-      const lastDate = new Date(lastPromptDate);
-      const now = new Date();
-      const diffDays = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24); // Calculate the difference in days
+    // If the user has already reviewed, don't show the prompt
+    if (reviewed) return false;
 
-      return diffDays >= PROMPT_DELAY_DAYS;
+    // If the user has dismissed the prompt too many times, don't show it
+    if (dismissCount >= MAX_DISMISSALS) return false;
+
+    // Check if enough days have passed since the last prompt
+    const now = new Date();
+    const lastDate = lastPromptDate ? new Date(lastPromptDate) : null;
+
+    // If the user has never been prompted before, show the prompt
+    if (!lastDate) {
+      return true;
     }
-    return true; // Show the prompt for first-time completion
+
+    // Calculate the difference in days between the current date and last prompt date
+    const diffDays = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24); // Difference in days
+    return diffDays >= PROMPT_DELAY_DAYS; // Show the prompt if enough days have passed
   };
 
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
-    if (course?.progressPercent == 100 && shouldShowReviewPrompt()) {
+    if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
@@ -152,8 +163,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleViewCertificateClick = () => {
-    // TODO: Implement certificate page
-    alert("Upcoming feature");
+    navigate(`/certificate?courseId=${course!.courseId}`);
   };
 
   const renderHeader = () => {
@@ -217,7 +227,7 @@ export const CourseDetailPage = () => {
     return (
       <button
         onClick={() => setActiveTab(tab)}
-        className={activeTab === tab ? "text-appAccent underline" : "text-gray3"}
+        className={activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}
       >
         {tab}
       </button>
