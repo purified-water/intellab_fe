@@ -5,10 +5,6 @@ interface TestCaseResultProps {
   runCodeResult: RunCodeResponseType | null;
 }
 
-// Same as the submissionResult component
-// Pass in runCodeResult as props or test case outputs. (call get test cases detail to get the test case outputs)
-// Pass in if runCode to jump the tabs to the output tab
-
 export const Output = ({ runCodeResult }: TestCaseResultProps) => {
   if (!runCodeResult) {
     return (
@@ -65,9 +61,8 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
 
   const renderTestCaseContent = () => {
     if (!runCodeResult) return;
-    const selectedTestCase = runCodeResult.testcases[activeTab];
 
-    // console.log("selectedTestCase", selectedTestCase);
+    const selectedTestCase = runCodeResult.testcases[activeTab];
 
     return (
       <div className="flex flex-col" key={selectedTestCase.input}>

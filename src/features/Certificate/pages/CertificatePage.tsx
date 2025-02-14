@@ -9,9 +9,7 @@ import { IGetCertificateResponse } from "../types";
 import { useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDownload, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
-import {
-  MdAccountCircle,
-} from "rocketicons/md";
+import { MdAccountCircle } from "rocketicons/md";
 import jsPDF from "jspdf";
 
 export const CertificatePage = () => {
@@ -90,7 +88,7 @@ export const CertificatePage = () => {
   };
 
   const renderActionButtons = () => {
-    const handleShareClick = () => { };
+    const handleShareClick = () => {};
 
     const handleDownloadClick = async () => {
       const fileName = `${certificate?.course.name}_Certificate.pdf`;
@@ -100,11 +98,11 @@ export const CertificatePage = () => {
         img.onload = () => {
           console.log(`Image loaded: ${img.width} x ${img.height}`);
           const pdf = new jsPDF({
-            orientation: img.width > img.height ? 'landscape' : 'portrait',
-            unit: 'px',
+            orientation: img.width > img.height ? "landscape" : "portrait",
+            unit: "px",
             format: [img.width, img.height]
           });
-          pdf.addImage(img, 'PNG', 0, 0, img.width, img.height);
+          pdf.addImage(img, "PNG", 0, 0, img.width, img.height);
           pdf.save(fileName);
         };
       }

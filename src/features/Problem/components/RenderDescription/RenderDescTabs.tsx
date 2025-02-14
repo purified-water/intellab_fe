@@ -33,7 +33,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         className={
           desActive === tabName
             ? "text-appAccent font-semibold text-sm md:text-base"
-            : "text-gray3 font-semibold text-sm md:text-base"
+            : "text-gray3 font-semibold text-sm md:text-base hover:text-appAccent/80"
         }
       >
         {tabName}
