@@ -31,6 +31,10 @@ export const CourseDetailPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Constants for timing logic
+  const PROMPT_DELAY_DAYS = 7; // Show again after 7 days if dismissed
+  const MAX_DISMISSALS = 100; // Stop showing after 3 dismissals
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -84,10 +88,30 @@ export const CourseDetailPage = () => {
     }
   };
 
+  // Function to check if we should show the review prompt
+  const shouldShowReviewPrompt = () => {
+    const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}");
+
+    if (storedData[course?.courseId ?? ""]) {
+      const { lastPromptDate, dismissCount, reviewed } = storedData[course?.courseId ?? ""];
+
+      if (reviewed) return false; // Don't show if already reviewed
+      if (dismissCount >= MAX_DISMISSALS) return false; // Don't show if dismissed too many times
+
+      // Check if enough days have passed
+      const lastDate = new Date(lastPromptDate);
+      const now = new Date();
+      const diffDays = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24); // Calculate the difference in days
+
+      return diffDays >= PROMPT_DELAY_DAYS;
+    }
+    return true; // Show the prompt for first-time completion
+  };
+
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
-    if (course?.progressPercent == 100) {
+    if (course?.progressPercent == 100 && shouldShowReviewPrompt()) {
       openModal();
     }
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
@@ -177,7 +201,13 @@ export const CourseDetailPage = () => {
         return <div>Comments content goes here</div>;
       case "Reviews":
         // return <div>Reviews content goes here</div>;
-        return <Reviews courseTitle={course?.courseName ?? ""} courseId={course?.courseId ?? ""}></Reviews>;
+        return (
+          <Reviews
+            courseTitle={course?.courseName ?? ""}
+            courseId={course?.courseId ?? ""}
+            hasCompleted={course?.progressPercent == 100}
+          ></Reviews>
+        );
       default:
         return null;
     }

@@ -39,6 +39,11 @@ export const courseAPI = {
     return data;
   },
 
+  postReview: async (reviewData: { rating: number; comment: string; userUid: string; courseId: string }) => {
+    const response = await apiClient.post(`course/reviews`, reviewData);
+    return response.data;
+  },
+
   search: async (keyword: string, page: number) => {
     const response = await apiClient.get(`course/courses/search?keyword=${keyword}&page=${page}`);
     const data: IGetCoursesResponse = response.data;

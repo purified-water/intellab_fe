@@ -47,7 +47,15 @@ const allReviews = [
   // Add more reviews as necessary
 ];
 
-export default function Reviews({ courseTitle, courseId }: { courseTitle: string; courseId: string }) {
+export default function Reviews({
+  courseTitle,
+  courseId,
+  hasCompleted
+}: {
+  courseTitle: string;
+  courseId: string;
+  hasCompleted: boolean;
+}) {
   const [reviewsToShow, setReviewsToShow] = useState(3);
   const [expandedReview, setExpandedReview] = useState<number | null>(null); // Track which review is expanded
   const [reviews, setReviews] = useState<IReview[]>([]);
@@ -61,18 +69,18 @@ export default function Reviews({ courseTitle, courseId }: { courseTitle: string
     setExpandedReview((prev) => (prev === index ? null : index));
   };
 
-  useEffect(() => {
-    const fetchReviews = async () => {
-      try {
-        const response = await courseAPI.getReviews(courseId); // calls your getReviews function
-        // Assuming response.result.content is your reviews array
-        setReviews(response.result.content || []);
-        console.log("REVIEWS", response.result.content);
-      } catch (error) {
-        console.error("Error fetching reviews:", error);
-      }
-    };
+  const fetchReviews = async () => {
+    try {
+      const response = await courseAPI.getReviews(courseId); // calls your getReviews function
+      // Assuming response.result.content is your reviews array
+      setReviews(response.result.content || []);
+      console.log("REVIEWS", response.result.content);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchReviews();
   }, []);
 
@@ -116,13 +124,51 @@ export default function Reviews({ courseTitle, courseId }: { courseTitle: string
           </div>
         </div>
         <div className="flex flex-col items-start grow-0">
-          <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
-            Add Review
-          </Button>
-          {isModalOpen && (
-            <RatingModal closeModal={closeModal} courseTitle={courseTitle} courseId={courseId} isReviewTab={true} />
+          {hasCompleted && (
+            <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+              Add Review
+            </Button>
           )}
-          <div className="space-y-4">
+          {isModalOpen && (
+            <RatingModal
+              closeModal={closeModal}
+              courseTitle={courseTitle}
+              courseId={courseId}
+              isReviewTab={true}
+              onReviewSubmitted={() => fetchReviews()}
+            />
+          )}
+          <div className="mt-2 space-y-4 overflow-y-auto max-h-[500px]">
+            {reviews.map((review, index) => (
+              <Card key={review.reviewId} className="w-full p-4 mt-4 border border-gray4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gray-300 rounded-full" />
+                  <div>
+                    <h4 className="font-semibold">{review.userUid}</h4>
+                    <div className="flex items-center space-x-1 text-gray-500">
+                      <div className="flex items-center">
+                        <div className="text-yellow-500">
+                          <Star size={14} fill="currentColor" stroke="none" />
+                        </div>
+                        <span className="pl-1 text-xs font-bold text-black">{review.rating}</span>
+                      </div>
+                      <span>·</span>
+                      <span className="text-xs text-gray-500">25 Jan, 2025</span>
+                    </div>
+                  </div>
+                </div>
+                <p
+                  className={`mt-2 text-gray-700 w-[750px] break-words text-sm ${expandedReview === index ? "" : "line-clamp-3"}`}
+                >
+                  {review.comment}
+                </p>
+                {review.comment.length > 200 && (
+                  <button className="mt-2 text-xs text-appPrimary" onClick={() => handleShowMore(index)}>
+                    {expandedReview === index ? "Show Less" : "Show More"}
+                  </button>
+                )}
+              </Card>
+            ))}
             {allReviews.slice(0, reviewsToShow).map((review, index) => (
               <Card key={index} className="w-full p-4 mt-4 border border-gray4">
                 <div className="flex items-center space-x-3">
