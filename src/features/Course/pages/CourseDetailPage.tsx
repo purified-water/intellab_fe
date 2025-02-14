@@ -186,7 +186,7 @@ export const CourseDetailPage = () => {
     return (
       <button
         onClick={() => setActiveTab(tab)}
-        className={activeTab === tab ? "text-appAccent underline" : "text-gray3"}
+        className={activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}
       >
         {tab}
       </button>

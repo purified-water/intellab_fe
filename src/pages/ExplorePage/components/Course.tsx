@@ -82,19 +82,19 @@ export default function Course(props: CourseProps) {
   };
 
   const renderContent = () => (
-    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
+    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
       {/* Header section with background gradient and reviews */}
       <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col items-end justify-between p-2">
         <div className="flex flex-col items-center justify-between">
-          <div className="flex items-center justify-end px-4 pt-3 mb-5">
-            <div className="mx-1 text-sm font-normal text-white">•</div>
-            <div className="text-sm font-normal text-white">
+          <div className="flex items-center justify-end px-2 pt-2 mb-5">
+            <div className="text-sm font-medium text-white">
               {detailCourse?.reviewCount
                 ? amountTransformer(detailCourse.reviewCount)
                 : amountTransformer(DEFAULT_COURSE.reviewCount)}
             </div>
-            <div className="flex items-center justify-center bg-slate-800 rounded-[9px] w-[58px] h-[25px] ml-2">
-              <img className="w-4 h-4 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
+            <div className="ml-1 text-sm font-normal text-white">•</div>
+            <div className="flex items-center justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
+              <img className="w-3 h-3 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
               <div className="text-white">{detailCourse?.averageRating ?? DEFAULT_COURSE.averageRating}</div>
             </div>
           </div>
