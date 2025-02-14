@@ -11,7 +11,6 @@ import { QuizHeader } from "../components/QuizHeader";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { saveQuizDraft, loadQuizDraft, clearQuizDraft } from "@/utils/courseLocalStorage";
-import { getUserIdFromLocalStorage } from "@/utils";
 import { calculateUserScore } from "../utils/CalculateQuizScore";
 
 export const LessonQuiz = () => {
@@ -29,7 +28,6 @@ export const LessonQuiz = () => {
   const isDone = searchParams.get("isDone");
   const navigate = useNavigate();
   const NUMBER_OF_QUESTIONS = 10;
-  const userId = getUserIdFromLocalStorage();
   const [userGrade, setUserGrade] = useState<number | null>(null);
 
   const handleAnswerSelection = (questionId: string, order: number) => {
@@ -114,7 +112,7 @@ export const LessonQuiz = () => {
       handlePostSubmitQuiz(correctAnswersCount);
 
       // Update theory done
-      courseAPI.updateTheoryDone(learningId!, courseId!, userId!);
+      courseAPI.updateTheoryDone(learningId!, courseId!);
     } else {
       setIsCorrect(false);
       handlePostSubmitQuiz(correctAnswersCount);
@@ -218,7 +216,7 @@ export const LessonQuiz = () => {
         {isSubmitted ? (
           <QuizResult isCorrect={isCorrect} onClick={handleRetryOrFinish} grade={userGrade} />
         ) : (
-          <QuizHeader />
+          <QuizHeader questionCount={quizzes.length} />
         )}
         <div className="w-full max-w-3xl p-6">
           {/* Questions */}

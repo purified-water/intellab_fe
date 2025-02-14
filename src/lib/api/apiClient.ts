@@ -1,3 +1,97 @@
+// import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
+// import Cookies from "js-cookie";
+
+// export const apiClient = axios.create({
+//   baseURL: import.meta.env.VITE_SERVER_DOCKER_URL,
+//   withCredentials: true // Ensures cookies (like refreshToken) are sent with requests
+// });
+
+// let isRefreshing = false;
+// let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: AxiosError) => void }> = [];
+
+// const processQueue = (error: AxiosError | null, token?: string | null) => {
+//   failedQueue.forEach(({ resolve, reject }) => {
+//     token ? resolve(token) : reject(error as AxiosError);
+//   });
+//   failedQueue = [];
+// };
+
+// const refreshToken = async (): Promise<string> => {
+//   try {
+//     const { data } = await axios.post<{ accessToken: string }>(
+//       `${import.meta.env.VITE_SERVER_DOCKER_URL}/auth/refresh`,
+//       {},
+//       { withCredentials: true } // Ensures refresh token is sent automatically
+//     );
+
+//     Cookies.set("accessToken", data.accessToken, { expires: 1 });
+//     return data.accessToken;
+//   } catch (refreshError) {
+//     Cookies.remove("accessToken");
+//     window.location.href = "/login";
+//     throw refreshError;
+//   }
+// };
+
+// // Request Interceptor - Attach Access Token (No Preemptive Check)
+// apiClient.interceptors.request.use(
+//   (config: InternalAxiosRequestConfig) => {
+//     const token = Cookies.get("accessToken");
+
+//     if (token && config.headers) {
+//       config.headers.Authorization = `Bearer ${token}`;
+//     }
+
+//     return config;
+//   },
+//   (error: AxiosError) => Promise.reject(error)
+// );
+
+// // Response Interceptor - Handle 401 Unauthorized
+// apiClient.interceptors.response.use(
+//   (response: AxiosResponse) => response,
+//   async (error: AxiosError) => {
+//     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+
+//     // If token is invalid or expired, try refreshing it
+//     if (error.response?.status === 401 && !originalRequest._retry) {
+//       originalRequest._retry = true;
+
+//       if (!isRefreshing) {
+//         isRefreshing = true;
+
+//         try {
+//           const newToken = await refreshToken();
+//           processQueue(null, newToken);
+//           isRefreshing = false;
+
+//           // Retry the original request with new token
+//           originalRequest.headers.Authorization = `Bearer ${newToken}`;
+//           return apiClient(originalRequest);
+//         } catch (refreshError) {
+//           processQueue(refreshError as AxiosError, null);
+//           isRefreshing = false;
+//           return Promise.reject(refreshError);
+//         }
+//       } else {
+//         return new Promise<string>((resolve, reject) => {
+//           failedQueue.push({ resolve, reject });
+//         })
+//           .then((token) => {
+//             originalRequest.headers.Authorization = `Bearer ${token}`;
+//             return apiClient(originalRequest);
+//           })
+//           .catch((err) => Promise.reject(err));
+//       }
+//     }
+
+//     return Promise.reject(error);
+//   }
+// );
+
+// export default apiClient;
+
+// OLD API CLIENT WITHOUT REFRESH TOKEN
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -20,42 +114,3 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
-
-// ERROR: IT WILL NAVIGATE TO LOGIN PAGE WHEN TRYING TO REFRESH THE TOKEN
-// Add a response interceptor to handle token refresh
-// apiClient.interceptors.response.use(
-//   (response) => {
-//     return response;
-//   },
-//   async (error) => {
-//     const originalRequest = error.config;
-
-//     // Check if the error is due to an expired access token
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-
-//       try {
-//         const refreshToken = Cookies.get("refreshToken");
-//         console.log("Refresh token:", refreshToken);
-//         const { data } = await axios.post(`${import.meta.env.VITE_SERVER_DOCKER_URL}/auth/refresh`, { refreshToken });
-
-//         Cookies.set("accessToken", data.accessToken, { expires: 1 });
-
-//         // Update the Authorization header with the new access token
-//         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-
-//         // Retry the original request
-//         return apiClient(originalRequest);
-//       } catch (refreshError) {
-//         // Handle refresh token errors (e.g., redirect to login)
-//         console.error("Refresh token failed:", refreshError);
-//         Cookies.remove("accessToken");
-//         Cookies.remove("refreshToken");
-//         window.location.href = "/login";
-//         return Promise.reject(refreshError);
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );

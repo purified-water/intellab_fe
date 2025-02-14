@@ -19,7 +19,7 @@ export const YourCourseSection = () => {
     if (accessToken && userId) {
       setLoading(true);
       try {
-        const response = await courseAPI.getUserEnrolledCourses(userId!);
+        const response = await courseAPI.getUserEnrolledCourses();
         const userEnrolledCourses = response.result.content;
         setUserEnrollCourses(userEnrolledCourses);
       } catch (e) {
@@ -52,8 +52,8 @@ export const YourCourseSection = () => {
     return (
       <section>
         <h1 className="text-3xl font-bold">Your Courses</h1>
-        <div className="relative w-full mt-4 overflow-x-scroll scroll-smooth scrollbar-hide">
-          <div className="flex space-x-4 flex-nowrap">
+        <div className="relative w-full overflow-x-scroll scroll-smooth scrollbar-hide">
+          <div className="flex py-4 space-x-4 flex-nowrap">
             {userEnrollCourses.map((course: IUserCourse, index: number) => (
               <YourCourseCard
                 key={index}

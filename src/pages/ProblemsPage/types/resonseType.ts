@@ -25,7 +25,7 @@ export interface Problem {
   acceptanceRate: number;
   hintCount: number;
   categories: Category[];
-  done: boolean;
+  isDone: boolean;
 }
 
 export interface ProblemsResult {

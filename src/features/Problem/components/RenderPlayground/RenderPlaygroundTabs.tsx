@@ -16,7 +16,9 @@ import {
 } from "@/components/ui/DropdownMenu";
 import { DEFAULT_LANGUAGE_CODE, LanguageCodes } from "../../constants/LanguageCodes";
 import { LanguageCodeType } from "../../types/LanguageCodeType";
-
+import { BoilerplateType } from "../../types/LanguageCodeType";
+import { problemAPI } from "@/lib/api";
+import { useParams } from "react-router-dom";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
 }
@@ -26,6 +28,31 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
   const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
   const [code, setCode] = useState("");
+  const problemId = useParams<{ problemId: string }>().problemId;
+  const [boilerplateList, setBoilerplateList] = useState<BoilerplateType[]>([]);
+
+  useEffect(() => {
+    getBoilerplateCode();
+  }, [problemId]);
+
+  const getBoilerplateCode = async () => {
+    if (!problemId) return;
+    const response = await problemAPI.getBoilerplateCode(problemId);
+    const boilerplateList: BoilerplateType[] = response.result;
+
+    setBoilerplateList(boilerplateList);
+
+    const matchingBoilerplate = boilerplateList.find(
+      // Find the matching with the start name, if 2 languages have the same start name, it will return the first one
+      (boilerplate) => boilerplate.longName.toLowerCase().startsWith(language.toLowerCase())
+    );
+
+    if (matchingBoilerplate) {
+      setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+    } else {
+      setCode(""); // Set the code to empty if no match is found
+    }
+  };
 
   useEffect(() => {
     const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
@@ -45,6 +72,21 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     setCode(newCode);
     matchLanguage(language);
     setLanguagePackage(matchingLanguage, newCode);
+  };
+
+  const handleLanguageChange = (newLanguage: SupportedLanguages) => {
+    setLanguage(newLanguage);
+    // Update the code with the new language
+    const matchingBoilerplate = boilerplateList.find(
+      // Find the matching with the start name, if 2 languages have the same start name, it will return the first one
+      (boilerplate) => boilerplate.longName.toLowerCase().startsWith(newLanguage.toLowerCase())
+    );
+
+    if (matchingBoilerplate) {
+      setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+    } else {
+      setCode(""); // Set the code to empty if no match is found
+    }
   };
 
   const renderPlaygroundTabButton = (tabName: string) => {
@@ -112,9 +154,8 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
               <DropdownMenuRadioGroup
                 value={language}
                 onValueChange={(value) => {
-                  setLanguage(value as SupportedLanguages);
-                  // clear the playground
-                  setCode("");
+                  const selectedLanguage = value as SupportedLanguages;
+                  handleLanguageChange(selectedLanguage); // Handle language change
                 }}
               >
                 {Object.values(SupportedLanguages).map((lang) => (
@@ -135,6 +176,3 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     </div>
   );
 };
-
-// TODO sửa lỗi không lướt được cái codemirror với khi màn hình codemirror nhỏ mà xuống dòng thì nó đẩy
-// cái tab button lên luôn không thấy nữa

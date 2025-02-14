@@ -1,4 +1,6 @@
+import { useToast } from "@/hooks/use-toast";
 import { courseAPI } from "@/lib/api/courseApi";
+import { getUserIdFromLocalStorage } from "@/utils/userLocalStorage";
 import React, { useState, useEffect, useRef } from "react";
 
 interface RatingModalProps {
@@ -19,9 +21,10 @@ const RatingModal: React.FC<RatingModalProps> = ({
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
+  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const userId = getUserIdFromLocalStorage();
   //   const [isPromptVisible, setIsPromptVisible] = useState(false); // State to control modal visibility
 
   //   // Constants for timing logic
@@ -49,21 +52,32 @@ const RatingModal: React.FC<RatingModalProps> = ({
   //   };
 
   // Function to update localStorage when user interacts with the prompt
-  const updateReviewPrompt = (action: "dismiss" | "reviewed") => {
-    const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}") || {};
-    const now = new Date();
+  const updateReviewPrompt = (action: "dismiss" | "reviewed", courseId: string, userUid: string) => {
+    // Retrieve existing review prompt data from localStorage
+    const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}");
 
+    // Initialize course data if it doesn't exist
     if (!storedData[courseId]) {
-      storedData[courseId] = { lastPromptDate: now, dismissCount: 0, reviewed: false };
+      storedData[courseId] = {};
     }
 
+    // Initialize user data for the specific course if it doesn't exist
+    const courseData = storedData[courseId][userUid] || { lastPromptDate: null, dismissCount: 0, reviewed: false };
+    const now = new Date().toISOString(); // Get the current timestamp for lastPromptDate
+
+    // Update the stored data based on the action (dismiss or reviewed)
     if (action === "dismiss") {
-      storedData[courseId].dismissCount += 1;
-      storedData[courseId].lastPromptDate = now;
+      courseData.dismissCount += 1; // Increment dismiss count
+      courseData.lastPromptDate = now; // Update lastPromptDate on dismissal
     } else if (action === "reviewed") {
-      storedData[courseId].reviewed = true;
+      courseData.reviewed = true; // Mark as reviewed
+      courseData.lastPromptDate = now; // Update lastPromptDate when review is submitted
     }
 
+    // Save the updated user data for the course back into the storedData object
+    storedData[courseId][userUid] = courseData;
+
+    // Update localStorage with the new review prompt data
     localStorage.setItem("reviewPrompt", JSON.stringify(storedData));
   };
 
@@ -85,6 +99,10 @@ const RatingModal: React.FC<RatingModalProps> = ({
   const handleSubmit = async () => {
     try {
       setIsLoading(true);
+      toast({
+        title: "Submitting your review...",
+        description: "Please wait."
+      });
       const userId = localStorage.getItem("userId") || "";
       await courseAPI.postReview({
         rating,
@@ -93,9 +111,13 @@ const RatingModal: React.FC<RatingModalProps> = ({
         courseId
       });
       setIsSuccess(true);
+      toast({
+        title: "Review submitted successfully!",
+        description: "Thank you for your feedback."
+      });
       setIsLoading(false);
       // Optionally close modal or reset state
-      updateReviewPrompt("reviewed"); // Mark as reviewed when submitted
+      updateReviewPrompt("reviewed", courseId, userId); // Mark as reviewed when submitted
       onReviewSubmitted?.();
       closeModal();
     } catch (err) {
@@ -129,7 +151,7 @@ const RatingModal: React.FC<RatingModalProps> = ({
           <button
             className="text-gray-500 hover:text-gray-700"
             onClick={() => {
-              updateReviewPrompt("dismiss");
+              updateReviewPrompt("dismiss", courseId, userId ?? "");
               closeModal();
             }}
           >
