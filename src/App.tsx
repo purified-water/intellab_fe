@@ -90,7 +90,7 @@ const router = createBrowserRouter([
         element: <LessonQuiz />
       },
       {
-        path: "/certificate",
+        path: "/certificate/:id",
         element: <CertificatePage />
       }
     ]
