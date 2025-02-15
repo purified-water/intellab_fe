@@ -202,8 +202,13 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
   const [testCases, setTestCases] = useState<TestCaseAfterSubmit[]>([]);
   const { problemId } = useParams<{ problemId: string }>(); // Get the problemId from the URL
 
-  // If theres no history, which is recently submitted code, get the code from the store
+  const savedCodeData = useSelector((state: { userCode: UserCodeState }) =>
+    selectCodeByProblemId(state, problemId!)
+  ); // Retrieve saved code
+  const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[problemId!]);
+
   useEffect(() => {
+    // If theres no history, which is recently submitted code, get the code from the store
     const initializeData = async () => {
       if (historyInformation) {
         // console.log("History information", historyInformation);
@@ -212,10 +217,6 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
         setTestCases(historyInformation.testCasesOutput);
         setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
       } else if (problemId) {
-        const savedCodeData = useSelector((state: { userCode: UserCodeState }) =>
-          selectCodeByProblemId(state, problemId!)
-        ); // Retrieve saved code
-        const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[problemId]);
 
         if (submissionResultFromRedux && savedCodeData) {
           setSubmissionResult(submissionResultFromRedux);

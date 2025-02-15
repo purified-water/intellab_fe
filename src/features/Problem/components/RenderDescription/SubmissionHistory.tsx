@@ -24,10 +24,13 @@ export const SubmissionHistory = () => {
       // TEMPORARY: Add submitDate to each submission
       const submissionsWithDate = response.map((submission: SubmissionHistoryType) => ({
         ...submission,
-        submitDate: new Date().toLocaleString()
       }));
+      
+      const sortedSubmissions = submissionsWithDate.sort((a: SubmissionHistoryType, b: SubmissionHistoryType) =>
+        new Date(b.submitDate ?? "").getTime() - new Date(a.submitDate ?? "").getTime()
+      );
 
-      setSubmissionList(submissionsWithDate);
+      setSubmissionList(sortedSubmissions);
     } catch (error) {
       console.error(error);
     }
