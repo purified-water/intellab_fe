@@ -22,4 +22,6 @@ export interface SubmissionResultsProps {
 
 export interface SubmissionInformationProps {
   isPassed: boolean;
+  historyInformation?: SubmissionTypeNoProblem | null;
+  onBack?: () => void;
 }

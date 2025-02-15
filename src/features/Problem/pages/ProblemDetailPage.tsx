@@ -74,6 +74,8 @@ export const ProblemDetail = () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
 
+      console.log("Problem detail", problemDetail);
+
       if (problemDetail) {
         setProblemDetail(problemDetail);
         setTestCases(problemDetail.testCases.slice(0, 3));
@@ -110,7 +112,6 @@ export const ProblemDetail = () => {
   };
 
   const pollRunCode = async (runCodeId: string) => {
-    console.log("Polling run code", runCodeId);
     let elapsedTime = 0;
     const maxTimeout = 12000; // 12s
 
@@ -180,8 +181,8 @@ export const ProblemDetail = () => {
 
         const response = await problemAPI.createSubmission(1, code, language, problemId!, userId);
 
-        if (response?.submission_id) {
-          pollSubmissionStatus(response.submission_id);
+        if (response?.submissionId) {
+          pollSubmissionStatus(response.submissionId);
         }
       }
     } catch (error) {
@@ -196,12 +197,12 @@ export const ProblemDetail = () => {
   };
 
   const handleSubmissionResult = (submission: SubmissionTypeNoProblem) => {
-    const testCases_output = submission.testCases_output as TestCaseAfterSubmit[];
+    const testCasesOutput = submission.testCasesOutput as TestCaseAfterSubmit[];
     // Save the submission result to the state
     if (!problemId) return;
     dispatch(saveSubmission({ problemId, updateResponse: submission }));
     // Check if all test cases are passed
-    const isPassed = testCases_output.every((testCase: TestCaseAfterSubmit) => testCase.result_status === "Accepted");
+    const isPassed = testCasesOutput.every((testCase: TestCaseAfterSubmit) => testCase.result_status === "Accepted");
 
     setIsSubmissionPassed(isPassed);
     setIsSubmitting(false);
@@ -220,7 +221,7 @@ export const ProblemDetail = () => {
           const updateResponse = response;
 
           // Check if all test case results have `result_status` not equal to "null" or "In Queue"
-          const allResultsAvailable = updateResponse.testCases_output.every(
+          const allResultsAvailable = updateResponse.testCasesOutput.every(
             (testCase: TestCaseAfterSubmit) =>
               testCase.result_status &&
               testCase.result_status !== "In Queue" &&
@@ -280,7 +281,7 @@ export const ProblemDetail = () => {
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-          <ResizablePanel defaultSize={40} minSize={40} id="description" className="bg-white rounded-t-lg">
+          <ResizablePanel defaultSize={40} minSize={35} id="description" className="bg-white rounded-t-lg">
             <RenderDescTabs
               problemDetail={problemDetail}
               courseId={courseId}

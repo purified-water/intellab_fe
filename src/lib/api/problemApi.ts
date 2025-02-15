@@ -12,6 +12,7 @@ export const problemAPI = {
   getProblemDetail: async (problemId: string) => {
     const response = await apiClient.get(`problem/problems/${problemId}`);
     const data: ProblemType = response.data;
+    console.log("Problem detail in api", data);
     return data;
   },
   createSubmission: async (
@@ -22,10 +23,10 @@ export const problemAPI = {
     userId: string
   ) => {
     const response = await apiClient.post(`problem/problem-submissions`, {
-      submit_order: submitOrder,
+      submitOrder: submitOrder,
       code: code,
-      programming_language: programmingLanguage,
-      problem: { problemId },
+      programmingLanguage: programmingLanguage,
+      problemId: problemId,
       userId: userId
     });
     return response.data;
@@ -56,6 +57,10 @@ export const problemAPI = {
   },
   getTestCaseDetail: async (testCaseId: string) => {
     const response = await apiClient.get(`problem/test-case/${testCaseId}`);
+    return response.data;
+  },
+  getSubmissionHistory: async (problemId: string) => {
+    const response = await apiClient.get(`problem/problem-submissions/submitList/${problemId}`);
     return response.data;
   }
 };
