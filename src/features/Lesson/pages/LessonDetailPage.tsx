@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { courseAPI, certificateAPI } from "@/lib/api";
+import { courseAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/features/Course/types";
 import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";

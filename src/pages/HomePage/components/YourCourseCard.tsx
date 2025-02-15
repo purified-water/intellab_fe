@@ -41,7 +41,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const handleContinueCourse = () => {
     if (accessToken && userId) {
       if (isFinished) {
-        navigate(`/certificate?courseId=${courseId}`);
+        navigate(`/certificate/${courseDetail?.certificateId}`);
       } else {
         if (courseDetail?.latestLessonId) {
           navigate(`/lesson/${courseDetail.latestLessonId}?courseId=${courseDetail.courseId}`);
@@ -76,7 +76,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
               className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
               onClick={handleContinueCourse}
             >
-              {isFinished ? "View certificate" : "Continue"}
+              {isFinished ? "View Certificate" : "Continue"}
             </button>
             <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
           </div>

@@ -46,11 +46,15 @@ export default function Course(props: CourseProps) {
   };
 
   const handleButtonClick = (id: string) => {
-    if (isAuthenticated && detailCourse?.userEnrolled && detailCourse?.latestLessonId) {
+    if (isAuthenticated && detailCourse?.userEnrolled) {
       if (isFinished) {
-        navigate(`/certificate?courseId=${course.courseId}`);
+        navigate(`/certificate/${detailCourse.certificateId}`);
       } else {
-        navigate(`/lesson/${detailCourse.latestLessonId}`);
+        if (detailCourse?.latestLessonId) {
+          navigate(`/lesson/${detailCourse.latestLessonId}`);
+        } else {
+          navigate(`/course/${id}`);
+        }
       }
     } else {
       navigate(`/course/${id}`);
