@@ -43,6 +43,7 @@ export default function Reviews({
         setReviews([...response.result.content]);
         setPage(1);
         setTotalElements(response.result.totalElements);
+        console.log("reviews get", response);
         return;
       }
       const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements);
@@ -66,6 +67,7 @@ export default function Reviews({
 
   const fetchReviewStats = async () => {
     const response = await courseAPI.getReviewStats(courseId);
+    console.log("review", response);
     setReviewStats(response.result);
   };
 
@@ -89,7 +91,7 @@ export default function Reviews({
           <div className="flex items-end space-x-2 text-xl font-bold">
             <span className="text-yellow-500">★</span>
             <span>{reviewStats?.averageRating.toFixed(1) ?? 0}</span>
-            <span className="text-sm text-gray-500">{reviewStats?.totalReviews ?? 0}</span>
+            <span className="text-sm text-gray-500">{reviewStats?.totalReviews ?? 0} reviews</span>
           </div>
           <div>
             {[
@@ -144,7 +146,7 @@ export default function Reviews({
                     ) : null}
                   </div>
                   <div>
-                    <h4 className="font-semibold">{review.displayName}</h4>
+                    <h4 className="font-semibold">{review.displayName ? review.displayName : "Tester"}</h4>
                     <div className="flex items-center space-x-1 text-gray-500">
                       <div className="flex items-center">
                         <div className="text-yellow-500">

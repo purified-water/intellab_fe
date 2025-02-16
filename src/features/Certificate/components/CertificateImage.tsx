@@ -17,7 +17,7 @@ export function CertificateImage(props: CertificateImageProps) {
     );
   } else {
     content = (
-      <div className="flex-shrink-0 border-gray3 border">
+      <div className="border border-gray3 min-w-[500px] max-w-[1000px]">
         <img className="object-contain" src={certificate?.certificateLink} alt="Certificate" />
       </div>
     );

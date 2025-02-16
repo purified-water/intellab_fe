@@ -23,11 +23,12 @@ export const SubmissionHistory = () => {
       const response = await problemAPI.getSubmissionHistory(problemId);
       // TEMPORARY: Add submitDate to each submission
       const submissionsWithDate = response.map((submission: SubmissionHistoryType) => ({
-        ...submission,
+        ...submission
       }));
-      
-      const sortedSubmissions = submissionsWithDate.sort((a: SubmissionHistoryType, b: SubmissionHistoryType) =>
-        new Date(b.submitDate ?? "").getTime() - new Date(a.submitDate ?? "").getTime()
+
+      const sortedSubmissions = submissionsWithDate.sort(
+        (a: SubmissionHistoryType, b: SubmissionHistoryType) =>
+          new Date(b.submitDate ?? "").getTime() - new Date(a.submitDate ?? "").getTime()
       );
 
       setSubmissionList(sortedSubmissions);
@@ -131,7 +132,7 @@ export const SubmissionHistory = () => {
                   <td className="w-auto px-6 py-2 whitespace-nowrap text-gray2">
                     <div className="flex items-center gap-1 text-sm">
                       <Clock className="w-4 h-4" />
-                      <span>{submission.runtime ? (submission.runtime * 1000).toFixed(0) : "N/A"} ms</span>
+                      <span>{submission.runtime ? `${(submission.runtime * 1000).toFixed(0)} ms` : "N/A"}</span>
                     </div>
                   </td>
 
@@ -139,7 +140,7 @@ export const SubmissionHistory = () => {
                   <td className="w-auto px-6 py-2 text-sm whitespace-nowrap text-gray2">
                     <div className="flex items-center gap-1">
                       <Cpu className="w-4 h-4" />
-                      <span>{submission.memory ? (submission.memory / 1000).toFixed(1) : "N/A"} MB</span>
+                      <span>{submission.memory ? `${(submission.memory / 1000).toFixed(1)} MB` : "N/A"}</span>
                     </div>
                   </td>
 

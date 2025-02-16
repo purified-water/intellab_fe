@@ -26,14 +26,16 @@ export function LearnedSection(props: LearnedSectionProps) {
   } else {
     const categories = certificate?.course.categories;
     if (categories && categories.length > 0) {
-      content = (<div className="border border-gray4 py-4 px-8 rounded-lg space-y-4">
-        <p className="font-bold text-2xl">What you have learned</p>
-        <section className="flex space-x-4 overflow-auto">
-          {certificate?.course.categories.map((category, index) => (
-            <Category key={index} category={category.category_name} loading={loading} />
-          ))}
-        </section>
-      </div>)
+      content = (
+        <div className="border border-gray4 py-4 px-8 rounded-lg space-y-4">
+          <p className="font-bold text-2xl">What you have learned</p>
+          <section className="flex space-x-4 overflow-auto">
+            {certificate?.course.categories.map((category, index) => (
+              <Category key={index} category={category.category_name} loading={loading} />
+            ))}
+          </section>
+        </div>
+      );
     }
   }
 

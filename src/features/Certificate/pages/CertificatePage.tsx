@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { ProfileSection, CourseInfomationSection, LearnedSection, CertificateImage, ActionButtons } from "../components";
+import {
+  ProfileSection,
+  CourseInfomationSection,
+  LearnedSection,
+  CertificateImage,
+  ActionButtons
+} from "../components";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
 import { certificateAPI } from "@/lib/api";
 import { ICertificate } from "../types";

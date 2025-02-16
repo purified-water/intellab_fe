@@ -202,9 +202,7 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
   const [testCases, setTestCases] = useState<TestCaseAfterSubmit[]>([]);
   const { problemId } = useParams<{ problemId: string }>(); // Get the problemId from the URL
 
-  const savedCodeData = useSelector((state: { userCode: UserCodeState }) =>
-    selectCodeByProblemId(state, problemId!)
-  ); // Retrieve saved code
+  const savedCodeData = useSelector((state: { userCode: UserCodeState }) => selectCodeByProblemId(state, problemId!)); // Retrieve saved code
   const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[problemId!]);
 
   useEffect(() => {
@@ -217,7 +215,6 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
         setTestCases(historyInformation.testCasesOutput);
         setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
       } else if (problemId) {
-
         if (submissionResultFromRedux && savedCodeData) {
           setSubmissionResult(submissionResultFromRedux);
           setTestCases(submissionResultFromRedux.testCasesOutput);
