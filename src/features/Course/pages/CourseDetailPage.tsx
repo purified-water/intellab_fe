@@ -31,6 +31,10 @@ export const CourseDetailPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  // Constants for timing logic
+  const PROMPT_DELAY_DAYS = 7; // Show again after 7 days if dismissed
+  const MAX_DISMISSALS = 100; // Stop showing after 3 dismissals
+
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
@@ -84,10 +88,41 @@ export const CourseDetailPage = () => {
     }
   };
 
+  // Function to check if we should show the review prompt
+  const shouldShowReviewPrompt = (courseId: string, userUid: string) => {
+    // Retrieve existing review prompt data from localStorage
+    const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}");
+
+    // Get the data specific to the current course and user
+    const courseData = storedData[courseId]?.[userUid] || { lastPromptDate: null, dismissCount: 0, reviewed: false };
+
+    // Destructure the necessary data
+    const { lastPromptDate, dismissCount, reviewed } = courseData;
+
+    // If the user has already reviewed, don't show the prompt
+    if (reviewed) return false;
+
+    // If the user has dismissed the prompt too many times, don't show it
+    if (dismissCount >= MAX_DISMISSALS) return false;
+
+    // Check if enough days have passed since the last prompt
+    const now = new Date();
+    const lastDate = lastPromptDate ? new Date(lastPromptDate) : null;
+
+    // If the user has never been prompted before, show the prompt
+    if (!lastDate) {
+      return true;
+    }
+
+    // Calculate the difference in days between the current date and last prompt date
+    const diffDays = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24); // Difference in days
+    return diffDays >= PROMPT_DELAY_DAYS; // Show the prompt if enough days have passed
+  };
+
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
-    if (course?.progressPercent == 100) {
+    if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
@@ -176,7 +211,13 @@ export const CourseDetailPage = () => {
         return <div>Comments content goes here</div>;
       case "Reviews":
         // return <div>Reviews content goes here</div>;
-        return <Reviews courseTitle={course?.courseName ?? ""} courseId={course?.courseId ?? ""}></Reviews>;
+        return (
+          <Reviews
+            courseTitle={course?.courseName ?? ""}
+            courseId={course?.courseId ?? ""}
+            hasCompleted={course?.progressPercent == 100}
+          ></Reviews>
+        );
       default:
         return null;
     }

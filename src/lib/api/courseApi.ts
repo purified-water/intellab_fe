@@ -8,7 +8,7 @@ import {
   IGetUserEnrolledCoursesResponse,
   IGetCategories
 } from "../../pages/HomePage/types/responseTypes";
-import { IReviewsResponse } from "../../pages/HomePage/types/reviewResponse";
+import { IReviewsResponse, ReviewStatsResponse } from "../../pages/HomePage/types/reviewResponse";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
@@ -33,10 +33,23 @@ export const courseAPI = {
     return data;
   },
 
-  getReviews: async (courseId: string) => {
-    const response = await apiClient.get(`course/courses/${courseId}/reviews`);
+  getReviews: async (courseId: string, page: number, size: number) => {
+    const response = await apiClient.get(
+      `course/courses/${courseId}/reviews?page=${page}&size=${size}&sort=createAt,desc`
+    );
     const data: IReviewsResponse = response.data;
     return data;
+  },
+
+  getReviewStats: async (courseId: string) => {
+    const response = await apiClient.get(`course/courses/${courseId}/reviews-stats`);
+    const data: ReviewStatsResponse = response.data;
+    return data;
+  },
+
+  postReview: async (reviewData: { rating: number; comment: string; userUid: string; courseId: string }) => {
+    const response = await apiClient.post(`course/reviews`, reviewData);
+    return response.data;
   },
 
   search: async (keyword: string, page: number) => {
