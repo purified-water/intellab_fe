@@ -25,22 +25,22 @@ export interface SolutionType {
 }
 
 export interface SendSubmissionType {
-  submission_id: string;
-  submit_order: number;
+  submissionId: string;
+  submitOrder: number;
   code: string;
-  programming_language: string;
-  score_achieved: number;
+  programmingLanguage: string;
+  scoreAchieved: number;
   problem: ProblemType;
   userUid: string;
-  testCases_output: TestCaseResultWithIO[];
+  testCasesOutput: TestCaseResultWithIO[];
 }
 
 export interface SubmissionTypeNoProblem {
-  submission_id: string;
-  submit_order: number;
+  submissionId: string;
+  submitOrder: number;
   code: string;
-  programming_language: string;
-  score_achieved: number;
+  programmingLanguage: string;
+  scoreAchieved: number;
   userUid: string;
-  testCases_output: TestCaseAfterSubmit[];
+  testCasesOutput: TestCaseAfterSubmit[];
 }

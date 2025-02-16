@@ -1,55 +1,42 @@
+import { Problem } from "@/pages/ProblemsPage/types/resonseType";
+import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
 import { MdCheckCircleOutline } from "rocketicons/md";
+import { useNavigate } from "react-router-dom";
+interface AllProblemsListItemProps {
+  problems: Problem[];
+  toggleSidebar: () => void;
+}
 
-type Row = {
-  status: string;
-  title: string;
-  hints: string;
-  level: string;
-  category: string;
-};
+export const AllProblemsListItem = ({ problems, toggleSidebar }: AllProblemsListItemProps) => {
+  const navigate = useNavigate();
 
-const data: Row[] = [
-  { status: "solved", title: "1. Two Sum", hints: "True", level: "Medium", category: "String, Hash table" },
-  { status: "", title: "1. Two Sum", hints: "False", level: "Easy", category: "String, Hash table, Array, Numbers" },
-  { status: "", title: "1. Two Sum", hints: "False", level: "Easy", category: "String, Hash table, Array, Numbers" },
-  {
-    status: "solved",
-    title: "1. Two Sum",
-    hints: "False",
-    level: "Hard",
-    category: "String, Hash table, Array, Numbers"
-  },
-  { status: "", title: "1. Two Sum", hints: "False", level: "Easy", category: "String, Hash table, Array, Numbers" }
-  // Add more rows as needed
-];
-
-export const AllProblemsListItem = () => {
-  const handleProblemClicked = () => {
-    console.log("Problem clicked");
+  const handleProblemClicked = (problemId: string) => {
+    toggleSidebar();
+    navigate(`/problems/${problemId}`);
   };
 
   return (
     <div className="mt-4 overflow-x-auto">
       <table className="min-w-full table-auto">
         <tbody>
-          {data.map((row, index) => (
+          {problems.map((row, index) => (
             <tr
               key={index}
-              onClick={handleProblemClicked}
+              onClick={() => handleProblemClicked(row.problemId)}
               className={`cursor-pointer hover:cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
             >
               <td className="w-6 px-4 py-2 text-center">
-                {row.status === "solved" ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                {row.done == true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
 
-              <td className="w-4/6 px-4 py-2 font-semibold">{row.title}</td>
+              <td className="w-4/6 px-4 py-2 font-semibold">{row.problemName}</td>
 
               <td
                 className={`px-4 py-2 w-1/6 font-semibold ${
-                  row.level === "Easy" ? "text-appEasy" : row.level === "Medium" ? "text-appMedium" : "text-appHard"
+                  row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"
                 }`}
               >
-                {row.level}
+                {capitalizeFirstLetter(row.level)}
               </td>
             </tr>
           ))}

@@ -163,7 +163,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleViewCertificateClick = () => {
-    navigate(`/certificate?courseId=${course!.courseId}`);
+    navigate(`/certificate/${course?.certificateId}`);
   };
 
   const renderHeader = () => {
