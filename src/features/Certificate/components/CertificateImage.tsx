@@ -12,7 +12,7 @@ export function CertificateImage(props: CertificateImageProps) {
   if (loading) {
     content = (
       <div className="flex-shrink-0">
-        <Skeleton className="h-[500px] w-[700px] rounded-lg" />
+        <Skeleton className="h-[700px] w-[900px] rounded-lg" />
       </div>
     );
   } else {

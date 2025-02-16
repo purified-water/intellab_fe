@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ProfileSection, CourseInfomationSection, LearntSection, CertificateImage, ActionButtons } from "../components";
+import { ProfileSection, CourseInfomationSection, LearnedSection, CertificateImage, ActionButtons } from "../components";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
 import { certificateAPI } from "@/lib/api";
 import { ICertificate } from "../types";
@@ -63,20 +63,20 @@ export const CertificatePage = () => {
   };
 
   let layoutStyle;
-  if (width > 1350) {
-    layoutStyle = "flex justify-between space-x-8";
+  if (width > 1200) {
+    layoutStyle = "flex space-x-8 justify-center";
   } else {
-    layoutStyle = "justify-between space-y-4 min-w-[600px] max-w-[550px]";
+    layoutStyle = "space-y-4 min-w-[500px] max-w-[500px]";
   }
 
   return (
-    <div className="py-4 px-56 space-y-4 min-w-[600px]">
+    <div className="py-4 px-56 space-y-4 min-w-[550px]">
       {renderCourseName()}
       <div className={layoutStyle}>
-        <div className="space-y-4 min-w-[600px] max-w-[600px]">
+        <div className="space-y-4 min-w-[500px] ">
           <ProfileSection loading={loading} certificate={certificate} />
           <CourseInfomationSection loading={loading} certificate={certificate} />
-          <LearntSection loading={loading} certificate={certificate} />
+          <LearnedSection loading={loading} certificate={certificate} />
         </div>
         <div className="space-y-4">
           <CertificateImage loading={loading} certificate={certificate} />

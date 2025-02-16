@@ -46,14 +46,14 @@ export function ActionButtons(props: ActionButtonsProps) {
     content = (
       <div className="flex space-x-3">
         <Button
-          className="px-5 py-6 rounded-lg bg-appPrimary font-bold text-lg hover:bg-appPrimary/80"
+          className="px-5 py-6 rounded-lg bg-appPrimary font-bold text-base hover:bg-appPrimary/80"
           onClick={handleShareClick}
         >
           <FontAwesomeIcon icon={faShareFromSquare} />
           Share Certificate
         </Button>
         <Button
-          className="px-5 py-6 rounded-lg border border-appPrimary text-lg bg-white font-bold text-appPrimary hover:bg-white/75 hover:text-opacity-75 hover:border-opacity-75"
+          className="px-5 py-6 rounded-lg border border-appPrimary text-base bg-white font-bold text-appPrimary hover:bg-white/75 hover:text-opacity-75 hover:border-opacity-75"
           onClick={handleDownloadClick}
         >
           <FontAwesomeIcon icon={faDownload} />
