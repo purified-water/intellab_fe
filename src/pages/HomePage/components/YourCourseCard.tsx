@@ -41,8 +41,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const handleContinueCourse = () => {
     if (accessToken && userId) {
       if (isFinished) {
-        // TODO: Implement certificate page
-        alert("Upcoming feature");
+        navigate(`/certificate/${courseDetail?.certificateId}`);
       } else {
         if (courseDetail?.latestLessonId) {
           navigate(`/lesson/${courseDetail.latestLessonId}?courseId=${courseDetail.courseId}`);
@@ -77,7 +76,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
               className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
               onClick={handleContinueCourse}
             >
-              {isFinished ? "View certificate" : "Continue"}
+              {isFinished ? "View Certificate" : "Continue"}
             </button>
             <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
           </div>
@@ -98,7 +97,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
       {skeletonLoading || apiLoading ? renderSkeleton() : renderContent()}
     </div>
   );

@@ -12,6 +12,7 @@ export const problemAPI = {
   getProblemDetail: async (problemId: string) => {
     const response = await apiClient.get(`problem/problems/${problemId}`);
     const data: ProblemType = response.data;
+    console.log("Problem detail in api", data);
     return data;
   },
   createSubmission: async (
@@ -19,15 +20,31 @@ export const problemAPI = {
     code: string,
     programmingLanguage: string,
     problemId: string,
-    userUid: string = "6eaea212-5351-45c3-3a53-9c9b9a407e1e" // TEMPORARY waiting to change to userId
+    userId: string
   ) => {
     const response = await apiClient.post(`problem/problem-submissions`, {
-      submit_order: submitOrder,
+      submitOrder: submitOrder,
       code: code,
-      programming_language: programmingLanguage,
-      problem: { problemId },
-      userUid
+      programmingLanguage: programmingLanguage,
+      problemId: problemId,
+      userId: userId
     });
+    return response.data;
+  },
+  postRunCode: async (code: string, languageId: number, problemId: string) => {
+    const response = await apiClient.post(`problem/problem-run-code`, {
+      code: code,
+      languageId: languageId,
+      problemId: problemId
+    });
+    return response.data;
+  },
+  getRunCodeUpdate: async (runCodeId: string) => {
+    const response = await apiClient.get(`problem/problem-run-code/${runCodeId}`);
+    return response.data;
+  },
+  getBoilerplateCode: async (problemId: string) => {
+    const response = await apiClient.get(`problem/problems/${problemId}/partial-boilerplate`);
     return response.data;
   },
   getUpdateSubmission: async (submissionId: string) => {
@@ -40,6 +57,10 @@ export const problemAPI = {
   },
   getTestCaseDetail: async (testCaseId: string) => {
     const response = await apiClient.get(`problem/test-case/${testCaseId}`);
+    return response.data;
+  },
+  getSubmissionHistory: async (problemId: string) => {
+    const response = await apiClient.get(`problem/problem-submissions/submitList/${problemId}`);
     return response.data;
   }
 };

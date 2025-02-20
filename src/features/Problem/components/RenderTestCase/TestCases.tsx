@@ -10,11 +10,11 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
   // console.log("testCases in Testcases", testCases);
   const renderTabs = () => {
     return (
-      <div className="flex mb-4 gap-x-2 text-gray3 hover:cursor-pointer">
+      <div className="flex mb-4 gap-x-2 text-gray3">
         {testCases.map((_tc, idx) => (
           <div
             key={idx}
-            className={`py-1 px-3 font-semibold rounded-lg ${activeTab === idx ? "bg-gray5 text-gray2" : ""}`}
+            className={`py-1 px-3 font-semibold cursor-pointer rounded-lg ${activeTab === idx ? "bg-gray5 text-gray2" : ""}`}
             onClick={() => setActiveTab(idx)} // Set active tab on click
           >
             Case {idx + 1}

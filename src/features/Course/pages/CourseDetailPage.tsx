@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import Pagination from "@/components/ui/Pagination";
+import Reviews from "../components/Reviews";
+import RatingModal from "../components/RatingModal";
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
@@ -26,6 +28,15 @@ export const CourseDetailPage = () => {
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const courses = useSelector((state: RootState) => state.course.courses);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Constants for timing logic
+  const PROMPT_DELAY_DAYS = 7; // Show again after 7 days if dismissed
+  const MAX_DISMISSALS = 100; // Stop showing after 3 dismissals
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
   const getCourseDetail = async () => {
     setLoading(true);
@@ -49,7 +60,7 @@ export const CourseDetailPage = () => {
 
     if (isEnrolled && isAuthenticated) {
       try {
-        const response = await courseAPI.getLessonsAfterEnroll(userId!, id!, page);
+        const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
         // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
@@ -77,9 +88,43 @@ export const CourseDetailPage = () => {
     }
   };
 
+  // Function to check if we should show the review prompt
+  const shouldShowReviewPrompt = (courseId: string, userUid: string) => {
+    // Retrieve existing review prompt data from localStorage
+    const storedData = JSON.parse(localStorage.getItem("reviewPrompt") || "{}");
+
+    // Get the data specific to the current course and user
+    const courseData = storedData[courseId]?.[userUid] || { lastPromptDate: null, dismissCount: 0, reviewed: false };
+
+    // Destructure the necessary data
+    const { lastPromptDate, dismissCount, reviewed } = courseData;
+
+    // If the user has already reviewed, don't show the prompt
+    if (reviewed) return false;
+
+    // If the user has dismissed the prompt too many times, don't show it
+    if (dismissCount >= MAX_DISMISSALS) return false;
+
+    // Check if enough days have passed since the last prompt
+    const now = new Date();
+    const lastDate = lastPromptDate ? new Date(lastPromptDate) : null;
+
+    // If the user has never been prompted before, show the prompt
+    if (!lastDate) {
+      return true;
+    }
+
+    // Calculate the difference in days between the current date and last prompt date
+    const diffDays = (now.getTime() - lastDate.getTime()) / (1000 * 60 * 60 * 24); // Difference in days
+    return diffDays >= PROMPT_DELAY_DAYS; // Show the prompt if enough days have passed
+  };
+
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
+    if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
+      openModal();
+    }
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
@@ -118,8 +163,7 @@ export const CourseDetailPage = () => {
   };
 
   const handleViewCertificateClick = () => {
-    // TODO: Implement certificate page
-    alert("Upcoming feature");
+    navigate(`/certificate/${course?.certificateId}`);
   };
 
   const renderHeader = () => {
@@ -153,12 +197,27 @@ export const CourseDetailPage = () => {
                 onPageChange={(page) => getCourseLessons(page)}
               />
             )}
+            {isModalOpen && (
+              <RatingModal
+                closeModal={closeModal}
+                courseTitle={course?.courseName ?? ""}
+                courseId={course?.courseId ?? ""}
+                isReviewTab={false}
+              />
+            )}
           </div>
         );
       case "Comments":
         return <div>Comments content goes here</div>;
       case "Reviews":
-        return <div>Reviews content goes here</div>;
+        // return <div>Reviews content goes here</div>;
+        return (
+          <Reviews
+            courseTitle={course?.courseName ?? ""}
+            courseId={course?.courseId ?? ""}
+            hasCompleted={course?.progressPercent == 100}
+          ></Reviews>
+        );
       default:
         return null;
     }
@@ -168,7 +227,7 @@ export const CourseDetailPage = () => {
     return (
       <button
         onClick={() => setActiveTab(tab)}
-        className={activeTab === tab ? "text-appAccent underline" : "text-gray3"}
+        className={activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}
       >
         {tab}
       </button>

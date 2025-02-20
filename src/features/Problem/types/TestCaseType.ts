@@ -8,6 +8,7 @@ export interface TestCaseType {
   submitOutputs: string[];
 }
 export interface TestCaseResultWithIO {
+  // To get the test case detail
   testcaseId: string;
   input: string;
   output: string;
@@ -21,12 +22,13 @@ export interface TestCaseAfterSubmit {
   testCaseOutputID: TestCaseOutputID;
   token: string;
   runtime: number;
+  memory: number;
   submission_output: string | null;
   result_status: string;
 }
 
 export interface TestCaseOutputID {
   // For getting the output of the test case
-  submission_id: string;
-  testcase_id: string;
+  submissionId: string;
+  testcaseId: string;
 }

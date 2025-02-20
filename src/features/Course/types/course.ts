@@ -12,4 +12,6 @@ export interface ICourse {
   unitPrice: string;
   userEnrolled: boolean;
   userUid: string | null;
+  certificateUrl: string | null;
+  certificateId: string | null;
 }

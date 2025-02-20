@@ -15,12 +15,15 @@ import { useParams } from "react-router-dom";
 import { UserCodeState } from "@/redux/problem/problemType";
 import { RootState } from "@/redux/rootReducer";
 import { problemAPI } from "@/lib/api";
+import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
+
+// NOTE: MISSING MEMORY, TIME when viewing history
 
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
   return (
     <div className="flex-col px-4">
-      <div className="flex items-center my-2 cursor-pointer text-gray3" onClick={onBack}>
+      <div className="flex items-center my-2 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
         <ChevronLeft />
         <div className="text-lg font-medium">Back</div>
       </div>
@@ -48,7 +51,7 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
 const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewAllTestCaseResultListProps) => {
   return (
     <div className="flex-col px-4 overflow-y-scroll">
-      <div className="flex items-center my-2 cursor-pointer text-gray3" onClick={onBack}>
+      <div className="flex items-center my-2 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
         <ChevronLeft className="" />
         <div className="text-lg font-medium">Back</div>
       </div>
@@ -59,7 +62,7 @@ const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewA
         {testCases.map((testCase, index) => (
           <div
             className={`flex justify-between items-center cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
-            key={testCase.testCaseOutputID.testcase_id}
+            key={testCase.testCaseOutputID.testcaseId}
             onClick={() => onTestCaseClick(testCase)}
           >
             <div className="flex items-center px-2 py-2 gap-x-2">
@@ -87,7 +90,7 @@ export const SubmissionResults = ({
   language,
   submissionResult
 }: SubmissionResultsProps) => {
-  const testCases = submissionResult.testCases_output as TestCaseAfterSubmit[];
+  const testCases = submissionResult.testCasesOutput as TestCaseAfterSubmit[];
   const totalTestCasesCount = testCases.length;
   const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
 
@@ -95,14 +98,14 @@ export const SubmissionResults = ({
     // One test case may have many submission outputs, so we get the last submission output to check the result status
     (testCase) => testCase.result_status !== "Accepted"
   );
-  const selectedTestCase = firstFailedTestCase || submissionResult.testCases_output[0];
+  const selectedTestCase = firstFailedTestCase || submissionResult.testCasesOutput[0];
 
   const [selectedTestCaseDetail, setSelectedTestCaseDetail] = useState<TestCaseResultWithIO | null>(null);
 
   useEffect(() => {
     const fetchTestCaseDetail = async () => {
       try {
-        const response = await problemAPI.getTestCaseDetail(selectedTestCase.testCaseOutputID.testcase_id);
+        const response = await problemAPI.getTestCaseDetail(selectedTestCase.testCaseOutputID.testcaseId);
         console.log("Test case detail", response);
         setSelectedTestCaseDetail(response);
       } catch (error) {
@@ -160,14 +163,22 @@ export const SubmissionResults = ({
             <div className="mb-1 text-sm">Run time =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
               <pre className="text-base">
-                {selectedTestCaseDetail?.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].runtime}ms
+                {selectedTestCaseDetail?.submitOutputs &&
+                  selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].runtime * 1000}
+                ms
               </pre>
             </div>
-
-            {/* <div className="mt-4 mb-1 text-sm">Memory =</div>
+            {/* MISSING MEMORY */}
+            <div className="mt-4 mb-1 text-sm">Memory =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
-              <pre className="text-base">{selectedTestCaseDetail?.input}</pre>
-            </div> */}
+              <pre className="text-base">
+                {(
+                  selectedTestCaseDetail?.submitOutputs &&
+                  selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].memory / 1000
+                )?.toFixed(0)}
+                KB
+              </pre>
+            </div>
 
             <div className="mt-4 mb-1 text-sm">Code | {language}</div>
             <div className="w-full px-4 py-2 overflow-x-auto rounded-lg bg-gray5">
@@ -180,24 +191,47 @@ export const SubmissionResults = ({
   );
 };
 
-export const SubmissionInformation = ({ isPassed }: SubmissionInformationProps) => {
+export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: SubmissionInformationProps) => {
   const [currentPanel, setCurrentPanel] = useState<string>("result");
   const [selectedTestCaseDetail, setSelectedTestCaseDetail] = useState<TestCaseResultWithIO | null>(null);
-
+  const [codeInformation, setCodeInformation] = useState<{ code: string; language: string }>({
+    code: "",
+    language: ""
+  });
+  const [submissionResult, setSubmissionResult] = useState<SubmissionTypeNoProblem | null>(null);
+  const [testCases, setTestCases] = useState<TestCaseAfterSubmit[]>([]);
   const { problemId } = useParams<{ problemId: string }>(); // Get the problemId from the URL
-  if (!problemId) return null;
-  const savedCodeData = useSelector((state: { userCode: UserCodeState }) => selectCodeByProblemId(state, problemId!)); // Retrieve saved code
-  const submissionResult = useSelector((state: RootState) => state.submission.submissions[problemId]);
-  const testCases = submissionResult.testCases_output as TestCaseAfterSubmit[];
 
-  const { code, language } = savedCodeData || { code: "", language: "" }; // Destructure saved code and language
+  const savedCodeData = useSelector((state: { userCode: UserCodeState }) => selectCodeByProblemId(state, problemId!)); // Retrieve saved code
+  const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[problemId!]);
+
+  useEffect(() => {
+    // If theres no history, which is recently submitted code, get the code from the store
+    const initializeData = async () => {
+      if (historyInformation) {
+        // console.log("History information", historyInformation);
+        // console.log("Test cases", historyInformation.testCasesOutput);
+        setSubmissionResult(historyInformation);
+        setTestCases(historyInformation.testCasesOutput);
+        setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
+      } else if (problemId) {
+        if (submissionResultFromRedux && savedCodeData) {
+          setSubmissionResult(submissionResultFromRedux);
+          setTestCases(submissionResultFromRedux.testCasesOutput);
+          setCodeInformation({ code: savedCodeData.code, language: savedCodeData.language });
+        }
+      }
+    };
+
+    initializeData();
+  }, [historyInformation, problemId]);
 
   const handleViewAllTestCases = () => setCurrentPanel("allTestCases");
 
   const handleViewTestCaseDetail = async (testCase: TestCaseAfterSubmit) => {
     // Get test case detail
     try {
-      const response = await problemAPI.getTestCaseDetail(testCase.testCaseOutputID.testcase_id);
+      const response = await problemAPI.getTestCaseDetail(testCase.testCaseOutputID.testcaseId);
       setSelectedTestCaseDetail(response);
     } catch (error) {
       console.log("Error in getting test case detail", error);
@@ -215,14 +249,22 @@ export const SubmissionInformation = ({ isPassed }: SubmissionInformationProps) 
 
   return (
     <div>
-      {currentPanel === "result" && (
-        <SubmissionResults
-          isPassed={isPassed}
-          onViewAllTestCases={handleViewAllTestCases}
-          submittedCode={code}
-          language={language}
-          submissionResult={submissionResult}
-        />
+      {currentPanel === "result" && submissionResult && (
+        <>
+          {historyInformation && (
+            <div className="flex items-center mx-4 my-2 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
+              <ChevronLeft className="" />
+              <div className="text-lg font-medium">Back</div>
+            </div>
+          )}
+          <SubmissionResults
+            isPassed={isPassed}
+            onViewAllTestCases={handleViewAllTestCases}
+            submittedCode={codeInformation.code}
+            language={codeInformation.language}
+            submissionResult={submissionResult}
+          />
+        </>
       )}
       {currentPanel === "allTestCases" && (
         <ViewAllTestCaseResultList

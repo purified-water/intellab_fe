@@ -5,3 +5,4 @@ export * from "./problemApi";
 export * from "./userApi";
 export * from "./leaderboardAPI";
 export * from "./aiAPI";
+export * from "./certificateApi";

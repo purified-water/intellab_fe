@@ -1,6 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchExploreCourses, filterCourses, resetFilters } from "@/redux/course/courseSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { courseAPI } from "@/lib/api/courseApi";
+import { ICategory } from "@/pages/HomePage/types/responseTypes";
 
 export interface PriceRange {
   min: number;
@@ -11,41 +13,38 @@ interface SearchKeyword {
   keyword: string;
 }
 const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedCategories, setSelectedCategories] = useState<ICategory[]>([]);
   const [selectedRating, setSelectedRating] = useState<string | null>("0");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<PriceRange>({ min: 1, max: 1000000 });
   const dispatch = useAppDispatch();
-  const categories = [
-    "Recursive",
-    "Queue",
-    "Data Structure",
-    "Problem Solving",
-    "Matrix",
-    "Algorithm",
-    "Array",
-    "Dynamic Programming"
-  ];
+  const [categories, setCategories] = useState<ICategory[]>([]);
   // const categories = [
-  //   "Sorting",
-  //   "Search",
-  //   "Graph",
-  //   "Dynamic Programming",
-  //   "Greedy",
-  //   "Backtracking",
-  //   "Divide and Conquer",
-  //   "Recursion",
-  //   "Genetic Algorithms",
-  //   "Pathfinding",
-  //   "String Matching",
-  //   "Compression",
-  //   "Hashing",
-  //   "Clustering",
+  //   "Recursive",
   //   "Queue",
-  //   "Stack",
-  //   "Linked List"
+  //   "Data Structure",
+  //   "Problem Solving",
+  //   "Matrix",
+  //   "Algorithm",
+  //   "Array",
+  //   "Dynamic Programming"
   // ];
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await courseAPI.getCategories();
+        if (response?.result) {
+          setCategories(response.result);
+          console.log("CATEGORY:", response.result);
+        }
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   const ratings = [
     { label: "All", value: "0", count: 0 },
@@ -66,7 +65,7 @@ const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
     setSelectedLevels((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]));
   };
 
-  const handleCategoryClick = (topic: string) => {
+  const handleCategoryClick = (topic: ICategory) => {
     setSelectedCategories((prev) => {
       const newGenres = prev.includes(topic) ? prev.filter((g) => g !== topic) : [...prev, topic];
       console.log("selected genres:", newGenres);
@@ -219,11 +218,11 @@ const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           <div className="flex flex-wrap gap-2 mt-2">
             {categories.map((category) => (
               <button
-                key={category}
+                key={category.categoryId}
                 className={`px-3 py-1 rounded-md border border-appPrimary ${selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"}`}
                 onClick={() => handleCategoryClick(category)}
               >
-                {category}
+                {category.name}
               </button>
             ))}
           </div>

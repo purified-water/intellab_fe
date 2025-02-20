@@ -5,8 +5,10 @@ import {
   IGetCourseLessonsResponse,
   IEnrollCourseResponse,
   IGetLessonDetailResponse,
-  IGetUserEnrolledCoursesResponse
+  IGetUserEnrolledCoursesResponse,
+  IGetCategories
 } from "../../pages/HomePage/types/responseTypes";
+import { IReviewsResponse, ReviewStatsResponse } from "../../pages/HomePage/types/reviewResponse";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 
@@ -23,6 +25,31 @@ export const courseAPI = {
     const response = await apiClient.get(`course/courses/exceptEnrolled?userUid=${userUid}`);
     const data: IGetCoursesResponse = response.data;
     return data;
+  },
+
+  getCategories: async () => {
+    const response = await apiClient.get(`course/courses/categories`);
+    const data: IGetCategories = response.data;
+    return data;
+  },
+
+  getReviews: async (courseId: string, page: number, size: number) => {
+    const response = await apiClient.get(
+      `course/courses/${courseId}/reviews?page=${page}&size=${size}&sort=createAt,desc`
+    );
+    const data: IReviewsResponse = response.data;
+    return data;
+  },
+
+  getReviewStats: async (courseId: string) => {
+    const response = await apiClient.get(`course/courses/${courseId}/reviews-stats`);
+    const data: ReviewStatsResponse = response.data;
+    return data;
+  },
+
+  postReview: async (reviewData: { rating: number; comment: string; userUid: string; courseId: string }) => {
+    const response = await apiClient.post(`course/reviews`, reviewData);
+    return response.data;
   },
 
   search: async (keyword: string, page: number) => {
@@ -48,8 +75,8 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonsAfterEnroll: async (userId: string, courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
-    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me/${userId}`, {
+  getLessonsAfterEnroll: async (courseId: string, page: number, size: number = DEFAULT_PAGE_SIZE) => {
+    const response = await apiClient.get(`/course/courses/${courseId}/lessons/me`, {
       params: {
         page,
         size
@@ -70,8 +97,8 @@ export const courseAPI = {
     return data;
   },
 
-  getLessonDetail: async (lessonId: string, userId: string) => {
-    const response = await apiClient.get(`/course/lessons/${lessonId}/${userId}`);
+  getLessonDetail: async (lessonId: string) => {
+    const response = await apiClient.get(`/course/lessons/${lessonId}`);
     const data: IGetLessonDetailResponse = response.data;
     return data;
   },
@@ -98,25 +125,25 @@ export const courseAPI = {
     return response.data;
   },
 
-  updateLessonLearningProgress: async (learningId: string, courseId: string, userId: string) => {
-    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/updateLearningProgress`, {
+  updateLessonLearningProgress: async (learningId: string, courseId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/updateLearningProgress`, {
       status: LearningStatus.IN_PROGRESS
     });
     return response.data;
   },
 
-  updateTheoryDone: async (learningId: string, courseId: string, userId: string) => {
-    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/doneTheory`);
+  updateTheoryDone: async (learningId: string, courseId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/doneTheory`);
     return response.data;
   },
 
-  updatePracticeDone: async (learningId: string, courseId: string, userId: string) => {
-    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/${userId}/donePractice`);
+  updatePracticeDone: async (learningId: string, courseId: string) => {
+    const response = await apiClient.put(`/course/lessons/${learningId}/${courseId}/donePractice`);
     return response.data;
   },
 
-  getUserEnrolledCourses: async (userUid: string) => {
-    const response = await apiClient.get(`/course/courses/${userUid}/enrolledCourses`);
+  getUserEnrolledCourses: async () => {
+    const response = await apiClient.get(`/course/courses/me/enrolledCourses`);
     const data: IGetUserEnrolledCoursesResponse = response.data;
     return data;
   }

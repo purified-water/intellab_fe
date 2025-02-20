@@ -25,11 +25,11 @@ export const CourseSection = (props: CourseSectionProps) => {
   return (
     <section className="mb-8">
       {courses.length > 0 && <h2 className="text-3xl font-bold">{title}</h2>}
-      <div className="relative w-full mt-4 overflow-x-scroll scroll-smooth scrollbar-hide">
+      <div className="relative w-full overflow-x-scroll scroll-smooth scrollbar-hide">
         {loading ? (
           renderSkeletonList()
         ) : (
-          <div className="flex space-x-4 flex-nowrap">
+          <div className="flex py-4 space-x-4 flex-nowrap">
             {courses.map((course: ICourse, index: number) => (
               <CourseSectionCard key={index} course={course} skeletonLoading={loading} />
             ))}
