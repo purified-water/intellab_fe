@@ -10,9 +10,9 @@ export const Category = (props: CategoryProps) => {
 
   let content;
   if (loading) {
-    content = <Skeleton className="px-3 py-1 w-32 h-8 rounded-md border shrink-0" />;
+    content = <Skeleton className="mt-2 mr-2 px-3 py-1 w-32 h-8 rounded-md border shrink-0" />;
   } else {
-    content = <div className="px-3 py-1 rounded-md border border-appPrimary shrink-0">{category}</div>;
+    content = <div className="mt-2 mr-2 px-3 py-1 rounded-md border border-appPrimary shrink-0">{category}</div>;
   }
 
   return content;
