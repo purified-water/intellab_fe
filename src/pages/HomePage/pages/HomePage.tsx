@@ -9,6 +9,7 @@ import { ICourse } from "@/features/Course/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { getUserIdFromLocalStorage } from "@/utils";
+import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 
 export const HomePage = () => {
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
@@ -61,6 +62,8 @@ export const HomePage = () => {
         </div>
       </main>
       <AppFooter />
+
+      <AIOrb />
     </div>
   );
 };

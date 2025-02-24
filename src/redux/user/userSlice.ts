@@ -25,3 +25,6 @@ const userSlice = createSlice({
 
 export const { setUser, setProgress, clearUser } = userSlice.actions;
 export default userSlice.reducer;
+
+// Selector to get userId from Redux store
+export const selectUserId = (state: { user: UserState }) => state.user.user?.userId || null; // For getting faster userId

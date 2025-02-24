@@ -82,7 +82,6 @@ export const courseAPI = {
         size
       }
     });
-    console.log("response", response);
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
