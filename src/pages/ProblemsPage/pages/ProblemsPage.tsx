@@ -7,10 +7,9 @@ import { fetchPaginatedProblems } from "@/redux/problem/problemSlice";
 import { RootState } from "@/redux/rootReducer";
 import { useAppDispatch } from "@/redux/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import Spinner from "@/components/ui/Spinner";
+import { Spinner, Pagination } from "@/components/ui";
 import { motion } from "framer-motion";
 import FilterComponent from "@/pages/ProblemsPage/components/FilterComponent";
-import Pagination from "@/components/ui/Pagination";
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();

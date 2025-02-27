@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/shadcn/Button";
 import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import RatingModal from "./RatingModal";
+import RatingModal from "../RatingModal";
 import { IReview, ReviewStatsResult } from "@/pages/HomePage/types/reviewResponse";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
 
-export default function Reviews({
+export function Reviews({
   courseTitle,
   courseId,
   hasCompleted
@@ -44,7 +44,6 @@ export default function Reviews({
         setPage(1);
         setTotalElements(response.result.totalElements);
         console.log("reviews get", response);
-        fetchReviewStats();
         return;
       }
       const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements);
@@ -68,6 +67,7 @@ export default function Reviews({
 
   const fetchReviewStats = async () => {
     const response = await courseAPI.getReviewStats(courseId);
+    console.log("review", response);
     setReviewStats(response.result);
   };
 
@@ -85,7 +85,7 @@ export default function Reviews({
   const closeModal = () => setIsModalOpen(false);
 
   return (
-    <div className="mx-20 mt-6 overflow-hidden">
+    <div className="mt-6 overflow-hidden">
       <div className="flex items-start">
         <div className="flex flex-col flex-1 w-full">
           <div className="flex items-end space-x-2 text-xl font-bold">
@@ -111,8 +111,7 @@ export default function Reviews({
                     transition={{ duration: 1, ease: "easeInOut" }}
                   ></motion.div>
                 </div>
-
-                <span>{rating?.toFixed(0)}%</span>
+                <span>{rating?.toFixed(1)}%</span>
               </div>
             ))}
           </div>
@@ -122,16 +121,11 @@ export default function Reviews({
             <Spinner loading={loading}></Spinner>
           </div>
         )}
-        <div className="flex flex-col items-start w-full grow-0">
+        <div className="flex flex-col items-start grow-0">
           {hasCompleted && !loading && (
             <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
               Add Review
             </Button>
-          )}
-          {reviews.length === 0 && !loading && (
-            <div className="w-full mt-2">
-              <div>No reviews available</div>
-            </div>
           )}
           {isModalOpen && (
             <RatingModal
@@ -152,7 +146,7 @@ export default function Reviews({
                     ) : null}
                   </div>
                   <div>
-                    <h4 className="font-semibold">{review.displayName}</h4>
+                    <h4 className="font-semibold">{review.displayName ? review.displayName : "Tester"}</h4>
                     <div className="flex items-center space-x-1 text-gray-500">
                       <div className="flex items-center">
                         <div className="text-yellow-500">

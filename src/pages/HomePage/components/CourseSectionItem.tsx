@@ -7,6 +7,7 @@ import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { Button } from "@/components/ui/Button";
 
 interface CourseSectionCardProps {
   course: ICourse;
@@ -70,12 +71,9 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
         )}
       </div>
       <div className="flex justify-between mt-2">
-        <button
-          className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
-          onClick={handleCourseClicked}
-        >
+        <Button variant={"white"} onClick={handleCourseClicked}>
           {detailCourse?.userEnrolled ? "Continue" : "Study now"}
-        </button>
+        </Button>
         <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
       </div>
     </div>
@@ -92,12 +90,9 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
         </p>
       </div>
       <div className="flex justify-between mt-2">
-        <button
-          className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
-          onClick={handleCourseClicked}
-        >
+        <Button variant={"white"} onClick={handleCourseClicked}>
           {course?.userEnrolled ? "Continue" : "Study now"}
-        </button>
+        </Button>
         <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
       </div>
     </div>

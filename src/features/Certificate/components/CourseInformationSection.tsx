@@ -15,7 +15,7 @@ export function CourseInformationSection(props: CourseInformationSectionProps) {
 
   const handleGoToCourse = () => {
     navigation(`/course/${certificate?.course.id}`);
-  }
+  };
 
   let content = null;
   if (loading) {
