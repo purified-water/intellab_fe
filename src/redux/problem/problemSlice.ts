@@ -13,12 +13,11 @@ export const fetchPaginatedProblems = createAsyncThunk(
   "problems/fetchPaginated",
   async ({ keyword, page, size }: FetchPaginatedProblemsParams, thunkAPI) => {
     try {
-      const userId = getUserIdFromLocalStorage();
-      const response = await problemAPI.getProblems(keyword, page, size, userId!);
-      console.log("RESPONSE", response);
+      const response = await problemAPI.getProblems(keyword, page, size);
+      
       return response.result; // Assume the API returns { data: [...], totalPages: 5 }
     } catch {
-      console.log("ERROR");
+      console.log("Failed to fetch problems");
       return thunkAPI.rejectWithValue("Something went wrong");
     }
   }
@@ -45,7 +44,6 @@ const problemSlice = createSlice({
     builder
       .addCase(fetchPaginatedProblems.pending, (state) => {
         state.status = "loading";
-        console.log("LOADING");
       })
       .addCase(fetchPaginatedProblems.fulfilled, (state, action) => {
         state.status = "succeeded";
