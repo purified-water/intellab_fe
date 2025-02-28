@@ -5,7 +5,7 @@ import SearchBar from "@/pages/ExplorePage/components/SearchBar";
 import { ICourse } from "@/features/Course/types";
 import { courseAPI } from "@/lib/api";
 import SearchResultComponent from "@/pages/ExplorePage/components/SearchResultComponent";
-import Pagination from "@/components/ui/Pagination";
+import { Pagination } from "@/components/ui";
 import { motion } from "framer-motion";
 import FilterComponent from "./components/FilterComponent";
 import { useDispatch, useSelector } from "react-redux";

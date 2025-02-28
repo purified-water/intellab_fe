@@ -6,3 +6,14 @@ export const shortenDate = (dateString: string): string => {
     year: "numeric"
   });
 };
+
+export const formatDateTime = (dateStr: string): string => {
+  const date = new Date(dateStr);
+  return date.toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+    hour: "numeric",
+    minute: "numeric"
+  });
+};

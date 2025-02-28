@@ -1,10 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  CourseInformationSection,
-  LearnedSection,
-  CertificateImage,
-  ActionButtons
-} from "../components";
+import { CourseInformationSection, LearnedSection, CertificateImage, ActionButtons } from "../components";
 import { certificateAPI } from "@/lib/api";
 import { ICertificate } from "../types";
 import { useParams } from "react-router-dom";
@@ -72,7 +67,7 @@ export const CertificatePage = () => {
         />
       );
     }
-  }
+  };
 
   return (
     <div className="py-8">

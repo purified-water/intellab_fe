@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { MarkdownRender } from "../components/MarkdownRender";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui";
 // import MarkdownEditor from "../components/MarkdownRender2";
 // import { testData } from "../components/testData";
 

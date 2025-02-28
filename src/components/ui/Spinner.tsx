@@ -5,7 +5,7 @@ type SpinnerProps = {
   overlay?: boolean;
 }
 
-export default function Spinner(props: SpinnerProps) {
+export function Spinner(props: SpinnerProps) {
   const { loading, overlay = false } = props;
 
   const renderSpinner = () => {

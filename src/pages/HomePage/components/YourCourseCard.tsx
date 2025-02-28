@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { ProgressBar } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "@/utils";
 
