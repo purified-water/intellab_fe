@@ -1,5 +1,5 @@
 import { ProblemComment } from "./ProblemComment";
-import { Button } from "@/components/ui/shadcn/button";
+import { Button } from "@/components/ui/Button";
 import { Check, ChevronDown } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
@@ -10,11 +10,11 @@ import { problemAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
-import Spinner from "@/components/ui/Spinner";
-import Pagination from "@/components/ui/Pagination";
+import { Spinner } from "@/components/ui/Spinner";
+import { Pagination } from "@/components/ui/Pagination";
 interface ISortBy {
-  value: string,
-  label: string
+  value: string;
+  label: string;
 }
 
 export const ProblemCommentSection = () => {
@@ -53,7 +53,8 @@ export const ProblemCommentSection = () => {
       const response = await problemAPI.getProblemComments(userId, problemId, [sortBy], pageNumber); // Only single sort by
       const responseResult: ProblemCommentsResponse = response.result;
       const data = responseResult.content;
-      console.log("Comments", data);
+
+      console.log("Base comment list", data);
 
       setProblemComments(data);
       setCurrentPage(responseResult.number);
@@ -75,27 +76,55 @@ export const ProblemCommentSection = () => {
 
       if (!userComment) {
         toast({
-          title: 'Failed to comment',
+          title: "Failed to comment",
           description: `Please type something to comment.`,
-          variant: 'destructive',
+          variant: "destructive"
         });
         return;
       }
 
       if (!userId) {
         toast({
-          title: 'Failed to comment',
+          title: "Failed to comment",
           description: `Please log in to comment.`,
-          variant: 'destructive',
+          variant: "destructive"
         });
       }
 
-      await problemAPI.postComment(userComment, problemId, null, null);
+      const postCommentResponse = await problemAPI.postComment(userComment, problemId, null, null);
+      const newTemporaryMessage: ProblemCommentType = {
+        ...postCommentResponse.result,
+        childrenComments: postCommentResponse.result.childrenComments || { content: [] } // Ensure childrenComments exists
+      };
 
-      // Update comments
-      getComments();
+      // Dont have to refetch comments, just add new comment to the top
+      // Use functional update to avoid potential state mutation issues
+      setProblemComments((prevComments) => [newTemporaryMessage, ...prevComments]);
+      setUserComment("");
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const refreshCommentReplies = async (commentId: string) => {
+    try {
+      if (!userId) return;
+
+      const response = await problemAPI.getCommentParantAndChildren(commentId, userId);
+      const updatedComment: ProblemCommentType = {
+        ...response.result,
+        childrenComments: response.result.childrenComments || { content: [] }
+      };
+      // Find and update the comment in the list with the new replies
+      setProblemComments((prevComments) => {
+        const updatedComments = prevComments.map((comment) =>
+          comment.commentId === commentId ? { ...updatedComment } : comment
+        );
+
+        return [...updatedComments]; // Ensuring new reference
+      });
+    } catch (error) {
+      console.log("Error refreshing comment:", error);
     }
   };
 
@@ -114,6 +143,7 @@ export const ProblemCommentSection = () => {
           placeholder="Type your comment..."
           className="w-full text-sm px-4 py-2 bg-white border rounded-lg resize-none max-h-[300px] overflow-y-scroll border-gray4/60"
           rows={1}
+          value={userComment}
           onInput={(e) => {
             e.currentTarget.style.height = "auto";
             e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
@@ -175,17 +205,25 @@ export const ProblemCommentSection = () => {
       </Popover>
 
       <div className="mt-4">
-        {problemComments.map((comment, index) => (
-          <ProblemComment key={index} comment={comment} updateCommentList={getComments} />
+        {problemComments.map((comment) => (
+          <ProblemComment
+            key={comment.commentId}
+            comment={comment}
+            updateCommentList={getComments}
+            refreshCommentReplies={refreshCommentReplies}
+          />
         ))}
       </div>
+
+      {!problemComments.length && (
+        <div>
+          <p className="text-center text-gray3">No comments yet</p>
+        </div>
+      )}
+
       <div className="mb-12">
         {totalPages != 0 && (
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page) => getComments(page)}
-          />
+          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(page) => getComments(page)} />
         )}
       </div>
     </div>

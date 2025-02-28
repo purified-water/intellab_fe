@@ -47,7 +47,7 @@ export const HomePage = () => {
 
   return (
     <div className="flex flex-col w-full min-h-screen">
-      <main className="flex-col flex-grow w-full px-4 pt-3 md:px-14">
+      <main className="flex flex-col flex-grow w-full px-4 pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
         <Header />
         <div id="content" className="flex flex-col gap-4 mt-4 md:flex-row">
           <div id="courses" className="w-full px-4 py-4 border rounded-lg md:w-3/4 border-gray5">

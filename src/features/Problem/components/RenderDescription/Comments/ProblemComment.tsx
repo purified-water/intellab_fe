@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProblemReply } from "./ProblemReply";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { Pencil, Trash2 } from "lucide-react";
 import { FaRegComment } from "rocketicons/fa6";
-import { Button } from "@/components/ui/shadcn/button";
+import { Button } from "@/components/ui/Button";
 import { ProblemCommentType, ProblemCommentsResponse } from "@/features/Problem/types/ProblemCommentType";
 import { formatDate } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -14,9 +14,10 @@ import { useParams } from "react-router-dom";
 interface ProblemCommentProps {
   comment: ProblemCommentType;
   updateCommentList: () => void;
+  refreshCommentReplies: (commentId: string) => void;
 }
 
-export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentProps) => {
+export const ProblemComment = ({ comment, updateCommentList, refreshCommentReplies }: ProblemCommentProps) => {
   const { toast } = useToast();
   const userId = useSelector(selectUserId);
   const { problemId } = useParams<{ problemId: string }>();
@@ -32,21 +33,18 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
   const [isHovering, setIsHovering] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(comment.content);
-  const [replyList, setReplyList] = useState<ProblemCommentType[]>(comment.childrenComments?.content!);
+  const [replyList, setReplyList] = useState<ProblemCommentType[]>(comment.childrenComments?.content || []);
   // Pagination
-  const [currentPage, setCurrentPage] = useState(comment.childrenComments?.number!);
-  const [totalPages,] = useState(comment.childrenComments?.totalPages!);
+  const [currentPage, setCurrentPage] = useState(comment.childrenComments?.number ?? 0);
+  const [totalPages] = useState(comment.childrenComments?.totalPages ?? 0);
 
   const handleLoadMoreReplies = async (pageNumber: number = 0) => {
     try {
-      console.log("Getting from page", pageNumber);
       const response = await problemAPI.getSecondLevelReplies(comment.commentId, pageNumber);
       const responseResult: ProblemCommentsResponse = response.result;
       const data = responseResult.content;
-      console.log("Second level replies", response);
 
       setReplyList((prev) => [...prev, ...data]);
-      console.log("reply list now", replyList);
       setCurrentPage((prev) => prev + 1);
     } catch (error) {
       console.log(error);
@@ -63,14 +61,11 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
 
     try {
       if (upVoted) {
-        const response = await problemAPI.postRemoveUpvoteComment(comment.commentId);
+        await problemAPI.postRemoveUpvoteComment(comment.commentId);
         setTemporaryUpvoteCount((prev) => prev - 1);
-        console.log("Remove upvote comment", response);
-
       } else {
-        const response = await problemAPI.postUpvoteComment(comment.commentId);
+        await problemAPI.postUpvoteComment(comment.commentId);
         setTemporaryUpvoteCount((prev) => prev + 1);
-        console.log("Upvote comment", response);
       }
     } catch (error) {
       console.log(error);
@@ -79,15 +74,19 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
     setUpVoted(!upVoted);
   };
 
+  useEffect(() => {
+    // This will update the UI when a new reply is added, ensure React re-renders the component
+    setReplyList(comment.childrenComments?.content || []);
+  }, [comment.childrenComments]);
+
   const handleMainCommentReply = async () => {
     if (!comment || !problemId) return;
-    console.log("Replying to comment", comment);
 
     if (!mainReplyContent) {
       toast({
-        title: 'Failed to comment',
+        title: "Failed to comment",
         description: `Please type something to comment.`,
-        variant: 'destructive',
+        variant: "destructive"
       });
       return;
     }
@@ -97,35 +96,38 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
         title: "Failed to reply",
         description: "Login to reply",
         variant: "destructive"
-      })
+      });
     }
 
     try {
       // parentCommentID = replyingToCommentID because we're replying to the parent comment
       await problemAPI.postComment(mainReplyContent, problemId, comment.commentId, comment.commentId);
-
+      // Cant direcly use the response from the post request because it doesn't return the childrenComments
+      // Small delay to ensure API updates before fetching
+      setTimeout(() => {
+        refreshCommentReplies(comment.commentId); // Get the latest replies
+      }, 100);
       // Update UI
       setIsReplying(false);
+      setShowReplies(true);
       setMainReplyContent("");
-      updateCommentList();
     } catch (error) {
       console.log(error);
       toast({
         title: "Failed to reply",
         description: "An error occured",
         variant: "destructive"
-      })
+      });
     }
-
-  }
+  };
 
   const handleEditComment = async () => {
     try {
       if (!editedContent) {
         toast({
-          title: 'Failed to edit comment',
+          title: "Failed to edit comment",
           description: `Please type something to edit.`,
-          variant: 'destructive',
+          variant: "destructive"
         });
         return;
       }
@@ -138,7 +140,7 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleRemoveComment = async () => {
     if (!comment) return;
@@ -149,7 +151,7 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const renderUserReply = () => {
     return (
@@ -166,6 +168,7 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
             placeholder="Type your reply..."
             className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"
             rows={1}
+            value={mainReplyContent}
             onInput={(e) => {
               e.currentTarget.style.height = "auto";
               e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
@@ -176,20 +179,22 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
                 e.preventDefault();
                 handleMainCommentReply();
               }
-            }
-            }
+            }}
           />
         </div>
         <div>
           <div className="flex justify-end space-x-2">
             <Button
               onClick={() => setIsReplying(false)}
-              variant="outline" className="px-4 py-2 mt-2 rounded-lg text-appPrimary border-appPrimary">
+              variant="outline"
+              className="px-4 py-2 mt-2 rounded-lg text-appPrimary border-appPrimary"
+            >
               Cancel
             </Button>
             <Button
               onClick={handleMainCommentReply}
-              className="px-4 py-2 mt-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90">
+              className="px-4 py-2 mt-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            >
               Comment
             </Button>
           </div>
@@ -233,7 +238,8 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
           <div className="flex justify-end mt-2 space-x-2">
             <Button
               onClick={() => setIsEditing(false)}
-              variant="outline" className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
+              variant="outline"
+              className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
             >
               Cancel
             </Button>
@@ -264,7 +270,7 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
         {/* Show Replies Button */}
         <div onClick={() => setShowReplies(!showReplies)} className="flex items-center space-x-1 cursor-pointer">
           <FaRegComment className="w-4 h-4 icon-gray3 hover:text-black" />
-          {comment.childrenComments ? (
+          {replyList.length > 0 ? (
             <p className="text-xs text-gray2 hover:text-black">
               {showReplies ? `Hide ${commentReplyList.length} replies` : `Show ${commentReplyList.length} replies`}
             </p>
@@ -272,31 +278,30 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
         </div>
 
         {/* Share Button */}
-        <div onClick={
-          () => {
+        <div
+          onClick={() => {
             if (!userId) return;
-            setIsReplying(true)
-          }
-        }
-          className="flex items-center space-x-1 cursor-pointer">
+            setIsReplying(true);
+          }}
+          className="flex items-center space-x-1 cursor-pointer"
+        >
           <BiShare className="w-5 h-5 icon-gray3 hover:text-black" />
           <p className="text-xs text-gray2 hover:text-black">Reply</p>
         </div>
 
         {isHovering && userId === comment.userUid && (
           <div className="flex space-x-4 edit-delete-buttons">
-            <div onClick={() => setIsEditing(true)}
-              className="flex items-center space-x-1 cursor-pointer">
+            <div onClick={() => setIsEditing(true)} className="flex items-center space-x-1 cursor-pointer">
               <Pencil className="w-4 h-4 text-gray3 hover:text-black" />
               <p className="text-xs text-gray2 hover:text-black">Edit</p>
             </div>
 
-            <div onClick={handleRemoveComment}
-              className="flex items-center space-x-1 cursor-pointer">
+            <div onClick={handleRemoveComment} className="flex items-center space-x-1 cursor-pointer">
               <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
               <p className="text-xs text-gray2 hover:text-black">Delete</p>
             </div>
-          </div>)}
+          </div>
+        )}
       </div>
 
       {/* Replies Section */}
@@ -304,7 +309,12 @@ export const ProblemComment = ({ comment, updateCommentList }: ProblemCommentPro
         <>
           <div className="mt-2">
             {replyList.map((reply, index) => (
-              <ProblemReply key={index} reply={reply} updateCommentList={updateCommentList} />
+              <ProblemReply
+                key={index}
+                reply={reply}
+                updateCommentList={updateCommentList}
+                refreshCommentReplies={refreshCommentReplies}
+              />
             ))}
           </div>
 
