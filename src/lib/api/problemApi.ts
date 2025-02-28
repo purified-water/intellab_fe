@@ -5,9 +5,9 @@ const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_CHILDREN_SIZE = 10;
 
 export const problemAPI = {
-  getProblems: async (keyword: string, page: number, size: number, userUid: string) => {
+  getProblems: async (keyword: string, page: number, size: number) => {
     const response = await apiClient.get(
-      `problem/problems/search?keyword=${keyword}&page=${page}&size=${size}&userUid=${userUid}`
+      `problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`
     );
     const data: ProblemsResponse = response.data;
     return data;
@@ -15,7 +15,6 @@ export const problemAPI = {
   getProblemDetail: async (problemId: string) => {
     const response = await apiClient.get(`problem/problems/${problemId}`);
     const data: ProblemType = response.data;
-    console.log("Problem detail in api", data);
     return data;
   },
   createSubmission: async (
@@ -131,6 +130,14 @@ export const problemAPI = {
       params: {
         page: page,
         size: size
+      }
+    });
+    return response.data;
+  },
+  getCommentParantAndChildren: async (commentId: string, userId: string) => {
+    const response = await apiClient.get(`problem/problem-comments/${commentId}/root-and-children`, {
+      params: {
+        userId: userId
       }
     });
     return response.data;

@@ -15,7 +15,7 @@ export const Sidebar = () => {
         mode="single"
         selected={date}
         onSelect={setDate}
-        className="overflow-auto border border-gray5 rounded-md"
+        className="overflow-auto border rounded-md border-gray5"
       />
       {isAuthenticated && <ProgressCircle />}
       <Leaderboard />

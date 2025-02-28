@@ -3,7 +3,7 @@ import { formatDate } from "@/utils";
 import { useState } from "react";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { Pencil, Trash2 } from "lucide-react";
-import { Button } from "@/components/ui/shadcn/button";
+import { Button } from "@/components/ui/Button";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
 import { problemAPI } from "@/lib/api/problemApi";
@@ -12,9 +12,10 @@ import { useToast } from "@/hooks/use-toast";
 interface ProblemReplyProps {
   reply: ProblemCommentType;
   updateCommentList: () => void;
+  refreshCommentReplies: (commentId: string) => void;
 }
 
-export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) => {
+export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }: ProblemReplyProps) => {
   const userId = useSelector(selectUserId);
   const { problemId } = useParams<{ problemId: string }>();
   const { toast } = useToast();
@@ -34,14 +35,11 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
 
     try {
       if (upVoted) {
-        const response = await problemAPI.postRemoveUpvoteComment(reply.commentId);
+        await problemAPI.postRemoveUpvoteComment(reply.commentId);
         setTemporaryUpvoteCount((prev) => prev - 1);
-        console.log("Remove upvote comment", response);
-
       } else {
-        const response = await problemAPI.postUpvoteComment(reply.commentId);
+        await problemAPI.postUpvoteComment(reply.commentId);
         setTemporaryUpvoteCount((prev) => prev + 1);
-        console.log("Upvote comment", response);
       }
     } catch (error) {
       console.log(error);
@@ -55,9 +53,9 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
 
     if (!secondLevelReplyContent) {
       toast({
-        title: 'Failed to comment',
+        title: "Failed to comment",
         description: `Please type something to comment.`,
-        variant: 'destructive',
+        variant: "destructive"
       });
       return;
     }
@@ -67,7 +65,7 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
         title: "Failed to reply",
         description: "Login to reply",
         variant: "destructive"
-      })
+      });
     }
 
     try {
@@ -75,27 +73,29 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
       // replyingToCommentID is the second level comment that we're replying to
       await problemAPI.postComment(secondLevelReplyContent, problemId, reply.parentCommentId, reply.commentId);
 
+      // Update the comment reply list only
+      refreshCommentReplies(reply.parentCommentId!);
+
       // Update UI
       setIsReplying(false);
       setSecondLevelReplyContent("");
-      updateCommentList();
     } catch (error) {
       console.log(error);
       toast({
         title: "Failed to reply",
         description: "An error occured",
         variant: "destructive"
-      })
+      });
     }
-  }
+  };
 
   const handleEditComment = async () => {
     try {
       if (!editedContent) {
         toast({
-          title: 'Failed to edit comment',
+          title: "Failed to edit comment",
           description: `Please type something to edit.`,
-          variant: 'destructive',
+          variant: "destructive"
         });
         return;
       }
@@ -108,7 +108,7 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const handleRemoveComment = async () => {
     if (!reply) return;
@@ -119,7 +119,7 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
     } catch (error) {
       console.log(error);
     }
-  }
+  };
 
   const renderUserReply = () => {
     return (
@@ -147,20 +147,22 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
                 e.preventDefault();
                 handleSecondLevelCommentReply();
               }
-            }
-            }
+            }}
           />
         </div>
         <div>
           <div className="flex justify-end space-x-2">
             <Button
               onClick={() => setIsReplying(false)}
-              variant={"outline"} className="px-4 py-2 mt-2 rounded-lg text-appPrimary border-appPrimary">
+              variant={"outline"}
+              className="px-4 py-2 mt-2 rounded-lg text-appPrimary border-appPrimary"
+            >
               Cancel
             </Button>
             <Button
               onClick={handleSecondLevelCommentReply}
-              className="px-4 py-2 mt-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90">
+              className="px-4 py-2 mt-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            >
               Comment
             </Button>
           </div>
@@ -174,7 +176,8 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
       <div
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
-        className="flex items-start space-x-2 reply-component">
+        className="flex items-start space-x-2 reply-component"
+      >
         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
           {reply.userAvatar ? (
             <img src={reply.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
@@ -202,7 +205,8 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
                 <div className="flex justify-end mt-2 space-x-2">
                   <Button
                     onClick={() => setIsEditing(false)}
-                    variant="outline" className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
+                    variant="outline"
+                    className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
                   >
                     Cancel
                   </Button>
@@ -218,7 +222,9 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
               <p className="mt-1 text-black">
                 {editedContent.split(/\[@(.*?)\]/g).map((part, index) =>
                   editedContent.includes(`[@${part}]`) ? (
-                    <span key={index} className="font-semibold text-appPrimary">@{part}</span>
+                    <span key={index} className="font-semibold text-appPrimary">
+                      @{part}
+                    </span>
                   ) : (
                     part
                   )
@@ -239,30 +245,30 @@ export const ProblemReply = ({ reply, updateCommentList }: ProblemReplyProps) =>
             </div>
 
             {/* Share Button */}
-            <div onClick={
-              () => {
+            <div
+              onClick={() => {
                 if (!userId) return;
-                setIsReplying(true)
+                setIsReplying(true);
                 setSecondLevelReplyContent(`[@${reply.username ? reply.username : "user"}] `); // Prepend the format [@<username>]
               }}
-              className="flex items-center space-x-1 cursor-pointer">
+              className="flex items-center space-x-1 cursor-pointer"
+            >
               <BiShare className="w-5 h-5 icon-gray3 hover:text-black" />
               <p className="text-xs text-gray2 hover:text-black">Reply</p>
             </div>
             {isHovering && userId === reply.userUid && (
               <div className="flex space-x-4 edit-delete-buttons">
-                <div onClick={() => setIsEditing(true)}
-                  className="flex items-center space-x-1 cursor-pointer">
+                <div onClick={() => setIsEditing(true)} className="flex items-center space-x-1 cursor-pointer">
                   <Pencil className="w-4 h-4 text-gray3 hover:text-black" />
                   <p className="text-xs text-gray2 hover:text-black">Edit</p>
                 </div>
 
-                <div onClick={handleRemoveComment}
-                  className="flex items-center space-x-1 cursor-pointer">
+                <div onClick={handleRemoveComment} className="flex items-center space-x-1 cursor-pointer">
                   <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
                   <p className="text-xs text-gray2 hover:text-black">Delete</p>
                 </div>
-              </div>)}
+              </div>
+            )}
           </div>
         </div>
       </div>

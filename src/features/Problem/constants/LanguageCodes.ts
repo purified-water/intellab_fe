@@ -7,19 +7,14 @@ export const DEFAULT_LANGUAGE_CODE = {
 };
 
 export const LanguageCodes: LanguageCodeType[] = [
-  // {
-  //   id: 104,
-  //   name: "C (Clang 18.1.8)",
-  //   is_archived: false
-  // },
   {
-    id: 105,
-    name: "C++ (GCC 14.1.0)",
+    id: 50,
+    name: "C (GCC 9.2.0)",
     is_archived: false
   },
   {
-    id: 103,
-    name: "C (GCC 14.1.0)",
+    id: 54,
+    name: "C++ (GCC 9.2.0)",
     is_archived: false
   },
   {
@@ -45,26 +40,6 @@ export const LanguageCodes: LanguageCodeType[] = [
   {
     id: 71,
     name: "Python (3.8.1)",
-    is_archived: false
-  },
-  {
-    id: 99,
-    name: "R (4.4.1)",
-    is_archived: false
-  },
-  {
-    id: 72,
-    name: "Ruby (2.7.0)",
-    is_archived: false
-  },
-  {
-    id: 73,
-    name: "Rust (1.40.0)",
-    is_archived: false
-  },
-  {
-    id: 81,
-    name: "Scala (2.13.2)",
     is_archived: false
   },
   {

@@ -97,7 +97,7 @@ export const ExplorePage = () => {
   const renderSkeletonList = () => {
     const skeletonCount = 6; // Số lượng skeleton cố định
     return (
-      <div className="flex px-10 py-4 overflow-x-auto gap-7 scrollbar-hide">
+      <div className="flex py-4 overflow-x-auto gap-7 scrollbar-hide">
         {[...Array(skeletonCount)].map((_, index) => (
           <Course key={index} course={DEFAULT_COURSE} skeletonLoading={true} />
         ))}
@@ -111,7 +111,7 @@ export const ExplorePage = () => {
 
   const renderCourses = (displayingCourses: ICourse[]) => {
     return (
-      <div className="flex px-10 py-4 overflow-x-auto gap-7 scrollbar-hide">
+      <div className="flex py-4 overflow-x-auto gap-7 scrollbar-hide">
         {displayingCourses.map((course) => (
           <div key={course.courseId}>
             <Course course={course} skeletonLoading={loading} />
@@ -130,9 +130,9 @@ export const ExplorePage = () => {
   );
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col w-full px-4 pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
       {/* Header section with filter button and search bar */}
-      <div className="flex items-center pt-10 pl-10">
+      <div className="flex items-center pt-10">
         <FilterButton
           onClick={() => {
             setShowFilter(!showFilter);
@@ -167,7 +167,7 @@ export const ExplorePage = () => {
         ) : (
           <div>
             {/* Welcome message */}
-            <div className="w-full h-[106px] flex flex-col pl-10">
+            <div className="w-full h-[106px] flex flex-col">
               <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">Welcome to Intellab explore!</div>
               <div>Find new and exciting courses here!</div>
             </div>
@@ -175,7 +175,7 @@ export const ExplorePage = () => {
               <div>
                 {/* Section for Fundamentals For Beginner */}
                 <div className="flex flex-col mb-[78px]">
-                  <div className="flex items-center justify-between w-full pl-10 mb-8">
+                  <div className="flex items-center justify-between w-full mb-8">
                     <div className="text-4xl font-bold text-black">Fundamentals For Beginner</div>
                     {/* NOTE: 26/12/2024 temporarily hide this this button */}
                     <Link to="/explore/fundamentals" state={{ courses: displayedCourses, section: "fundamentals" }}>
@@ -188,7 +188,7 @@ export const ExplorePage = () => {
 
                 {/* Section for Popular Courses */}
                 <div className="flex flex-col mb-[78px]">
-                  <div className="flex items-center justify-between w-full pl-10 mb-8">
+                  <div className="flex items-center justify-between w-full mb-8">
                     <div className="text-4xl font-bold text-black">Popular Courses</div>
                     {/* NOTE: 26/12/2024 temporarily hide this this button */}
                     {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>

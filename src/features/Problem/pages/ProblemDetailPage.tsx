@@ -74,8 +74,6 @@ export const ProblemDetail = () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
 
-      console.log("Problem detail", problemDetail);
-
       if (problemDetail) {
         setProblemDetail(problemDetail);
         setTestCases(problemDetail.testCases.slice(0, 3));
