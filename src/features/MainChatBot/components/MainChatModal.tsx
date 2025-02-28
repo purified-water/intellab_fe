@@ -1,3 +1,4 @@
+"use strict";
 import { useState, useRef, useEffect } from "react";
 import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
@@ -23,28 +24,37 @@ import { ChatbotMessageResponseType } from "../types/ChatbotMessageType";
 import { aiAPI } from "@/lib/api";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
-
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { clearChatDetail, setChatDetail, addMessage, updateThreadId } from "@/redux/mainChatbot/mainChatbotSlice";
+import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
-  const [chatDetail, setChatDetail] = useState<ChatbotHistoryDetailType | null>({
-    thread_id: null,
-    timestamp: "",
-    messages: []
-  });
+  // const [chatDetail, setChatDetail] = useState<ChatbotHistoryDetailType | null>({
+  //   thread_id: null,
+  //   timestamp: "",
+  //   messages: []
+  // });
   const [input, setInput] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
-  const [chatModel, setChatModel] = useState("llama3.2");
+  const [chatModel, setChatModel] = useState("groq-llama-3.3-70b");
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
   const { toast } = useToast();
   const userId = getUserIdFromLocalStorage();
+  // Redux state and dispatch
+  const dispatch = useDispatch();
+  const chatDetail = useSelector((state: RootState) => state.mainChatbot.chatDetail);
+
+  console.log("Is user inactive?", isUserInactive());
+  console.log("Chat detail", chatDetail);
 
   useEffect(() => {
     fetchChatHistory();
@@ -81,23 +91,30 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     console.log("Userid", userId);
     try {
       const response = await aiAPI.getThreadsHistory(userId);
-      console.log("Chat history fetched", response);
+      // console.log("Chat history fetched", response);
       setChatHistoryItems(response.data);
+      // If the user is new, show the welcome message
+      if (isUserInactive() || response.data.length === 0) {
+        dispatch(clearChatDetail());
+        return;
+      } else {
+        handleGetChatDetail(response.data[response.data.length - 1]);
+      }
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleNewChat = () => {
-    setChatDetail({
-      thread_id: null,
-      timestamp: "",
-      messages: []
-    });
+    dispatch(clearChatDetail());
+    setInput("");
   };
 
   const handleSendMessage = async () => {
     if (!input.trim() || !userId) return;
+
+    updateLastVisit();
+
     const trimmedInput = input.trim();
 
     let isNewChat: boolean = false;
@@ -106,22 +123,23 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     }
 
     // Used to set the user message in the chat
-    const userMessage = {
+    const userMessage: ChatbotMessageContentType = {
       type: "user",
       content: trimmedInput,
       timestamp: new Date().toISOString(),
-      metadata: {
-        model: chatModel
-      }
-    } as ChatbotMessageContentType;
+      metadata: { model: chatModel }
+    };
 
-    setChatDetail((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        messages: [...prev.messages, userMessage]
-      };
-    });
+    // dispatch(setChatDetail({
+    //   ...chatDetail,
+    //   thread_id: chatDetail?.thread_id ?? null,
+    //   timestamp: chatDetail?.timestamp ?? "",
+    //   messages: [...(chatDetail?.messages || []), userMessage] // Append user message
+    // }));
+
+    dispatch(addMessage(userMessage));
+    console.log("After sending message:", chatDetail?.messages);
+
     setInput("");
 
     try {
@@ -141,15 +159,19 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         });
         return;
       }
-
-      setChatDetail((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          thread_id: responseData.thread_id
-        };
-      });
+      // setChatDetail((prev) => {
+      //   if (!prev) return null;
+      //   return {
+      //     ...prev,
+      //     thread_id: responseData.thread_id
+      //   };
+      // });
       setIsLoadingResponse(false);
+      updateLastVisit();
+
+      if (chatDetail?.thread_id === null) {
+        dispatch(updateThreadId(responseData.thread_id));
+      }
 
       const aiMessage = {
         type: responseData.type,
@@ -160,13 +182,14 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         }
       } as ChatbotMessageContentType;
 
-      setChatDetail((prev) => {
-        if (!prev) return null;
-        return {
-          ...prev,
-          messages: [...prev.messages, aiMessage]
-        };
-      });
+      // dispatch(setChatDetail({
+      //   ...chatDetail,
+      //   thread_id: chatDetail?.thread_id ?? null,
+      //   timestamp: chatDetail?.timestamp ?? "",
+      //   messages: [...(chatDetail?.messages || []), aiMessage] // Append messages safely without overwriting
+      // }));
+      dispatch(addMessage(aiMessage));
+      console.log("After sending message:", chatDetail?.messages);
       // Generate the chat title for chat history
       if (isNewChat) {
         await aiAPI.postGenerateTitle(trimmedInput, userId, responseData.thread_id);
@@ -175,15 +198,19 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoadingResponse(false);
     }
   };
 
   const handleGetChatDetail = async (chatItem: ChatbotHistoryItemType) => {
     if (!chatItem.thread_id || !userId) return;
+    console.log("Getting chat details for thread", chatItem.thread_id);
     try {
       const response = await aiAPI.getThreadDetails(userId, chatItem.thread_id);
-      console.log("Chat detail fetched", response);
-      setChatDetail(response.data);
+
+      updateLastVisit();
+      dispatch(setChatDetail(response.data));
     } catch (error) {
       console.error(error);
     }
@@ -223,17 +250,15 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     <SidebarProvider>
       <div
         id="overlay"
-        className={`fixed z-50 ${
-          isMinimized
-            ? "bottom-4 right-4 max-w-[520px] max-h-[1200px]"
-            : "inset-0 flex items-center justify-center bg-gray3/30"
-        }`}
+        className={`fixed z-50 ${isMinimized
+          ? "bottom-4 right-4 max-w-[520px] max-h-[1200px]"
+          : "inset-0 flex items-center justify-center bg-gray3/30"
+          }`}
       >
         <div
           id="chat-container"
-          className={`relative flex flex-col bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-appFadedPrimary shadow-xl transition-all duration-300 ease-in-out ${
-            isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
-          }`}
+          className={`relative flex flex-col bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-appFadedPrimary shadow-xl transition-all duration-300 ease-in-out ${isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
+            }`}
           style={{
             transformOrigin: "bottom right",
             transition: "transform 0.15s ease-in-out, opacity 0.15s ease-in-out"
@@ -295,7 +320,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
             </div>
 
             {/* Input Field (Moves to Bottom on User Interaction) */}
-            <div id="chat-input" className="sticky z-10 flex items-end px-2 mt-4 bottom-4">
+            <div id="chat-input" className="sticky z-10 flex items-end px-2 mt-4 bottom-8">
               <textarea
                 ref={textAreaRef}
                 rows={1}
