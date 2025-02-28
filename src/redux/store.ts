@@ -6,7 +6,7 @@ import rootReducer from "@/redux/rootReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "course", "problem", "user", "submission", "comment"]
+  whitelist: ["auth", "course", "problem", "user", "submission", "comment", "mainChatbot"]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
