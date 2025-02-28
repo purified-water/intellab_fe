@@ -5,7 +5,7 @@ interface AnimatedButtonProps {
   onClick: () => void;
 }
 
-export default function AnimatedButton(props: AnimatedButtonProps) {
+export function AnimatedButton(props: AnimatedButtonProps) {
   const { label, onClick } = props;
 
   return (

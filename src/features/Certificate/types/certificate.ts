@@ -9,6 +9,7 @@ interface ICertificate {
   username: string;
   completeDate: string;
   certificateLink: string;
+  userUid: string;
 }
 
 interface ICourseCategory {

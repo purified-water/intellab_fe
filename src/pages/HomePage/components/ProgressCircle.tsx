@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Separator } from "@/components/ui/Separator";
+import { Separator } from "@/components/ui";
 import { Progress } from "@/types";
 import { userAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";

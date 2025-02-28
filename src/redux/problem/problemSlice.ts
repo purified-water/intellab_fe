@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { ProblemState, UserCodeState } from "./problemType";
 import { problemAPI } from "@/lib/api/problemApi";
+import { getUserIdFromLocalStorage } from "@/utils";
 // Async thunk for fetching paginated problems
 interface FetchPaginatedProblemsParams {
   keyword: string;
@@ -13,7 +14,7 @@ export const fetchPaginatedProblems = createAsyncThunk(
   async ({ keyword, page, size }: FetchPaginatedProblemsParams, thunkAPI) => {
     try {
       const response = await problemAPI.getProblems(keyword, page, size);
-
+      
       return response.result; // Assume the API returns { data: [...], totalPages: 5 }
     } catch {
       console.log("Failed to fetch problems");

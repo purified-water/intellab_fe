@@ -6,7 +6,7 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from "@/components/ui/shadcn/Pagination";
+} from "@/components/ui/shadcn/pagination";
 
 interface PaginationProps {
   currentPage: number;
@@ -16,7 +16,7 @@ interface PaginationProps {
 
 const DEFAULT_START_PAGE_NUMBER = 1;
 
-const Pagination = (props: PaginationProps) => {
+export const Pagination = (props: PaginationProps) => {
   const { currentPage, totalPages, onPageChange } = props;
 
   const renderPages = () => {
@@ -128,5 +128,3 @@ const Pagination = (props: PaginationProps) => {
     </div>
   );
 };
-
-export default Pagination;
