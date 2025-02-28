@@ -14,17 +14,26 @@ export const ProfileSection = () => {
     }
   }, [isAuthenticated]);
 
+  const renderProfilePhoto = () => {
+    let content = <i className="text-9xl fa-solid fa-circle-user"></i>;
+    const userPhoto = user?.photoUrl;
+    if (userPhoto) {
+      content = <img src={userPhoto} alt="profile" className="w-32 h-32 rounded-full object-contain" />;
+    }
+    return content;
+  };
+
   return (
     <div className="flex flex-col">
-      <div className="flex items-center mr-32">
-        <i className="text-9xl fa-solid fa-circle-user"></i>
+      <div className="flex items-center">
+        {renderProfilePhoto()}
         <div className="flex flex-col items-start justify-center pl-5">
-          <div className="text-2xl font-semibold text-black1">{user?.name}</div>
-          <div className="mb-5 text-base font-normal text-gray3">Nguyen Van A</div>{" "}
+          <div className="text-2xl font-semibold text-black1">{`${user?.firstName} ${user?.lastName}`}</div>
+          <div className="mb-5 text-base font-normal text-gray3">{user?.displayName}</div>{" "}
           <div>
             <span className="text-lg font-normal text-black1">Rank:</span>
             <span className="text-lg font-semibold text-black1"> 1,000</span>
-          </div>{" "}
+          </div>
         </div>
       </div>
       <button

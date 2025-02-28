@@ -1,27 +1,36 @@
 import { useEffect, useState } from "react";
 import { Separator } from "@/components/ui";
-import { Progress } from "@/types";
+import { TProgress } from "@/types";
 import { userAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const ProgressCircle = () => {
-  const [progress, setProgress] = useState<Progress | null>(null);
+  const [progress, setProgress] = useState<TProgress | null>(null);
   const [loading, setLoading] = useState(false);
+  const toast = useToast();
+  const userId = getUserIdFromLocalStorage();
 
-  const handleGetProgress = async (userId: string) => {
-    const progress = await userAPI.getProgress(userId);
-    if (progress) {
-      setProgress(progress);
+  const getProgressProblemAPI = async (userId: string | null) => {
+    setLoading(true);
+    try {
+      const progress = await userAPI.getProgressProblem(userId);
+      if (progress) {
+        setProgress(progress);
+      } else {
+        showToastError({ toast: toast.toast, message: "Error getting problem statistics" });
+      }
+    } catch (e: any) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error getting problem statistics" });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    setLoading(true);
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      handleGetProgress(userId);
-    }
-    setLoading(false);
+    getProgressProblemAPI(userId);
   }, []);
 
   const renderSkeleton = () => {

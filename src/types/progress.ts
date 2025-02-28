@@ -1,4 +1,4 @@
-export type Progress = {
+type TProgress = {
   totalProblems: number;
   easy: {
     solved: number;
@@ -13,3 +13,20 @@ export type Progress = {
     max: number;
   };
 };
+
+type TRankLanguages = {
+  top1: {
+    solved: number;
+    name: string;
+  };
+  top2: {
+    solved: number;
+    name: string;
+  };
+  top3: {
+    solved: number;
+    name: string;
+  };
+};
+
+export type { TProgress, TRankLanguages };
