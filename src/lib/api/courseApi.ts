@@ -43,10 +43,16 @@ export const courseAPI = {
     return data;
   },
 
-  getReviews: async (courseId: string, page: number, size: number) => {
-    const response = await apiClient.get(
-      `course/courses/${courseId}/reviews?page=${page}&size=${size}&sort=createAt,desc`
-    );
+  getReviews: async (courseId: string, page: number, size: number, rating: string) => {
+    const rating_param = rating === "all" ? null : Number(rating);
+    const response = await apiClient.get(`course/courses/${courseId}/reviews`, {
+      params: {
+        page,
+        size,
+        sort: "createAt,desc",
+        ...(rating_param !== null && { rating: rating_param })
+      }
+    });
     const data: IReviewsResponse = response.data;
     return data;
   },

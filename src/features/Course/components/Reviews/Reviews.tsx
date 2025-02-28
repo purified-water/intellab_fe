@@ -7,6 +7,7 @@ import RatingModal from "../RatingModal";
 import { IReview, ReviewStatsResult } from "@/pages/HomePage/types/reviewResponse";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
+import ComboboxDemo from "../ComboboxDemo";
 
 export function Reviews({
   courseTitle,
@@ -25,6 +26,9 @@ export function Reviews({
   const size = 3; // number of reviews per page
   const hasFetched = useRef(false);
   const [reviewStats, setReviewStats] = useState<ReviewStatsResult | null>(null);
+  const [ratingFilterOpen, setRatingFilterOpen] = useState(false);
+  const [ratingFilter, setRatingFilter] = useState("all");
+
   const handleShowMore = (index: number) => {
     // Toggle the expanded review state
     setExpandedReview((prev) => (prev === index ? null : index));
@@ -39,14 +43,14 @@ export function Reviews({
     try {
       setLoading(true);
       if (refetch) {
-        const response = await courseAPI.getReviews(courseId, 0, numOfElements);
+        const response = await courseAPI.getReviews(courseId, 0, numOfElements, ratingFilter);
         setReviews([...response.result.content]);
         setPage(1);
         setTotalElements(response.result.totalElements);
         console.log("reviews get", response);
         return;
       }
-      const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements);
+      const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements, ratingFilter);
 
       // Assuming response.result.content is the reviews array
       if (numOfElements === 1) {
@@ -71,13 +75,26 @@ export function Reviews({
     setReviewStats(response.result);
   };
 
+  const fetchRatingFilter = async (numOfElements: number = size) => {
+    const response = await courseAPI.getReviews(courseId, 0, numOfElements, ratingFilter);
+    setReviews(response.result.content);
+    setPage(1);
+    setTotalElements(response.result.totalElements);
+    console.log("reviews filter get", response);
+  };
+
   useEffect(() => {
+    // Set loading
+    setLoading(true);
+
+    fetchRatingFilter();
+    fetchReviewStats();
+    // Stop loading
+    setLoading(false);
     if (!hasFetched.current) {
-      fetchReviews();
-      fetchReviewStats();
       hasFetched.current = true;
     }
-  }, []);
+  }, [ratingFilter]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -111,21 +128,32 @@ export function Reviews({
                     transition={{ duration: 1, ease: "easeInOut" }}
                   ></motion.div>
                 </div>
-                <span>{rating?.toFixed(1)}%</span>
+                <span>{rating?.toFixed(0)}%</span>
               </div>
             ))}
           </div>
         </div>
-        {loading && (
-          <div className="w-full">
-            <Spinner loading={loading}></Spinner>
+        <div className="flex flex-col items-start flex-auto w-full ml-4">
+          <div className="flex items-end justify-between w-full">
+            <ComboboxDemo
+              open={ratingFilterOpen}
+              setOpen={setRatingFilterOpen}
+              value={ratingFilter}
+              setValue={setRatingFilter}
+            ></ComboboxDemo>
+
+            {hasCompleted && hasFetched.current && (
+              <Button className="w-32 mr-4 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+                Add Review
+              </Button>
+            )}
           </div>
-        )}
-        <div className="flex flex-col items-start grow-0">
-          {hasCompleted && !loading && (
-            <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
-              Add Review
-            </Button>
+          {reviews.length === 0 && !loading && (
+            <div className="w-full mt-2">
+              <div className="justify-items-center">
+                <p className="mt-10 text-xl text-gray3">No reviews yet</p>
+              </div>
+            </div>
           )}
           {isModalOpen && (
             <RatingModal
@@ -133,12 +161,15 @@ export function Reviews({
               courseTitle={courseTitle}
               courseId={courseId}
               isReviewTab={true}
-              onReviewSubmitted={() => fetchReviews(true, size, page, true)}
+              onReviewSubmitted={() => {
+                fetchReviews(true, size, page, true);
+                fetchReviewStats();
+              }}
             />
           )}
           <div className="mt-2 space-y-4 overflow-y-auto max-h-[500px]">
             {reviews.map((review, index) => (
-              <Card key={review.reviewId} className="w-full p-4 mt-4 border border-gray4">
+              <Card key={review.reviewId} className="w-full pt-4 pb-4 pl-4 pr-5 mt-4 border border-gray4">
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gray-300 rounded-full">
                     {review.photoUrl ? (
@@ -182,6 +213,11 @@ export function Reviews({
             <button className="mt-4 text-sm underline text-appPrimary" onClick={() => fetchReviews(true)}>
               View more...
             </button>
+          )}
+          {loading && (
+            <div className="w-full">
+              <Spinner loading={loading}></Spinner>
+            </div>
           )}
         </div>
       </div>
