@@ -66,6 +66,15 @@ const Navbar = () => {
 
   const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
 
+  const renderUserPhoto = () => {
+    let content = <MdAccountCircle className="icon-xl" />;
+    const userPhoto = user?.photoUrl;
+    if (userPhoto) {
+      content = <img src={userPhoto} alt="User" className="w-10 h-10 object-contain rounded-full" />;
+    }
+    return content;
+  };
+
   return (
     <>
       <nav className="flex items-center justify-between w-full px-12 py-2 border-b border-gray5">
@@ -131,7 +140,7 @@ const Navbar = () => {
                 className="p-1 transition text-gray3 hover:text-gray1 hover:cursor-pointer"
                 onClick={toggleDropdown}
               >
-                <MdAccountCircle className="icon-xl" />
+                {renderUserPhoto()}
               </div>
               {isDropdownOpen && (
                 <div
@@ -140,10 +149,9 @@ const Navbar = () => {
                   className="absolute right-0 z-10 w-56 mt-2 bg-white rounded-lg shadow-md top-10"
                 >
                   <div className="flex flex-row items-center px-3">
-                    <MdAccountCircle className="icon-3xl" />
-
+                    {renderUserPhoto()}
                     <div className="flex flex-col px-4 py-2">
-                      <div className="text-lg font-semibold">{user?.name}</div>
+                      <div className="text-lg font-semibold">{`${user?.firstName} ${user?.lastName}`}</div>
                       <div className="text-sm text-gray-500">100 points</div>
                     </div>
                   </div>
