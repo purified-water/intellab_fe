@@ -34,7 +34,7 @@ export function AlertDialog(props: AlertDialogProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-appPrimary" onClick={onConfirm}>Confirm</AlertDialogAction>
+          <AlertDialogAction className="bg-appPrimary hover:bg-appPrimary/80" onClick={onConfirm}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </ShadCNAlertDialog>

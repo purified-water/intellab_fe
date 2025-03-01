@@ -1,12 +1,16 @@
 import { useState, useRef } from "react";
 import { ChatbotModal } from "./MainChatModal";
 import { aiOrbLogo, lightAiOrbAnimation } from "@/assets";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 export const AIOrb = () => {
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [, setIsHovered] = useState(false);
   const [videoError, setVideoError] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const handleMouseEnter = () => {
     setIsHovered(true);
@@ -27,6 +31,10 @@ export const AIOrb = () => {
   const handleVideoError = () => {
     setVideoError(true);
   };
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <>

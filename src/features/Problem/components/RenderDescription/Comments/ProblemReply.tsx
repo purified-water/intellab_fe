@@ -9,6 +9,8 @@ import { selectUserId } from "@/redux/user/userSlice";
 import { problemAPI } from "@/lib/api/problemApi";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { RootState } from "@/redux/rootReducer";
+import { AvatarIcon } from "@/components/ui";
 interface ProblemReplyProps {
   reply: ProblemCommentType;
   updateCommentList: () => void;
@@ -19,6 +21,8 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
   const userId = useSelector(selectUserId);
   const { problemId } = useParams<{ problemId: string }>();
   const { toast } = useToast();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.user.user);
   // Upvote
   const [upVoted, setUpVoted] = useState(reply.isUpVoted);
   const [temporaryUpvoteCount, setTemporaryUpvoteCount] = useState(reply.numberOfLikes);
@@ -60,7 +64,7 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
       return;
     }
 
-    if (!userId) {
+    if (!isAuthenticated) {
       toast({
         title: "Failed to reply",
         description: "Login to reply",
@@ -127,9 +131,7 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
         <div className="flex items-start space-x-2">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
             {/* TODO: CHANGE THIS AVATAR TO USER AVA, NOT COMMENT's */}
-            {reply.userAvatar ? (
-              <img src={reply.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
-            ) : null}
+            {user?.photoUrl ? <AvatarIcon src={user.photoUrl} alt="Avatar" /> : null}
           </div>
 
           <textarea

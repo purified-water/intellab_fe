@@ -66,17 +66,17 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
 
     return (
       <div className="flex flex-col" key={selectedTestCase.input}>
-        <div className="mb-1 text-sm">Inputs =</div>
+        <div className="mb-1 text-sm">Input:</div>
         <div className="w-full px-4 py-1 rounded-lg min-h-8 h-fit bg-gray5">
           <pre className="text-base">{selectedTestCase.input}</pre>
         </div>
 
-        <div className="mt-4 mb-1 text-sm">Expected Outputs =</div>
+        <div className="mt-4 mb-1 text-sm">Expected Output:</div>
         <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
           <pre className="text-base">{selectedTestCase.expectedOutput}</pre>
         </div>
 
-        <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
+        <div className="mt-4 mb-1 text-sm">Actual Output:</div>
         <div className="w-full px-4 py-1 mb-8 rounded-lg min-h-8 bg-gray5">
           <pre className="text-base">
             {selectedTestCase.actualOutput ? selectedTestCase.actualOutput : selectedTestCase.error}

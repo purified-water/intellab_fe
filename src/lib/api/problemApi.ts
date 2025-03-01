@@ -6,9 +6,7 @@ const DEFAULT_CHILDREN_SIZE = 10;
 
 export const problemAPI = {
   getProblems: async (keyword: string, page: number, size: number) => {
-    const response = await apiClient.get(
-      `problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`
-    );
+    const response = await apiClient.get(`problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`);
     const data: ProblemsResponse = response.data;
     return data;
   },
@@ -122,7 +120,7 @@ export const problemAPI = {
     return response.data;
   },
   deleteComment: async (commentId: string) => {
-    const response = await apiClient.delete(`problem/problem-comments/${commentId}/soft`);
+    const response = await apiClient.delete(`problem/problem-comments/${commentId}`);
     return response.data;
   },
   getSecondLevelReplies: async (parentCommentId: string, page: number = 0, size: number = DEFAULT_CHILDREN_SIZE) => {
