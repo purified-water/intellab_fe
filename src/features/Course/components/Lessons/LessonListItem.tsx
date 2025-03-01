@@ -3,6 +3,8 @@ import { BookOpenText, Code } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 const EMPTY_SPACE = <div className="w-8" />;
 const FINISHED_ICON = <FontAwesomeIcon icon={faCircleCheck} className="w-8 h-8" color="#27AE60" />;
@@ -17,6 +19,7 @@ interface LessonListItemProps {
 
 export default function LessonListItem(props: LessonListItemProps) {
   const { lesson, isEnrolled, lastViewedLessonId, course } = props;
+  const toast = useToast();
 
   const navigate = useNavigate();
 
@@ -28,7 +31,11 @@ export default function LessonListItem(props: LessonListItemProps) {
     if (isEnrolled) {
       navigateToLesson();
     } else {
-      alert("Please enroll the course to access this lesson");
+      showToastError({
+        toast: toast.toast,
+        title: "Enrollment required",
+        message: "You need to enroll in the course to access this lesson"
+      });
     }
   };
 

@@ -77,12 +77,8 @@ export const CommentReply = (props: CommentReplyProps) => {
   const [editReplyContent, setEditReplyContent] = useState("");
 
   useEffect(() => {
-    if (parentCommentId == repliedCommentId) {
-      setEditReplyContent(content);
-    } else {
-      const parsedReply = parseReplyContent(content);
-      setEditReplyContent(parsedReply?.replyContent ?? "");
-    }
+    setEditReplyContent(`${content} `);
+    setReplyContent(`[@${userName}] `);
   }, [replyComment]);
 
   const renderReplyComment = () => {
@@ -220,7 +216,7 @@ export const CommentReply = (props: CommentReplyProps) => {
       };
 
       const handleReply = () => {
-        const actualContent = `[@${userName}] ${replyContent.trim()}`;
+        const actualContent = replyContent.trim();
         const actualParentCommentId = parentCommentId ?? commentId;
         const handleSuccess = () => {
           setIsReply(false);
@@ -288,14 +284,7 @@ export const CommentReply = (props: CommentReplyProps) => {
     };
 
     const handleEdit = () => {
-      let actualContent;
-      if (parentCommentId == repliedCommentId) {
-        // reply is first level
-        actualContent = editReplyContent!.trim();
-      } else {
-        // reply is second level and above
-        actualContent = `[@${userName}] ${editReplyContent!.trim()}`;
-      }
+      const actualContent = editReplyContent.trim();
 
       const handleSuccess = () => {
         setIsEdit(false);

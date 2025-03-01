@@ -10,7 +10,7 @@ import { CommunityPage } from "@/pages/CommunityPage";
 import { CourseDetailPage } from "@/features/Course/pages";
 import { ExplorePage } from "@/pages/ExplorePage/ExplorePage";
 import SectionDetailPage from "@/pages/ExplorePage/SectionDetailPage";
-import { ProfilePage } from "@/features/Profile/pages/ProfilePage";
+import { ProfilePage, EditProfilePage } from "@/features/Profile/pages";
 import { PricingPage } from "@/features/Pricing/PricingPage";
 import { LessonDetailPage } from "@/features/Lesson/pages/LessonDetailPage";
 import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
@@ -92,6 +92,10 @@ const router = createBrowserRouter([
       {
         path: "/certificate/:id",
         element: <CertificatePage />
+      },
+      {
+        path: "/profile/edit",
+        element: <EditProfilePage />
       }
     ]
   }
