@@ -15,7 +15,7 @@ export const StatsSection = () => {
 
   const getProgressProblemAPI = async (userId: string | null) => {
     try {
-      const progress = await userAPI.getProgressProblem(userId);
+      const progress = await userAPI.getProgressLevel(userId);
       if (progress) {
         setProgress(progress);
       } else {

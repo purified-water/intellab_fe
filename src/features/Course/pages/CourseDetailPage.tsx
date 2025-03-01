@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import RatingModal from "../components/RatingModal";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -19,6 +21,7 @@ const TAB_BUTTONS = {
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Lessons");
   const [course, setCourse] = useState<ICourse | null>(null);
@@ -133,7 +136,7 @@ export const CourseDetailPage = () => {
     if (isAuthenticated) {
       enrollCourseHandler();
     } else {
-      alert("Please login to enroll in this course");
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to enroll in the course" });
     }
   };
 
@@ -144,10 +147,10 @@ export const CourseDetailPage = () => {
       if (response.code === 0) {
         // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
         setIsEnrolled(true);
-        alert("Enroll successfully");
+        showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {
         setIsEnrolled(false);
-        alert("Enroll failed");
+        showToastError({ toast: toast.toast, message: "Error enrolling course" });
       }
     } catch (error) {
       console.log("--> Error enrolling course", error);

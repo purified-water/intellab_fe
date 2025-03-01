@@ -16,7 +16,7 @@ const rootReducer = combineReducers({
   userCode: userCodeReducer,
   submission: submissionReducer,
   comment: commentReducer,
-  mainChatbot: mainChatbotReducer,
+  mainChatbot: mainChatbotReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

@@ -10,8 +10,6 @@ type TUploadProfilePhotoResponse = TApiResponse<string>;
 
 type TGetProfilesResponse = TApiResponse<IUser[]>;
 
-type TGetProgressProblemResponse = TProgress;
-
 type TGetProgressLevelResponse = TProgress;
 
 type TGetProgressLanguageResponse = TRankLanguages;
@@ -25,7 +23,6 @@ export type {
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
   TGetProfilesResponse,
-  TGetProgressProblemResponse,
   TGetProgressLevelResponse,
   TGetProgressLanguageResponse,
   TGetProfileResponse,

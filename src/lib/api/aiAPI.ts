@@ -32,7 +32,7 @@ export const aiAPI = {
     userId: string,
     thread_id?: string | null
   ) => {
-    const bodyParams: ChatbotMessageInputType  = {
+    const bodyParams: ChatbotMessageInputType = {
       message: message,
       model: model,
       user_id: userId

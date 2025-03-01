@@ -22,7 +22,7 @@ import {
   TUpvoteCommentResponse
 } from "@/features/Course/types/apiResponseType";
 
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 10;
 
 export const courseAPI = {
   getCourses: async () => {

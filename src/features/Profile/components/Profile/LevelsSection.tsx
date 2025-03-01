@@ -4,15 +4,17 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { showToastError } from "@/utils/toastUtils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const LevelsSection = () => {
   const [loading, setLoading] = useState(true);
   const [level, setLevels] = useState<TProgress | null>(null);
   const toast = useToast();
+  const userId = getUserIdFromLocalStorage();
 
   const getProgressProblemAPI = async () => {
     try {
-      const progress = await userAPI.getProgressLevel();
+      const progress = await userAPI.getProgressLevel(userId);
       if (progress) {
         setLevels(progress);
       } else {
@@ -79,10 +81,9 @@ export const LevelsSection = () => {
   if (loading) {
     content = renderSkeleton();
   } else {
-    if (level) {
+    if (level && Object.keys(level).length > 0) {
       content = renderStatistic();
     }
   }
-
   return content;
 };

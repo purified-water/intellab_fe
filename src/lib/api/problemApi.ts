@@ -6,9 +6,7 @@ const DEFAULT_CHILDREN_SIZE = 10;
 
 export const problemAPI = {
   getProblems: async (keyword: string, page: number, size: number) => {
-    const response = await apiClient.get(
-      `problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`
-    );
+    const response = await apiClient.get(`problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`);
     const data: ProblemsResponse = response.data;
     return data;
   },

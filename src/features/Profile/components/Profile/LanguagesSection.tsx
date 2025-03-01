@@ -4,15 +4,17 @@ import { TRankLanguages } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const LanguagesSection = () => {
   const [loading, setLoading] = useState(true);
   const [languages, setLanguages] = useState<TRankLanguages | null>(null);
   const toast = useToast();
+  const userId = getUserIdFromLocalStorage();
 
   const getRankLanguagesAPI = async () => {
     try {
-      const response = await userAPI.getProgressLanguage();
+      const response = await userAPI.getProgressLanguage(userId);
       if (response) {
         setLanguages(response);
       } else {
@@ -77,7 +79,7 @@ export const LanguagesSection = () => {
   if (loading) {
     content = renderSkeleton();
   } else {
-    if (languages) {
+    if (languages && Object.keys(languages).length > 0) {
       content = renderStatistic();
     }
   }

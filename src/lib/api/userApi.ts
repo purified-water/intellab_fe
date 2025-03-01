@@ -4,7 +4,6 @@ import {
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
   TGetProfilesResponse,
-  TGetProgressProblemResponse,
   TGetProgressLevelResponse,
   TGetProgressLanguageResponse,
   TGetProfileResponse,
@@ -51,25 +50,24 @@ export const userAPI = {
     return data;
   },
 
-  getProgressProblem: async (userId: string | null) => {
+  getProgressLevel: async (userId: string | null) => {
     const queryParams = {
       userId: userId
     };
-    const response = await apiClient.get("/problem/statistics/progress", {
+    const response = await apiClient.get("/problem/statistics/progress/level", {
       params: queryParams
     });
-    const data: TGetProgressProblemResponse = response.data;
-    return data;
-  },
-
-  getProgressLevel: async () => {
-    const response = await apiClient.get("/identity/profile/statistics/progress/level");
     const data: TGetProgressLevelResponse = response.data;
     return data;
   },
 
-  getProgressLanguage: async () => {
-    const response = await apiClient.get("/identity/profile/statistics/progress/language");
+  getProgressLanguage: async (userId: string | null) => {
+    const queryParams = {
+      userId: userId
+    };
+    const response = await apiClient.get("/problem/statistics/progress/language", {
+      params: queryParams
+    });
     const data: TGetProgressLanguageResponse = response.data;
     return data;
   },

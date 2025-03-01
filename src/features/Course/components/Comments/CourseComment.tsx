@@ -12,7 +12,7 @@ import { showToastError } from "@/utils/toastUtils";
 import { courseAPI } from "@/lib/api";
 import { API_RESPONSE_CODE } from "@/constants";
 import { Pencil, Trash2 } from "lucide-react";
-import { Spinner, AlertDialog, AvatarIcon } from "@/components/ui";
+import { AlertDialog, AvatarIcon } from "@/components/ui";
 import { getUserIdFromLocalStorage } from "@/utils";
 import * as commentStore from "@/redux/comment/commentSlice";
 import { useDispatch } from "react-redux";
@@ -57,7 +57,6 @@ export const CourseComment = (props: CourseCommentProps) => {
 
   const isOwner = userUid === localUserUid;
 
-  const [loading, setLoading] = useState(false);
   const [showReplies, setShowReplies] = useState(false);
   const [showReplyInput, setShowReplyInput] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
@@ -68,11 +67,10 @@ export const CourseComment = (props: CourseCommentProps) => {
   const totalReplies = replies.totalElements;
 
   useEffect(() => {
-    setEditContent(content);
+    setEditContent(`${content} `);
   }, [content]);
 
   const upvoteCommentAPI = async (commentId: string) => {
-    setLoading(true);
     try {
       const response = await courseAPI.upvoteComment(commentId);
       const { code, message, result } = response;
@@ -83,13 +81,10 @@ export const CourseComment = (props: CourseCommentProps) => {
       }
     } catch (e: any) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error upvoting comment" });
-    } finally {
-      setLoading(false);
     }
   };
 
   const cancelUpvoteCommentAPI = async (commentId: string) => {
-    setLoading(true);
     try {
       const response = await courseAPI.cancelUpvoteComment(commentId);
       const { code, message, result } = response;
@@ -100,8 +95,6 @@ export const CourseComment = (props: CourseCommentProps) => {
       }
     } catch (e: any) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error canceling upvote comment" });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -241,7 +234,6 @@ export const CourseComment = (props: CourseCommentProps) => {
     };
 
     const renderReplies = () => {
-      console.log("--> replies: ", replies);
       return (
         showReplies && (
           <div className="ml-8 mt-4 space-y-4">
@@ -385,14 +377,5 @@ export const CourseComment = (props: CourseCommentProps) => {
     );
   };
 
-  const renderSpinner = () => {
-    return <Spinner loading={loading} overlay />;
-  };
-
-  return (
-    <div>
-      {isEdit ? renderEditInput() : renderComment()}
-      {renderSpinner()}
-    </div>
-  );
+  return <div>{isEdit ? renderEditInput() : renderComment()}</div>;
 };

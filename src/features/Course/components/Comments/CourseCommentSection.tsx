@@ -60,6 +60,10 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
         setCurrentPage(result.number);
         if (!totalPages) {
           setTotalPages(result.totalPages);
+        } else {
+          if (result.totalPages == 0) {
+            setTotalPages(null);
+          }
         }
       } else {
         if (comments.length > 0) {
@@ -85,7 +89,6 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
     onSuccess: () => void
   ) => {
     const actualContent = content.trim();
-    setLoading(true);
     try {
       const response = await courseAPI.createComment(courseId, actualContent, repliedCommentId, parentCommentId);
       const { code, message, result } = response;
@@ -94,18 +97,13 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
         dispatch(commentStore.createComment(result));
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error creating comment" });
-        setLoading(false);
       }
     } catch (e: any) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error creating comment" });
-      setLoading(false);
-    } finally {
-      setLoading(false);
     }
   };
 
   const deleteCommentAPI = async (comment: TComment) => {
-    setLoading(true);
     try {
       const response = await courseAPI.deleteComment(comment.commentId);
       const { code, message, result } = response;
@@ -113,23 +111,19 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
         if (comment.parentCommentId) {
           // the comment is a child comment
           dispatch(commentStore.deleteComment(comment));
-          setLoading(false);
         } else {
           // the comment is a parent comment
           getCommentsAPI(currentPage);
         }
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error deleting comment" });
-        setLoading(false);
       }
     } catch (e: any) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error deleting comment" });
-      setLoading(false);
     }
   };
 
   const editCommentAPI = async (commentId: string, content: string, onSuccess: () => void) => {
-    setLoading(true);
     try {
       const response = await courseAPI.modifyComment(commentId, content);
       const { code, message, result } = response;
@@ -141,8 +135,6 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       }
     } catch (e: any) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error editing comment" });
-    } finally {
-      setLoading(false);
     }
   };
 
