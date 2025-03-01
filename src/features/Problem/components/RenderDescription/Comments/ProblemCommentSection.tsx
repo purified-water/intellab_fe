@@ -12,6 +12,8 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
 import { Spinner } from "@/components/ui/Spinner";
 import { Pagination } from "@/components/ui/Pagination";
+import { RootState } from "@/redux/rootReducer";
+
 interface ISortBy {
   value: string;
   label: string;
@@ -40,6 +42,7 @@ export const ProblemCommentSection = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
   const userId = useSelector(selectUserId); // Get userid from redux is faster than from localstorage
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   // Pagination
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
@@ -53,8 +56,6 @@ export const ProblemCommentSection = () => {
       const response = await problemAPI.getProblemComments(userId, problemId, [sortBy], pageNumber); // Only single sort by
       const responseResult: ProblemCommentsResponse = response.result;
       const data = responseResult.content;
-
-      console.log("Base comment list", data);
 
       setProblemComments(data);
       setCurrentPage(responseResult.number);
@@ -83,7 +84,7 @@ export const ProblemCommentSection = () => {
         return;
       }
 
-      if (!userId) {
+      if (!isAuthenticated) {
         toast({
           title: "Failed to comment",
           description: `Please log in to comment.`,

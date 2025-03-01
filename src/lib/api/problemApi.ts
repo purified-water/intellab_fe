@@ -120,7 +120,7 @@ export const problemAPI = {
     return response.data;
   },
   deleteComment: async (commentId: string) => {
-    const response = await apiClient.delete(`problem/problem-comments/${commentId}/soft`);
+    const response = await apiClient.delete(`problem/problem-comments/${commentId}`);
     return response.data;
   },
   getSecondLevelReplies: async (parentCommentId: string, page: number = 0, size: number = DEFAULT_CHILDREN_SIZE) => {

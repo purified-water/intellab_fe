@@ -2,6 +2,8 @@
 import { useState, useRef, useEffect } from "react";
 import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
+import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
 import ChatBubble from "./ChatBubble";
 import { aiOrbLogo } from "@/assets";
 import {
@@ -12,22 +14,27 @@ import {
   Maximize2,
   // SquareArrowOutUpRight,
   SquarePen,
-  ArrowUp
+  ArrowUp,
+  ChevronDown,
+  Check
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
-import {
-  ChatbotHistoryDetailType,
-  ChatbotHistoryItemType,
-  ChatbotMessageContentType
-} from "../types/ChatbotHistoryType";
+import { ChatbotHistoryItemType, ChatbotMessageContentType } from "../types/ChatbotHistoryType";
 import { ChatbotMessageResponseType } from "../types/ChatbotMessageType";
 import { aiAPI } from "@/lib/api";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { useToast } from "@/hooks/use-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { clearChatDetail, setChatDetail, addMessage, updateThreadId } from "@/redux/mainChatbot/mainChatbotSlice";
+import {
+  clearChatDetail,
+  setChatDetail,
+  addMessage,
+  updateThreadId,
+  updateLastMessageContent,
+  updateLastMessage
+} from "@/redux/mainChatbot/mainChatbotSlice";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
+import { CHATBOT_MODELS } from "../constants/chatbotModels";
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -44,17 +51,15 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const [isMinimized, setIsMinimized] = useState(true);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
-  const [chatModel, setChatModel] = useState("groq-llama-3.3-70b");
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
-  const { toast } = useToast();
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
   const dispatch = useDispatch();
   const chatDetail = useSelector((state: RootState) => state.mainChatbot.chatDetail);
 
-  console.log("Is user inactive?", isUserInactive());
-  console.log("Chat detail", chatDetail);
+  const [modelChangeOpen, setModelChangeOpen] = useState(false);
+  const [chatModel, setChatModel] = useState(CHATBOT_MODELS[0].value);
 
   useEffect(() => {
     fetchChatHistory();
@@ -88,10 +93,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   // Fetch chat history on component mount
   const fetchChatHistory = async () => {
     if (!userId) return;
-    console.log("Userid", userId);
+
     try {
       const response = await aiAPI.getThreadsHistory(userId);
-      // console.log("Chat history fetched", response);
+
       setChatHistoryItems(response.data);
       // If the user is new, show the welcome message
       if (isUserInactive() || response.data.length === 0) {
@@ -110,7 +115,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     setInput("");
   };
 
-  const handleSendMessage = async () => {
+  const handleSendMessageStream = async () => {
     if (!input.trim() || !userId) return;
 
     updateLastVisit();
@@ -130,71 +135,58 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       metadata: { model: chatModel }
     };
 
-    // dispatch(setChatDetail({
-    //   ...chatDetail,
-    //   thread_id: chatDetail?.thread_id ?? null,
-    //   timestamp: chatDetail?.timestamp ?? "",
-    //   messages: [...(chatDetail?.messages || []), userMessage] // Append user message
-    // }));
+    const aiMessagePlaceholder: ChatbotMessageContentType = {
+      type: "ai",
+      content: "",
+      timestamp: new Date().toISOString(),
+      metadata: { model: chatModel }
+    };
 
     dispatch(addMessage(userMessage));
-    console.log("After sending message:", chatDetail?.messages);
+    dispatch(addMessage(aiMessagePlaceholder)); // Add AI placeholder message
 
     setInput("");
+    setIsLoadingResponse(true);
 
     try {
-      setIsLoadingResponse(true);
-      const responseData: ChatbotMessageResponseType = await aiAPI.postMainChatbotMessage(
+      const responseStream = await aiAPI.postMainChatbotMessageStream(
         trimmedInput,
         chatModel,
         userId,
         chatDetail?.thread_id
-      ); //
+      );
 
-      if (!responseData) {
-        toast({
-          title: "Failed to get response",
-          description: "An error occurred while fetching the AI's response",
-          variant: "destructive"
-        });
-        return;
-      }
-      // setChatDetail((prev) => {
-      //   if (!prev) return null;
-      //   return {
-      //     ...prev,
-      //     thread_id: responseData.thread_id
-      //   };
-      // });
       setIsLoadingResponse(false);
       updateLastVisit();
 
-      if (chatDetail?.thread_id === null) {
-        dispatch(updateThreadId(responseData.thread_id));
-      }
+      let accumulatedContent = ""; // Store streamed tokens
+      for await (const chunk of responseStream) {
+        if (chunk.type === "token") {
+          accumulatedContent += chunk.content;
+          dispatch(updateLastMessageContent(accumulatedContent)); // Update AI message progressively
+        } else if (chunk.type === "message") {
+          const responseData = chunk.content as ChatbotMessageResponseType;
+          const finalMessage = {
+            type: responseData.type,
+            content: responseData.content,
+            timestamp: responseData.metadata.created_at,
+            metadata: {
+              model: responseData.metadata.model
+            }
+          } as ChatbotMessageContentType;
 
-      const aiMessage = {
-        type: responseData.type,
-        content: responseData.content,
-        timestamp: responseData.metadata.created_at,
-        metadata: {
-          model: responseData.metadata.model
+          dispatch(updateLastMessage(finalMessage)); // Replace streamed content with final response
+
+          if (chatDetail?.thread_id === null) {
+            dispatch(updateThreadId(responseData.thread_id));
+          }
+
+          if (isNewChat) {
+            await aiAPI.postGenerateTitle(trimmedInput, userId, responseData.thread_id);
+            // Update the new chat history
+            fetchChatHistory();
+          }
         }
-      } as ChatbotMessageContentType;
-
-      // dispatch(setChatDetail({
-      //   ...chatDetail,
-      //   thread_id: chatDetail?.thread_id ?? null,
-      //   timestamp: chatDetail?.timestamp ?? "",
-      //   messages: [...(chatDetail?.messages || []), aiMessage] // Append messages safely without overwriting
-      // }));
-      dispatch(addMessage(aiMessage));
-      console.log("After sending message:", chatDetail?.messages);
-      // Generate the chat title for chat history
-      if (isNewChat) {
-        await aiAPI.postGenerateTitle(trimmedInput, userId, responseData.thread_id);
-        // Update the new chat history
-        fetchChatHistory();
       }
     } catch (error) {
       console.error(error);
@@ -205,7 +197,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
 
   const handleGetChatDetail = async (chatItem: ChatbotHistoryItemType) => {
     if (!chatItem.thread_id || !userId) return;
-    console.log("Getting chat details for thread", chatItem.thread_id);
+
     try {
       const response = await aiAPI.getThreadDetails(userId, chatItem.thread_id);
 
@@ -228,6 +220,84 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           Welcome to Intellab AI!
         </h1>
         <p className="mt-2 text-gray-600">Ask me anything about Intellab.</p>
+      </div>
+    );
+  };
+
+  const renderChatTopBar = () => {
+    return (
+      <div
+        id="action-buttons"
+        className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration- ${isSidebarOpen ? "ml-64" : "ml-0"}`}
+      >
+        <div className="flex items-center">
+          {!isMinimized && (
+            <Button variant="ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className=" hover:text-gray1">
+              {isSidebarOpen ? <PanelLeftClose /> : <PanelLeft />}
+            </Button>
+          )}
+
+          <Button variant="ghost" className="flex items-center space-x-2 hover:text-gray1" onClick={handleNewChat}>
+            <SquarePen />
+            <span>New chat</span>
+          </Button>
+        </div>
+
+        <Popover open={modelChangeOpen} onOpenChange={setModelChangeOpen}>
+          <PopoverTrigger asChild>
+            <div
+              role="combobox"
+              aria-expanded={modelChangeOpen}
+              className="flex items-center px-4 py-[5px] space-x-1 text-sm rounded-lg cursor-pointer hover:bg-accent"
+            >
+              <span className="font-semibold ">
+                {CHATBOT_MODELS.find((modelItem) => modelItem.value === chatModel)?.label}
+              </span>
+              <ChevronDown className="w-4 opacity-50" />
+            </div>
+          </PopoverTrigger>
+
+          <PopoverContent className="min-w-fit max-w-[200px] p-0">
+            <Command>
+              <CommandList>
+                <CommandEmpty>No model found.</CommandEmpty>
+                <CommandGroup>
+                  {CHATBOT_MODELS.map((modelItem) => (
+                    <CommandItem
+                      key={modelItem.value}
+                      value={modelItem.value}
+                      onSelect={(currentValue) => {
+                        setChatModel(currentValue === chatModel ? "" : currentValue);
+                        setModelChangeOpen(false);
+                      }}
+                    >
+                      {modelItem.label}
+                      <Check className={chatModel === modelItem.value ? "opacity-100" : "opacity-0"} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+        <div className="flex items-center">
+          {/* <button className="hover:text-gray1" onClick={onClose}>
+            <SquareArrowOutUpRight/>
+          </button> */}
+          <Button
+            variant="ghost"
+            className="hover:text-gray1"
+            onClick={() => {
+              setIsMinimized(!isMinimized);
+              setIsSidebarOpen(false); // Ensure sidebar is hidden when minimized
+            }}
+          >
+            {isMinimized ? <Maximize2 /> : <Minus />}
+          </Button>
+          <Button variant="ghost" className="hover:text-gray1" onClick={onClose}>
+            <X />
+          </Button>
+        </div>
       </div>
     );
   };
@@ -267,43 +337,9 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           }}
         >
           {/* Top Bar */}
-          <div
-            id="action-buttons"
-            className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration- ${isSidebarOpen ? "ml-64" : "ml-0"}`}
-          >
-            <div className="flex items-center">
-              {!isMinimized && (
-                <Button variant="ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className=" hover:text-gray1">
-                  {isSidebarOpen ? <PanelLeftClose /> : <PanelLeft />}
-                </Button>
-              )}
+          {renderChatTopBar()}
 
-              <Button variant="ghost" className="flex items-center space-x-2 hover:text-gray1" onClick={handleNewChat}>
-                <SquarePen />
-                <span>New chat</span>
-              </Button>
-            </div>
-
-            <div className="flex items-center">
-              {/* <button className="hover:text-gray1" onClick={onClose}>
-                  <SquareArrowOutUpRight/>
-                </button> */}
-              <Button
-                variant="ghost"
-                className="hover:text-gray1"
-                onClick={() => {
-                  setIsMinimized(!isMinimized);
-                  setIsSidebarOpen(false); // Ensure sidebar is hidden when minimized
-                }}
-              >
-                {isMinimized ? <Maximize2 /> : <Minus />}
-              </Button>
-              <Button variant="ghost" className="hover:text-gray1" onClick={onClose}>
-                <X />
-              </Button>
-            </div>
-          </div>
-
+          {/* Sidebar */}
           {!isMinimized && (
             <ChatSidebar
               isOpen={isSidebarOpen}
@@ -333,13 +369,13 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
                 onKeyDown={(e) => {
                   if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendMessage();
+                    handleSendMessageStream();
                   }
                 }}
               />
 
               <button
-                onClick={handleSendMessage}
+                onClick={handleSendMessageStream}
                 className="flex items-center justify-center p-2 ml-2 text-white rounded-lg shadow-sm w-11 h-11 bg-gradient-to-tr from-appPrimary to-appAccent hover:opacity-80"
               >
                 <ArrowUp className="w-6 h-6" />
