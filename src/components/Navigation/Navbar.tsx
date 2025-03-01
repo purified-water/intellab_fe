@@ -70,7 +70,7 @@ const Navbar = () => {
     let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="w-10 h-10 object-contain rounded-full" />;
+      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full" />;
     }
     return content;
   };
@@ -159,7 +159,7 @@ const Navbar = () => {
                   <hr className="border-gray5" />
 
                   <ul className="py-3 space-y-2">
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="/profile">
                         <div className="flex items-center space-x-2">
                           <MdOutlinePerson className="icon-lg icon-gray3" />
@@ -167,7 +167,7 @@ const Navbar = () => {
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="/settings">
                         <div className="flex items-center space-x-2">
                           <MdOutlineSettings className="icon-lg icon-gray3" />
@@ -175,7 +175,7 @@ const Navbar = () => {
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="#">
                         <div className="flex items-center space-x-2">
                           <MdOutlineWbSunny className="icon-lg icon-gray3" />
@@ -183,7 +183,7 @@ const Navbar = () => {
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <div className="flex items-center space-x-2">
                         <MdLogout className="icon-lg icon-gray3" />
                         <button onClick={handleLogout}>Logout</button>

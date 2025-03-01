@@ -17,6 +17,7 @@ const mainChatbotSlice = createSlice({
   name: "mainChatbot",
   initialState,
   reducers: {
+    // Reserved for setting chat detail after selecting a history item only
     setChatDetail: (state, action: PayloadAction<ChatbotHistoryDetailType>) => {
       console.log("setChatDetail", action.payload);
 
@@ -28,7 +29,7 @@ const mainChatbotSlice = createSlice({
           ...state.chatDetail,
           thread_id: action.payload.thread_id ?? state.chatDetail.thread_id, // Preserve thread_id
           timestamp: action.payload.timestamp ?? state.chatDetail.timestamp,
-          messages: [...state.chatDetail.messages, ...action.payload.messages]
+          messages: [...action.payload.messages]
         };
       }
     },
@@ -44,6 +45,21 @@ const mainChatbotSlice = createSlice({
         state.chatDetail.thread_id = action.payload;
       }
     },
+    // For updating a stream of content from AI
+    updateLastMessageContent: (state, action: PayloadAction<string>) => {
+      if (state.chatDetail?.messages.length) {
+        const lastMessage = state.chatDetail.messages[state.chatDetail.messages.length - 1];
+        if (lastMessage && lastMessage.type === "ai") {
+          lastMessage.content = action.payload;
+        }
+      }
+    },
+    // For updating when the stream stops and return the whole message
+    updateLastMessage: (state, action: PayloadAction<ChatbotMessageContentType>) => {
+      if (state.chatDetail?.messages.length) {
+        state.chatDetail.messages[state.chatDetail.messages.length - 1] = action.payload;
+      }
+    },
 
     clearChatDetail: (state) => {
       state.chatDetail = {
@@ -55,5 +71,12 @@ const mainChatbotSlice = createSlice({
   }
 });
 
-export const { setChatDetail, clearChatDetail, addMessage, updateThreadId } = mainChatbotSlice.actions;
+export const {
+  setChatDetail,
+  clearChatDetail,
+  addMessage,
+  updateThreadId,
+  updateLastMessage,
+  updateLastMessageContent
+} = mainChatbotSlice.actions;
 export default mainChatbotSlice.reducer;

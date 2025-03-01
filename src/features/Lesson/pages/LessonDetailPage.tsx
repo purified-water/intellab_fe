@@ -184,14 +184,15 @@ export const LessonDetailPage = () => {
     if (lesson?.nextLessonId) return null;
 
     return (
-      <div
-        className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
-        onClick={navigateToCourse}
-      >
-        <p>Finish Course</p>
-        <div className="ml-auto">
-          <ChevronRight style={{ color: "gray" }} size={22} />
-        </div>
+      <div className="flex-col items-center justify-center">
+        <div className="mb-2 text-2xl font-bold">Congratulation! You have finished the course</div>
+        <div className="mb-6 text-xl font-semi">Return to course page to view you certificate</div>
+        <Button
+          className="h-10 px-6 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80 disabled:bg-gray5 disabled:text-gray3"
+          onClick={navigateToCourse}
+        >
+          Return to course
+        </Button>
       </div>
     );
   };
@@ -236,7 +237,7 @@ export const LessonDetailPage = () => {
           {renderCourseName()}
           {renderContent()}
           {renderQuizPage()}
-          {isLessonDone && <div className="text-2xl font-bold">What's next?</div>}
+          {isLessonDone && lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}
           {renderProblem()}
           {renderNextLesson()}
           {renderFinishLesson()}

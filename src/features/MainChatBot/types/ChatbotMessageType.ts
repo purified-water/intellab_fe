@@ -1,7 +1,7 @@
 export interface ChatbotMessageResponseType {
   type: string;
   content: string;
-  tool_calls: any[];
+  // tool_calls: any[];
   tool_call_id: string | null;
   run_id: string;
   metadata: {
@@ -18,11 +18,11 @@ export interface ChatbotMessageResponseType {
     message: {
       role: string;
       content: string;
-      images: any | null;
-      tool_calls: any | null;
+      // images: string | null;
+      // tool_calls: string | null;
     };
   };
-  custom_data: Record<string, any>;
+  // custom_data: Record<string, any>;
   thread_id: string;
 }
 

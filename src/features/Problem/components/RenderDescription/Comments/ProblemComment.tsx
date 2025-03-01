@@ -3,7 +3,7 @@ import { ProblemReply } from "./ProblemReply";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { Pencil, Trash2 } from "lucide-react";
 import { FaRegComment } from "rocketicons/fa6";
-import { Button } from "@/components/ui/Button";
+import { Button, AlertDialog, AvatarIcon } from "@/components/ui";
 import { ProblemCommentType, ProblemCommentsResponse } from "@/features/Problem/types/ProblemCommentType";
 import { formatDate } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -11,6 +11,7 @@ import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
 import { problemAPI } from "@/lib/api/problemApi";
 import { useParams } from "react-router-dom";
+import { RootState } from "@/redux/rootReducer";
 interface ProblemCommentProps {
   comment: ProblemCommentType;
   updateCommentList: () => void;
@@ -20,6 +21,9 @@ interface ProblemCommentProps {
 export const ProblemComment = ({ comment, updateCommentList, refreshCommentReplies }: ProblemCommentProps) => {
   const { toast } = useToast();
   const userId = useSelector(selectUserId);
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const user = useSelector((state: RootState) => state.user.user);
+
   const { problemId } = useParams<{ problemId: string }>();
   // Upvote
   const [upVoted, setUpVoted] = useState(comment.isUpVoted);
@@ -91,7 +95,7 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
       return;
     }
 
-    if (!userId) {
+    if (!isAuthenticated) {
       toast({
         title: "Failed to reply",
         description: "Login to reply",
@@ -159,9 +163,7 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
         <div className="flex items-start space-x-2">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
             {/* TODO: CHANGE THIS AVATAR TO USER AVA, NOT COMMENT's */}
-            {comment.userAvatar ? (
-              <img src={comment.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
-            ) : null}
+            {user?.photoUrl ? <AvatarIcon src={user.photoUrl} alt="Avatar" /> : null}
           </div>
 
           <textarea
@@ -296,10 +298,16 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
               <p className="text-xs text-gray2 hover:text-black">Edit</p>
             </div>
 
-            <div onClick={handleRemoveComment} className="flex items-center space-x-1 cursor-pointer">
-              <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
-              <p className="text-xs text-gray2 hover:text-black">Delete</p>
-            </div>
+            <AlertDialog
+              title={"Delete comment"}
+              message={"Are you sure you want to delete this comment?"}
+              onConfirm={() => handleRemoveComment()}
+            >
+              <div className="flex items-center space-x-1 cursor-pointer">
+                <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
+                <p className="text-xs text-gray2 hover:text-black">Delete</p>
+              </div>
+            </AlertDialog>
           </div>
         )}
       </div>

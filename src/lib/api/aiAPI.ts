@@ -32,7 +32,7 @@ export const aiAPI = {
     userId: string,
     thread_id?: string | null
   ) => {
-    const bodyParams: ChatbotMessageInputType  = {
+    const bodyParams: ChatbotMessageInputType = {
       message: message,
       model: model,
       user_id: userId
@@ -58,5 +58,77 @@ export const aiAPI = {
   getThreadDetails: async (userId: string, threadId: string) => {
     const response = await axios.get(`${BASE_URL}/conversations/${userId}/thread/${threadId}`);
     return response.data;
+  },
+  // AI CHATBOT STREAMING DATA - SSE
+  postMainChatbotMessageStream: async (
+    message: string,
+    model: string = "llama3.2",
+    userId: string,
+    thread_id?: string | null
+  ) => {
+    const bodyParams: ChatbotMessageInputType = {
+      message: message,
+      model: model,
+      user_id: userId
+    };
+    if (thread_id) {
+      bodyParams.thread_id = thread_id;
+    }
+
+    // Use Fetch API for SSE handling
+    const response = await fetch(`${BASE_URL}/global_chatbot/stream`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(bodyParams)
+    });
+
+    if (!response.body) {
+      throw new Error("Failed to establish connection for streaming.");
+    }
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder(); // Decode from binary to text
+
+    async function* streamProcessor() {
+      let buffer = "";
+
+      while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        // Process only complete SSE events
+        const events = buffer.split("\n\n"); // SSE events are separated by double newlines
+        buffer = events.pop() ?? ""; // Keep the last incomplete event for next iteration
+
+        for (const event of events) {
+          if (event.startsWith("data:")) {
+            try {
+              const jsonStr = event.replace(/^data:\s*/, ""); // Remove 'data:' prefix
+              if (jsonStr === "[DONE]") break;
+              yield JSON.parse(jsonStr); // Parse the JSON object
+            } catch (error) {
+              console.log(error);
+              console.error("Failed to parse AI response chunk:", event);
+            }
+          }
+        }
+      }
+
+      // Handle any remaining buffer
+      if (buffer.startsWith("data:")) {
+        try {
+          yield JSON.parse(buffer.replace(/^data:\s*/, ""));
+        } catch (error) {
+          console.log(error);
+          console.error("Failed to parse final AI response chunk:", buffer);
+        }
+      }
+    }
+
+    return streamProcessor();
   }
 };

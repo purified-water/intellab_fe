@@ -17,8 +17,6 @@ import { RootState } from "@/redux/rootReducer";
 import { problemAPI } from "@/lib/api";
 import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
 
-// NOTE: MISSING MEMORY, TIME when viewing history
-
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
   return (
@@ -28,16 +26,16 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
         <div className="text-lg font-medium">Back</div>
       </div>
       <div className="flex flex-col mb-2" key={testCaseDetail.testcaseId}>
-        <div className="mb-1 text-sm">Inputs =</div>
+        <div className="mb-1 text-sm">Input:</div>
         <div className="w-full px-4 py-1 rounded-lg bg-gray5">
           <pre className="text-base">{testCaseDetail.input}</pre>
         </div>
-        <div className="mt-4 mb-1 text-sm">Expected Outputs =</div>
+        <div className="mt-4 mb-1 text-sm">Expected Output:</div>
         <div className="w-full px-4 py-1 rounded-lg bg-gray5">
           <pre className="text-base">{testCaseDetail.output}</pre>
         </div>
 
-        <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
+        <div className="mt-4 mb-1 text-sm">Actual Output:</div>
         <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
           <pre className="text-base">
             {testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1].submission_output}
@@ -136,17 +134,17 @@ export const SubmissionResults = ({
       {!isPassed ? (
         <div className="test-case-content">
           <div className="flex flex-col mb-2" key={selectedTestCaseDetail?.testcaseId}>
-            <div className="mb-1 text-sm">Inputs =</div>
+            <div className="mb-1 text-sm">Input:</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
               <pre className="text-base">{selectedTestCaseDetail?.input}</pre>
             </div>
 
-            <div className="mt-4 mb-1 text-sm">Expected Outputs =</div>
+            <div className="mt-4 mb-1 text-sm">Expected Output:</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray5">
               <pre className="text-base">{selectedTestCaseDetail?.output}</pre>
             </div>
 
-            <div className="mt-4 mb-1 text-sm">Actual Outputs =</div>
+            <div className="mt-4 mb-1 text-sm">Actual Output:</div>
             <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
               <pre className="text-base">
                 {

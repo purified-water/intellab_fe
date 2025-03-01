@@ -23,7 +23,8 @@ const formatMessageContent = (content: string) => {
 };
 
 const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingResponse }) => {
-  if (isLoadingResponse) {
+  console.log("Loading response", isLoadingResponse);
+  if (isLoadingResponse || message?.content === "") {
     return (
       <div className="flex justify-start my-2">
         <div className="max-w-xs px-4 py-3 text-base bg-white rounded-lg md:max-w-md">
