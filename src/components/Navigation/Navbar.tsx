@@ -70,7 +70,7 @@ const Navbar = () => {
     let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full" />;
+      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full border border-gray4" />;
     }
     return content;
   };
