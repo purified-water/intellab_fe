@@ -7,7 +7,6 @@ import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { Button } from "@/components/ui/Button";
 
 interface CourseSectionCardProps {
   course: ICourse;

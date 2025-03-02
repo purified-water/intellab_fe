@@ -1,6 +1,5 @@
 import { apiClient } from "./apiClient";
 import {
-  TUpdateProfileResponse,
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
   TGetProfilesResponse,
@@ -11,15 +10,19 @@ import {
 } from "@/features/Profile/types/apiResponseType";
 
 export const userAPI = {
-  updateProfile: async (displayName: string, firstName: string, lastName: string, photoUrl: string) => {
+  updateProfile: async (
+    displayName: string | null,
+    firstName: string | null,
+    lastName: string | null,
+    password: string | null
+  ) => {
     const response = await apiClient.put("identity/profile/update", {
       displayName: displayName,
       firstName: firstName,
       lastName: lastName,
-      photoUrl: photoUrl
+      password: password
     });
-    const data: TUpdateProfileResponse = response.data;
-    return data;
+    return response;
   },
 
   getUserPublic: async (userId: string) => {

@@ -2,8 +2,6 @@ import { TApiResponse } from "@/types";
 import { IUser, IUserMe } from "@/types";
 import { TProgress, TRankLanguages } from "@/types";
 
-type TUpdateProfileResponse = TApiResponse<any>;
-
 type TGetProfilePublicResponse = TApiResponse<IUser>;
 
 type TUploadProfilePhotoResponse = TApiResponse<string>;
@@ -19,7 +17,6 @@ type TGetProfileResponse = TApiResponse<IUser>;
 type TGetProfileMeResponse = IUserMe;
 
 export type {
-  TUpdateProfileResponse,
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
   TGetProfilesResponse,

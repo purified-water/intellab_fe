@@ -25,6 +25,7 @@ export default {
   			gray4: '#BDBDBD',
   			gray5: '#E0E0E0',
   			gray6: '#EBEBEB',
+        gray7: "#DEDEDE",
   			black1: '#01000f',
   			appLightThemeText: '#FFFFFF',
   			background: 'hsl(var(--background))',

@@ -21,7 +21,9 @@ export const ProfileSection = () => {
     let content = <i className="text-9xl fa-solid fa-circle-user"></i>;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="profile" className="w-32 h-32 rounded-full object-contain" />;
+      content = (
+        <img src={userPhoto} alt="profile" className="w-32 h-32 rounded-full object-contain border border-gray4" />
+      );
     }
     return content;
   };
