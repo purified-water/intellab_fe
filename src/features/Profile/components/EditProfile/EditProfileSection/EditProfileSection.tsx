@@ -150,26 +150,26 @@ export function EditProfileSection() {
     };
 
     return (
-      <div className="justify-items-center space-y-4 relative">
+      <div className="relative space-y-4 justify-items-center">
         <div className="relative group">
           <img
             src={user?.photoUrl}
             alt="User Avatar"
-            className="w-24 h-24 border border-gray4 rounded-full cursor-pointer object-contain"
+            className="object-contain w-24 h-24 border rounded-full cursor-pointer border-gray4"
           />
           <div
-            className="absolute inset-0 bg-black bg-opacity-50 items-center flex justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-full cursor-pointer"
+            className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 bg-black bg-opacity-50 rounded-full opacity-0 cursor-pointer group-hover:opacity-100"
             onClick={() => setIsModalOpen(true)}
           >
             <div className="items-center justify-center">
               <Camera size={24} className="text-white" />
-              <span className="text-white text-sm">Edit</span>
+              <span className="text-sm text-white">Edit</span>
             </div>
           </div>
         </div>
-        <span className="text-sm text-gray-500 flex items-center">
+        <span className="flex items-center text-sm text-gray3">
           {userId}
-          <button onClick={handleCopyUserId} className="ml-2 text-gray-400 hover:text-gray-600" title="Copy UserID">
+          <button onClick={handleCopyUserId} className="ml-2 text-gray3 hover:text-gray2" title="Copy UserID">
             <Copy size={16} />
           </button>
         </span>
@@ -196,10 +196,10 @@ export function EditProfileSection() {
 
     return (
       <div className="">
-        <div className="flex space-x-2 items-center">
+        <div className="flex items-center space-x-2">
           <h3 className="text-lg font-semibold">Basic Information</h3>
           {!isBasicInfoEditable && (
-            <button onClick={() => setIsBasicInfoEditable(true)} className="text-gray-500 hover:text-gray-700">
+            <button onClick={() => setIsBasicInfoEditable(true)} className="text-gray3 hover:text-gray-700">
               <Pencil size={16} />
             </button>
           )}
@@ -226,11 +226,11 @@ export function EditProfileSection() {
             errorMessage={errors.lastName}
           />
         </div>
-        <p className="text-sm text-gray-500 mt-2">
+        <p className="mt-2 text-sm text-gray3">
           * Note: Your first and last name will appear inside your course certificates
         </p>
         {isBasicInfoEditable && (
-          <div className="mt-4 flex justify-end space-x-2 font-bold">
+          <div className="flex justify-end mt-4 space-x-2 font-bold">
             <Button
               onClick={handleCancelBasicInfo}
               variant={"outline"}
@@ -238,7 +238,7 @@ export function EditProfileSection() {
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveBasicInfo} className="px-6 py-1 bg-appPrimary/80 rounded-lg hover:bg-appPrimary">
+            <Button onClick={handleSaveBasicInfo} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
               Save
             </Button>
           </div>
@@ -266,10 +266,10 @@ export function EditProfileSection() {
 
     return (
       <div className="">
-        <div className="flex space-x-2 items-center">
+        <div className="flex items-center space-x-2">
           <h3 className="text-lg font-semibold">Account Information</h3>
           {!isAccountInfoEditable && (
-            <button onClick={() => setIsAccountInfoEditable(true)} className="text-gray-500 hover:text-gray-700">
+            <button onClick={() => setIsAccountInfoEditable(true)} className="text-gray3 hover:text-gray-700">
               <Pencil size={16} />
             </button>
           )}
@@ -295,7 +295,7 @@ export function EditProfileSection() {
           />
         </div>
         {isAccountInfoEditable && (
-          <div className="mt-4 flex justify-end space-x-2">
+          <div className="flex justify-end mt-4 space-x-2">
             <Button
               onClick={handleCancelAccountInfo}
               variant={"outline"}
@@ -305,7 +305,7 @@ export function EditProfileSection() {
             </Button>
             <Button
               onClick={handleSaveAccountInfo}
-              className="px-6 py-1 bg-appPrimary/80 rounded-lg hover:bg-appPrimary"
+              className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80"
             >
               Save
             </Button>
@@ -329,7 +329,7 @@ export function EditProfileSection() {
 
     return (
       <div className="">
-        <h3 className="text-lg font-semibold mb-2">Change Password</h3>
+        <h3 className="mb-2 text-lg font-semibold">Change Password</h3>
         <div className="gap-4">
           <InputField
             label="Current password"
@@ -339,7 +339,7 @@ export function EditProfileSection() {
             name="currentPassword"
             disabled={true}
           />
-          <div className="flex w-full mt-4 justify-between">
+          <div className="flex justify-between w-full mt-4">
             <InputField
               label="New password"
               type="password"
@@ -362,8 +362,8 @@ export function EditProfileSection() {
             />
           </div>
         </div>
-        <div className="mt-4 flex justify-end">
-          <Button onClick={handleChangePassword} className="px-6 py-1 bg-appPrimary/80 rounded-lg hover:bg-appPrimary">
+        <div className="flex justify-end mt-4">
+          <Button onClick={handleChangePassword} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
             Change password
           </Button>
         </div>
@@ -384,7 +384,7 @@ export function EditProfileSection() {
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg space-y-8">
+    <div className="p-6 space-y-8 bg-white rounded-lg">
       {renderUserAvatar()}
       {renderBasicInfo()}
       {renderAccountInfo()}
