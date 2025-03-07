@@ -55,7 +55,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
 
   const renderCourseDetail = () => (
     <div
-      className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg cursor-pointer hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0"
+      className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg cursor-pointer hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0"
       onClick={handleCourseClicked}
     >
       <div>

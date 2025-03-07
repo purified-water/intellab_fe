@@ -9,7 +9,6 @@ type ProblemListItemProps = {
 };
 
 export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
-  console.log("PROBLEMS PAGE", problems);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Problem | null; order: "asc" | "desc" }>({
     key: null,
     order: "asc"
@@ -75,9 +74,9 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
               onClick={() => handleProblemListItemClicked(row.problemId)}
             >
               <td className="w-12 py-2 pl-8 text-center">
-                {row.done === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                {row.isDone === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
-              <td className="w-2/6 px-4 py-2 font-semibold">{row.problemName}</td>
+              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.problemName}</td>
               <td className="w-20 px-4 py-2 font-semibold text-center">
                 {row.hintCount > 0 ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>

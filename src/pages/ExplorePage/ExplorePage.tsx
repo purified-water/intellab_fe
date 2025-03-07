@@ -20,6 +20,7 @@ import { getExploreCourse, resetFilters } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { AppFooter } from "@/components/AppFooter";
+import { ScrollableList } from "@/components/HorizontallyListScrollButtons";
 
 // const SEARCH_WAIT_TIME = 3000;
 
@@ -74,7 +75,7 @@ export const ExplorePage = () => {
     // }
     try {
       const response = await courseAPI.search(query, 0);
-      console.log("QUERY", query);
+
       dispatch(getExploreCourse(response.result.content));
     } catch (error) {
       console.error("Failed to search courses:", error);
@@ -96,6 +97,7 @@ export const ExplorePage = () => {
 
   // Determine which courses to display
   const displayedCourses = query ? exploreCourses : exploreCourses;
+
   const renderSkeletonList = () => {
     const skeletonCount = 6; // Số lượng skeleton cố định
     return (
@@ -114,11 +116,11 @@ export const ExplorePage = () => {
   const renderCourses = (displayingCourses: ICourse[]) => {
     return (
       <div className="flex py-4 overflow-x-auto gap-7 scrollbar-hide">
-        {displayingCourses.map((course) => (
-          <div key={course.courseId}>
-            <Course course={course} skeletonLoading={loading} />
-          </div>
-        ))}
+        <ScrollableList size="large">
+          {displayingCourses.map((course) => (
+            <Course key={course.courseId} course={course} skeletonLoading={loading} />
+          ))}
+        </ScrollableList>
       </div>
     );
   };
@@ -174,10 +176,10 @@ export const ExplorePage = () => {
                 <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                   Welcome to Intellab explore!
                 </div>
-                <div>Find new and exciting courses here!</div>
+                <span className="mt-2 text-2xl font-light text-gray3">Find new and exciting courses here!</span>
               </div>
               {!hasFilter ? (
-                <div>
+                <div className="mt-8">
                   {/* Section for Fundamentals For Beginner */}
                   <div className="flex flex-col mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-8">

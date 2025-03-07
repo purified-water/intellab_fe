@@ -32,9 +32,9 @@ export default function BreadCrump(props: BreadCrumpProps) {
   return (
     <div className="flex items-center">
       {items.map((item, index) => (
-        <span key={index} className="flex items-center">
+        <span key={index} className="flex items-center max-w-64">
           <BreadcrumbPage
-            className="text-appPrimary hover:underline cursor-pointer text-base font-bold truncate"
+            className="text-base font-bold truncate cursor-pointer text-appPrimary hover:underline"
             onClick={() => handleClick(item.path)}
           >
             {item.title}

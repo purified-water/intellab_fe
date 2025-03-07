@@ -70,7 +70,7 @@ const Navbar = () => {
     let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full border border-gray4" />;
+      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 border rounded-full border-gray4" />;
     }
     return content;
   };
@@ -113,13 +113,6 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Problems
-            </Link>
-            <Link
-              to="/community"
-              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/community")}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Community
             </Link>
           </div>
         </div>

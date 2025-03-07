@@ -1,52 +1,64 @@
-import { Link as ScrollLink } from "react-scroll";
+import React, { useState } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
-interface TableOfContentsProps {
-  toc: { id: string; text: string; level: number }[];
-  activeTocItem: string;
-  setActiveTocItem: (id: string) => void;
-  tocTop: number;
-  defaultTop: number;
-  windowWidth: number;
+export interface TOCItem {
+  id: string;
+  text: string;
+  level: number;
 }
 
-export const TableOfContents = ({
-  toc,
-  activeTocItem,
-  setActiveTocItem,
-  tocTop,
-  defaultTop,
-  windowWidth
-}: TableOfContentsProps) => {
-  if (windowWidth <= 1000) {
+interface TableOfContentsProps {
+  items: TOCItem[];
+  activeId: string | null;
+}
+
+export const TableOfContents: React.FC<TableOfContentsProps> = ({ items, activeId }) => {
+  const [isOpen, setIsOpen] = useState(true);
+
+  if (items.length === 0) {
     return null;
   }
 
+  const toggleTOC = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleItemClick = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
-    <div
-      className="right-0 px-2 mr-4 border-l border-gray4 lg:mr-0"
-      style={{
-        position: "absolute",
-        top: tocTop + defaultTop + 20,
-        width: windowWidth * 0.18
-      }}
-    >
-      <ul>
-        {toc.map((item) => (
-          <li key={item.id} style={{ marginLeft: item.level * 10 }}>
-            <ScrollLink
-              to={item.id}
-              smooth={true}
-              duration={500}
-              className={`overflow-hidden text-sm cursor-pointer hover:text-gray1 ${
-                activeTocItem === item.id ? "text-black" : "text-gray3"
+    <div className="w-full max-w-xs p-4">
+      <div className="flex items-center mb-2 space-x-2 cursor-pointer" onClick={toggleTOC}>
+        <h3 className="text-sm font-bold text-gray1">Table of Contents</h3>
+        {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+      </div>
+
+      {isOpen && (
+        <ul className="space-y-1 text-sm">
+          {items.map((item, index) => (
+            <li
+              key={index}
+              style={{ paddingLeft: `${(item.level - 1) * 1}rem` }}
+              className={`py-1 border-l-2 pl-2 transition-colors duration-200 ${
+                activeId === item.id
+                  ? "border-l-appPrimary text-appPrimary font-semibold"
+                  : "border-l-transparent hover:border-l-gray-300 text-gray2 hover:text-appPrimary"
               }`}
-              onClick={() => setActiveTocItem(item.id)}
             >
-              {item.text}
-            </ScrollLink>
-          </li>
-        ))}
-      </ul>
+              <button
+                onClick={() => handleItemClick(item.id)}
+                className="w-full overflow-hidden text-xs text-left text-ellipsis line-clamp-1"
+              >
+                {item.text}
+              </button>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };

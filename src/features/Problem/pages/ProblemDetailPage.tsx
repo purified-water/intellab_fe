@@ -49,7 +49,6 @@ export const ProblemDetail = () => {
   const { toast } = useToast();
 
   const submissionValidation = () => {
-    console.log("code in validation", code);
     if (!code) {
       toast({
         variant: "destructive",
@@ -69,7 +68,7 @@ export const ProblemDetail = () => {
   };
 
   const dispatch = useDispatch();
-  console.log("user id from local storage", userId);
+
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
@@ -93,7 +92,7 @@ export const ProblemDetail = () => {
       if (problemId && languageId) {
         const response = await problemAPI.postRunCode(code, languageId, problemId);
         const result = response.result;
-        console.log("Run code response", result);
+
         if (result) {
           pollRunCode(result.runCodeId);
         }

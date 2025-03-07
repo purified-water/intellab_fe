@@ -86,9 +86,9 @@ export default function Course(props: CourseProps) {
   };
 
   const renderContent = () => (
-    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
+    <div className="flex flex-col transition-shadow duration-200 ease-in-out bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg ">
       {/* Header section with background gradient and reviews */}
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col items-end justify-between p-2">
+      <div className="flex flex-col items-end justify-between h-40 p-2 w-80 bg-gradient-to-tr from-appSecondary to-appFadedPrimary rounded-tl-xl rounded-tr-xl">
         <div className="flex flex-col items-center justify-between">
           <div className="flex items-center justify-end px-2 pt-2 mb-5">
             <div className="text-sm font-medium text-white">
@@ -141,7 +141,7 @@ export default function Course(props: CourseProps) {
 
   const renderSkeleton = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
+      <div className="flex flex-col h-40 p-2 w-80 bg-gray5 rounded-tl-xl rounded-tr-xl">
         <Skeleton className="self-end w-40 h-10 mb-9 bg-gray5" />
         <Skeleton className="h-10 mb-5 w-50 bg-gray5" />
         {/* <Skeleton className="self-end w-20 h-20 bg-gray5" /> */}

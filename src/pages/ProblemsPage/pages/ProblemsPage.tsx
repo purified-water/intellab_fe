@@ -119,10 +119,10 @@ export const ProblemsPage = () => {
                   <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                     Welcome to Intellab problems!
                   </div>
-                  <div>Improve your problem solving skills here!</div>
+                  <span className="mt-2 text-2xl font-light text-gray3">Improve your problem solving skills here!</span>
                 </div>
               )}
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full mt-8">
                 <ProblemListItem problems={problems} />
                 {totalPages != 0 && (
                   <Pagination
