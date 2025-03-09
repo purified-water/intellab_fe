@@ -4,15 +4,20 @@ import { TRankLanguages } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { getUserIdFromLocalStorage } from "@/utils";
 
-export const LanguagesSection = () => {
-  const [loading, setLoading] = useState(true);
+type LanguagesSectionProps = {
+  userId: string;
+};
+
+export const LanguagesSection = (props: LanguagesSectionProps) => {
+  const { userId } = props;
+
+  const [loading, setLoading] = useState(false);
   const [languages, setLanguages] = useState<TRankLanguages | null>(null);
   const toast = useToast();
-  const userId = getUserIdFromLocalStorage();
 
   const getRankLanguagesAPI = async () => {
+    setLoading(true);
     try {
       const response = await userAPI.getProgressLanguage(userId);
       if (response) {
@@ -20,7 +25,7 @@ export const LanguagesSection = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting rank languages" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting rank languages" });
     } finally {
       setLoading(false);
@@ -29,25 +34,17 @@ export const LanguagesSection = () => {
 
   useEffect(() => {
     getRankLanguagesAPI();
-  }, []);
+  }, [userId]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
 
-    return (
-      <>
-        <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
-        <div className="flex flex-col min-w-full">
-          <div className="text-2xl font-semibold text-black1">Languages</div>
-          {skeletons.map((_, index) => (
-            <div key={index} className="flex items-center justify-between pt-4">
-              <Skeleton className="h-6 w-2/3" />
-              <Skeleton className="h-6 w-1/4" />
-            </div>
-          ))}
-        </div>
-      </>
-    );
+    return skeletons.map((_, index) => (
+      <div key={index} className="flex items-center justify-between pt-4">
+        <Skeleton className="h-6 w-2/3" />
+        <Skeleton className="h-6 w-1/4" />
+      </div>
+    ));
   };
 
   const renderStatistic = () => {
@@ -64,15 +61,15 @@ export const LanguagesSection = () => {
 
     return (
       <>
-        <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
-        <div className="flex flex-col min-w-full">
-          <div className="text-2xl font-semibold text-black1">Languages</div>
-          {renderLanguage(languages.top1)}
-          {renderLanguage(languages.top2)}
-          {renderLanguage(languages.top3)}
-        </div>
+        {renderLanguage(languages.top1)}
+        {renderLanguage(languages.top2)}
+        {renderLanguage(languages.top3)}
       </>
     );
+  };
+
+  const renderEmpty = () => {
+    return <div className="text-lg font-normal text-gray3 mt-4">No data available</div>;
   };
 
   let content = null;
@@ -81,8 +78,18 @@ export const LanguagesSection = () => {
   } else {
     if (languages && Object.keys(languages).length > 0) {
       content = renderStatistic();
+    } else {
+      content = renderEmpty();
     }
   }
 
-  return content;
+  return (
+    <>
+      <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
+      <div className="flex flex-col min-w-full">
+        <div className="text-2xl font-semibold text-black1">Languages</div>
+        {content}
+      </div>
+    </>
+  );
 };

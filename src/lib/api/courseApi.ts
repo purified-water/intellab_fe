@@ -21,6 +21,7 @@ import {
   TModifyCommentResponse,
   TUpvoteCommentResponse
 } from "@/features/Course/types/apiResponseType";
+import { TGetCompletedCourseListMeResponse } from "@/features/Profile/types";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -193,9 +194,9 @@ export const courseAPI = {
       page,
       userUid,
       size: 10,
-      sort
+      sort,
       // childrenPage,
-      // childrenSize: 5,
+      childrenSize: 1
       // childrenSortBy: "created",
       // childrenSortOrder: "desc"
     };
@@ -252,6 +253,15 @@ export const courseAPI = {
   deleteComment: async (commentId: string) => {
     const response = await apiClient.delete(`/course/courses/comments/${commentId}/delete`);
     const data: TDeleteCommentResponse = response.data;
+    return data;
+  },
+
+  getCompletedCourseListMe: async (UserUid: string) => {
+    const queryParams = {
+      UserUid
+    };
+    const response = await apiClient.get(`/course/courses/courseList/me`, { params: queryParams });
+    const data: TGetCompletedCourseListMeResponse = response.data;
     return data;
   }
 };

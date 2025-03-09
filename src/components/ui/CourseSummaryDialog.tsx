@@ -59,7 +59,7 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
         title: 'Saved!',
         description: 'Summary saved as PDF',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Failed to save as PDF',
         description: `Failed to save summary as PDF: ${error.message}`,

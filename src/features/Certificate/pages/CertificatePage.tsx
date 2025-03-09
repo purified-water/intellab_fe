@@ -43,7 +43,7 @@ export const CertificatePage = () => {
         } else {
           showToastError("Certificate not found");
         }
-      } catch (error: any) {
+      } catch (error) {
         showToastError(error.message);
       } finally {
         setLoading(false);

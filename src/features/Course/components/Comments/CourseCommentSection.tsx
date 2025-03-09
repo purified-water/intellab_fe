@@ -71,7 +71,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
         }
         showToastError({ toast: toast.toast, message: message ?? "Error fetching comments" });
       }
-    } catch (e: any) {
+    } catch (e) {
       if (comments.length > 0) {
         dispatch(commentStore.setComments([]));
       }
@@ -98,7 +98,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error creating comment" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error creating comment" });
     }
   };
@@ -118,7 +118,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error deleting comment" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error deleting comment" });
     }
   };
@@ -133,7 +133,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error editing comment" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error editing comment" });
     }
   };
@@ -148,7 +148,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error fetching replies" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error fetching replies" });
     } finally {
       setLoading(false);

@@ -4,15 +4,20 @@ import { useToast } from "@/hooks/use-toast";
 import { useState, useEffect } from "react";
 import { showToastError } from "@/utils/toastUtils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { getUserIdFromLocalStorage } from "@/utils";
 
-export const LevelsSection = () => {
-  const [loading, setLoading] = useState(true);
+type LevelsSectionProps = {
+  userId: string;
+};
+
+export const LevelsSection = (props: LevelsSectionProps) => {
+  const { userId } = props;
+
+  const [loading, setLoading] = useState(false);
   const [level, setLevels] = useState<TProgress | null>(null);
   const toast = useToast();
-  const userId = getUserIdFromLocalStorage();
 
   const getProgressProblemAPI = async () => {
+    setLoading(true);
     try {
       const progress = await userAPI.getProgressLevel(userId);
       if (progress) {
@@ -20,7 +25,7 @@ export const LevelsSection = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting problem statistics" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting problem statistics" });
     } finally {
       setLoading(false);
@@ -29,7 +34,7 @@ export const LevelsSection = () => {
 
   useEffect(() => {
     getProgressProblemAPI();
-  }, []);
+  }, [userId]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render

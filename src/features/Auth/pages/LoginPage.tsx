@@ -50,7 +50,7 @@ export const LoginPage = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting user profile" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
     }
   };
@@ -85,7 +85,7 @@ export const LoginPage = () => {
         dispatch(loginSuccess());
         navigate("/");
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message || "Invalid email or password";
         setInputErrors({ ...inputErrors, email: errorMessage });

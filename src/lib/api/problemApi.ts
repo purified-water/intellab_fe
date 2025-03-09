@@ -1,6 +1,8 @@
 import { apiClient } from "./apiClient";
 import { ProblemType } from "@/types/ProblemType";
 import { ProblemsResponse } from "@/pages/ProblemsPage/types/resonseType";
+import { TGetSubmissionListMeResponse } from "@/features/Profile/types";
+
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_CHILDREN_SIZE = 10;
 
@@ -139,5 +141,14 @@ export const problemAPI = {
       }
     });
     return response.data;
+  },
+
+  getSubmissionListMe: async (UserUid: string | null) => {
+    const queryParams = {
+      UserUid
+    };
+    const response = await apiClient.get(`problem/problem-submissions/submitList/me`, { params: queryParams });
+    const data: TGetSubmissionListMeResponse = response.data;
+    return data;
   }
 };
