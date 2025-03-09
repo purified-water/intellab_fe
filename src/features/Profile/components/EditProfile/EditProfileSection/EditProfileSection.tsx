@@ -10,6 +10,8 @@ import { userAPI } from "@/lib/api";
 import { setUser } from "@/redux/user/userSlice";
 import { Button } from "@/components/ui";
 import { HTTPS_STATUS_CODE } from "@/constants";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { authAPI } from "@/lib/api";
 
 export function EditProfileSection() {
   const toast = useToast();
@@ -24,7 +26,7 @@ export function EditProfileSection() {
     lastName: user?.lastName || "",
     displayName: user?.displayName ?? "",
     email: user?.email,
-    currentPassword: "", // getProfileMe API doesn't return current password
+    currentPassword: "", // getProfileMe API doesn't return current password, have to call Login api to compare
     newPassword: "",
     retypePassword: ""
   });
@@ -38,6 +40,7 @@ export function EditProfileSection() {
     firstName: "",
     lastName: "",
     displayName: "",
+    currentPassword: "",
     newPassword: "",
     retypePassword: ""
   });
@@ -78,6 +81,7 @@ export function EditProfileSection() {
 
   const validateChangePassword = () => {
     const newErrors = {
+      currentPassword: formData.currentPassword.length > 0 ? "" : "Current password is required",
       newPassword: formData.newPassword.length >= 6 ? "" : "Password must be at least 6 characters",
       retypePassword: formData.newPassword === formData.retypePassword ? "" : "Passwords do not match"
     };
@@ -93,7 +97,7 @@ export function EditProfileSection() {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting user profile" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
     }
   };
@@ -118,7 +122,7 @@ export function EditProfileSection() {
         );
         showToastSuccess({ toast: toast.toast, message: "Profile updated successfully" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Failed to update profile" });
     }
   };
@@ -134,7 +138,7 @@ export function EditProfileSection() {
       } else {
         showToastError({ toast: toast.toast, message: "Failed to upload avatar" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error uploading avatar" });
     }
   };
@@ -144,7 +148,7 @@ export function EditProfileSection() {
       try {
         await navigator.clipboard.writeText(userId!);
         showToastSuccess({ toast: toast.toast, message: "UserID copied to clipboard" });
-      } catch (e: any) {
+      } catch (e) {
         showToastError({ toast: toast.toast, message: e.message ?? "Failed to copy UserID" });
       }
     };
@@ -153,7 +157,7 @@ export function EditProfileSection() {
       <div className="relative space-y-4 justify-items-center">
         <div className="relative group">
           <img
-            src={user?.photoUrl}
+            src={user?.photoUrl ?? DEFAULT_AVATAR}
             alt="User Avatar"
             className="object-contain w-24 h-24 border rounded-full cursor-pointer border-gray4"
           />
@@ -318,12 +322,24 @@ export function EditProfileSection() {
   const renderChangePassword = () => {
     const handleChangePassword = async () => {
       if (validateChangePassword()) {
-        updateProfileAPI();
-        setFormData((prev) => ({
-          ...prev,
-          newPassword: "",
-          retypePassword: ""
-        }));
+        try {
+          const response = await authAPI.login(user?.email, formData.currentPassword);
+          if (response.status == HTTPS_STATUS_CODE.OK) {
+            await updateProfileAPI();
+            setFormData((prev) => ({
+              ...prev,
+              currentPassword: "",
+              newPassword: "",
+              retypePassword: ""
+            }));
+          }
+        } catch (e) {
+          console.log("--> handle change password error: ", e);
+          setErrors((prev) => ({
+            ...prev,
+            currentPassword: "Incorrect current password"
+          }));
+        }
       }
     };
 
@@ -337,7 +353,9 @@ export function EditProfileSection() {
             value={formData.currentPassword}
             onChange={handleChange}
             name="currentPassword"
-            disabled={true}
+            placeholder="Enter current password..."
+            error={!!errors.currentPassword}
+            errorMessage={errors.currentPassword}
           />
           <div className="flex justify-between w-full mt-4">
             <InputField

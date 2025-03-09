@@ -16,6 +16,8 @@ import { AlertDialog, AvatarIcon } from "@/components/ui";
 import { getUserIdFromLocalStorage } from "@/utils";
 import * as commentStore from "@/redux/comment/commentSlice";
 import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 type CourseCommentProps = {
   comment: TComment;
@@ -50,10 +52,12 @@ export const CourseComment = (props: CourseCommentProps) => {
   } = comment;
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const reduxUser = useSelector((state: RootState) => state.user.user);
 
   const toast = useToast();
   const dispatch = useDispatch();
   const localUserUid = getUserIdFromLocalStorage();
+  const navigate = useNavigate();
 
   const isOwner = userUid === localUserUid;
 
@@ -79,7 +83,7 @@ export const CourseComment = (props: CourseCommentProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error upvoting comment" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error upvoting comment" });
     }
   };
@@ -93,18 +97,24 @@ export const CourseComment = (props: CourseCommentProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error canceling upvote comment" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error canceling upvote comment" });
     }
   };
 
   const renderComment = () => {
+    const handleUsernameClick = () => {
+      navigate(`/profile/${userUid}`);
+    };
+
     const renderUserInformation = () => {
       return (
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">
             <AvatarIcon src={avatarUrl} alt={userName} />
-            <p className="text-lg font-semibold">{userName}</p>
+            <p className="text-lg font-semibold cursor-pointer hover:text-appPrimary" onClick={handleUsernameClick}>
+              {userName}
+            </p>
           </div>
           <p className="text-sm font-medium text-gray3">{formatDateTime(created)}</p>
         </div>
@@ -285,7 +295,7 @@ export const CourseComment = (props: CourseCommentProps) => {
         showReplyInput && (
           <div className="mt-4 ml-8 space-y-2">
             <div className="flex items-start space-x-2">
-              <AvatarIcon src={avatarUrl} alt={userName} />
+              <AvatarIcon src={reduxUser?.photoUrl ?? DEFAULT_AVATAR} alt={userName} />
               <textarea
                 placeholder="Type your reply..."
                 className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"

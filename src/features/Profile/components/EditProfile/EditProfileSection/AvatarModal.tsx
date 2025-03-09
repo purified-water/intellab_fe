@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { X, RotateCcw, RotateCw, Save, FileImage } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,7 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
   const [rotation, setRotation] = useState(0);
   const [scale, setScale] = useState(1);
   const [previewUrl, setPreviewUrl] = useState<string | null>(DEFAULT_AVATAR);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const toast = useToast();
 
@@ -50,10 +51,33 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
   };
 
   const handleSave = async () => {
-    if (selectedFile) {
-      await onSave(selectedFile);
-      reset();
-      onClose();
+    if (selectedFile && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        const img = new Image();
+        img.src = previewUrl!;
+        img.onload = async () => {
+          canvas.width = img.width;
+          canvas.height = img.height;
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          ctx.save();
+          ctx.translate(canvas.width / 2, canvas.height / 2);
+          ctx.rotate((rotation * Math.PI) / 180);
+          ctx.scale(scale, scale);
+          ctx.drawImage(img, -img.width / 2, -img.height / 2);
+          ctx.restore();
+
+          canvas.toBlob(async (blob) => {
+            if (blob) {
+              const transformedFile = new File([blob], selectedFile.name, { type: selectedFile.type });
+              await onSave(transformedFile);
+              reset();
+              onClose();
+            }
+          }, selectedFile.type);
+        };
+      }
     } else {
       showToastError({ toast: toast.toast, message: "Please select an image to upload." });
     }
@@ -91,7 +115,7 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
         <div className="bg-gray-900 p-4 rounded-md flex flex-col items-center justify-center mb-4 relative">
           <div className="relative mb-4">
             {previewUrl ? (
-              <div className="w-64 h-64 bg-gray5 flex items-center justify-center overflow-hidden">
+              <div className="w-64 h-64 bg-gray5 flex items-center justify-center overflow-hidden rounded-full">
                 <img
                   src={previewUrl}
                   alt="Avatar Preview"
@@ -153,18 +177,19 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
         <div className="mt-4 flex justify-end space-x-2">
           <button
             onClick={handleSave}
-            className="flex items-center px-4 py-2 bg-gray-200 border border-gray-300 rounded hover:bg-gray-300 text-blue-400 font-bold"
+            className="flex items-center px-4 py-2 rounded-lg font-bold bg-appPrimary  hover:bg-appPrimary/80 text-white"
           >
             <Save size={16} className="mr-2" />
             Save
           </button>
           <button
             onClick={handleCancel}
-            className="px-4 py-2 bg-gray-200 border border-gray-300 rounded hover:bg-gray-300 text-blue-400 font-bold"
+            className="px-4 py-2 rounded-lg font-bold bg-appPrimary  hover:bg-appPrimary/80 text-white"
           >
             Cancel
           </button>
         </div>
+        <canvas ref={canvasRef} className="hidden"></canvas>
       </div>
     </div>
   );

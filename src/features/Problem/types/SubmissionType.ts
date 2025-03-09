@@ -1,4 +1,6 @@
 import { TestCaseType, TestCaseResultWithIO, TestCaseAfterSubmit } from "./TestCaseType";
+import { TCategory } from "@/types/category";
+
 export interface ProblemType {
   problemId: string;
   problemName: string;
@@ -12,6 +14,7 @@ export interface ProblemType {
   testCases: TestCaseType[];
   submissions: string[];
   solutions: SolutionType[];
+  categories: TCategory[];
 }
 
 export interface SolutionType {
@@ -33,6 +36,10 @@ export interface SendSubmissionType {
   problem: ProblemType;
   userUid: string;
   testCasesOutput: TestCaseResultWithIO[];
+  isSolved: boolean;
+  submitDate: string;
+  usedMemory: number;
+  runTime: number;
 }
 
 export interface SubmissionTypeNoProblem {

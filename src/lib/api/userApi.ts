@@ -25,7 +25,7 @@ export const userAPI = {
     return response;
   },
 
-  getUserPublic: async (userId: string) => {
+  getProfilePublic: async (userId: string) => {
     const response = await apiClient.post("/identity/profile/single/public", {
       userId: userId
     });
@@ -76,9 +76,10 @@ export const userAPI = {
   },
 
   getProfile: async (userId: string) => {
-    const response = await apiClient.post("/identity/profile/single", {
-      userId: userId
-    });
+    const queryParams = {
+      userId
+    };
+    const response = await apiClient.get("/identity/profile/single", { params: queryParams });
     const data: TGetProfileResponse = response.data;
     return data;
   },

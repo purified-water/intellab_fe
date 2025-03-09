@@ -1,19 +1,27 @@
 import { TProgress } from "@/types";
 import { userAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { getUserIdFromLocalStorage } from "@/utils";
 import { useState, useEffect } from "react";
 import { showToastError } from "@/utils/toastUtils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
-export const StatsSection = () => {
-  const [loading, setLoading] = useState(true);
+type StatsSectionProps = {
+  userId: string;
+};
+
+export const StatsSection = (props: StatsSectionProps) => {
+  const { userId } = props;
+
+  const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<TProgress | null>(null);
   const toast = useToast();
-
-  const userId = getUserIdFromLocalStorage();
+  const reduxUser = useSelector((state: RootState) => state.user.user);
+  const isMe = userId === reduxUser?.userId;
 
   const getProgressProblemAPI = async (userId: string | null) => {
+    setLoading(true);
     try {
       const progress = await userAPI.getProgressLevel(userId);
       if (progress) {
@@ -21,7 +29,7 @@ export const StatsSection = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting problem statistics" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting problem statistics" });
     } finally {
       setLoading(false);
@@ -30,7 +38,7 @@ export const StatsSection = () => {
 
   useEffect(() => {
     getProgressProblemAPI(userId);
-  }, []);
+  }, [userId]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
@@ -66,7 +74,7 @@ export const StatsSection = () => {
     <>
       <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
       <div className="flex flex-col min-w-full">
-        <div className="text-2xl font-semibold text-black1">My Stats</div>
+        <div className="text-2xl font-semibold text-black1">{isMe ? "My Stats" : "Stats"}</div>
         {loading ? renderSkeleton() : renderStats()}
       </div>
     </>

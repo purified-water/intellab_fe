@@ -68,7 +68,7 @@ export const Header = (props: HeaderProps) => {
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
-    } catch (error: any) {
+    } catch (error) {
       toast.toast({
         variant: "destructive",
         title: "An error occurred",

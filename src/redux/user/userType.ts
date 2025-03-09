@@ -1,5 +1,5 @@
-import { IUserMe } from "@/types";
+import { IUser } from "@/types";
 
 export interface UserState {
-  user: IUserMe | null;
+  user: IUser | null;
 }
