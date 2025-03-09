@@ -1,6 +1,6 @@
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+//import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { tomorrow as theme } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -24,7 +24,7 @@ const parseMarkdown = (markdown: string): (string | { type: string; title: strin
   let isInCodeBlock = false;
 
   lines.forEach((line) => {
-    const match = line.match(/^([A-Za-z#\+\-]+)$/); // Match language names as headings
+    const match = line.match(/^([A-Za-z#+-]+)$/); // Match language names as headings
     const codeMatch = line.match(/^```(\w+)/); // Match code block language
 
     if (match && !isInCodeBlock) {

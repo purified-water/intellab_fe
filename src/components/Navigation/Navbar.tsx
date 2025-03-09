@@ -151,7 +151,7 @@ const Navbar = () => {
                   <div className="flex flex-row items-center px-3">
                     {renderUserPhoto()}
                     <div className="flex flex-col px-4 py-2">
-                      <p className="text-lg font-semibold truncate max-w-[150px]">{`${user?.firstName} ${user?.lastName}`}</p>
+                      <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
                       <div className="text-sm text-gray-500">100 points</div>
                     </div>
                   </div>
@@ -160,7 +160,7 @@ const Navbar = () => {
 
                   <ul className="py-3 space-y-2">
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to="/profile">
+                      <Link to={`/profile/${user?.userId}`}>
                         <div className="flex items-center space-x-2">
                           <MdOutlinePerson className="icon-lg icon-gray3" />
                           <span>Profile</span>

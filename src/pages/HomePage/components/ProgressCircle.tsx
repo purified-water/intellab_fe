@@ -15,34 +15,46 @@ const ProgressLayout = ({ children }: { children: React.ReactNode }) => (
   </div>
 );
 
-const ProgressStatistics = ({ easy, medium, hard, totalSolved, totalProblems }: any) => (
-  <div className="w-full space-y-2 text-left md:w-32">
-    <div className="flex justify-between text-sm">
-      <span className="font-semibold">Solved:</span>
-      <span>
-        {totalSolved}/{totalProblems}
-      </span>
+type ProgressStatisticsProps = {
+  easy: { solved: number; max: number };
+  medium: { solved: number; max: number };
+  hard: { solved: number; max: number };
+  totalSolved: number;
+  totalProblems: number;
+};
+
+const ProgressStatistics = (props: ProgressStatisticsProps) => {
+  const { easy, medium, hard, totalSolved, totalProblems } = props;
+
+  return (
+    <div className="w-full space-y-2 text-left md:w-32">
+      <div className="flex justify-between text-sm">
+        <span className="font-semibold">Solved:</span>
+        <span>
+          {totalSolved}/{totalProblems}
+        </span>
+      </div>
+      <div className="flex justify-between text-sm">
+        <span className="font-semibold text-appEasy">Easy:</span>
+        <span>
+          {easy.solved}/{easy.max}
+        </span>
+      </div>
+      <div className="flex justify-between text-sm">
+        <span className="font-semibold text-appMedium">Medium:</span>
+        <span>
+          {medium.solved}/{medium.max}
+        </span>
+      </div>
+      <div className="flex justify-between text-sm">
+        <span className="font-semibold text-appHard">Hard:</span>
+        <span>
+          {hard.solved}/{hard.max}
+        </span>
+      </div>
     </div>
-    <div className="flex justify-between text-sm">
-      <span className="font-semibold text-appEasy">Easy:</span>
-      <span>
-        {easy.solved}/{easy.max}
-      </span>
-    </div>
-    <div className="flex justify-between text-sm">
-      <span className="font-semibold text-appMedium">Medium:</span>
-      <span>
-        {medium.solved}/{medium.max}
-      </span>
-    </div>
-    <div className="flex justify-between text-sm">
-      <span className="font-semibold text-appHard">Hard:</span>
-      <span>
-        {hard.solved}/{hard.max}
-      </span>
-    </div>
-  </div>
-);
+  );
+};
 
 export const ProgressCircle = () => {
   const [progress, setProgress] = useState<TProgress | null>(null);
@@ -59,7 +71,7 @@ export const ProgressCircle = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting problem statistics" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting problem statistics" });
     } finally {
       setLoading(false);

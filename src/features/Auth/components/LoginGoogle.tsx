@@ -24,7 +24,7 @@ const GoogleLogin = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting user profile" });
       }
-    } catch (e: any) {
+    } catch (e) {
       showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
     }
   };

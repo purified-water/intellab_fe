@@ -1,3 +1,5 @@
+import { TCategory } from "./category";
+
 export interface ICourse {
   averageRating: number;
   courseId: string;
@@ -14,4 +16,11 @@ export interface ICourse {
   userUid: string | null;
   certificateUrl: string | null;
   certificateId: string | null;
+  categories: TCategory[];
+}
+
+export interface ICompletedCourse {
+  course: ICourse;
+  certificateId: string;
+  completedDate: string;
 }

@@ -10,6 +10,8 @@ import { formatDateTime } from "@/utils";
 import { showToastError } from "@/utils/toastUtils";
 import { Trash2, Pencil } from "lucide-react";
 import { getUserIdFromLocalStorage } from "@/utils";
+import { useNavigate } from "react-router-dom";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 const parseReplyContent = (reply: string) => {
   const regex = /^\[@(.*?)\]\s(.*)$/;
@@ -65,9 +67,11 @@ export const CommentReply = (props: CommentReplyProps) => {
   } = replyComment;
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const reduxUser = useSelector((state: RootState) => state.user.user);
 
   const toast = useToast();
   const localUserUid = getUserIdFromLocalStorage();
+  const navigate = useNavigate();
 
   const isOwner = userUid == localUserUid;
 
@@ -81,13 +85,19 @@ export const CommentReply = (props: CommentReplyProps) => {
     setReplyContent(`[@${userName}] `);
   }, [replyComment]);
 
+  const handleUsernameClick = () => {
+    navigate(`/profile/${userUid}`);
+  };
+
   const renderReplyComment = () => {
     const renderUserInformation = () => {
       return (
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2">
             <AvatarIcon src={avatarUrl} alt={userName} />
-            <p className="text-lg font-semibold">{userName}</p>
+            <p className="text-lg font-semibold cursor-pointer hover:text-appPrimary" onClick={handleUsernameClick}>
+              {userName}
+            </p>
           </div>
           <p className="text-sm font-medium text-gray3">{formatDateTime(created)}</p>
         </div>
@@ -229,7 +239,7 @@ export const CommentReply = (props: CommentReplyProps) => {
         isReply && (
           <div className="mt-4 ml-8 space-y-2">
             <div className="flex items-start space-x-2">
-              <AvatarIcon src={avatarUrl} alt={userName} />
+              <AvatarIcon src={reduxUser?.photoUrl ?? DEFAULT_AVATAR} alt={userName} />
               <textarea
                 placeholder="Type your reply..."
                 className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"

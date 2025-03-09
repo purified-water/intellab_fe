@@ -12,10 +12,11 @@ interface SortByButtonProps {
   items: ISortByItem[];
   selectedValue: string;
   onSelect: (value: string) => void;
+  title?: string;
 }
 
 export const SortByButton = (props: SortByButtonProps) => {
-  const { items, selectedValue, onSelect } = props;
+  const { items, selectedValue, onSelect, title = "Sorted by:" } = props;
 
   const [sortByOpen, setSortByOpen] = useState(false);
 
@@ -27,7 +28,7 @@ export const SortByButton = (props: SortByButtonProps) => {
           aria-expanded={sortByOpen}
           className="w-[200px] flex text-sm space-x-2 items-center cursor-pointer"
         >
-          <span className="font-normal">Sorted by:</span>
+          <span className="font-normal">{title}</span>
           <span className="font-semibold ">{items.find((item) => item.value === selectedValue)?.label}</span>
           <ChevronDown className="w-4 opacity-50" />
         </div>
