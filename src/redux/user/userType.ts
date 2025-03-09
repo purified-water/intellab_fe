@@ -1,6 +1,5 @@
-import { UserType, Progress } from "@/types";
+import { IUser } from "@/types";
 
 export interface UserState {
-  user: UserType | null;
-  progress: Progress | null;
+  user: IUser | null;
 }

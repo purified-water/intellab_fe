@@ -9,6 +9,8 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -16,6 +18,7 @@ export const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -39,10 +42,16 @@ export const LoginPage = () => {
     return isValid;
   };
 
-  const handleGetUser = async (accessToken: string) => {
-    const user = await userAPI.getUser(accessToken);
-    if (user) {
-      dispatch(setUser(user));
+  const getProfileMeAPI = async () => {
+    try {
+      const response = await userAPI.getProfileMe();
+      if (response) {
+        dispatch(setUser(response));
+      } else {
+        showToastError({ toast: toast.toast, message: "Error getting user profile" });
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
     }
   };
 
@@ -72,11 +81,11 @@ export const LoginPage = () => {
         }
 
         localStorage.setItem("userId", userId);
-        await handleGetUser(response.data.accessToken);
+        await getProfileMeAPI();
         dispatch(loginSuccess());
         navigate("/");
       }
-    } catch (error: any) {
+    } catch (error) {
       if (error.response) {
         const errorMessage = error.response.data.message || "Invalid email or password";
         setInputErrors({ ...inputErrors, email: errorMessage });

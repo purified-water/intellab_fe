@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/features/Course/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { ProgressBar } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "@/utils";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 interface YourCourseCardProps {
   courseId: string;
@@ -15,6 +17,7 @@ interface YourCourseCardProps {
 
 export const YourCourseCard = (props: YourCourseCardProps) => {
   const navigate = useNavigate();
+  const toast = useToast();
 
   const { courseId, userId, progress, skeletonLoading } = props;
 
@@ -50,7 +53,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
         }
       }
     } else {
-      alert("Please login to continue");
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to continue" });
     }
   };
 

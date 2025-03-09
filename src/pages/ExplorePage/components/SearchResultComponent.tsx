@@ -1,5 +1,5 @@
 import React from "react";
-import Spinner from "@/components/ui/Spinner";
+import { Spinner } from "@/components/ui";
 import { ICourse } from "@/features/Course/types";
 import Course from "./Course";
 

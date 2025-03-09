@@ -11,8 +11,19 @@ import {
 import { IReviewsResponse, ReviewStatsResponse } from "../../pages/HomePage/types/reviewResponse";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
+import {
+  TCancelUpvoteCommentResponse,
+  TCreateCommentResponse,
+  TDeleteCommentResponse,
+  TGetCourseCommentsResponse,
+  TGetCommentResponse,
+  TGetCommentChildrenResponse,
+  TModifyCommentResponse,
+  TUpvoteCommentResponse
+} from "@/features/Course/types/apiResponseType";
+import { TGetCompletedCourseListMeResponse } from "@/features/Profile/types";
 
-const DEFAULT_PAGE_SIZE = 5;
+const DEFAULT_PAGE_SIZE = 10;
 
 export const courseAPI = {
   getCourses: async () => {
@@ -33,10 +44,16 @@ export const courseAPI = {
     return data;
   },
 
-  getReviews: async (courseId: string, page: number, size: number) => {
-    const response = await apiClient.get(
-      `course/courses/${courseId}/reviews?page=${page}&size=${size}&sort=createAt,desc`
-    );
+  getReviews: async (courseId: string, page: number, size: number, rating: string) => {
+    const rating_param = rating === "all" ? null : Number(rating);
+    const response = await apiClient.get(`course/courses/${courseId}/reviews`, {
+      params: {
+        page,
+        size,
+        sort: "createAt,desc",
+        ...(rating_param !== null && { rating: rating_param })
+      }
+    });
     const data: IReviewsResponse = response.data;
     return data;
   },
@@ -82,7 +99,6 @@ export const courseAPI = {
         size
       }
     });
-    console.log("response", response);
     const data: IGetCourseLessonsResponse = response.data;
     return data;
   },
@@ -145,6 +161,107 @@ export const courseAPI = {
   getUserEnrolledCourses: async () => {
     const response = await apiClient.get(`/course/courses/me/enrolledCourses`);
     const data: IGetUserEnrolledCoursesResponse = response.data;
+    return data;
+  },
+
+  // Comment APIs
+  upvoteComment: async (commentId: string) => {
+    const response = await apiClient.put(`/course/courses/comments/${commentId}/upvote`);
+    const data: TUpvoteCommentResponse = response.data;
+    return data;
+  },
+
+  cancelUpvoteComment: async (commentId: string) => {
+    const response = await apiClient.put(`/course/courses/comments/${commentId}/cancelUpvote`);
+    const data: TCancelUpvoteCommentResponse = response.data;
+    return data;
+  },
+
+  modifyComment: async (commentId: string, content: string) => {
+    const response = await apiClient.put(`/course/courses/comments/modify`, { commentId, content });
+    const data: TModifyCommentResponse = response.data;
+    return data;
+  },
+
+  getCourseComments: async (
+    courseId: string,
+    userUid: string | null,
+    page: number | null,
+    sort: string | null
+    //childrenPage: number | null
+  ) => {
+    const queryParams = {
+      page,
+      userUid,
+      size: 10,
+      sort,
+      // childrenPage,
+      childrenSize: 1
+      // childrenSortBy: "created",
+      // childrenSortOrder: "desc"
+    };
+    const response = await apiClient.get(`/course/courses/${courseId}/comments`, { params: queryParams });
+    const data: TGetCourseCommentsResponse = response.data;
+    return data;
+  },
+
+  createComment: async (
+    courseId: string,
+    content: string,
+    repliedCommentId: string | null,
+    parentCommentId: string | null
+  ) => {
+    const response = await apiClient.post(`/course/courses/${courseId}/comments`, {
+      content,
+      repliedCommentId,
+      parentCommentId
+    });
+    const data: TCreateCommentResponse = response.data;
+    return data;
+  },
+
+  getComment: async (
+    commentId: string,
+    userUid: string | null,
+    page: number | null,
+    size: number | null,
+    sort: string[] | null
+  ) => {
+    const queryParams = {
+      userUid,
+      page,
+      size,
+      sort
+    };
+
+    const response = await apiClient.get(`/course/courses/comments/${commentId}`, { params: queryParams });
+    const data: TGetCommentResponse = response.data;
+    return data;
+  },
+
+  getCommentChildren: async (commentId: string, userUid: string | null, size: number | null) => {
+    const queryParams = {
+      userUid,
+      size,
+      sort: "created,desc"
+    };
+    const response = await apiClient.get(`/course/courses/comments/${commentId}/children`, { params: queryParams });
+    const data: TGetCommentChildrenResponse = response.data;
+    return data;
+  },
+
+  deleteComment: async (commentId: string) => {
+    const response = await apiClient.delete(`/course/courses/comments/${commentId}/delete`);
+    const data: TDeleteCommentResponse = response.data;
+    return data;
+  },
+
+  getCompletedCourseListMe: async (UserUid: string) => {
+    const queryParams = {
+      UserUid
+    };
+    const response = await apiClient.get(`/course/courses/courseList/me`, { params: queryParams });
+    const data: TGetCompletedCourseListMeResponse = response.data;
     return data;
   }
 };

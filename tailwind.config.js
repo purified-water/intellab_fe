@@ -17,22 +17,19 @@ export default {
         appEasy: "#27AE60",
         appMedium: "#E2B93B",
         appHard: "#EB5757",
-
-        // For button background colors
         appFadedPrimary: "#D8B3F2",
         appFadedAccent: "#FFD5DE",
-
         gray1: "#333333",
         gray2: "#4F4F4F",
         gray3: "#828282",
         gray4: "#BDBDBD",
         gray5: "#E0E0E0",
         gray6: "#EBEBEB",
-
+        gray7: "#DEDEDE",
         black1: "#01000f",
-
+        gold: "#FFC13F",
+        bronze: "#EB8657",
         appLightThemeText: "#FFFFFF",
-
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -72,6 +69,16 @@ export default {
           3: "hsl(var(--chart-3))",
           4: "hsl(var(--chart-4))",
           5: "hsl(var(--chart-5))"
+        },
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))"
         }
       },
       backgroundImage: {
@@ -79,8 +86,12 @@ export default {
       },
       keyframes: {
         disco: {
-          "0%": { transform: "translateY(-50%) rotate(0deg)" },
-          "100%": { transform: "translateY(-50%) rotate(360deg)" }
+          "0%": {
+            transform: "translateY(-50%) rotate(0deg)"
+          },
+          "100%": {
+            transform: "translateY(-50%) rotate(360deg)"
+          }
         }
       },
       animation: {

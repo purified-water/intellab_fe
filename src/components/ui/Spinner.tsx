@@ -5,7 +5,7 @@ type SpinnerProps = {
   overlay?: boolean;
 }
 
-export default function Spinner(props: SpinnerProps) {
+export function Spinner(props: SpinnerProps) {
   const { loading, overlay = false } = props;
 
   const renderSpinner = () => {
@@ -13,7 +13,7 @@ export default function Spinner(props: SpinnerProps) {
       <ClipLoader
         color="#5a3295"
         loading={loading}
-        size={70}
+        size={40}
         aria-label="Loading Spinner"
         data-testid="loader"
       />
@@ -21,15 +21,15 @@ export default function Spinner(props: SpinnerProps) {
   };
 
   let content = (
-    <div className="items-center justify-center flex flex-col">
+    <div className="flex flex-col items-center justify-center">
       {renderSpinner()}
     </div>
   )
 
   if (overlay) {
     content = (
-      <div className="fixed inset-0 bg-gray3 bg-opacity-50 flex items-center justify-center">
-        <div className="size-40 bg-white rounded-lg items-center justify-center flex flex-col">
+      <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 bg-gray3">
+        <div className="flex flex-col items-center justify-center rounded-lg size-40">
           {renderSpinner()}
         </div>
       </div>

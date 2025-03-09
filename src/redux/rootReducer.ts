@@ -5,6 +5,8 @@ import problemReducer from "@/redux/problem/problemSlice";
 import userReducer from "@/redux/user/userSlice";
 import { userCodeReducer } from "@/redux/problem/problemSlice";
 import submissionReducer from "./problem/submissionSlice";
+import commentReducer from "./comment/commentSlice";
+import mainChatbotReducer from "./mainChatbot/mainChatbotSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -12,7 +14,9 @@ const rootReducer = combineReducers({
   problem: problemReducer,
   user: userReducer,
   userCode: userCodeReducer,
-  submission: submissionReducer
+  submission: submissionReducer,
+  comment: commentReducer,
+  mainChatbot: mainChatbotReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

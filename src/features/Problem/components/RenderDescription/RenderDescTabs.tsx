@@ -4,6 +4,7 @@ import { ProblemType } from "@/types/ProblemType";
 import { TestCaseType } from "../../types/TestCaseType";
 import { SubmissionInformation } from "./SubmissionInformation";
 import { SubmissionHistory } from "./SubmissionHistory";
+import { ProblemCommentSection } from "./Comments/ProblemCommentSection";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
   courseId: string | null;
@@ -54,7 +55,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
           />
         );
       case "Comments":
-        return <div>Comments</div>;
+        return <ProblemCommentSection />;
       case "Submissions":
         return <SubmissionHistory />;
       case "Hints":

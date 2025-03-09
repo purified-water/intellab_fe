@@ -35,11 +35,11 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
     return (
       <div className="test-case-content">
         <div className="flex flex-col mb-2" key={selectedTestCase.testCaseId}>
-          <div className="mb-1 text-sm">Inputs =</div>
+          <div className="mb-1 text-sm">Input:</div>
           <div className="w-full px-4 py-1 rounded-lg bg-gray5">
             <pre className="text-base">{selectedTestCase.input}</pre>
           </div>
-          <div className="mt-4 mb-1 text-sm">Outputs =</div>
+          <div className="mt-4 mb-1 text-sm">Output:</div>
           <div className="w-full px-4 py-1 rounded-lg bg-gray5">
             <pre className="text-base">{selectedTestCase.output}</pre>
           </div>

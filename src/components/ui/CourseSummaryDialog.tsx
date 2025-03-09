@@ -21,9 +21,9 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
 
   const renderHeader = () => {
     return (
-      <div className='flex text-black text-2xl justify-between items-center py-4 px-8 border-b border-gray5'>
+      <div className='flex items-center justify-between px-8 py-4 text-2xl text-black border-b border-gray5'>
         <p className='font-bold '>Course Summary</p>
-        <FontAwesomeIcon icon={faX} className="cursor-pointer text-xl text-gray4" onClick={onClose} />
+        <FontAwesomeIcon icon={faX} className="text-xl cursor-pointer text-gray4" onClick={onClose} />
       </div>
     )
   }
@@ -59,7 +59,7 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
         title: 'Saved!',
         description: 'Summary saved as PDF',
       });
-    } catch (error: any) {
+    } catch (error) {
       toast({
         title: 'Failed to save as PDF',
         description: `Failed to save summary as PDF: ${error.message}`,
@@ -78,8 +78,8 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
 
   const renderFooter = () => {
     return (
-      <div className='flex justify-between text-black text-base py-4 px-8'>
-        <button className='flex items-center py-2 px-10 text-gray1 font-bold border border-appPrimary rounded-xl hover:bg-slate-200' onClick={handleSaveAsPDF}>
+      <div className='flex justify-between px-8 py-4 text-base text-black'>
+        <button className='flex items-center px-10 py-2 font-bold border text-gray1 border-appPrimary rounded-xl hover:bg-slate-200' onClick={handleSaveAsPDF}>
           <FaFilePdf className='mr-2' />
           <p>Save as PDF</p>
         </button>

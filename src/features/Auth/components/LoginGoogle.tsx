@@ -8,15 +8,24 @@ import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 const GoogleLogin = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const toast = useToast();
 
-  const handleGetUser = async (accessToken: string) => {
-    const user = await userAPI.getUser(accessToken);
-    if (user) {
-      dispatch(setUser(user));
+  const getProfileMeAPI = async () => {
+    try {
+      const response = await userAPI.getProfileMe();
+      if (response) {
+        dispatch(setUser(response));
+      } else {
+        showToastError({ toast: toast.toast, message: "Error getting user profile" });
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
     }
   };
 
@@ -36,7 +45,7 @@ const GoogleLogin = () => {
         }
 
         localStorage.setItem("userId", userId);
-        await handleGetUser(idToken);
+        await getProfileMeAPI();
         dispatch(loginSuccess());
         navigate("/");
       }

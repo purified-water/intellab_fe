@@ -12,12 +12,12 @@ export function CertificateImage(props: CertificateImageProps) {
   if (loading) {
     content = (
       <div className="flex-shrink-0">
-        <Skeleton className="h-[700px] w-[900px] rounded-lg" />
+        <Skeleton className="h-[550px] w-[750px] rounded-lg" />
       </div>
     );
   } else {
     content = (
-      <div className="border border-gray3 min-w-[500px] max-w-[1000px]">
+      <div className="border border-gray3 max-w-[750px] min-w-[300px]">
         <img className="object-contain" src={certificate?.certificateLink} alt="Certificate" />
       </div>
     );

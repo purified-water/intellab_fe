@@ -1,20 +1,27 @@
 import { useState, useEffect } from "react";
-import { Header, LessonList } from "@/features/Course/components";
+import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
 import { ICourse, ILesson, IEnrolledLesson } from "../types";
-import Spinner from "@/components/ui/Spinner";
+import { Spinner, Pagination } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import Pagination from "@/components/ui/Pagination";
-import Reviews from "../components/Reviews";
 import RatingModal from "../components/RatingModal";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError, showToastSuccess } from "@/utils/toastUtils";
+
+const TAB_BUTTONS = {
+  LESSONS: "Lessons",
+  COMMENTS: "Comments",
+  REVIEWS: "Reviews"
+};
 
 export const CourseDetailPage = () => {
   const navigate = useNavigate();
+  const toast = useToast();
   const { id } = useParams<{ id: string }>();
   const [activeTab, setActiveTab] = useState("Lessons");
   const [course, setCourse] = useState<ICourse | null>(null);
@@ -62,13 +69,12 @@ export const CourseDetailPage = () => {
       try {
         const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
-        // console.log("Lessons after enroll", lessons);
         setLessons(lessons);
         setLoading(false);
         setCurrentPage(response.result.number);
         setTotalPages(response.result.totalPages);
       } catch (error) {
-        console.log("Error fetching lessons", error);
+        console.log("--> Error fetching lessons", error);
         setLoading(false);
       }
     } else {
@@ -76,13 +82,12 @@ export const CourseDetailPage = () => {
         const response = await courseAPI.getLessons(id!, page);
         const lessons = response.result.content;
         lessons.sort((a: ILesson, b: ILesson) => a.lessonOrder - b.lessonOrder);
-        // console.log("Lessons before enroll", lessons);
         setLessons(lessons);
         setCurrentPage(response.result.number);
         setTotalPages(response.result.totalPages);
         setLoading(false);
       } catch (error) {
-        console.log("Error fetching lessons", error);
+        console.log("--> Error fetching lessons", error);
         setLoading(false);
       }
     }
@@ -131,7 +136,7 @@ export const CourseDetailPage = () => {
     if (isAuthenticated) {
       enrollCourseHandler();
     } else {
-      alert("Please login to enroll in this course");
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to enroll in the course" });
     }
   };
 
@@ -142,13 +147,13 @@ export const CourseDetailPage = () => {
       if (response.code === 0) {
         // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
         setIsEnrolled(true);
-        alert("Enroll successfully");
+        showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {
         setIsEnrolled(false);
-        alert("Enroll failed");
+        showToastError({ toast: toast.toast, message: "Error enrolling course" });
       }
     } catch (error) {
-      console.log("Error enrolling course", error);
+      console.log("--> Error enrolling course", error);
     }
     setLoading(false);
   };
@@ -180,9 +185,10 @@ export const CourseDetailPage = () => {
   };
 
   const renderTabContent = () => {
+    let content = null;
     switch (activeTab) {
-      case "Lessons":
-        return (
+      case TAB_BUTTONS.LESSONS:
+        content = (
           <div>
             <LessonList
               lessons={lessons}
@@ -207,25 +213,30 @@ export const CourseDetailPage = () => {
             )}
           </div>
         );
-      case "Comments":
-        return <div>Comments content goes here</div>;
-      case "Reviews":
-        // return <div>Reviews content goes here</div>;
-        return (
+        break;
+      case TAB_BUTTONS.COMMENTS:
+        content = course && <CourseCommentSection course={course} />;
+        break;
+      case TAB_BUTTONS.REVIEWS:
+        content = (
           <Reviews
             courseTitle={course?.courseName ?? ""}
             courseId={course?.courseId ?? ""}
             hasCompleted={course?.progressPercent == 100}
-          ></Reviews>
+          />
         );
+        break;
       default:
-        return null;
+        break;
     }
+
+    return <div className="w-[90%]">{content}</div>;
   };
 
-  const renderTabButton = (tab: string) => {
+  const renderTabButton = (tab: string, key: number) => {
     return (
       <button
+        key={key}
         onClick={() => setActiveTab(tab)}
         className={activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}
       >
@@ -238,20 +249,22 @@ export const CourseDetailPage = () => {
     return (
       <>
         <div className="flex gap-10 pl-10 mb-4 text-xl font-bold ml-14">
-          {renderTabButton("Lessons")}
-          {renderTabButton("Comments")}
-          {renderTabButton("Reviews")}
+          {Object.values(TAB_BUTTONS).map((tab, index) => renderTabButton(tab, index))}
         </div>
-        <div className="px-6">{renderTabContent()}</div>
+        <div className="px-6 justify-items-center">{renderTabContent()}</div>
       </>
     );
+  };
+
+  const renderSpinner = () => {
+    return <Spinner loading={loading} overlay />;
   };
 
   return (
     <div className="pb-8 mx-auto max-w-7xl">
       {renderHeader()}
       {renderBody()}
-      <Spinner loading={loading} overlay />
+      {renderSpinner()}
     </div>
   );
 };

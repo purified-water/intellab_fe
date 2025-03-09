@@ -1,12 +1,10 @@
 import { useState } from "react";
-import { ProgressBar } from "@/components/ui/ProgressBar";
+import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
 import { amountTransformer } from "@/utils";
 import { ICourse } from "../types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import Spinner from "@/components/ui/Spinner";
-import AnimatedButton from "@/components/ui/AnimatedButton";
 
 interface HeaderProps {
   course: ICourse;
@@ -70,7 +68,7 @@ export const Header = (props: HeaderProps) => {
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
-    } catch (error: any) {
+    } catch (error) {
       toast.toast({
         variant: "destructive",
         title: "An error occurred",

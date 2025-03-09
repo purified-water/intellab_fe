@@ -66,6 +66,15 @@ const Navbar = () => {
 
   const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
 
+  const renderUserPhoto = () => {
+    let content = <MdAccountCircle className="icon-xl" />;
+    const userPhoto = user?.photoUrl;
+    if (userPhoto) {
+      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full border border-gray4" />;
+    }
+    return content;
+  };
+
   return (
     <>
       <nav className="flex items-center justify-between w-full px-12 py-2 border-b border-gray5">
@@ -131,7 +140,7 @@ const Navbar = () => {
                 className="p-1 transition text-gray3 hover:text-gray1 hover:cursor-pointer"
                 onClick={toggleDropdown}
               >
-                <MdAccountCircle className="icon-xl" />
+                {renderUserPhoto()}
               </div>
               {isDropdownOpen && (
                 <div
@@ -140,10 +149,9 @@ const Navbar = () => {
                   className="absolute right-0 z-10 w-56 mt-2 bg-white rounded-lg shadow-md top-10"
                 >
                   <div className="flex flex-row items-center px-3">
-                    <MdAccountCircle className="icon-3xl" />
-
+                    {renderUserPhoto()}
                     <div className="flex flex-col px-4 py-2">
-                      <div className="text-lg font-semibold">{user?.name}</div>
+                      <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
                       <div className="text-sm text-gray-500">100 points</div>
                     </div>
                   </div>
@@ -151,23 +159,23 @@ const Navbar = () => {
                   <hr className="border-gray5" />
 
                   <ul className="py-3 space-y-2">
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
-                      <Link to="/profile">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+                      <Link to={`/profile/${user?.userId}`}>
                         <div className="flex items-center space-x-2">
                           <MdOutlinePerson className="icon-lg icon-gray3" />
                           <span>Profile</span>
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
-                      <Link to="/settings">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+                      <Link to="/profile/edit">
                         <div className="flex items-center space-x-2">
                           <MdOutlineSettings className="icon-lg icon-gray3" />
                           <span>Settings</span>
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="#">
                         <div className="flex items-center space-x-2">
                           <MdOutlineWbSunny className="icon-lg icon-gray3" />
@@ -175,7 +183,7 @@ const Navbar = () => {
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 text-gray3 hover:opacity-70">
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <div className="flex items-center space-x-2">
                         <MdLogout className="icon-lg icon-gray3" />
                         <button onClick={handleLogout}>Logout</button>

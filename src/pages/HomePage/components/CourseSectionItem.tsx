@@ -74,7 +74,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
           className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
           onClick={handleCourseClicked}
         >
-          {detailCourse?.userEnrolled ? "Continue" : "Study now"}
+          {detailCourse?.userEnrolled ? "Continue" : "Enroll"}
         </button>
         <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
       </div>
@@ -96,7 +96,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
           className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
           onClick={handleCourseClicked}
         >
-          {course?.userEnrolled ? "Continue" : "Study now"}
+          {course?.userEnrolled ? "Continue" : "Enroll"}
         </button>
         <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
       </div>

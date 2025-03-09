@@ -1,24 +1,21 @@
 import { useState, useEffect } from "react";
-import {
-  ProfileSection,
-  CourseInfomationSection,
-  LearnedSection,
-  CertificateImage,
-  ActionButtons
-} from "../components";
-import useWindowDimensions from "@/hooks/use-window-dimensions";
+import { CourseInformationSection, LearnedSection, CertificateImage, ActionButtons } from "../components";
 import { certificateAPI } from "@/lib/api";
 import { ICertificate } from "../types";
 import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { API_RESPONSE_CODE } from "@/constants";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { getUserIdFromLocalStorage } from "@/utils";
 
 export const CertificatePage = () => {
   const { id: certificateId } = useParams<{ id: string }>();
-  const { width } = useWindowDimensions();
   const [loading, setLoading] = useState(false);
   const [certificate, setCertificate] = useState<ICertificate | null>(null);
   const { toast } = useToast();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const userId = getUserIdFromLocalStorage();
 
   const showToastSuccess = (message: string) => {
     toast({
@@ -46,7 +43,7 @@ export const CertificatePage = () => {
         } else {
           showToastError("Certificate not found");
         }
-      } catch (error: any) {
+      } catch (error) {
         showToastError(error.message);
       } finally {
         setLoading(false);
@@ -58,42 +55,31 @@ export const CertificatePage = () => {
     getCertificate();
   }, []);
 
-  const renderCourseName = () => {
-    let content = null;
-    if (loading) {
-      content = <div className="h-12" />;
-    } else {
-      content = <p className="text-3xl font-bold truncate">{certificate?.course.name}</p>;
+  const renderActionButtons = () => {
+    if (isAuthenticated && userId === certificate?.userUid) {
+      return (
+        <ActionButtons
+          loading={loading}
+          certificateId={certificateId!}
+          certificate={certificate}
+          showToastError={showToastError}
+          showToastSuccess={showToastSuccess}
+        />
+      );
     }
-    return content;
   };
 
-  let layoutStyle;
-  if (width > 1200) {
-    layoutStyle = "flex space-x-8 justify-center";
-  } else {
-    layoutStyle = "space-y-4 min-w-[500px] max-w-[500px]";
-  }
-
   return (
-    <div className="py-4 px-56 space-y-4 min-w-[550px]">
-      {renderCourseName()}
-      <div className={layoutStyle}>
-        <div className="space-y-4 min-w-[500px] ">
-          <ProfileSection loading={loading} certificate={certificate} />
-          <CourseInfomationSection loading={loading} certificate={certificate} />
+    <div className="py-8">
+      <div className="flex space-x-10 justify-center">
+        <span className="space-y-4 w-[500px]">
+          <CourseInformationSection loading={loading} certificate={certificate} />
           <LearnedSection loading={loading} certificate={certificate} />
-        </div>
-        <div className="space-y-4">
+        </span>
+        <span className="space-y-4">
           <CertificateImage loading={loading} certificate={certificate} />
-          <ActionButtons
-            loading={loading}
-            certificateId={certificateId!}
-            certificate={certificate}
-            showToastError={showToastError}
-            showToastSuccess={showToastSuccess}
-          />
-        </div>
+          {renderActionButtons()}
+        </span>
       </div>
     </div>
   );

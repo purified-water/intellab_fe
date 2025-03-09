@@ -80,7 +80,7 @@ export default function Course(props: CourseProps) {
         text = "Continue";
       }
     } else {
-      text = "Study Now";
+      text = "Enroll";
     }
     return text;
   };
