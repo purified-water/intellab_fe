@@ -1,5 +1,5 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "@/lib/api";
@@ -24,6 +24,10 @@ export const SignUpPage = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
+
+  useEffect(() => {
+    document.title = "Sign Up | Intellab";
+  }, []);
 
   const inputValidation = () => {
     let isValid = true;

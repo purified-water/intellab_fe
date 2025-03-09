@@ -37,7 +37,6 @@ const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
         const response = await courseAPI.getCategories();
         if (response?.result) {
           setCategories(response.result);
-          console.log("CATEGORY:", response.result);
         }
       } catch (error) {
         console.error("Error fetching categories:", error);

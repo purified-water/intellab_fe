@@ -27,7 +27,7 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
   return (
     <div className="relative w-full">
       <button
-        className="absolute left-0 z-10 p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-r from-white/40 to-transparent top-1/2 hover:text-gray1 text-gray2"
+        className="absolute left-0 z-10 flex items-center justify-center p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-r from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
         style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
       >
         <ChevronLeft size={24} className="pointer-events-auto" onClick={scrollLeft} />
@@ -39,7 +39,7 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
         {children}
       </div>
       <button
-        className="absolute right-0 z-10 p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-l from-white/40 to-transparent top-1/2 hover:text-gray1 text-gray2"
+        className="absolute right-0 z-10 flex items-center justify-center p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-l from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
         style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
       >
         <ChevronRight size={24} className="pointer-events-auto" onClick={scrollRight} />

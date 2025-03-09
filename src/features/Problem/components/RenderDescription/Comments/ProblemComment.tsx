@@ -5,7 +5,7 @@ import { Pencil, Trash2 } from "lucide-react";
 import { FaRegComment } from "rocketicons/fa6";
 import { Button, AlertDialog, AvatarIcon } from "@/components/ui";
 import { ProblemCommentType, ProblemCommentsResponse } from "@/features/Problem/types/ProblemCommentType";
-import { formatDate } from "@/utils";
+import { formatDateInProblem } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
@@ -223,8 +223,8 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
         </div>
         <p className="text-sm font-medium text-gray3">
           {comment.isModified
-            ? `Edited at ${formatDate(comment.lastModifiedAt, { monthFormat: "short" })}`
-            : formatDate(comment.createdAt, { monthFormat: "short" })}
+            ? `Edited at ${formatDateInProblem(comment.lastModifiedAt, { monthFormat: "short" })}`
+            : formatDateInProblem(comment.createdAt, { monthFormat: "short" })}
         </p>
       </div>
 

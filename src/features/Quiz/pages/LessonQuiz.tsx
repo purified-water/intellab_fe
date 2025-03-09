@@ -36,7 +36,6 @@ export const LessonQuiz = () => {
       saveQuizDraft(lessonId!, updatedAnswers);
       return updatedAnswers;
     });
-    console.log("selectedAnswers", selectedAnswers);
   };
 
   const fetchQuizzes = async (isDone: number | null) => {
@@ -45,21 +44,10 @@ export const LessonQuiz = () => {
       if (!lessonId) return;
       const response = await courseAPI.getLessonQuiz(lessonId, NUMBER_OF_QUESTIONS, isDone); // False to get quiz first time
       const result = response.result;
-      console.log("Quizzes", result);
+
       setQuizzes(result);
 
-      // Handle when fix the error of options order is null when isDone is true
-      // if (isDone !== null) {
-      //   setSubmittedAnswers(Object.fromEntries(result.map((quiz: IQuizResponse) => [quiz.questionId, quiz.answer])));
-      // }
-      // Handle when havent fixed the error
-      // const savedDraft = loadQuizDraft(lessonId);
-      // if (savedDraft && Object.keys(savedDraft).length > 0) {
-      //   setSelectedAnswers(savedDraft);
-      // }
-
       if (isDone !== null) {
-        console.log("isDone is not null, processing result:", result);
         const updatedAnswers = Object.fromEntries(
           result.map((quiz: IQuizResponse) => [quiz.questionId.toString(), parseInt(quiz.answer)])
         );
@@ -86,7 +74,6 @@ export const LessonQuiz = () => {
       };
     });
 
-    console.log("assignmentDetailRequests", assignmentDetailRequests);
     try {
       await courseAPI.postSubmitQuiz(lessonId, {
         score: correctAnswersCount,
@@ -100,7 +87,6 @@ export const LessonQuiz = () => {
   };
 
   const handleSubmit = () => {
-    console.log("Selected answers", selectedAnswers);
     const { userGrade, correctAnswersCount, results } = calculateUserScore(selectedAnswers ?? {}, quizzes);
 
     setSubmittedAnswers(results);

@@ -34,7 +34,7 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
       </div>
     );
   };
-  // console.log("testCases in Testcases", testCases);
+
   const renderTabs = () => {
     if (!runCodeResult || runCodeResult.testcases.length === 0) {
       return null;

@@ -59,6 +59,8 @@ export const CourseDetailPage = () => {
     }
 
     setCourse(result);
+    // Set document title
+    document.title = `${result.courseName} | Intellab`;
     setLoading(false);
   };
 

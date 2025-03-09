@@ -143,11 +143,11 @@ button:hover {
   }
 }
 
-/* .markdown > * {
+.markdown > * {
   all: revert;
-} */
+}
 /* .markdown img {
-  max-width: 20rem;
+  max-width: 22rem;
   width: 100%;
   height: auto;
   justify-self: center;
@@ -155,3 +155,13 @@ button:hover {
 .markdown h1 { font-size: 2rem; font-weight: bold; margin-top: 0.75rem; margin-bottom: 0.5rem;}
 .markdown h2 { font-size: 1.5rem; font-weight: bold; margin-top: 0.5rem; margin-bottom: 0.25rem;}
 .markdown h3 { font-size: 1.25rem; font-weight: medium; margin-top: 0.25rem}
+
+.desc-code {
+  font-size: 0.9rem;
+  display: inline;
+  white-space: normal;
+  word-break: keep-all;
+  background-color: #e7e7e7;
+  padding: 0.1rem 0.2rem;
+  border-radius: 0.2rem;
+}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-import { atomDark } from "react-syntax-highlighter/dist/cjs/styles/prism";
+import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { LessonHeader } from "./LessonHeader";
 import { ILesson } from "@/features/Course/types";
 import { LANGUAGE_MAP } from "../constants/languageMap";
@@ -31,9 +31,10 @@ const getHighlighterLanguage = (language: string): string => {
 // Output block component
 const OutputBlock: React.FC<{ content: string }> = ({ content }) => {
   return (
-    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-lg">
+    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-md">
       <div className="px-4 py-3 text-sm font-semibold border-b text-appPrimary">Output</div>
-      <div className="p-4 text-white bg-black/85">
+      {/*  */}
+      <div className="p-4 text-white bg-appOutputBG">
         <pre className="whitespace-pre-wrap">
           <code>{content}</code>
         </pre>
@@ -57,7 +58,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
   }, [activeTab]);
 
   return (
-    <div className="mt-8 mb-4 border rounded-lg shadow-lg h-fit code-tabs-headers">
+    <div className="mt-8 mb-4 border rounded-lg shadow-md h-fit code-tabs-headers">
       <div className="flex rounded-t-lg">
         {codeBlocks.map((block) => (
           <button
@@ -75,7 +76,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
       </div>
 
       <div
-        className="overflow-auto rounded-b-lg shadow-lg code-content"
+        className="overflow-auto rounded-b-lg shadow-md code-content"
         style={{ maxHeight: codeHeight }}
         ref={codeRef}
       >
@@ -83,7 +84,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
           <div key={block.language} className={activeTab === block.language ? "block" : "hidden"}>
             <SyntaxHighlighter
               language={getHighlighterLanguage(block.language)}
-              style={atomDark}
+              style={xonokai}
               customStyle={{ margin: 0, borderRadius: 0 }}
               showLineNumbers
             >

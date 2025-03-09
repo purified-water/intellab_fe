@@ -1,7 +1,7 @@
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { CourseSectionCard } from "./CourseSectionItem";
 import { ICourse } from "@/features/Course/types";
-import { ScrollableList } from "@/components/HorizontallyListScrollButtons";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 interface CourseSectionProps {
   title: string;

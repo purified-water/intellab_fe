@@ -151,7 +151,7 @@ export const ProblemCommentSection = () => {
           }}
           onChange={(e) => setUserComment(e.currentTarget.value)}
           onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.shiftKey) {
+            if (e.key === "Enter" && !e.ctrlKey) {
               e.preventDefault();
               handleSubmitComment();
             }

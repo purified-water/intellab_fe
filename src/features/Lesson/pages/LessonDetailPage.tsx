@@ -87,7 +87,6 @@ export const LessonDetailPage = () => {
 
       if (scrolledToBottom) {
         setIsScrolledToBottom(true);
-        console.log("User scrolled to bottom", isScrolledToBottom);
       }
     };
 
@@ -122,7 +121,7 @@ export const LessonDetailPage = () => {
       const response = await courseAPI.getLessonDetail(id);
       const { result } = response;
 
-      console.log("Lesson detail", result);
+      // console.log("Lesson detail", result);
       if (result.exerciseId) {
         setHasQuiz(true);
       }
@@ -130,6 +129,8 @@ export const LessonDetailPage = () => {
         setIsLessonDone(true);
       }
       setLesson(result);
+      // Set document title
+      document.title = `${result.lessonName} - ${course?.courseName} | Intellab`;
       setLoading(false);
     }
   };

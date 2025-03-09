@@ -7,7 +7,7 @@ interface TestCasesProps {
 
 export const TestCases = ({ testCases }: TestCasesProps) => {
   const [activeTab, setActiveTab] = useState(0); // Track the active tab
-  // console.log("testCases in Testcases", testCases);
+
   const renderTabs = () => {
     return (
       <div className="flex mb-4 gap-x-2 text-gray3">

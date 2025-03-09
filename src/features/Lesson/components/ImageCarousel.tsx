@@ -23,12 +23,12 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
   };
 
   return (
-    <div className="relative my-4 overflow-hidden border rounded-lg shadow-lg">
+    <div className="relative my-4 overflow-hidden border rounded-lg shadow-md">
       <div className="relative bg-gray6/20 h-96">
         <img
           src={images[currentIndex].src ? images[currentIndex].src : unavailableImage}
           alt={images[currentIndex].alt}
-          className="object-contain w-full h-full"
+          className="object-contain w-full h-full max-h-[360px]"
         />
       </div>
       <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-between pointer-events-none">
@@ -47,7 +47,7 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
           <ChevronRight size={24} />
         </button>
       </div>
-      <div className="absolute bottom-0 left-0 right-0 flex justify-center p-2 bg-white/80 backdrop-blur-sm">
+      <div className="absolute bottom-0 left-0 right-0 flex justify-center p-2 bg-white/20 backdrop-blur-sm">
         <div className="text-sm font-semibold text-gray1">
           {currentIndex + 1} / {images.length}
         </div>

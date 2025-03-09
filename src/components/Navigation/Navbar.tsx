@@ -89,7 +89,7 @@ const Navbar = () => {
           </div>
 
           <Link to="/">
-            <img src={intellab_side} alt="Intellab Logo" className="w-24 h-auto mr-4" />
+            <img src={intellab_side} alt="Intellab Logo" className="w-24 h-auto mr-2" />
           </Link>
 
           <div

@@ -20,7 +20,7 @@ import { getExploreCourse, resetFilters } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { AppFooter } from "@/components/AppFooter";
-import { ScrollableList } from "@/components/HorizontallyListScrollButtons";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 // const SEARCH_WAIT_TIME = 3000;
 
@@ -38,6 +38,10 @@ export const ExplorePage = () => {
     const userId = localStorage.getItem("userId");
     return userId;
   };
+
+  useEffect(() => {
+    document.title = "Explore | Intellab";
+  }, []);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -176,7 +180,7 @@ export const ExplorePage = () => {
                 <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                   Welcome to Intellab explore!
                 </div>
-                <span className="mt-2 text-2xl font-light text-gray3">Find new and exciting courses here!</span>
+                <span className="mt-2 text-xl font-light text-gray3">Find new and exciting courses here!</span>
               </div>
               {!hasFilter ? (
                 <div className="mt-8">

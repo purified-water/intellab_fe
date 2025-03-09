@@ -23,8 +23,8 @@ export const Header = () => {
   const renderGreeting = () => {
     return (
       <div className="mb-6 text-left md:mb-0">
-        <h1 className="text-4xl font-bold md:text-5xl text-appPrimary">{greeting}</h1>
-        <p className="font-normal text-md md:text-lg text-gray1">Continue your studies or start a new course!</p>
+        <h1 className="mb-2 text-4xl font-bold md:text-5xl text-appPrimary">{greeting}</h1>
+        <span className="mt-2 text-xl font-light text-gray3">Continue your studies or start a new course!</span>
       </div>
     );
   };
@@ -54,7 +54,7 @@ export const Header = () => {
   };
 
   return (
-    <header className="flex flex-col items-start justify-between w-full h-auto px-4 mb-8 md:flex-row md:items-center md:h-56 md:pr-20">
+    <header className="flex flex-col items-start justify-between w-full h-auto px-4 mb-8 md:flex-row md:items-center md:h-56 md:pr-12">
       {renderGreeting()}
       {isAuthenticated && renderBody()}
     </header>

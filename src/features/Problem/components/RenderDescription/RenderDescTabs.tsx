@@ -81,7 +81,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
     <>
       <div
         id="tab-buttons"
-        className="flex items-center justify-around w-full px-4 py-3 space-x-2 overflow-x-scroll border-b h-18 scrollbar-hide shrink-0"
+        className="flex items-center justify-around w-full px-4 py-3 space-x-2 overflow-x-scroll border-b max-h-18 scrollbar-hide shrink-0"
       >
         {renderDescriptionTabButton("Description")}
         {renderDescriptionTabButton("Comments")}

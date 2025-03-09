@@ -34,18 +34,13 @@ import {
   updateLastMessage
 } from "@/redux/mainChatbot/mainChatbotSlice";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
-import { CHATBOT_MODELS } from "../constants/chatbotModels";
+import { CHATBOT_MODELS } from "../../../constants/enums/chatbotModels";
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
 export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
-  // const [chatDetail, setChatDetail] = useState<ChatbotHistoryDetailType | null>({
-  //   thread_id: null,
-  //   timestamp: "",
-  //   messages: []
-  // });
   const [input, setInput] = useState("");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
@@ -216,7 +211,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         <div className="w-24 h-24 mb-4">
           <img src={aiOrbLogo} alt="AI Orb Logo" className="object-cover w-full h-full" />
         </div>
-        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-appPrimary to-appAccent">
+        <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-appAIFrom to-appAITo">
           Welcome to Intellab AI!
         </h1>
         <p className="mt-2 text-gray-600">Ask me anything about Intellab.</p>
@@ -367,7 +362,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
+                  if (e.key === "Enter" && !e.ctrlKey) {
                     e.preventDefault();
                     handleSendMessageStream();
                   }
@@ -375,10 +370,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
               />
 
               <button
+                className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
                 onClick={handleSendMessageStream}
-                className="flex items-center justify-center p-2 ml-2 text-white rounded-lg shadow-sm w-11 h-11 bg-gradient-to-tr from-appPrimary to-appAccent hover:opacity-80"
               >
-                <ArrowUp className="w-6 h-6" />
+                <ArrowUp className="w-11 h-11" />
               </button>
             </div>
           </div>

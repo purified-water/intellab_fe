@@ -5,7 +5,7 @@ import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
 import { IUserCourse } from "@/pages/HomePage/types/responseTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { ScrollableList } from "@/components/HorizontallyListScrollButtons";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 export const YourCourseSection = () => {
   const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
