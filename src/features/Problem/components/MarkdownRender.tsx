@@ -4,6 +4,10 @@ import remarkGfm from "remark-gfm";
 interface MarkdownRenderProps {
   content: string;
 }
+interface CodeProps {
+  children?: React.ReactNode;
+  className?: string;
+}
 
 export const MarkdownRender = (props: MarkdownRenderProps) => {
   const { content } = props;
@@ -13,14 +17,10 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
       className="mb-12 markdown"
       remarkPlugins={[remarkGfm]}
       components={{
-        code: (props) => {
-          const { children, className, ...rest } = props;
-
-          // Check if this is an inline code block (not in a pre)
-          const isInline = !className;
+        code: ({ children, className, ...rest }: CodeProps) => {
+          const isInline = !className; // Check if inline code
 
           if (isInline) {
-            // For inline code like `nums1` or `nums2`
             return (
               <code className="desc-code" {...rest}>
                 {children}
@@ -28,7 +28,6 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
             );
           }
 
-          // For code blocks with ```
           return (
             <div className="overflow-x-auto max-w-[100%]">
               <pre>

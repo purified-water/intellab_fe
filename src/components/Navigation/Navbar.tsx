@@ -177,7 +177,7 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 cursor-pointer">
                         <MdLogout className="icon-lg icon-gray3" />
                         <button onClick={handleLogout}>Logout</button>
                       </div>

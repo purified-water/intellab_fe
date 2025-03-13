@@ -18,3 +18,11 @@ export interface ChatbotHistoryDetailType {
   timestamp: string;
   messages: ChatbotMessageContentType[];
 }
+
+export interface ChatTitleGeneratorPayload {
+  message: string;
+  user_id: string;
+  thread_id: string;
+  problem_title?: string;
+  problem_id?: string;
+}

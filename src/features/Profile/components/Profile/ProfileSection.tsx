@@ -70,10 +70,10 @@ export const ProfileSection = (props: ProfileSectionProps) => {
           <Skeleton className="w-20 h-20 rounded-full" />
           <div className="flex flex-col items-start justify-center pl-4">
             <Skeleton className="w-48 h-6 mb-2" />
-            <Skeleton className="w-36 h-5 mb-5" />
+            <Skeleton className="h-5 mb-5 w-36" />
             <div>
-              <Skeleton className="w-12 h-6 inline-block" />
-              <Skeleton className="w-16 h-6 inline-block ml-2" />
+              <Skeleton className="inline-block w-12 h-6" />
+              <Skeleton className="inline-block w-16 h-6 ml-2" />
             </div>
           </div>
         </div>

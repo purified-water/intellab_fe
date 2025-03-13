@@ -32,7 +32,7 @@ export const ChatHistoryDropDown = ({ chatHistoryItems, onSelectChat }: ChatHist
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-full mx-2 overflow-y-scroll shadow-lg max-w-80 scrollbar-hide max-h-80">
+        <DropdownMenuContent className="mx-2 overflow-y-scroll shadow-lg w-[200px] max-w-80 scrollbar-hide max-h-80">
           <DropdownMenuLabel>Chat History</DropdownMenuLabel>
           <DropdownMenuSeparator />
 

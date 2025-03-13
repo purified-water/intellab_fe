@@ -26,15 +26,15 @@ export function SubmissionItem(props: SubmissionItemProps) {
         className={`flex items-center justify-between py-4 px-7 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer`}
       >
         <div className="space-y-3">
-          <Skeleton className="h-6 w-48" />
+          <Skeleton className="w-48 h-6" />
           <div className="flex space-x-2">
             {categoriesPlaceholder.map((_, index) => (
-              <Skeleton key={index} className="h-8 w-20 rounded-full" />
+              <Skeleton key={index} className="w-20 h-8 rounded-full" />
             ))}
           </div>
           <Skeleton className="h-5 w-36" />
         </div>
-        <Skeleton className="h-6 w-24" />
+        <Skeleton className="w-24 h-6" />
       </div>
     );
   };
@@ -43,13 +43,14 @@ export function SubmissionItem(props: SubmissionItemProps) {
     const renderSubmissionInformation = () => {
       return (
         <div className="space-y-2">
-          <p className="font-bold text-xl">{submission?.problem.problemName}</p>
+          <p className="text-xl font-bold">{submission?.problem.problemName}</p>
           <div className="flex space-x-2">
-            {submission?.problem.categories.map((category, index) => (
-              <div key={index} className="text-gray2 bg-gray5 py-1 px-3 rounded-full font-bold">
-                {category.name}
-              </div>
-            ))}
+            {submission &&
+              submission?.problem.categories.map((category, index) => (
+                <div key={index} className="px-3 py-1 font-bold rounded-full text-gray2 bg-gray5">
+                  {category.name}
+                </div>
+              ))}
           </div>
           <p className="text-gray2">Submitted on {shortenDate(submission?.submitDate)}</p>
         </div>

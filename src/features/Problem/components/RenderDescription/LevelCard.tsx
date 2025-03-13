@@ -1,4 +1,4 @@
-import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { ProblemLevels } from "../../constants/ProblemLevels";
 
 interface LevelCardProps {
