@@ -22,15 +22,15 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
     }
   };
 
-  const buttonWidth = size === "large" ? "80px" : "40px";
+  const buttonWidth = size === "large" ? "90px" : "50px";
 
   return (
     <div className="relative w-full">
       <button
-        className="absolute left-0 z-10 flex items-center justify-center p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-r from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
+        className="absolute left-0 z-10 flex items-center justify-center p-1 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-r from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
         style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
       >
-        <ChevronLeft size={24} className="pointer-events-auto" onClick={scrollLeft} />
+        <ChevronLeft size={28} className="pointer-events-auto" onClick={scrollLeft} />
       </button>
       <div
         ref={scrollContainerRef}
@@ -39,10 +39,10 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
         {children}
       </div>
       <button
-        className="absolute right-0 z-10 flex items-center justify-center p-2 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-l from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
+        className="absolute right-0 z-10 flex items-center justify-center p-1 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-l from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
         style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
       >
-        <ChevronRight size={24} className="pointer-events-auto" onClick={scrollRight} />
+        <ChevronRight size={28} className="pointer-events-auto" onClick={scrollRight} />
       </button>
     </div>
   );

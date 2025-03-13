@@ -171,6 +171,10 @@ export function LeaderboardPage() {
     setTimeout(() => setLoading(false), 2000);
   }, []);
 
+  useEffect(() => {
+    document.title = "Leaderboard | Intellab";
+  }, []);
+
   const onLeaderboardClick = () => {
     navigate("/");
   };
@@ -186,7 +190,7 @@ export function LeaderboardPage() {
 
   const rendrerPodiums = () => {
     return (
-      <div className="flex justify-center space-x-7 items-end">
+      <div className="flex items-end justify-center space-x-7">
         <PodiumItem item={SAMPLE_DATA[1]} height={110} loading={loading} />
         <PodiumItem item={SAMPLE_DATA[0]} color="gold" height={130} loading={loading} />
         <PodiumItem item={SAMPLE_DATA[2]} color="bronze" loading={loading} />
@@ -198,7 +202,7 @@ export function LeaderboardPage() {
     <div className="min-h-screen py-6">
       <div className="container mx-auto ">
         {renderTitle()}
-        <div className="justify-items-center space-y-8">
+        <div className="space-y-8 justify-items-center">
           {rendrerPodiums()}
           <LeaderboardList data={SAMPLE_DATA} />
         </div>

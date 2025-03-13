@@ -53,6 +53,7 @@ export const CertificatePage = () => {
 
   useEffect(() => {
     getCertificate();
+    document.title = `Certificate ${certificate ? certificate?.course.name : ""} | Intellab`;
   }, []);
 
   const renderActionButtons = () => {
@@ -71,7 +72,7 @@ export const CertificatePage = () => {
 
   return (
     <div className="py-8">
-      <div className="flex space-x-10 justify-center">
+      <div className="flex justify-center space-x-10">
         <span className="space-y-4 w-[500px]">
           <CourseInformationSection loading={loading} certificate={certificate} />
           <LearnedSection loading={loading} certificate={certificate} />

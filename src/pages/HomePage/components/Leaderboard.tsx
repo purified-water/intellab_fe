@@ -44,12 +44,12 @@ export const Leaderboard = () => {
   };
 
   return (
-    <div className="p-4 border border-gray5 rounded-lg">
+    <div className="p-4 border rounded-lg border-gray5">
       <div className="text-xl font-bold text-appPrimary">Leaderboard</div>
       <Separator className="my-2" />
       <div>{loading ? renderSkeletonLoading() : renderRanks()}</div>
       <div className="flex justify-center mt-3">
-        <a href="#" className="self-center font-bold text-appPrimary">
+        <a href="/leaderboard" className="self-center font-bold text-appPrimary">
           View more...
         </a>
       </div>

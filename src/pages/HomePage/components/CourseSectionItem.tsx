@@ -58,12 +58,15 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
 
   const handleCourseClicked = async () => {
     if (isAuthenticated) {
-      if (detailCourse)
+      if (detailCourse) {
         if (detailCourse.userEnrolled) {
           navigate(`/lesson/${detailCourse?.latestLessonId}`);
         } else if (detailCourse.price > 0) {
           await createCoursePaymentAPI();
+        } else {
+          navigate(`/course/${course.courseId}`);
         }
+      }
     } else {
       navigate(`/course/${course.courseId}`);
     }
@@ -91,7 +94,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     return (
       <div className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
         <div>
-          <h3 className="text-xl font-bold line-clamp-2 cursor-pointer" onClick={handleTitleClick}>
+          <h3 className="text-xl font-bold cursor-pointer line-clamp-2" onClick={handleTitleClick}>
             {detailCourse?.courseName}
           </h3>
           <p
