@@ -22,7 +22,7 @@ export const Header = () => {
 
   const renderGreeting = () => {
     return (
-      <div className="mb-6 text-left md:mb-0">
+      <div className="mt-8 mb-6 text-left sm:mt-0 md:mb-0">
         <h1 className="mb-2 text-4xl font-bold md:text-5xl text-appPrimary">{greeting}</h1>
         <span className="mt-2 text-xl font-light text-gray3">Continue your studies or start a new course!</span>
       </div>
@@ -31,7 +31,7 @@ export const Header = () => {
 
   const renderBody = () => {
     return (
-      <div className="flex mt-4 space-x-2 text-center w-fit md:justify-between md:space-y-0 md:space-x-8">
+      <div className="flex justify-between w-full mt-4 space-x-2 text-center sm:w-fit md:space-y-0 md:space-x-8">
         <div id="login-streak">
           <p className="mb-2 text-xs font-semibold text-black md:mb-10">LOGIN STREAK</p>
           <p className="text-3xl font-bold text-black md:text-4xl">6</p>

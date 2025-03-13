@@ -83,7 +83,7 @@ export const ProblemsPage = () => {
 
   return (
     <>
-      <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
+      <div className="flex flex-col w-full pt-3 mx-auto px-12 md:max-w-5xl lg:max-w-[90rem] md:px-28">
         <div className="flex items-center pt-10">
           <FilterButton
             onClick={() => {
@@ -119,7 +119,7 @@ export const ProblemsPage = () => {
                   {query && problems.length === 0 ? "Not found" : "Search results"}
                 </div>
               ) : (
-                <div className="w-full h-[106px] flex flex-col mb-4">
+                <div className="flex flex-col w-full mb-4">
                   <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                     Welcome to Intellab problems!
                   </div>

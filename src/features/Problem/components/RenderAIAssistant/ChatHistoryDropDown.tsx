@@ -32,25 +32,27 @@ export const ChatHistoryDropDown = ({ chatHistoryItems, onSelectChat }: ChatHist
           </Button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent className="w-full mx-2 overflow-y-scroll shadow-lg max-w-80 scrollbar-hide max-h-80">
+        <DropdownMenuContent className="mx-2 overflow-y-scroll shadow-lg w-[200px] max-w-80 scrollbar-hide max-h-80">
           <DropdownMenuLabel>Chat History</DropdownMenuLabel>
           <DropdownMenuSeparator />
 
-          {chatHistoryItems.length !== 0 ? sortedHistory.map((item) => (
-            <DropdownMenuItem
-              key={item.thread_id}
-              onClick={() => onSelectChat(item)}
-              className="flex items-center w-full px-2 py-1 space-x-2 cursor-pointer"
-            >
-              <span className="block w-full truncate">
-                {item.title !== "No title available" ? item.title : "Untitled Chat"}
-              </span>
-            </DropdownMenuItem>
-          )) :
+          {chatHistoryItems.length !== 0 ? (
+            sortedHistory.map((item) => (
+              <DropdownMenuItem
+                key={item.thread_id}
+                onClick={() => onSelectChat(item)}
+                className="flex items-center w-full px-2 py-1 space-x-2 cursor-pointer"
+              >
+                <span className="block w-full truncate">
+                  {item.title !== "No title available" ? item.title : "Untitled Chat"}
+                </span>
+              </DropdownMenuItem>
+            ))
+          ) : (
             <DropdownMenuItem className="flex items-center w-full px-2 py-1 space-x-2 cursor-pointer" disabled>
               <span className="block w-full truncate">Not available</span>
             </DropdownMenuItem>
-          }
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

@@ -86,7 +86,7 @@ export default function Course(props: CourseProps) {
   };
 
   const renderContent = () => (
-    <div className="flex flex-col transition-shadow duration-200 ease-in-out bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg ">
+    <div className="flex flex-col transition-shadow duration-200 ease-in-out bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
       {/* Header section with background gradient and reviews */}
       <div className="flex flex-col items-end justify-between h-40 p-2 w-80 bg-gradient-to-tr from-appSecondary to-appFadedPrimary rounded-tl-xl rounded-tr-xl">
         <div className="flex flex-col items-center justify-between">

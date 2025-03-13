@@ -4,7 +4,7 @@ import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
-import ChatBubble from "./ChatBubble";
+import { ChatBubble } from "./ChatBubble";
 import { aiOrbLogo } from "@/assets";
 import {
   PanelLeft,
@@ -34,7 +34,9 @@ import {
   updateLastMessage
 } from "@/redux/mainChatbot/mainChatbotSlice";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
-import { CHATBOT_MODELS } from "../../../constants/enums/chatbotModels";
+import { CHATBOT_MODELS } from "@/constants/enums/chatbotModels";
+import { AI_AGENT } from "@/constants/enums/aiAgents";
+import { FaSpinner, FaSquare } from "rocketicons/fa6";
 interface ChatbotModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -46,7 +48,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const [isMinimized, setIsMinimized] = useState(true);
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
-  const [isLoadingResponse, setIsLoadingResponse] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
@@ -55,6 +57,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
 
   const [modelChangeOpen, setModelChangeOpen] = useState(false);
   const [chatModel, setChatModel] = useState(CHATBOT_MODELS[0].value);
+  // Handle data stream signals
+  const [isLoadingResponse, setIsLoadingResponse] = useState(false); // When waiting for response
+  const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   useEffect(() => {
     fetchChatHistory();
@@ -88,11 +94,13 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   // Fetch chat history on component mount
   const fetchChatHistory = async () => {
     if (!userId) return;
+    setIsLoadingHistory(true);
 
     try {
       const response = await aiAPI.getThreadsHistory(userId);
 
       setChatHistoryItems(response.data);
+      setIsLoadingHistory(false);
       // If the user is new, show the welcome message
       if (isUserInactive() || response.data.length === 0) {
         dispatch(clearChatDetail());
@@ -101,7 +109,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         handleGetChatDetail(response.data[response.data.length - 1]);
       }
     } catch (error) {
+      setIsLoadingHistory(false);
       console.error(error);
+    } finally {
+      setIsLoadingHistory(false);
     }
   };
 
@@ -116,6 +127,9 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     updateLastVisit();
 
     const trimmedInput = input.trim();
+    // Initialize abort controller
+    const controller = new AbortController();
+    setAbortController(controller);
 
     let isNewChat: boolean = false;
     if (chatDetail?.thread_id === null) {
@@ -144,18 +158,29 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     setIsLoadingResponse(true);
 
     try {
-      const responseStream = await aiAPI.postMainChatbotMessageStream(
+      const responseStream = await aiAPI.postChatbotMessageStream(
+        AI_AGENT.GLOBAL_CHATBOT,
         trimmedInput,
         chatModel,
         userId,
+        controller,
         chatDetail?.thread_id
       );
 
-      setIsLoadingResponse(false);
       updateLastVisit();
+      setIsStreaming(true);
 
       let accumulatedContent = ""; // Store streamed tokens
+      let firstChunkReceived = false;
+
+      if (!responseStream) return;
+
       for await (const chunk of responseStream) {
+        if (!firstChunkReceived) {
+          firstChunkReceived = true;
+          setIsLoadingResponse(false);
+        }
+
         if (chunk.type === "token") {
           accumulatedContent += chunk.content;
           dispatch(updateLastMessageContent(accumulatedContent)); // Update AI message progressively
@@ -177,16 +202,18 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           }
 
           if (isNewChat) {
-            await aiAPI.postGenerateTitle(trimmedInput, userId, responseData.thread_id);
+            await aiAPI.postGenerateTitle(AI_AGENT.GLOBAL_CHATBOT, trimmedInput, userId, responseData.thread_id);
             // Update the new chat history
             fetchChatHistory();
           }
         }
       }
     } catch (error) {
+      setIsLoadingResponse(false);
       console.error(error);
     } finally {
       setIsLoadingResponse(false);
+      setIsStreaming(false);
     }
   };
 
@@ -204,6 +231,14 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   };
 
   if (!isOpen) return null;
+
+  const handleStopStreaming = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+      setIsStreaming(false);
+    }
+  };
 
   const renderWelcomeChat = () => {
     return (
@@ -223,7 +258,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     return (
       <div
         id="action-buttons"
-        className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration- ${isSidebarOpen ? "ml-64" : "ml-0"}`}
+        className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration- ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
       >
         <div className="flex items-center">
           {!isMinimized && (
@@ -338,6 +373,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           {!isMinimized && (
             <ChatSidebar
               isOpen={isSidebarOpen}
+              isLoading={isLoadingHistory}
               chatHistoryItems={chatHistoryItems}
               onSelectChat={handleGetChatDetail}
             />
@@ -345,7 +381,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
 
           <div
             id="chat-content"
-            className={`relative flex flex-col flex-grow ${isMinimized ? "px-4 pb-6" : "px-16 pb-12"} pt-2 h-full transition-all duration-300 ${isSidebarOpen ? "ml-64" : "ml-0"}`}
+            className={`relative flex flex-col flex-grow ${isMinimized ? "px-2 pb-6 sm:px-4 sm:pb-6" : "px-2 pb-6 sm:px-16 sm:pb-12"} pt-2 h-full transition-all duration-300 ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
           >
             {/* Chat Content or Welcome Message */}
             <div id="chat-messages" className="flex flex-col flex-grow max-h-screen overflow-scroll">
@@ -367,14 +403,28 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
                     handleSendMessageStream();
                   }
                 }}
+                disabled={isLoadingResponse || isStreaming} // Disable input when submitting or streaming
               />
 
-              <button
-                className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
-                onClick={handleSendMessageStream}
-              >
-                <ArrowUp className="w-11 h-11" />
-              </button>
+              {isLoadingResponse ? (
+                <div className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm cursor-not-allowed h-11 w-11 bg-gradient-to-tr from-appAIFrom/80 to-appAITo/80">
+                  <FaSpinner className="inline-block cursor-not-allowed icon-sm animate-spin icon-white" />
+                </div>
+              ) : isStreaming ? (
+                <button
+                  onClick={handleStopStreaming} // Stop streaming on click
+                  className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
+                >
+                  <FaSquare className="w-4 h-4 icon-white" />
+                </button>
+              ) : (
+                <button
+                  className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
+                  onClick={handleSendMessageStream}
+                >
+                  <ArrowUp className="w-11 h-11" />
+                </button>
+              )}
             </div>
           </div>
         </div>

@@ -19,25 +19,34 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineSparkles } from "rocketicons/hi2";
 import { renderWelcomeChat, ProblemChatInput } from "./index";
-import ChatBubble from "@/features/MainChatBot/components/ChatBubble";
+import { ChatBubble } from "@/features/MainChatBot/components";
 import { ChatHistoryDropDown } from "./ChatHistoryDropDown";
+import { AI_AGENT } from "@/constants";
+import { ProblemType } from "@/types/ProblemType";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 interface RenderAIAssistantProps {
   isAIAssistantOpen: boolean;
   setIsAIAssistantOpen: (isAIAssistantOpen: boolean) => void;
+  problem: ProblemType | null;
 }
 
-export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: RenderAIAssistantProps) => {
+export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, problem }: RenderAIAssistantProps) => {
   const [input, setInput] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
-  const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
   const [chatModel, setChatModel] = useState("llama3.2");
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
   const dispatch = useDispatch();
   const chatDetail = useSelector((state: RootState) => state.mainChatbot.chatDetail);
+  const toast = useToast();
+  // Handle data stream signals
+  const [isLoadingResponse, setIsLoadingResponse] = useState(false); // When waiting for response
+  const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
+  const [abortController, setAbortController] = useState<AbortController | null>(null);
 
   useEffect(() => {
     fetchChatHistory();
@@ -73,8 +82,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
         className="flex flex-col flex-grow max-h-full px-2 py-12 space-y-4 overflow-y-auto"
       >
         {chatDetail?.messages.map((message, index) => <ChatBubble variant="problemAI" key={index} message={message} />)}
-        {isLoadingResponse && <ChatBubble isLoadingResponse />}
-        {/* <div ref={chatEndRef} /> */}
+        {isLoadingResponse && <ChatBubble isLoadingResponse={isLoadingResponse} />}
       </div>
     );
   };
@@ -84,7 +92,8 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
     if (!userId) return;
 
     try {
-      const response = await aiAPI.getThreadsHistory(userId);
+      if (!problem) return;
+      const response = await aiAPI.getProblemThreadsHistory(userId, problem.problemId);
 
       setChatHistoryItems(response.data);
       // If the user is new, show the welcome message
@@ -104,12 +113,34 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
     setInput("");
   };
 
+  const handleStopStreaming = () => {
+    if (abortController) {
+      abortController.abort();
+      setAbortController(null);
+      setIsStreaming(false);
+    }
+  };
+
   const handleSendMessageStream = async () => {
-    if (!input.trim() || !userId) return;
+    if (!input.trim()) {
+      showToastError({ toast: toast.toast, message: "Please enter a message" });
+      return;
+    }
+    if (!userId) {
+      showToastError({ toast: toast.toast, message: "Please login to continue" });
+      return;
+    }
+
+    const formatAIMessageInputContent = (problemDescription: string, problemId: string, userInput: string) => {
+      return `Problem: ${problemDescription} Problem_id: ${problemId} Question: ${userInput}`;
+    };
 
     updateLastVisit();
 
     const trimmedInput = input.trim();
+    // Initialize abort controller
+    const controller = new AbortController();
+    setAbortController(controller);
 
     let isNewChat: boolean = false;
     if (chatDetail?.thread_id === null) {
@@ -138,18 +169,33 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
     setIsLoadingResponse(true);
 
     try {
-      const responseStream = await aiAPI.postMainChatbotMessageStream(
-        trimmedInput,
+      if (!problem) return;
+      const formattedInput = formatAIMessageInputContent(problem?.description, problem?.problemId, input);
+
+      // Has to format input with the following: "Problem: <problem> Question: <question>"
+      const responseStream = await aiAPI.postChatbotMessageStream(
+        AI_AGENT.PROBLEM_CHATBOT,
+        formattedInput,
         chatModel,
         userId,
+        controller,
         chatDetail?.thread_id
       );
 
-      setIsLoadingResponse(false);
       updateLastVisit();
+      setIsStreaming(true);
 
       let accumulatedContent = ""; // Store streamed tokens
+      let firstChunkReceived = false;
+
+      if (!responseStream) return;
+
       for await (const chunk of responseStream) {
+        if (!firstChunkReceived) {
+          firstChunkReceived = true;
+          setIsLoadingResponse(false);
+        }
+
         if (chunk.type === "token") {
           accumulatedContent += chunk.content;
           dispatch(updateLastMessageContent(accumulatedContent)); // Update AI message progressively
@@ -169,9 +215,16 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
           if (chatDetail?.thread_id === null) {
             dispatch(updateThreadId(responseData.thread_id));
           }
-
+          // TO DO: Add new title generation. Its returing error
           if (isNewChat) {
-            await aiAPI.postGenerateTitle(trimmedInput, userId, responseData.thread_id);
+            const inputWithMoreContext = problem.problemName + " " + trimmedInput;
+            await aiAPI.postGenerateTitle(
+              AI_AGENT.PROBLEM_CHATBOT,
+              inputWithMoreContext, // Dont need the problem description
+              userId,
+              responseData.thread_id,
+              problem.problemId
+            );
             // Update the new chat history
             fetchChatHistory();
           }
@@ -179,102 +232,18 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen }: R
       }
     } catch (error) {
       setIsLoadingResponse(false);
-      console.error(error);
+      console.error("Error in sending message", error);
     } finally {
       setIsLoadingResponse(false);
-    }
-  };
-
-  const handleSendMessageStatic = async () => {
-    if (!input.trim() || !userId) return;
-
-    updateLastVisit();
-
-    const trimmedInput = input.trim();
-
-    let isNewChat: boolean = false;
-    if (chatDetail?.thread_id === null) {
-      isNewChat = true;
-    }
-
-    // Used to set the user message in the chat
-    const userMessage: ChatbotMessageContentType = {
-      type: "user",
-      content: trimmedInput,
-      timestamp: new Date().toISOString(),
-      metadata: { model: chatModel }
-    };
-
-    const aiMessagePlaceholder: ChatbotMessageContentType = {
-      type: "ai",
-      content: "",
-      timestamp: new Date().toISOString(),
-      metadata: { model: chatModel }
-    };
-
-    dispatch(addMessage(userMessage));
-    dispatch(addMessage(aiMessagePlaceholder)); // Add AI placeholder message
-
-    setInput("");
-    setIsLoadingResponse(true);
-
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 2000)); // Simulate AI response wait time
-
-      const staticResponse = `
-Hello, here is some **code**
-\`\`\`python
-def hello_world():
-  print("Hello, World!")
-\`\`\`
-HIHIHI
-[Click here to view the problem](http://localhost:3000/problems/123)
-More code
-\`\`\`python
-def hello_world():
-  print("Hello, World!")
-\`\`\`
-\`\`\`java
-public class HelloWorld {
-  public static void main(String[] args) {
-    System.out.println("Hello, World!");
-  }
-}
-\`\`\`
-
-- Here is a list item
-- Another list item
-- Yet another list item
-
-      `;
-      const finalMessage: ChatbotMessageContentType = {
-        type: "ai",
-        content: staticResponse,
-        timestamp: new Date().toISOString(),
-        metadata: { model: chatModel }
-      };
-
-      dispatch(updateLastMessage(finalMessage)); // Replace placeholder with static response
-
-      if (chatDetail?.thread_id === null) {
-        dispatch(updateThreadId("static-thread-id"));
-      }
-
-      if (isNewChat) {
-        fetchChatHistory();
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoadingResponse(false);
+      setIsStreaming(false);
     }
   };
 
   const handleGetChatDetail = async (chatItem: ChatbotHistoryItemType) => {
-    if (!chatItem.thread_id || !userId) return;
+    if (!chatItem.thread_id || !userId || !problem) return;
 
     try {
-      const response = await aiAPI.getThreadDetails(userId, chatItem.thread_id);
+      const response = await aiAPI.getProblemThreadDetails(userId, problem?.problemId, chatItem.thread_id);
 
       updateLastVisit();
       dispatch(setChatDetail(response.data));
@@ -312,8 +281,11 @@ public class HelloWorld {
         setInput={setInput}
         chatModel={chatModel}
         setChatModel={setChatModel}
-        handleSendMessage={handleSendMessageStatic}
+        handleSendMessage={handleSendMessageStream}
         textAreaRef={textAreaRef}
+        isLoading={isLoadingResponse}
+        isSubmitting={isStreaming}
+        handleCancel={handleStopStreaming}
       />
     </div>
   );

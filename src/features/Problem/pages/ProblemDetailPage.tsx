@@ -74,7 +74,7 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-
+      // console.log("Problem detail", problemDetail);
       if (problemDetail) {
         setProblemDetail(problemDetail);
         document.title = `${problemDetail.problemName} | Intellab`;
@@ -281,7 +281,13 @@ export const ProblemDetail = () => {
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-          <ResizablePanel defaultSize={40} minSize={10} id="description" className="bg-white rounded-t-lg">
+          <ResizablePanel
+            order={1}
+            defaultSize={isAIAssistantOpen ? 30 : 40}
+            minSize={10}
+            id="description"
+            className="bg-white rounded-t-lg"
+          >
             <RenderDescTabs
               problemDetail={problemDetail}
               courseId={courseId}
@@ -296,13 +302,14 @@ export const ProblemDetail = () => {
 
           {/* Middle Panel: Playground and test case */}
           <ResizablePanel
-            defaultSize={60}
+            order={2}
+            defaultSize={isAIAssistantOpen ? 50 : 60}
             minSize={30}
             id="playground"
             className="overflow-y-auto bg-white rounded-t-lg"
           >
             <ResizablePanelGroup direction="vertical" className="h-full">
-              <ResizablePanel defaultSize={60} minSize={40} className="bg-white">
+              <ResizablePanel order={3} defaultSize={60} minSize={40} className="bg-white">
                 <RenderPGTabs
                   setLanguagePackage={(langJudge0, code) => {
                     setLanguage(langJudge0.name);
@@ -313,7 +320,13 @@ export const ProblemDetail = () => {
 
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
 
-              <ResizablePanel id="test-cases" defaultSize={40} minSize={20} className="overflow-y-auto bg-white">
+              <ResizablePanel
+                order={4}
+                id="test-cases"
+                defaultSize={40}
+                minSize={20}
+                className="overflow-y-auto bg-white"
+              >
                 <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
               </ResizablePanel>
             </ResizablePanelGroup>
@@ -324,12 +337,17 @@ export const ProblemDetail = () => {
           {/* Right Panel: AI Assistant */}
           {isAIAssistantOpen && (
             <ResizablePanel
-              defaultSize={30}
+              order={5}
+              defaultSize={20}
               minSize={20}
               id="ai-assistant"
               className="overflow-y-auto bg-white rounded-t-lg"
             >
-              <RenderAIAssistant isAIAssistantOpen={true} setIsAIAssistantOpen={setIsAIAssistantOpen} />
+              <RenderAIAssistant
+                isAIAssistantOpen={true}
+                setIsAIAssistantOpen={setIsAIAssistantOpen}
+                problem={problemDetail}
+              />
             </ResizablePanel>
           )}
         </ResizablePanelGroup>
@@ -346,13 +364,15 @@ export const ProblemDetail = () => {
             All Problems
           </Button>
 
-          <Button
-            className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
-            onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
-          >
-            <Sparkle className="inline-block w-4 h-4" />
-            Ask AI
-          </Button>
+          {userId && (
+            <Button
+              className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
+              onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
+            >
+              <Sparkle className="inline-block w-4 h-4" />
+              Ask AI
+            </Button>
+          )}
         </div>
 
         <div className="flex space-x-2">

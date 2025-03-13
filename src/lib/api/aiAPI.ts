@@ -1,7 +1,9 @@
 import axios from "axios";
 import { ChatbotMessageInputType } from "@/features/MainChatBot/types/ChatbotMessageType";
-
-const BASE_URL = "http://localhost:8006"; // Wait for AI service to connect with API gateway
+import { AI_AGENT } from "@/constants";
+import { ChatbotHistoryItemType, ChatTitleGeneratorPayload } from "@/features/MainChatBot/types";
+import { removeChatTitleQuotes } from "@/utils";
+const BASE_URL = "http://localhost:8006/ai"; // Wait for AI service to connect with API gateway
 
 export const aiAPI = {
   // *********** //
@@ -12,58 +14,82 @@ export const aiAPI = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
       modal: "groq-llama-3.3-70b"
     };
-    const response = await axios.post(`${BASE_URL}/summarize-assistant/invoke`, bodyParams);
+    const response = await axios.post(`${BASE_URL}/${AI_AGENT.SUMMARIZE_AGENT}/invoke`, bodyParams);
     return response.data;
   },
 
   getPDFSummaryFile: async () => {
-    const response = await axios.get(`${BASE_URL}/pdf-summarization`, {
+    const response = await axios.get(`${BASE_URL}/${AI_AGENT.PDF_SUMMARY}`, {
       responseType: "arraybuffer" // Important for binary data like PDFs
     });
     return response;
   },
 
-  // ************ //
-  // MAIN CHATBOT //
-  // ************ //
-  postMainChatbotMessage: async (
+  // ************************************************//
+  //  AI MAIN CHATBOT/PROBLEM ASSISTANT - REQUESTS   //
+  // ************************************************//
+  postChatbotMessage: async (
+    agent: "global_chatbot" | "problem_chatbot",
     message: string,
     model: string = "llama3.2",
     userId: string,
-    thread_id?: string | null
+    threadId?: string | null
   ) => {
     const bodyParams: ChatbotMessageInputType = {
       message: message,
       model: model,
       user_id: userId
     };
-    if (thread_id) {
-      bodyParams.thread_id = thread_id;
+    if (threadId) {
+      bodyParams.thread_id = threadId;
     }
-    const response = await axios.post(`${BASE_URL}/global_chatbot/invoke`, bodyParams);
+    const response = await axios.post(`${BASE_URL}/invoke/${agent}`, bodyParams);
     return response.data;
   },
-  postGenerateTitle: async (message: string, userId: string, threadId: string) => {
-    const response = await axios.post(`${BASE_URL}/title_generator/invoke`, {
+  postGenerateTitle: async (
+    agent: "global_chatbot" | "problem_chatbot",
+    message: string,
+    userId: string,
+    threadId: string,
+
+    problemId?: string
+  ) => {
+    const bodyParams: ChatTitleGeneratorPayload = {
       message: message,
       user_id: userId,
       thread_id: threadId
-    });
+    };
+
+    if (agent === "problem_chatbot") {
+      if (!problemId) {
+        throw new Error("Problem ID is required for problem chatbot.");
+      }
+      bodyParams.problem_title = "1"; // 1 means its calling the title generator for problem chatbot
+      bodyParams.problem_id = problemId;
+    }
+
+    const response = await axios.post(`${BASE_URL}/invoke/${AI_AGENT.TITLE_GENERATOR}`, bodyParams);
     return response.data;
   },
   getThreadsHistory: async (userId: string) => {
-    const response = await axios.get(`${BASE_URL}/conversations/${userId}/threads`);
+    const response = await axios.get(`${BASE_URL}/conversation/${userId}/threads`);
+    // Remove quotes from chat title
+    response.data.data.map((thread: ChatbotHistoryItemType) => {
+      thread.title = removeChatTitleQuotes(thread.title);
+    });
     return response.data;
   },
   getThreadDetails: async (userId: string, threadId: string) => {
-    const response = await axios.get(`${BASE_URL}/conversations/${userId}/thread/${threadId}`);
+    const response = await axios.get(`${BASE_URL}/conversation/${userId}/thread/${threadId}`);
     return response.data;
   },
-  // AI CHATBOT STREAMING DATA - SSE
-  postMainChatbotMessageStream: async (
+  // AI MAIN CHATBOT/PROBLEM ASSISTANT STREAMING DATA - SSE
+  postChatbotMessageStream: async (
+    agent: "global_chatbot" | "problem_chatbot",
     message: string,
     model: string = "llama3.2",
     userId: string,
+    controller: AbortController, // Added controller parameter
     thread_id?: string | null
   ) => {
     const bodyParams: ChatbotMessageInputType = {
@@ -75,60 +101,82 @@ export const aiAPI = {
       bodyParams.thread_id = thread_id;
     }
 
-    // Use Fetch API for SSE handling
-    const response = await fetch(`${BASE_URL}/global_chatbot/stream`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(bodyParams)
-    });
+    try {
+      const response = await fetch(`${BASE_URL}/stream/${agent}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyParams),
+        signal: controller.signal // Attach signal to fetch request
+      });
 
-    if (!response.body) {
-      throw new Error("Failed to establish connection for streaming.");
-    }
+      if (!response.body) {
+        throw new Error("Failed to establish connection for streaming.");
+      }
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder(); // Decode from binary to text
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
 
-    async function* streamProcessor() {
-      let buffer = "";
+      async function* streamProcessor() {
+        let buffer = "";
 
-      while (true) {
-        const { value, done } = await reader.read();
-        if (done) break;
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
 
-        buffer += decoder.decode(value, { stream: true });
+          buffer += decoder.decode(value, { stream: true });
 
-        // Process only complete SSE events
-        const events = buffer.split("\n\n"); // SSE events are separated by double newlines
-        buffer = events.pop() ?? ""; // Keep the last incomplete event for next iteration
+          const events = buffer.split("\n\n");
+          buffer = events.pop() ?? "";
 
-        for (const event of events) {
-          if (event.startsWith("data:")) {
-            try {
-              const jsonStr = event.replace(/^data:\s*/, ""); // Remove 'data:' prefix
-              if (jsonStr === "[DONE]") break;
-              yield JSON.parse(jsonStr); // Parse the JSON object
-            } catch (error) {
-              console.log(error);
-              console.error("Failed to parse AI response chunk:", event);
+          for (const event of events) {
+            if (event.startsWith("data:")) {
+              try {
+                const jsonStr = event.replace(/^data:\s*/, "");
+                if (jsonStr === "[DONE]") {
+                  reader.cancel();
+                  return;
+                }
+                yield JSON.parse(jsonStr);
+              } catch (error) {
+                console.log("Failed to parse AI response chunk:", error);
+                console.error("Failed to parse AI response chunk with event:", event);
+              }
             }
+          }
+        }
+
+        if (buffer.startsWith("data:")) {
+          try {
+            yield JSON.parse(buffer.replace(/^data:\s*/, ""));
+          } catch (error) {
+            console.log("Failed to parse final AI response chunk:", error);
+            console.error("Failed to parse final AI response chunk at buffer:", buffer);
           }
         }
       }
 
-      // Handle any remaining buffer
-      if (buffer.startsWith("data:")) {
-        try {
-          yield JSON.parse(buffer.replace(/^data:\s*/, ""));
-        } catch (error) {
-          console.log(error);
-          console.error("Failed to parse final AI response chunk:", buffer);
-        }
-      }
+      return streamProcessor();
+    } catch (error) {
+      console.log("Failed to establish connection for streaming:", error);
+      controller.abort();
+      return;
     }
+  },
 
-    return streamProcessor();
+  // GET PROBLEM CHATBOT HISTORY
+  getProblemThreadsHistory: async (userId: string, problemId: string) => {
+    const response = await axios.get(`${BASE_URL}/conversation/${userId}/problem/${problemId}/threads`);
+    // Remove quotes from chat title
+    response.data.data.map((thread: ChatbotHistoryItemType) => {
+      thread.title = removeChatTitleQuotes(thread.title);
+    });
+    return response.data;
+  },
+  // GET PROBLEM CHATBOT THREAD DETAILS
+  getProblemThreadDetails: async (userId: string, problemId: string, threadId: string) => {
+    const response = await axios.get(`${BASE_URL}/conversation/${userId}/problem/${problemId}/thread/${threadId}`);
+    return response.data;
   }
 };

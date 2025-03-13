@@ -1,7 +1,7 @@
 import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown } from "rocketicons/md";
 import { useState } from "react";
 import { Problem } from "../types/resonseType";
-import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { useNavigate } from "react-router-dom";
 
 type ProblemListItemProps = {
@@ -40,7 +40,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
     <div className="overflow-x-auto">
       <table className="min-w-full table-auto">
         <thead className="border-b">
-          <tr>
+          <tr className="text-xs sm:text-base">
             {["Status", "Title", "Hints", "Level", "Category"].map((header, index) => (
               <th
                 key={index}
@@ -69,7 +69,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
           {sortedData.map((row, index) => (
             <tr
               key={index}
-              className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+              className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
               onClick={() => handleProblemListItemClicked(row.problemId)}
             >
               <td className="w-12 py-2 pl-8 text-center">

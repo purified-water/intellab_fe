@@ -192,7 +192,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
       <div>
         <textarea
           placeholder="Type your comment..."
-          className="w-full text-sm px-4 py-2 bg-white border rounded-lg resize-none max-h-[300px] overflow-y-scroll border-gray4/60"
+          className="w-full text-sm px-4 py-2 bg-white border rounded-lg resize-none max-h-[300px] overflow-y-scroll border-gray4/60 focus:outline-none"
           rows={1}
           onInput={(e) => {
             e.currentTarget.style.height = "auto";
