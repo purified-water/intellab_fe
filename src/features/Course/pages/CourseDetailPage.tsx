@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
-import { courseAPI } from "@/lib/api";
+import { courseAPI, paymentAPI } from "@/lib/api";
 import { ICourse, ILesson, IEnrolledLesson } from "../types";
 import { Spinner, Pagination } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
@@ -12,6 +12,7 @@ import { RootState } from "@/redux/rootReducer";
 import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
+import { API_RESPONSE_CODE } from "@/constants";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -62,6 +63,20 @@ export const CourseDetailPage = () => {
     // Set document title
     document.title = `${result.courseName} | Intellab`;
     setLoading(false);
+  };
+
+  const createCoursePaymentAPI = async () => {
+    try {
+      const response = await paymentAPI.createCoursePayment(course!.courseId);
+      const { code, message, result } = response;
+      if (code == API_RESPONSE_CODE.SUCCESS && result) {
+        window.location.href = result.paymentUrl!;
+      } else {
+        showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
+    }
   };
 
   const getCourseLessons = async (page: number) => {
@@ -173,6 +188,14 @@ export const CourseDetailPage = () => {
     navigate(`/certificate/${course?.certificateId}`);
   };
 
+  const handleBuyClick = async () => {
+    if (isAuthenticated) {
+      await createCoursePaymentAPI();
+    } else {
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to buy the course" });
+    }
+  };
+
   const renderHeader = () => {
     return (
       course && (
@@ -181,6 +204,7 @@ export const CourseDetailPage = () => {
           onEnroll={handleEnrollClick}
           onContinue={handleContinueClick}
           onViewCertificate={handleViewCertificateClick}
+          onBuy={handleBuyClick}
         />
       )
     );

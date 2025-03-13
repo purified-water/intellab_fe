@@ -1,5 +1,5 @@
 import { SendSubmissionType } from "@/features/Problem/types/SubmissionType";
-import { formatDateTime } from "@/utils";
+import { shortenDate } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
@@ -52,7 +52,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
                 </div>
               ))}
           </div>
-          <p className="text-gray2">Submitted on {formatDateTime(submission?.submitDate ?? "")}</p>
+          <p className="text-gray2">Submitted on {shortenDate(submission?.submitDate)}</p>
         </div>
       );
     };

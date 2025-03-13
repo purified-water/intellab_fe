@@ -3,10 +3,13 @@ import { ICourse } from "@/features/Course/types";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
-import { courseAPI } from "@/lib/api";
+import { courseAPI, paymentAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { showToastError } from "@/utils/toastUtils";
+import { useToast } from "@/hooks/use-toast";
+import { API_RESPONSE_CODE } from "@/constants";
 
 interface CourseSectionCardProps {
   course: ICourse;
@@ -22,6 +25,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
 
   const accessToken = getAccessToken();
   const userId = getUserIdFromLocalStorage();
+  const toast = useToast();
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -34,17 +38,35 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     setInternalLoading(false);
   };
 
-  const handleCourseClicked = () => {
+  const createCoursePaymentAPI = async () => {
+    try {
+      const response = await paymentAPI.createCoursePayment(course.courseId);
+      const { code, message, result } = response;
+      if (code == API_RESPONSE_CODE.SUCCESS && result) {
+        window.location.href = result.paymentUrl!;
+      } else {
+        showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
+    }
+  };
+
+  const handleTitleClick = () => {
+    navigate(`/course/${detailCourse?.courseId}`);
+  };
+
+  const handleCourseClicked = async () => {
     if (isAuthenticated) {
       if (detailCourse)
         if (detailCourse.userEnrolled) {
           navigate(`/lesson/${detailCourse?.latestLessonId}`);
+        } else if (detailCourse.price > 0) {
+          await createCoursePaymentAPI();
         }
     } else {
       navigate(`/course/${course.courseId}`);
     }
-    // User not logged in can still view course detail
-    navigate(`/course/${course.courseId}`);
   };
 
   useEffect(() => {
@@ -53,33 +75,48 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     }
   }, [skeletonLoading]);
 
-  const renderCourseDetail = () => (
-    <div
-      className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg cursor-pointer hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0"
-      onClick={handleCourseClicked}
-    >
-      <div>
-        <h3 className="text-xl font-bold line-clamp-2">{detailCourse?.courseName}</h3>
-        <p
-          className={`text-sm mb-2 ${detailCourse?.courseName && detailCourse.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
-        >
-          {detailCourse?.description}
-        </p>
-        {detailCourse?.userEnrolled && (
-          <ProgressBar progress={detailCourse!.progressPercent} showText={false} height={5} />
+  const buttonText = (courseObject: ICourse) => {
+    let buttonText = null;
+    if (courseObject?.userEnrolled) {
+      buttonText = "Continue";
+    } else if (courseObject.price > 0) {
+      buttonText = "Buy";
+    } else {
+      buttonText = "Enroll";
+    }
+    return buttonText;
+  };
+
+  const renderCourseDetail = () => {
+    return (
+      <div className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+        <div>
+          <h3 className="text-xl font-bold line-clamp-2 cursor-pointer" onClick={handleTitleClick}>
+            {detailCourse?.courseName}
+          </h3>
+          <p
+            className={`text-sm mb-2 ${detailCourse?.courseName && detailCourse.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
+          >
+            {detailCourse?.description}
+          </p>
+          {detailCourse?.userEnrolled && (
+            <ProgressBar progress={detailCourse!.progressPercent} showText={false} height={5} />
+          )}
+        </div>
+        {detailCourse && (
+          <div className="flex justify-between mt-2">
+            <button
+              className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
+              onClick={handleCourseClicked}
+            >
+              {buttonText(detailCourse!)}
+            </button>
+            <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
+          </div>
         )}
       </div>
-      <div className="flex justify-between mt-2">
-        <button
-          className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
-          onClick={handleCourseClicked}
-        >
-          {detailCourse?.userEnrolled ? "Continue" : "Enroll"}
-        </button>
-        <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderDetail = () => (
     <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
@@ -96,7 +133,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
           className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
           onClick={handleCourseClicked}
         >
-          {course?.userEnrolled ? "Continue" : "Enroll"}
+          {buttonText(course)}
         </button>
         <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
       </div>

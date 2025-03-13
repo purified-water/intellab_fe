@@ -1,7 +1,7 @@
 import { SendSubmissionType } from "@/features/Problem/types/SubmissionType";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { formatDateTime } from "@/utils";
+import { shortenDate } from "@/utils";
 
 type ViewSubmissionItemProps = {
   submission: SendSubmissionType | null;
@@ -46,7 +46,7 @@ export function ViewAllSubmissionItem(props: ViewSubmissionItemProps) {
   const renderContent = () => {
     return (
       <tr className={`${isOdd && "bg-gray5"} cursor-pointer hover:opacity-80`} onClick={handleSubmissionClick}>
-        <td className="py-3 px-4">{formatDateTime(submission?.submitDate ?? "")}</td>
+        <td className="py-3 px-4">{shortenDate(submission?.submitDate)}</td>
         <td className="py-3 px-4 text-appPrimary font-bold">{submission?.problem.problemName}</td>
         <td className={`py-3 px-4 font-bold ${submission?.isSolved ? "text-appEasy" : "text-appHard"}`}>
           {submission?.isSolved ? "Accepted" : "Wrong Answer"}

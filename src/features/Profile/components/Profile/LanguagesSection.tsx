@@ -40,7 +40,7 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
 
     return skeletons.map((_, index) => (
-      <div key={index} className="flex items-center justify-between pt-4">
+      <div key={index} className="flex items-center justify-between pt-3">
         <Skeleton className="h-6 w-2/3" />
         <Skeleton className="h-6 w-1/4" />
       </div>
@@ -52,9 +52,9 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
 
     const renderLanguage = (language: { name: string; solved: number }) => {
       return (
-        <div className="flex items-center justify-between pt-4">
-          <div className="text-lg font-normal text-black1">{language.name}</div>
-          <div className="text-lg font-normal text-black1">{language.solved}</div>
+        <div className="flex items-center justify-between pt-3 text-base text-black1">
+          <p> {language.name}</p>
+          <p>{language.solved}</p>
         </div>
       );
     };
@@ -69,7 +69,7 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
   };
 
   const renderEmpty = () => {
-    return <div className="text-lg font-normal text-gray3 mt-4">No data available</div>;
+    return <div className="text-base font-normal text-gray3 mt-4">No data available</div>;
   };
 
   let content = null;
@@ -85,9 +85,9 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
 
   return (
     <>
-      <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
+      <div className="w-full my-4 border-t-2 border-gray5"></div>
       <div className="flex flex-col min-w-full">
-        <div className="text-2xl font-semibold text-black1">Languages</div>
+        <div className="text-xl font-semibold text-black1">Languages</div>
         {content}
       </div>
     </>

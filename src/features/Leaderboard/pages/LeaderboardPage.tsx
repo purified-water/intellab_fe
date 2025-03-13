@@ -184,16 +184,24 @@ export function LeaderboardPage() {
     );
   };
 
+  const rendrerPodiums = () => {
+    return (
+      <div className="flex justify-center space-x-7 items-end">
+        <PodiumItem item={SAMPLE_DATA[1]} height={110} loading={loading} />
+        <PodiumItem item={SAMPLE_DATA[0]} color="gold" height={130} loading={loading} />
+        <PodiumItem item={SAMPLE_DATA[2]} color="bronze" loading={loading} />
+      </div>
+    );
+  };
+
   return (
     <div className="min-h-screen py-6">
-      <div className="container mx-auto space-y-8">
+      <div className="container mx-auto ">
         {renderTitle()}
-        <div className="flex justify-center space-x-7 items-end">
-          <PodiumItem item={SAMPLE_DATA[1]} height={110} loading={loading} />
-          <PodiumItem item={SAMPLE_DATA[0]} color="gold" height={130} loading={loading} />
-          <PodiumItem item={SAMPLE_DATA[2]} color="bronze" loading={loading} />
+        <div className="justify-items-center space-y-8">
+          {rendrerPodiums()}
+          <LeaderboardList data={SAMPLE_DATA} />
         </div>
-        <LeaderboardList data={SAMPLE_DATA} />
       </div>
     </div>
   );
