@@ -6,3 +6,4 @@ export * from "./userApi";
 export * from "./leaderboardAPI";
 export * from "./aiAPI";
 export * from "./certificateApi";
+export * from "./paymentAPI";

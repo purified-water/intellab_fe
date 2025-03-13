@@ -5,10 +5,12 @@ import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { courseAPI } from "@/lib/api";
+import { courseAPI, paymentAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-
+import { showToastError } from "@/utils/toastUtils";
+import { useToast } from "@/hooks/use-toast";
+import { API_RESPONSE_CODE } from "@/constants";
 interface CourseProps {
   course: ICourse;
   skeletonLoading?: boolean;
@@ -21,6 +23,7 @@ export default function Course(props: CourseProps) {
   const [internalLoading, setInternalLoading] = useState(false);
 
   const navigate = useNavigate();
+  const toast = useToast();
 
   const userId = getUserIdFromLocalStorage();
 
@@ -35,23 +38,39 @@ export default function Course(props: CourseProps) {
     setInternalLoading(false);
   };
 
-  useEffect(() => {
-    if (!skeletonLoading) {
-      getCourseDetail();
+  const createCoursePaymentAPI = async () => {
+    try {
+      const response = await paymentAPI.createCoursePayment(course.courseId);
+      const { code, message, result } = response;
+      if (code == API_RESPONSE_CODE.SUCCESS && result) {
+        window.location.href = result.paymentUrl!;
+      } else {
+        showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
     }
-  }, [skeletonLoading]);
+  };
 
   const handleTitleClick = () => {
     navigate(`/course/${detailCourse?.courseId}`);
   };
 
-  const handleButtonClick = (id: string) => {
-    if (isAuthenticated && detailCourse?.userEnrolled) {
-      if (isFinished) {
-        navigate(`/certificate/${detailCourse.certificateId}`);
+  const handleButtonClick = async (id: string) => {
+    if (isAuthenticated) {
+      if (detailCourse?.userEnrolled) {
+        if (isFinished) {
+          navigate(`/certificate/${detailCourse.certificateId}`);
+        } else {
+          if (detailCourse?.latestLessonId) {
+            navigate(`/lesson/${detailCourse.latestLessonId}`);
+          } else {
+            navigate(`/course/${id}`);
+          }
+        }
       } else {
-        if (detailCourse?.latestLessonId) {
-          navigate(`/lesson/${detailCourse.latestLessonId}`);
+        if (detailCourse?.price > 0) {
+          await createCoursePaymentAPI();
         } else {
           navigate(`/course/${id}`);
         }
@@ -60,6 +79,12 @@ export default function Course(props: CourseProps) {
       navigate(`/course/${id}`);
     }
   };
+
+  useEffect(() => {
+    if (!skeletonLoading) {
+      getCourseDetail();
+    }
+  }, [skeletonLoading]);
 
   const priceText = (price: number, unitPrice: string) => {
     let result;
@@ -71,16 +96,20 @@ export default function Course(props: CourseProps) {
     return result;
   };
 
-  const buttonText = () => {
+  const buttonText = (courseObject: ICourse) => {
     let text;
-    if (detailCourse?.userEnrolled) {
-      if (isFinished) {
+    if (courseObject?.userEnrolled) {
+      if (courseObject.progressPercent === 100) {
         text = "View Certificate";
       } else {
         text = "Continue";
       }
     } else {
-      text = "Enroll";
+      if (courseObject?.price > 0) {
+        text = "Buy";
+      } else {
+        text = "Enroll";
+      }
     }
     return text;
   };
@@ -130,7 +159,7 @@ export default function Course(props: CourseProps) {
           className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
           onClick={() => handleButtonClick(detailCourse?.courseId ?? course.courseId)}
         >
-          {buttonText()}
+          {buttonText(detailCourse!)}
         </button>
         <span className="text-lg font-bold text-appPrimary">
           {priceText(detailCourse?.price ?? DEFAULT_COURSE.price, detailCourse?.unitPrice ?? DEFAULT_COURSE.unitPrice)}

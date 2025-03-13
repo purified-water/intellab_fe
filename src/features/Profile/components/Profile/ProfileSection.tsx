@@ -57,9 +57,9 @@ export const ProfileSection = (props: ProfileSectionProps) => {
     return content;
   };
 
-  let nameWidth = width / 11;
+  let nameWidth = width / 9;
   if (width < 1025) {
-    nameWidth = 900;
+    nameWidth = width / 2.5;
   }
   const fullName = `${user?.firstName} ${user?.lastName}`;
 
@@ -97,7 +97,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             </p>
             <div className="mb-5 text-base font-normal truncate text-gray3" style={{ maxWidth: nameWidth }}>
               {fullName}
-            </div>{" "}
+            </div>
             <div>
               <span className="text-lg font-normal text-black1">Rank:</span>
               <span className="text-lg font-semibold text-black1"> 1,000</span>

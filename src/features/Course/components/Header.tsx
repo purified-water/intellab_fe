@@ -11,10 +11,11 @@ interface HeaderProps {
   onEnroll: () => void;
   onContinue: () => void;
   onViewCertificate: () => void;
+  onBuy: () => Promise<void>;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { course, onEnroll, onContinue, onViewCertificate } = props;
+  const { course, onEnroll, onContinue, onViewCertificate, onBuy } = props;
   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
@@ -46,8 +47,13 @@ export const Header = (props: HeaderProps) => {
         onClick = onContinue;
       }
     } else {
-      buttonText = "Enroll";
-      onClick = onEnroll;
+      if (course.price > 0) {
+        buttonText = "Buy";
+        onClick = onBuy;
+      } else {
+        buttonText = "Enroll";
+        onClick = onEnroll;
+      }
     }
 
     return (

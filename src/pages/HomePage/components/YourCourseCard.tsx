@@ -64,8 +64,10 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const renderContent = () => {
     return (
       <>
-        <div onClick={handleViewCourseDetail} className="cursor-pointer">
-          <h3 className="text-xl font-bold line-clamp-2">{courseDetail?.courseName}</h3>
+        <div>
+          <h3 className="text-xl font-bold line-clamp-2 cursor-pointer" onClick={handleViewCourseDetail}>
+            {courseDetail?.courseName}
+          </h3>
           <p
             className={`text-sm mb-2 ${courseDetail?.courseName && courseDetail.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
           >
