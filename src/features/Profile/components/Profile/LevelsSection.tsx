@@ -41,11 +41,11 @@ export const LevelsSection = (props: LevelsSectionProps) => {
 
     return (
       <>
-        <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
+        <div className="w-full my-4 border-t-2 border-gray5"></div>
         <div className="flex flex-col min-w-full">
           <div className="text-2xl font-semibold text-black1">Levels</div>
           {skeletons.map((_, index) => (
-            <div key={index} className="flex items-center justify-between pt-4">
+            <div key={index} className="flex items-center justify-between pt-3">
               <Skeleton className="h-6 w-2/3" />
               <Skeleton className="h-6 w-1/4" />
             </div>
@@ -68,13 +68,13 @@ export const LevelsSection = (props: LevelsSectionProps) => {
 
     return (
       <>
-        <div className="w-full my-4 border-t-2 border-gray5 lg:my-10"></div>
+        <div className="w-full my-4 border-t-2 border-gray5"></div>
         <div className="flex flex-col min-w-full">
-          <div className="text-2xl font-semibold text-black1">Levels</div>
+          <div className="text-xl font-semibold text-black1">Levels</div>
           {levels.map((item, index) => (
-            <div key={index} className="flex items-center justify-between pt-4">
-              <div className="text-lg font-normal text-black1">{item.level}</div>
-              <div className="text-lg font-normal text-black1">{item.solved}</div>
+            <div key={index} className="flex items-center justify-between pt-3 text-base text-black1">
+              <p>{item.level}</p>
+              <p>{item.solved}</p>
             </div>
           ))}
         </div>

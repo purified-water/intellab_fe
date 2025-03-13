@@ -17,7 +17,7 @@ import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 import { Toaster } from "@/components/ui/shadcn/toaster";
 import { CertificatePage } from "./features/Certificate/pages";
-import { PaymentStatusPage } from "./features/Payment/pages";
+import { PaymentResultPage } from "./features/Payment/pages";
 import { LeaderboardPage } from "./features/Leaderboard/pages/LeaderboardPage";
 
 // Layout component to include conditional Navbar
@@ -104,8 +104,8 @@ const router = createBrowserRouter([
         element: <ViewAllSubmissionPage />
       },
       {
-        path: "/payment/status",
-        element: <PaymentStatusPage />
+        path: "/payment-result",
+        element: <PaymentResultPage />
       },
       {
         path: "/leaderboard",
