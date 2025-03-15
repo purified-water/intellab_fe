@@ -63,7 +63,16 @@ export function PodiumItem(props: PodiumItemProps) {
           <h3 className="text-base font-semibold text-gray-800">{user.displayName}</h3>
           <p className="text-sm text-gray-500">{`${user.firstName} ${user.lastName}`}</p>
         </div>
-        <div className={clsx(`${color === "gold" ? "bg-gold" : color === "bronze" ? "bg-bronze" : "bg-gray3"}`, "text-white", "text-center", "py-2", "px-4", "rounded-b-lg")}>
+        <div
+          className={clsx(
+            `${color === "gold" ? "bg-gold" : color === "bronze" ? "bg-bronze" : "bg-gray3"}`,
+            "text-white",
+            "text-center",
+            "py-2",
+            "px-4",
+            "rounded-b-lg"
+          )}
+        >
           {points} Points
         </div>
       </div>

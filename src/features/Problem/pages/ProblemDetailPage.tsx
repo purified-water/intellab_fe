@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button } from "@/components/ui";
 import { RenderDescTabs, RenderPGTabs, RenderTCTabs, RenderAllProblems, RenderAIAssistant } from "../components";
 import { MdList } from "rocketicons/md";
+import { HiOutlineSparkles } from "rocketicons/hi2";
 import { FaPlay, FaSpinner, FaUpload } from "rocketicons/fa6";
 import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
@@ -24,7 +25,6 @@ import { useDispatch } from "react-redux";
 import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
-import { Sparkle } from "lucide-react";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -369,7 +369,7 @@ export const ProblemDetail = () => {
               className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
               onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
             >
-              <Sparkle className="inline-block w-4 h-4" />
+              <HiOutlineSparkles className="inline-block w-4 h-4 icon-white" />
               Ask AI
             </Button>
           )}

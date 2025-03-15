@@ -8,9 +8,9 @@ import {
   MdMenu,
   MdOutlinePerson,
   MdOutlineSettings,
-  MdOutlineWbSunny,
   MdLogout
 } from "rocketicons/md";
+import { Sun, Moon } from "lucide-react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
@@ -18,7 +18,12 @@ import { clearUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 
-const Navbar = () => {
+interface NavbarProps {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -169,12 +174,19 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to="#">
-                        <div className="flex items-center space-x-2">
-                          <MdOutlineWbSunny className="icon-lg icon-gray3" />
-                          <span>Light theme</span>
-                        </div>
-                      </Link>
+                      <div onClick={toggleDarkMode} className="flex items-center space-x-2 cursor-pointer">
+                        {isDarkMode ? (
+                          <>
+                            <Moon className="icon-lg icon-gray3" />
+                            <span>Dark Mode</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sun className="icon-lg icon-gray3" />
+                            <span>Light Mode</span>
+                          </>
+                        )}
+                      </div>
                     </li>
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <div className="flex items-center space-x-2 cursor-pointer">

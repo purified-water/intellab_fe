@@ -21,13 +21,26 @@ import { PaymentResultPage } from "./features/Payment/pages";
 import { LeaderboardPage } from "./features/Leaderboard/pages/LeaderboardPage";
 
 // Layout component to include conditional Navbar
-const Layout = () => {
+import { useState, useEffect } from "react";
+
+export const Layout = () => {
   const location = useLocation();
   const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <Navbar isDarkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />}
       <Outlet />
     </>
   );
