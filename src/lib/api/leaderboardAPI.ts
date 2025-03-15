@@ -2,7 +2,7 @@ import { apiClient } from "./apiClient";
 import { TGetLeaderboardResponse } from "@/features/Leaderboard/types/apiResponseType";
 
 const DEFAULT_PAGE = 0;
-const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_PAGE_SIZE = 20;
 
 export const leaderboardAPI = {
   getLeaderboard: async (filter: string, page = DEFAULT_PAGE, size = DEFAULT_PAGE_SIZE) => {

@@ -38,7 +38,7 @@ export const Leaderboard = () => {
     return (
       <div className="grid grid-cols-[1fr_3fr_1fr] gap-2 cursor-pointer hover:opacity-80" onClick={handleItemClick}>
         <div className="text-base font-normal line-clamp-1">#{rank}</div>
-        <div className="col-auto text-base font-normal text-left line-clamp-1">{item.displayName}</div>
+        <div className="col-auto text-base font-normal text-left truncate">{item.displayName}</div>
         <div className="text-base font-normal text-right line-clamp-1">{item.point}</div>
       </div>
     );

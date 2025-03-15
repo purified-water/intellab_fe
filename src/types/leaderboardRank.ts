@@ -5,7 +5,18 @@ type TLeaderboardRank = {
   lastName: string;
   photoUrl: string;
   userUid: string;
-  // There are two more field "courseStat" and "courseStat" but we don't need them on the UI or functionality
+  courseStat: {
+    beginner: number;
+    intermediate: number;
+    advanced: number;
+    total: number;
+  };
+  problemStat: {
+    easy: number;
+    medium: number;
+    hard: number;
+    total: number;
+  };
 };
 
 export type { TLeaderboardRank };

@@ -24,8 +24,8 @@ export function LeaderboardPage() {
   };
 
   return (
-    <div className="py-6">
-      <div className="mx-auto">
+    <div className="py-4">
+      <div className="mx-96">
         {renderTitle()}
         <div className="space-y-8 justify-items-center">
           <PodiumList />
