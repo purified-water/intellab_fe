@@ -99,6 +99,11 @@ export default {
       },
       animation: {
         disco: "disco 1.5s linear infinite"
+      },
+      boxShadow: {
+        gold: "0 4px 6px 0 rgba(255, 215, 0, 0.1), 0 2px 4px 0 rgba(255, 215, 0, 0.06)",
+        bronze: "0 4px 6px 0 rgba(205, 127, 50, 0.1), 0 2px 4px 0 rgba(205, 127, 50, 0.06)",
+        gray3: "0 4px 6px 0 rgba(128, 128, 128, 0.1), 0 2px 4px 0 rgba(128, 128, 128, 0.06)"
       }
     }
   },

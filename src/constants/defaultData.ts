@@ -33,4 +33,6 @@ const DEFAULT_LESSON: ILesson = {
   nextLessonName: "Next Lesson Name"
 };
 
-export { DEFAULT_COURSE, DEFAULT_LESSON };
+const NA_VALUE = "N/A";
+
+export { DEFAULT_COURSE, DEFAULT_LESSON, NA_VALUE };

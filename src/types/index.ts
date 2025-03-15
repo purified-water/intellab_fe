@@ -5,3 +5,4 @@ export * from "./sort";
 export * from "./apiResponseType";
 export * from "./lesson";
 export * from "./course";
+export * from "./leaderboardRank";

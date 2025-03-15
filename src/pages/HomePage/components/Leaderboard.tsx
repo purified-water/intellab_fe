@@ -1,38 +1,51 @@
 import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/Separator";
 import { leaderboardAPI } from "@/lib/api";
-import { ILeaderboardRank } from "../types/responseTypes";
+import { TLeaderboardRank } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
+import { useNavigate } from "react-router-dom";
 
 export const Leaderboard = () => {
-  const [ranks, setRanks] = useState<ILeaderboardRank[]>();
-  const [loading, setLoading] = useState(false);
+  const [ranks, setRanks] = useState<TLeaderboardRank[]>();
+  const [loading, setLoading] = useState(true);
+  const toast = useToast();
+  const navigate = useNavigate();
 
   const getLeaderboard = async () => {
-    setLoading(true);
-    const data = await leaderboardAPI.getLeaderboard();
-    setRanks(data.content);
-    setLoading(false);
+    try {
+      const response = await leaderboardAPI.getLeaderboard("all", 0, 3);
+      if (response) {
+        setRanks(response.content);
+      }
+    } catch (e) {
+      showToastError({ toast: toast.toast, message: e.message ?? "An error occurred while fetching leaderboard data" });
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     getLeaderboard();
   }, []);
 
-  const LeaderboardItem = ({ rank, username, score }: { rank: number; username: string; score: number }) => {
+  const LeaderboardItem = ({ rank, item }: { rank: number; item: TLeaderboardRank }) => {
+    const handleItemClick = () => {
+      navigate(`/profile/${item.userUid}`);
+    };
+
     return (
-      <div className="grid grid-cols-[1fr_3fr_1fr] gap-2">
+      <div className="grid grid-cols-[1fr_3fr_1fr] gap-2 cursor-pointer hover:opacity-80" onClick={handleItemClick}>
         <div className="text-base font-normal line-clamp-1">#{rank}</div>
-        <div className="col-auto text-base font-normal text-left line-clamp-1">{username}</div>
-        <div className="text-base font-normal text-right line-clamp-1">{score}</div>
+        <div className="col-auto text-base font-normal text-left line-clamp-1">{item.displayName}</div>
+        <div className="text-base font-normal text-right line-clamp-1">{item.point}</div>
       </div>
     );
   };
 
   const renderRanks = () => {
-    return ranks?.map((rank, index) => (
-      <LeaderboardItem key={index} rank={rank.rank} username={rank.name} score={rank.score} />
-    ));
+    return ranks?.map((rank, index) => <LeaderboardItem key={index} rank={index + 1} item={rank} />);
   };
 
   const renderSkeletonLoading = () => {

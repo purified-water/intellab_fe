@@ -1,15 +1,16 @@
-import { TRank } from "../types";
+import { TLeaderboardRank } from "@/types";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 type LeaderboardItemProps = {
-  item: TRank | null;
+  rank: number;
+  item: TLeaderboardRank | null;
   loading: boolean;
 };
 
 export function LeaderboardItem(props: LeaderboardItemProps) {
-  const { item, loading } = props;
+  const { rank, item, loading } = props;
 
   const navigate = useNavigate();
 
@@ -34,27 +35,27 @@ export function LeaderboardItem(props: LeaderboardItemProps) {
 
   const renderContent = () => {
     const handleItemClick = () => {
-      navigate(`/profile/${item?.user.userId}`);
+      navigate(`/profile/${item?.userUid}`);
     };
 
     const renderAvatar = () => {
       let avatar = DEFAULT_AVATAR;
-      if (item?.user.photoUrl) {
-        avatar = item?.user.photoUrl;
+      if (item?.photoUrl) {
+        avatar = item?.photoUrl;
       }
       return <img className="w-10 h-10 rounded-full" src={avatar} alt="avatar" />;
     };
 
     return (
       <tr className="border-b border-gray5 cursor-pointer hover:opacity-80" onClick={handleItemClick}>
-        <td className="w-[80px] text-center py-3">{item?.rank}</td>
+        <td className="w-[80px] text-center py-3">{rank}</td>
         <td className="text-left pl-12">
           <div className="flex items-center gap-2">
             {renderAvatar()}
-            {item?.user.displayName}
+            {item?.displayName}
           </div>
         </td>
-        <td className="w-1/6 text-left">{item?.points} points</td>
+        <td className="w-1/6 text-left">{item?.point} points</td>
       </tr>
     );
   };

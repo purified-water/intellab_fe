@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { Copy, Pencil, Camera } from "lucide-react";
+import { Pencil, Camera } from "lucide-react";
 import { userAPI } from "@/lib/api";
 import { setUser } from "@/redux/user/userSlice";
 import { Button } from "@/components/ui";
@@ -18,8 +18,6 @@ export function EditProfileSection() {
   const dispatch = useDispatch();
 
   const user = useSelector((state: RootState) => state.user.user);
-
-  const userId = user?.userId;
 
   const [formData, setFormData] = useState({
     firstName: user?.firstName || "",
@@ -144,15 +142,6 @@ export function EditProfileSection() {
   };
 
   const renderUserAvatar = () => {
-    const handleCopyUserId = async () => {
-      try {
-        await navigator.clipboard.writeText(userId!);
-        showToastSuccess({ toast: toast.toast, message: "UserID copied to clipboard" });
-      } catch (e) {
-        showToastError({ toast: toast.toast, message: e.message ?? "Failed to copy UserID" });
-      }
-    };
-
     return (
       <div className="relative space-y-4 justify-items-center">
         <div className="relative group">
@@ -171,12 +160,6 @@ export function EditProfileSection() {
             </div>
           </div>
         </div>
-        <span className="flex items-center text-sm text-gray3">
-          {userId}
-          <button onClick={handleCopyUserId} className="ml-2 text-gray3 hover:text-gray2" title="Copy UserID">
-            <Copy size={16} />
-          </button>
-        </span>
       </div>
     );
   };
@@ -238,7 +221,7 @@ export function EditProfileSection() {
             <Button
               onClick={handleCancelBasicInfo}
               variant={"outline"}
-              className="px-6 py-1 rounded-lg border-gray4 text-gray3"
+              className="px-6 py-1 rounded-lg border-gray3 text-gray1 hover:opacity-80"
             >
               Cancel
             </Button>
@@ -303,7 +286,7 @@ export function EditProfileSection() {
             <Button
               onClick={handleCancelAccountInfo}
               variant={"outline"}
-              className="px-6 py-1 rounded-lg border-gray4 text-gray3"
+              className="px-6 py-1 rounded-lg border-gray3 text-gray1 hover:opacity-80"
             >
               Cancel
             </Button>

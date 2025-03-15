@@ -6,6 +6,8 @@ import { IUserCourse } from "@/pages/HomePage/types/responseTypes";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils/toastUtils";
 
 export const YourCourseSection = () => {
   const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
@@ -14,6 +16,7 @@ export const YourCourseSection = () => {
   const userId = getUserIdFromLocalStorage();
   const accessToken = getAccessToken();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const toast = useToast();
 
   const getUserEnrolledCourseIds = async () => {
     if (accessToken && userId) {
@@ -23,7 +26,7 @@ export const YourCourseSection = () => {
         const userEnrolledCourses = response.result.content;
         setUserEnrollCourses(userEnrolledCourses);
       } catch (e) {
-        console.log(e);
+        showToastError({ toast: toast.toast, message: e.message ?? "Error getting enrolled courses" });
       } finally {
         setLoading(false);
       }

@@ -1,6 +1,4 @@
-import { ICourse } from "@/types/course";
-import { ILesson } from "@/types/lesson";
-import { IPageable } from "@/types";
+import { ICourse, ILesson, IPageable } from "@/types";
 
 export interface IGetCoursesResponse {
   code: number;
@@ -80,19 +78,6 @@ export interface IGetUserEnrolledCoursesResponse {
     numberOfElements: number;
     first: boolean;
     empty: boolean;
-  };
-}
-
-export interface ILeaderboardRank {
-  rank: number;
-  name: string;
-  score: number;
-}
-
-export interface IGetLeaderboardResponse {
-  code: number;
-  result: {
-    content: ILeaderboardRank[];
   };
 }
 

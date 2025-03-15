@@ -3,13 +3,10 @@ import { ICourse } from "@/features/Course/types";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
-import { courseAPI, paymentAPI } from "@/lib/api";
+import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { showToastError } from "@/utils/toastUtils";
-import { useToast } from "@/hooks/use-toast";
-import { API_RESPONSE_CODE } from "@/constants";
 
 interface CourseSectionCardProps {
   course: ICourse;
@@ -25,8 +22,6 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
 
   const accessToken = getAccessToken();
   const userId = getUserIdFromLocalStorage();
-  const toast = useToast();
-
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getCourseDetail = async () => {
@@ -38,20 +33,6 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     setInternalLoading(false);
   };
 
-  const createCoursePaymentAPI = async () => {
-    try {
-      const response = await paymentAPI.createCoursePayment(course.courseId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        window.location.href = result.paymentUrl!;
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
-    }
-  };
-
   const handleTitleClick = () => {
     navigate(`/course/${detailCourse?.courseId}`);
   };
@@ -61,8 +42,6 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
       if (detailCourse) {
         if (detailCourse.userEnrolled) {
           navigate(`/lesson/${detailCourse?.latestLessonId}`);
-        } else if (detailCourse.price > 0) {
-          await createCoursePaymentAPI();
         } else {
           navigate(`/course/${course.courseId}`);
         }
@@ -83,7 +62,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     if (courseObject?.userEnrolled) {
       buttonText = "Continue";
     } else if (courseObject.price > 0) {
-      buttonText = "Buy";
+      buttonText = "Purchase";
     } else {
       buttonText = "Enroll";
     }
@@ -114,7 +93,9 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
             >
               {buttonText(detailCourse!)}
             </button>
-            <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
+            <p className="self-end mt-2 font-bold">
+              {detailCourse?.price ? `đ${detailCourse?.price.toLocaleString()}` : "Free"}
+            </p>
           </div>
         )}
       </div>
