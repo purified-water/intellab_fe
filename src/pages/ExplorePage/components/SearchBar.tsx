@@ -22,7 +22,7 @@ const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
 
   return (
     <div className="flex items-center justify-start w-full p-4 bg-white">
-      <div className="relative w-11/12 pr-10">
+      <div className="relative pr-10 w-[1020px]">
         <FontAwesomeIcon icon={faSearch} className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2" />
         <input
           value={query}
