@@ -12,7 +12,7 @@ export const aiAPI = {
   getCourseSummary: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
-      modal: "groq-llama-3.3-70b"
+      model: "llama3.2"
     };
     const response = await axios.post(`${BASE_URL}/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
@@ -22,12 +22,13 @@ export const aiAPI = {
     courseName: string,
     courseId: string,
     userId: string,
-    regenerate: "true" | "false"
+    regenerate: "true" | "false",
+    controller: AbortController // Added controller parameter
   ) => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenerate}`,
       user_id: userId,
-      model: "groq-llama-3.3-70b"
+      model: "llama3.2"
     };
 
     try {
@@ -36,7 +37,8 @@ export const aiAPI = {
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify(bodyParams)
+        body: JSON.stringify(bodyParams),
+        signal: controller.signal // Attach signal to fetch request
       });
 
       if (!response.body) {

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
 import { amountTransformer, getUserIdFromLocalStorage } from "@/utils";
 import { ICourse } from "../types";
@@ -22,7 +22,7 @@ export const Header = (props: HeaderProps) => {
   const toast = useToast();
   const [loading, setLoading] = useState(false);
   const userId = getUserIdFromLocalStorage();
-
+  const abortControllerRef = useRef<AbortController | null>(null);
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
   const isFinished = course.progressPercent == 100;
@@ -69,68 +69,26 @@ export const Header = (props: HeaderProps) => {
   };
 
   const handleSummaryClick = async () => {
-    if (!userId) return;
-
     setLoading(true);
-    setSummaryContent(""); // Clear previous content
-    setShowSummaryDialog(true);
-
-    console.log("is loading", loading);
-
-    // OLD CODE
-    // try {
-    //   const stream = await aiAPI.getCourseSummaryStream(formattedCourseName, course.courseId, userId, "false");
-
-    //   if (stream) {
-    //     for await (const chunk of stream) {
-    //       setSummaryContent((prev) => prev + (chunk.content || "")); // Append new content
-    //     }
-    //   }
-    // }
-
-    // NEW CODE
-    const controller = new AbortController();
     try {
-      // Call the post to activate stream here
-      const responseStream = await aiAPI.postChatbotMessageStream(
-        AI_AGENT.GLOBAL_CHATBOT,
-        "Give me a course to study",
-        "llama3.2",
-        userId,
-        controller
-      );
-      // Accumulate streamed tokens
-      let accumulatedContent = ""; // Store streamed tokens
-      let firstChunkReceived = false;
-
-      if (!responseStream) return;
-
-      for await (const chunk of responseStream) {
-        if (!firstChunkReceived) {
-          firstChunkReceived = true;
-          setLoading(false); // If first chunk is received, set to false to show data
-        }
-
-        if (chunk.type === "token") {
-          // If chunk is token, append to accumulated content
-          accumulatedContent += chunk.content;
-          setSummaryContent(accumulatedContent);
-        } else if (chunk.type === "message") {
-          // Final chunk is message (global chatbot), break loop;
-          // if summary ai is diferent then change type message to something else
-          console.log("Received message chunk:", chunk);
-          break;
-        }
-      }
+      // remove the special characters and the space at start and end from the course name
+      const response = await aiAPI.getCourseSummary(formattedCourseName, course.courseId, "false");
+      const { content } = response;
+      setSummaryContent(content);
+      setShowSummaryDialog(true);
     } catch (error) {
       toast.toast({
         variant: "destructive",
         title: "An error occurred",
         description: `Failed to generate AI summary: ${error.message}`
       });
-      setLoading(false);
-    } finally {
-      setLoading(false);
+    }
+    setLoading(false);
+  };
+
+  const handleCancelClick = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
   };
 
@@ -157,7 +115,10 @@ export const Header = (props: HeaderProps) => {
         courseName={formattedCourseName}
         isOpen={showSummaryDialog}
         summaryContent={summaryContent}
-        onClose={() => setShowSummaryDialog(false)}
+        onClose={() => {
+          setShowSummaryDialog(false);
+          handleCancelClick();
+        }}
       />
       {loading && <Spinner overlay loading={loading} />}
     </div>
