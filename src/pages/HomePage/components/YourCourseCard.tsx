@@ -83,7 +83,6 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
             >
               {isFinished ? "View Certificate" : "Continue"}
             </button>
-            <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
           </div>
         </div>
       </>

@@ -46,8 +46,12 @@ export const ProfileSection = (props: ProfileSectionProps) => {
     getProfileSinglePublicAPI();
   }, [userId]);
 
+  useEffect(() => {
+    document.title = `${user?.displayName ?? "Loading"} | Intellab`;
+  }, [user]);
+
   const renderProfilePhoto = () => {
-    let content = <i className="text-9xl fa-solid fa-circle-user"></i>;
+    let content = <i className="text-7xl fa-solid fa-circle-user"></i>;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
       content = (
@@ -106,7 +110,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
         </div>
         {isMe && (
           <button
-            className="min-w-full h-[50px] font-bold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary mt-[42px]"
+            className="min-w-full h-[50px] font-bold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary mt-[42px] hover:opacity-80"
             onClick={() => navigate("/profile/edit")}
           >
             Edit Profile

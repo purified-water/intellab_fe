@@ -93,7 +93,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
   return (
     <div className="w-full bg-white rounded-[10px] flex flex-col p-6 space-y-3">
       <div className="flex items-center justify-between">
-        <p className="text-2xl font-bold text-appPrimary">All Submissions</p>
+        <p className="text-xl font-bold text-appPrimary">All Submissions</p>
         {isMe && submissions.length > 0 && renderViewAllSubmissions()}
       </div>
       <div className="border-t-2 border-gray" />

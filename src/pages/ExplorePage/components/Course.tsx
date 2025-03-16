@@ -5,12 +5,9 @@ import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { courseAPI, paymentAPI } from "@/lib/api";
+import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { showToastError } from "@/utils/toastUtils";
-import { useToast } from "@/hooks/use-toast";
-import { API_RESPONSE_CODE } from "@/constants";
 interface CourseProps {
   course: ICourse;
   skeletonLoading?: boolean;
@@ -23,10 +20,7 @@ export default function Course(props: CourseProps) {
   const [internalLoading, setInternalLoading] = useState(false);
 
   const navigate = useNavigate();
-  const toast = useToast();
-
   const userId = getUserIdFromLocalStorage();
-
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const isFinished = detailCourse?.progressPercent === 100;
@@ -36,20 +30,6 @@ export default function Course(props: CourseProps) {
     const response = await courseAPI.getCourseDetail(course.courseId, userId ?? "∫");
     setCourseDetail(response.result);
     setInternalLoading(false);
-  };
-
-  const createCoursePaymentAPI = async () => {
-    try {
-      const response = await paymentAPI.createCoursePayment(course.courseId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        window.location.href = result.paymentUrl!;
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
-    }
   };
 
   const handleTitleClick = () => {
@@ -69,11 +49,7 @@ export default function Course(props: CourseProps) {
           }
         }
       } else {
-        if (detailCourse?.price > 0) {
-          await createCoursePaymentAPI();
-        } else {
-          navigate(`/course/${id}`);
-        }
+        navigate(`/course/${id}`);
       }
     } else {
       navigate(`/course/${id}`);
@@ -91,7 +67,7 @@ export default function Course(props: CourseProps) {
     if (price == 0) {
       result = "Free";
     } else {
-      result = `${price} ${unitPrice}`;
+      result = `${price.toLocaleString()} ${unitPrice}`;
     }
     return result;
   };
@@ -106,7 +82,7 @@ export default function Course(props: CourseProps) {
       }
     } else {
       if (courseObject?.price > 0) {
-        text = "Buy";
+        text = "Purchase";
       } else {
         text = "Enroll";
       }

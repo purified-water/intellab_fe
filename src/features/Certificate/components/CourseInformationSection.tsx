@@ -3,6 +3,7 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { useNavigate } from "react-router-dom";
+import { NA_VALUE } from "@/constants/defaultData";
 
 type CourseInformationSectionProps = {
   loading: boolean;
@@ -36,7 +37,7 @@ export function CourseInformationSection(props: CourseInformationSectionProps) {
         <div className="flex items-center space-x-2">
           <div className="flex items-center px-2 py-1 rounded-lg bg-gray1 text-appMedium">
             <Star size={14} fill="currentColor" stroke="none" />
-            <span className="ml-1 text-xs text-white ">{certificate?.course.rating?.toFixed(1) ?? 5}</span>
+            <span className="ml-1 text-xs text-white ">{certificate?.course.rating?.toFixed(1) ?? NA_VALUE}</span>
           </div>
           <span> • {certificate?.course.reviewCount} reviews</span>
         </div>
