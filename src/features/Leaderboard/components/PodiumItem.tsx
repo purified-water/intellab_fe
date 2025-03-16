@@ -54,7 +54,8 @@ export function PodiumItem(props: PodiumItemProps) {
           "rounded-lg",
           "space-y-8",
           "cursor-pointer",
-          "hover:bg-gray6"
+          "hover:bg-gray6",
+          "shadow-md"
         )}
         onClick={handleItemClick}
       >
@@ -65,7 +66,7 @@ export function PodiumItem(props: PodiumItemProps) {
           </h3>
           <p
             className="text-sm text-gray-500 truncate"
-            style={{ maxWidth: width / 7 }}
+            style={{ maxWidth: width / 6 }}
           >{`${item?.firstName} ${item?.lastName}`}</p>
         </div>
         <div
@@ -76,7 +77,8 @@ export function PodiumItem(props: PodiumItemProps) {
             "py-2",
             "px-4",
             "rounded-b-lg",
-            "font-semibold"
+            "font-semibold",
+            "shadow-md"
           )}
         >
           {item?.point} Points
