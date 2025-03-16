@@ -2,14 +2,49 @@ import { apiClient } from "./apiClient";
 import { ProblemType } from "@/types/ProblemType";
 import { ProblemsResponse } from "@/pages/ProblemsPage/types/resonseType";
 import { TGetSubmissionListMeResponse } from "@/features/Profile/types";
+import { IGetCategories } from "@/pages/HomePage/types/responseTypes";
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_CHILDREN_SIZE = 10;
 
 export const problemAPI = {
-  getProblems: async (keyword: string, page: number, size: number) => {
-    const response = await apiClient.get(`problem/problems/search?keyword=${keyword}&page=${page}&size=${size}`);
+  getProblems: async (
+    keyword: string,
+    page: number,
+    size: number,
+    categoryIds: number[],
+    level: string | null,
+    status: boolean | null
+  ) => {
+    // Create params object with non-null/non-empty values
+    const params: Record<string, string | number | boolean> = {
+      keyword,
+      page,
+      size
+    };
+
+    // Only add categories if the array is not empty
+    if (categoryIds.length > 0) {
+      params.categories = categoryIds.join(",");
+    }
+
+    // Only add level if it's not null
+    if (level !== null) {
+      params.level = level;
+    }
+
+    // Only add status if it's not null
+    if (status !== null) {
+      params.status = status;
+    }
+
+    const response = await apiClient.get(`problem/problems/search`, { params });
     const data: ProblemsResponse = response.data;
+    return data;
+  },
+  getCategories: async () => {
+    const response = await apiClient.get(`problem/problems/categories`);
+    const data: IGetCategories = response.data;
     return data;
   },
   getProblemDetail: async (problemId: string) => {
