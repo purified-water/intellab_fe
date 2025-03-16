@@ -80,7 +80,11 @@ const SectionDetailPage: React.FC = () => {
   //const displayedCourses = query ? searchedCourses : sectionCourses;
 
   const renderSearchResult = () => {
-    return <SearchResultComponent loading={loading} courses={exploreCourses} query={query}></SearchResultComponent>;
+    return (
+      <div className="pl-10">
+        <SearchResultComponent loading={loading} courses={exploreCourses} query={query}></SearchResultComponent>;
+      </div>
+    );
   };
 
   // const renderCourses = () => {
@@ -101,8 +105,8 @@ const SectionDetailPage: React.FC = () => {
   // };
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <div className="flex-grow sm:pl-10">
+    <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
+      <div className="flex-grow pt-10">
         {/* Header section with filter button and search bar */}
         <div className="flex items-center">
           <FilterButton
@@ -120,23 +124,23 @@ const SectionDetailPage: React.FC = () => {
           style={{ overflow: "hidden" }}
           className="py-2"
         >
-          <FilterComponent />
+          <FilterComponent keyword={query} />
         </motion.div>
 
         {/* Section title */}
         {/* {query ? renderSearchResult() : renderCourses()} */}
-        <motion.div
-          initial={{ y: 0 }}
-          animate={{ y: showFilter ? 20 : 0 }}
-          transition={{ duration: 0.5 }}
-          className="pb-10"
-        >
-          <div className="mb-6 text-4xl font-bold tracking-wide sm:text-4xl sm:mb-11 text-appPrimary">
-            {section && section.charAt(0).toUpperCase() + section.slice(1)} Courses
-          </div>
-          {renderSearchResult()}
-        </motion.div>
       </div>
+      <motion.div
+        initial={{ y: 0 }}
+        animate={{ y: showFilter ? 20 : 0 }}
+        transition={{ duration: 0.5 }}
+        className="pb-10"
+      >
+        <div className="pl-10 mx-auto mb-6 text-4xl font-bold tracking-wide sm:text-4xl sm:mb-11 text-appPrimary">
+          {section && section.charAt(0).toUpperCase() + section.slice(1)} Courses
+        </div>
+        {renderSearchResult()}
+      </motion.div>
 
       <div className="mt-auto">
         {totalPages && (

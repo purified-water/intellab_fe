@@ -1,36 +1,19 @@
-//import { apiClient } from "./apiClient";
-import { IGetLeaderboardResponse } from "@/pages/HomePage/types/responseTypes";
+import { apiClient } from "./apiClient";
+import { TGetLeaderboardResponse } from "@/features/Leaderboard/types/apiResponseType";
+
+const DEFAULT_PAGE = 0;
+const DEFAULT_PAGE_SIZE = 20;
 
 export const leaderboardAPI = {
-  getLeaderboard: async () => {
-    // const response = await apiClient.get("leaderboard");
-    // const data: IGetLeaderboardResponse = response.data;
-    const data: IGetLeaderboardResponse = await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          code: 200,
-          result: {
-            content: [
-              {
-                rank: 1,
-                name: "Hoàng Quốc",
-                score: 100
-              },
-              {
-                rank: 2,
-                name: "Hoàng Quốc 2",
-                score: 90
-              },
-              {
-                rank: 3,
-                name: "Hoàng Quốc 3",
-                score: 80
-              }
-            ]
-          }
-        });
-      }, 1000);
-    });
-    return data.result;
+  getLeaderboard: async (filter: string, page = DEFAULT_PAGE, size = DEFAULT_PAGE_SIZE) => {
+    const queryParams = {
+      filter,
+      page,
+      size
+    };
+
+    const response = await apiClient.get("identity/leaderboard", { params: queryParams });
+    const data: TGetLeaderboardResponse = response.data;
+    return data;
   }
 };

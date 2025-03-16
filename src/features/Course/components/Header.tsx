@@ -6,17 +6,19 @@ import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { AI_AGENT } from "@/constants";
+import { NA_VALUE } from "@/constants";
+import { showToastError } from "@/utils/toastUtils";
 
 interface HeaderProps {
   course: ICourse;
   onEnroll: () => void;
   onContinue: () => void;
   onViewCertificate: () => void;
-  onBuy: () => Promise<void>;
+  onPurchase: () => Promise<void>;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { course, onEnroll, onContinue, onViewCertificate, onBuy } = props;
+  const { course, onEnroll, onContinue, onViewCertificate, onPurchase } = props;
   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
@@ -30,7 +32,9 @@ export const Header = (props: HeaderProps) => {
   const renderReview = () => {
     return (
       <div className="mt-2 text-xs">
-        <span className="px-2 py-1 text-white bg-black rounded-full">⭐ {course.averageRating}</span>
+        <span className="px-2 py-1 text-white bg-black rounded-full">
+          ⭐ {course.averageRating != 0 ? course.averageRating.toFixed(1) : NA_VALUE}
+        </span>
         <span> • {amountTransformer(course.reviewCount)} reviews</span>
       </div>
     );
@@ -50,8 +54,8 @@ export const Header = (props: HeaderProps) => {
       }
     } else {
       if (course.price > 0) {
-        buttonText = "Buy";
-        onClick = onBuy;
+        buttonText = "Purchase";
+        onClick = onPurchase;
       } else {
         buttonText = "Enroll";
         onClick = onEnroll;
@@ -77,11 +81,7 @@ export const Header = (props: HeaderProps) => {
       setSummaryContent(content);
       setShowSummaryDialog(true);
     } catch (error) {
-      toast.toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: `Failed to generate AI summary: ${error.message}`
-      });
+      showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
     }
     setLoading(false);
   };

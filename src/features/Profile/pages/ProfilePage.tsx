@@ -8,17 +8,9 @@ import {
   CompletedCourseList,
   SubmissionList
 } from "@/features/Profile/components";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
-import { useEffect } from "react";
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
-  const user = useSelector((state: RootState) => state.user.user);
-
-  useEffect(() => {
-    document.title = `${user?.displayName} | Intellab`;
-  }, [user]);
 
   return (
     <div className="flex flex-col items-start justify-between min-h-screen px-20 pt-10 bg-gray5 lg:flex-row">

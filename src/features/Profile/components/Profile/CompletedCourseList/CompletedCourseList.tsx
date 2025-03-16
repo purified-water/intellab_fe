@@ -80,7 +80,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
 
   return (
     <div className="w-full bg-white rounded-[10px] flex flex-col p-6 space-y-3">
-      <p className="text-2xl font-bold text-appPrimary">Completed Courses</p>
+      <p className="text-xl font-bold text-appPrimary">Completed Courses</p>
       <div className="border-t-2 border-gray" />
       {content}
     </div>

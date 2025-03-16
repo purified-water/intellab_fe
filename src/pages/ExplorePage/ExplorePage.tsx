@@ -187,9 +187,9 @@ export const ExplorePage = () => {
                   {/* Section for Fundamentals For Beginner */}
                   <div className="flex flex-col mb-8 sm:mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
-                      <div className="text-2xl font-bold text-black sm:text-4xl">Fundamentals For Beginner</div>
+                      <div className="text-2xl font-bold text-black sm:text-4xl">Fundamental For Beginner</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
-                      <Link to="/explore/fundamentals" state={{ courses: displayedCourses, section: "fundamentals" }}>
+                      <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
                         <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
                       </Link>
                     </div>

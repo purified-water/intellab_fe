@@ -91,7 +91,7 @@ export const CourseDetailPage = () => {
         setCurrentPage(response.result.number);
         setTotalPages(response.result.totalPages);
       } catch (error) {
-        console.log("--> Error fetching lessons", error);
+        showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
         setLoading(false);
       }
     } else {
@@ -104,7 +104,7 @@ export const CourseDetailPage = () => {
         setTotalPages(response.result.totalPages);
         setLoading(false);
       } catch (error) {
-        console.log("--> Error fetching lessons", error);
+        showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
         setLoading(false);
       }
     }
@@ -170,9 +170,10 @@ export const CourseDetailPage = () => {
         showToastError({ toast: toast.toast, message: "Error enrolling course" });
       }
     } catch (error) {
-      console.log("--> Error enrolling course", error);
+      showToastError({ toast: toast.toast, message: error.message ?? "Error enrolling course" });
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleContinueClick = () => {
@@ -188,7 +189,7 @@ export const CourseDetailPage = () => {
     navigate(`/certificate/${course?.certificateId}`);
   };
 
-  const handleBuyClick = async () => {
+  const handlePurchaseClick = async () => {
     if (isAuthenticated) {
       await createCoursePaymentAPI();
     } else {
@@ -204,7 +205,7 @@ export const CourseDetailPage = () => {
           onEnroll={handleEnrollClick}
           onContinue={handleContinueClick}
           onViewCertificate={handleViewCertificateClick}
-          onBuy={handleBuyClick}
+          onPurchase={handlePurchaseClick}
         />
       )
     );
