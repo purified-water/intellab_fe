@@ -5,7 +5,6 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/esm/styles/prism";
 import clsx from "clsx";
 import { ChatbotMessageContentType } from "../types/ChatbotHistoryType";
-import { linkMappings } from "../constants/linkMappings";
 
 interface ChatBubbleProps {
   message?: ChatbotMessageContentType;
@@ -16,17 +15,6 @@ interface ChatBubbleProps {
 const variantClasses: Record<string, string> = {
   mainAI: "text-base",
   problemAI: "text-sm"
-};
-
-const formatMessageContent = (content: string) => {
-  return content.replace(/(http?:\/\/localhost:3000\/(course|problems)\/[a-zA-Z0-9-]+)/g, (url) => {
-    for (const [pattern, label] of Object.entries(linkMappings)) {
-      if (url.includes(pattern)) {
-        return `[${label}](<${url}>)`;
-      }
-    }
-    return url;
-  });
 };
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingResponse, variant = "mainAI" }) => {
@@ -46,7 +34,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
     );
   }
 
-  const formattedContent = formatMessageContent(message.content);
+  const formattedContent = message.content;
 
   return (
     <div className={clsx("flex", message.type === "user" ? "justify-end" : "justify-start")}>

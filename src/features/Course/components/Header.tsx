@@ -1,11 +1,10 @@
 import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
-import { amountTransformer, getUserIdFromLocalStorage } from "@/utils";
+import { amountTransformer } from "@/utils";
 import { ICourse } from "../types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
-import { AI_AGENT } from "@/constants";
 import { NA_VALUE } from "@/constants";
 import { showToastError } from "@/utils/toastUtils";
 
@@ -23,7 +22,6 @@ export const Header = (props: HeaderProps) => {
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-  const userId = getUserIdFromLocalStorage();
   const abortControllerRef = useRef<AbortController | null>(null);
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 

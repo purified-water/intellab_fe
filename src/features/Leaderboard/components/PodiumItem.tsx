@@ -24,13 +24,13 @@ export function PodiumItem(props: PodiumItemProps) {
 
   const renderSkeleton = () => {
     return (
-      <div className={clsx("shadow-gray3", "w-[400px]", "rounded-lg", "space-y-8")}>
-        <div className="py-2 justify-items-center space-y-1" style={{ height }}>
+      <div className={clsx("shadow-gray5", "w-[400px]", "rounded-lg", "space-y-8")}>
+        <div className="py-2 space-y-1 justify-items-center" style={{ height }}>
           <Skeleton className="w-12 h-12 rounded-full" />
           <Skeleton className="w-24 h-4 mt-2" />
           <Skeleton className="w-32 h-3 mt-1" />
         </div>
-        <div className={clsx("bg-gray3", "text-white", "text-center", "py-2", "px-4", "rounded-b-lg")}>
+        <div className={clsx("bg-gray5", "text-white", "text-center", "py-2", "px-4", "rounded-b-lg")}>
           <Skeleton className="h-6 mx-auto w-28" />
         </div>
       </div>
@@ -51,6 +51,7 @@ export function PodiumItem(props: PodiumItemProps) {
         className={clsx(
           `${color === "gold" ? "shadow-gold" : color === "bronze" ? "shadow-bronze" : "shadow-gray3"}`,
           "w-[400px]",
+          "shadow-md",
           "rounded-lg",
           "space-y-8",
           "cursor-pointer",
@@ -59,7 +60,7 @@ export function PodiumItem(props: PodiumItemProps) {
         )}
         onClick={handleItemClick}
       >
-        <div className="py-2 justify-items-center space-y-1" style={{ height }}>
+        <div className="py-2 space-y-1 justify-items-center" style={{ height }}>
           {renderAvatar()}
           <h3 className="text-base font-semibold text-gray-800 truncate" style={{ maxWidth: width / 10 }}>
             {item?.displayName}

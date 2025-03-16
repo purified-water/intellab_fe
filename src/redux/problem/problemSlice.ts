@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProblemState, UserCodeState } from "./problemType";
 import { problemAPI } from "@/lib/api/problemApi";
-import { Category, Problem } from "@/pages/ProblemsPage/types/resonseType";
+import { Problem } from "@/pages/ProblemsPage/types/resonseType";
 import { ICategory } from "@/pages/HomePage/types/responseTypes";
 // Async thunk for fetching paginated problems
 interface FetchPaginatedProblemsParams {
