@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
-import { amountTransformer } from "@/utils";
+import { amountTransformer, getUserIdFromLocalStorage } from "@/utils";
 import { ICourse } from "../types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { AI_AGENT } from "@/constants";
 import { NA_VALUE } from "@/constants";
 import { showToastError } from "@/utils/toastUtils";
 
@@ -22,7 +23,8 @@ export const Header = (props: HeaderProps) => {
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-
+  const userId = getUserIdFromLocalStorage();
+  const abortControllerRef = useRef<AbortController | null>(null);
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
   const isFinished = course.progressPercent == 100;
@@ -74,7 +76,7 @@ export const Header = (props: HeaderProps) => {
     setLoading(true);
     try {
       // remove the special characters and the space at start and end from the course name
-      const response = await aiAPI.getSummaryContent(formattedCourseName, course.courseId, "false");
+      const response = await aiAPI.getCourseSummary(formattedCourseName, course.courseId, "false");
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
@@ -82,6 +84,12 @@ export const Header = (props: HeaderProps) => {
       showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
     }
     setLoading(false);
+  };
+
+  const handleCancelClick = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
   };
 
   const renderRightButton = () => {
@@ -107,7 +115,10 @@ export const Header = (props: HeaderProps) => {
         courseName={formattedCourseName}
         isOpen={showSummaryDialog}
         summaryContent={summaryContent}
-        onClose={() => setShowSummaryDialog(false)}
+        onClose={() => {
+          setShowSummaryDialog(false);
+          handleCancelClick();
+        }}
       />
       {loading && <Spinner overlay loading={loading} />}
     </div>

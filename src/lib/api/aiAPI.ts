@@ -9,13 +9,88 @@ export const aiAPI = {
   // *********** //
   // AI SUMMARY  //
   // *********** //
-  getSummaryContent: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
+  getCourseSummary: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
-      modal: "groq-llama-3.3-70b"
+      model: "llama3.2"
     };
-    const response = await axios.post(`${BASE_URL}/${AI_AGENT.SUMMARIZE_AGENT}/invoke`, bodyParams);
+    const response = await axios.post(`${BASE_URL}/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
+  },
+
+  getCourseSummaryStream: async (
+    courseName: string,
+    courseId: string,
+    userId: string,
+    regenerate: "true" | "false",
+    controller: AbortController // Added controller parameter
+  ) => {
+    const bodyParams = {
+      message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenerate}`,
+      user_id: userId,
+      model: "llama3.2"
+    };
+
+    try {
+      const response = await fetch(`${BASE_URL}/stream/${AI_AGENT.SUMMARIZE_ASSISTANT}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(bodyParams),
+        signal: controller.signal // Attach signal to fetch request
+      });
+
+      if (!response.body) {
+        throw new Error("Failed to establish connection for streaming.");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+
+      async function* streamProcessor() {
+        let buffer = "";
+
+        while (true) {
+          const { value, done } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+          const events = buffer.split("\n\n");
+          buffer = events.pop() ?? "";
+
+          for (const event of events) {
+            if (event.startsWith("data:")) {
+              try {
+                const jsonStr = event.replace(/^data:\s*/, "");
+                if (jsonStr === "[DONE]") {
+                  reader.cancel();
+                  return;
+                }
+                yield JSON.parse(jsonStr);
+              } catch (error) {
+                console.log("Failed to parse AI response chunk:", error);
+                console.error("Failed to parse AI response chunk with event:", event);
+              }
+            }
+          }
+        }
+
+        if (buffer.startsWith("data:")) {
+          try {
+            yield JSON.parse(buffer.replace(/^data:\s*/, ""));
+          } catch (error) {
+            console.log("Failed to parse final AI response chunk:", error);
+            console.error("Failed to parse final AI response chunk at buffer:", buffer);
+          }
+        }
+      }
+
+      return streamProcessor();
+    } catch (error) {
+      console.log("Failed to establish connection for streaming:", error);
+      return;
+    }
   },
 
   getPDFSummaryFile: async () => {
