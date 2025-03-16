@@ -96,9 +96,9 @@ export function LeaderboardItem(props: LeaderboardItemProps) {
         case "problem":
           result = (
             <>
-              <td className="w-[80px] text-left">{item?.problemStat.easy}</td>
-              <td className="w-[80px] text-left">{item?.problemStat.medium}</td>
-              <td className="w-[80px] text-left">{item?.problemStat.hard}</td>
+              <td className="w-[80px] text-left">{item?.courseStat ? item?.problemStat.easy : NA_VALUE}</td>
+              <td className="w-[80px] text-left">{item?.courseStat ? item?.problemStat.medium : NA_VALUE}</td>
+              <td className="w-[80px] text-left">{item?.courseStat ? item?.problemStat.hard : NA_VALUE}</td>
             </>
           );
           break;
