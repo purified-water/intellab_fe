@@ -1,5 +1,5 @@
 import { Problem } from "@/pages/ProblemsPage/types/resonseType";
-import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { MdCheckCircleOutline } from "rocketicons/md";
 import { useNavigate } from "react-router-dom";
 interface AllProblemsListItemProps {

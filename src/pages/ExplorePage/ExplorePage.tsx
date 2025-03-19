@@ -20,6 +20,7 @@ import { getExploreCourse, resetFilters } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { AppFooter } from "@/components/AppFooter";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 // const SEARCH_WAIT_TIME = 3000;
 
@@ -37,6 +38,10 @@ export const ExplorePage = () => {
     const userId = localStorage.getItem("userId");
     return userId;
   };
+
+  useEffect(() => {
+    document.title = "Explore | Intellab";
+  }, []);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -74,7 +79,7 @@ export const ExplorePage = () => {
     // }
     try {
       const response = await courseAPI.search(query, 0);
-      console.log("QUERY", query);
+
       dispatch(getExploreCourse(response.result.content));
     } catch (error) {
       console.error("Failed to search courses:", error);
@@ -96,6 +101,7 @@ export const ExplorePage = () => {
 
   // Determine which courses to display
   const displayedCourses = query ? exploreCourses : exploreCourses;
+
   const renderSkeletonList = () => {
     const skeletonCount = 6; // Số lượng skeleton cố định
     return (
@@ -114,11 +120,11 @@ export const ExplorePage = () => {
   const renderCourses = (displayingCourses: ICourse[]) => {
     return (
       <div className="flex py-4 overflow-x-auto gap-7 scrollbar-hide">
-        {displayingCourses.map((course) => (
-          <div key={course.courseId}>
-            <Course course={course} skeletonLoading={loading} />
-          </div>
-        ))}
+        <ScrollableList size="large">
+          {displayingCourses.map((course) => (
+            <Course key={course.courseId} course={course} skeletonLoading={loading} />
+          ))}
+        </ScrollableList>
       </div>
     );
   };
@@ -133,7 +139,7 @@ export const ExplorePage = () => {
 
   return (
     <>
-      <div className="flex flex-col w-full px-4 pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
+      <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
         {/* Header section with filter button and search bar */}
         <div className="flex items-center pt-10">
           <FilterButton
@@ -170,20 +176,20 @@ export const ExplorePage = () => {
           ) : (
             <div>
               {/* Welcome message */}
-              <div className="w-full h-[106px] flex flex-col">
+              <div className="flex flex-col w-full">
                 <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                   Welcome to Intellab explore!
                 </div>
-                <div>Find new and exciting courses here!</div>
+                <span className="mt-2 text-xl font-light text-gray3">Find new and exciting courses here!</span>
               </div>
               {!hasFilter ? (
-                <div>
+                <div className="mt-8">
                   {/* Section for Fundamentals For Beginner */}
-                  <div className="flex flex-col mb-[78px]">
-                    <div className="flex items-center justify-between w-full mb-8">
-                      <div className="text-4xl font-bold text-black">Fundamentals For Beginner</div>
+                  <div className="flex flex-col mb-8 sm:mb-[78px]">
+                    <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
+                      <div className="text-2xl font-bold text-black sm:text-4xl">Fundamental For Beginner</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
-                      <Link to="/explore/fundamentals" state={{ courses: displayedCourses, section: "fundamentals" }}>
+                      <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
                         <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
                       </Link>
                     </div>
@@ -193,8 +199,8 @@ export const ExplorePage = () => {
 
                   {/* Section for Popular Courses */}
                   <div className="flex flex-col mb-[78px]">
-                    <div className="flex items-center justify-between w-full mb-8">
-                      <div className="text-4xl font-bold text-black">Popular Courses</div>
+                    <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
+                      <div className="text-2xl font-bold text-black sm:text-4xl">Popular Courses</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
                       {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>

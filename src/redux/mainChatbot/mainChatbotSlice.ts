@@ -19,8 +19,6 @@ const mainChatbotSlice = createSlice({
   reducers: {
     // Reserved for setting chat detail after selecting a history item only
     setChatDetail: (state, action: PayloadAction<ChatbotHistoryDetailType>) => {
-      console.log("setChatDetail", action.payload);
-
       if (!state.chatDetail) {
         state.chatDetail = action.payload;
       } else {

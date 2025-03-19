@@ -70,8 +70,6 @@ export const SubmissionHistory = () => {
     );
   }
 
-  console.log("selectedSubmission", selectedSubmission);
-
   return (
     <div className="h-full pb-16 overflow-x-auto overflow-y-scroll">
       {currentPanel === "history" ? (

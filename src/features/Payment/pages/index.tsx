@@ -1,1 +1,1 @@
-export * from "./PaymentStatusPage";
+export * from "./PaymentResultPage";

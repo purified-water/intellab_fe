@@ -64,8 +64,10 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const renderContent = () => {
     return (
       <>
-        <div onClick={handleViewCourseDetail} className="cursor-pointer">
-          <h3 className="text-xl font-bold line-clamp-2">{courseDetail?.courseName}</h3>
+        <div>
+          <h3 className="text-xl font-bold line-clamp-2 cursor-pointer" onClick={handleViewCourseDetail}>
+            {courseDetail?.courseName}
+          </h3>
           <p
             className={`text-sm mb-2 ${courseDetail?.courseName && courseDetail.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
           >
@@ -81,7 +83,6 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
             >
               {isFinished ? "View Certificate" : "Continue"}
             </button>
-            <p className="self-end mt-2 font-bold">{courseDetail?.price ? `${courseDetail?.price} VND` : "Free"}</p>
           </div>
         </div>
       </>
@@ -100,7 +101,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0 hover:shadow-lg">
       {skeletonLoading || apiLoading ? renderSkeleton() : renderContent()}
     </div>
   );

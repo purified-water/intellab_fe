@@ -18,6 +18,10 @@ export const HomePage = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userUid = getUserIdFromLocalStorage();
 
+  useEffect(() => {
+    document.title = "Home | Intellab";
+  }, []);
+
   const getCourses = async () => {
     const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     return response ? response.result.content : [];

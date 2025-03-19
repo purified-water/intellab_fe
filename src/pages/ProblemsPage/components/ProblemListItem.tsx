@@ -1,7 +1,7 @@
 import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown } from "rocketicons/md";
 import { useState } from "react";
 import { Problem } from "../types/resonseType";
-import { capitalizeFirstLetter } from "@/utils/capitalizeFirstLetter";
+import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { useNavigate } from "react-router-dom";
 
 type ProblemListItemProps = {
@@ -9,7 +9,6 @@ type ProblemListItemProps = {
 };
 
 export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
-  console.log("PROBLEMS PAGE", problems);
   const [sortConfig, setSortConfig] = useState<{ key: keyof Problem | null; order: "asc" | "desc" }>({
     key: null,
     order: "asc"
@@ -34,7 +33,6 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
   });
 
   const handleProblemListItemClicked = (problemId: string) => {
-    console.log("Problem ID", problemId);
     navigate(`/problems/${problemId}`);
   };
 
@@ -42,7 +40,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
     <div className="overflow-x-auto">
       <table className="min-w-full table-auto">
         <thead className="border-b">
-          <tr>
+          <tr className="text-xs sm:text-base">
             {["Status", "Title", "Hints", "Level", "Category"].map((header, index) => (
               <th
                 key={index}
@@ -71,13 +69,13 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
           {sortedData.map((row, index) => (
             <tr
               key={index}
-              className={`cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+              className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
               onClick={() => handleProblemListItemClicked(row.problemId)}
             >
               <td className="w-12 py-2 pl-8 text-center">
-                {row.done === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                {row.isDone === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
-              <td className="w-2/6 px-4 py-2 font-semibold">{row.problemName}</td>
+              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.problemName}</td>
               <td className="w-20 px-4 py-2 font-semibold text-center">
                 {row.hintCount > 0 ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>

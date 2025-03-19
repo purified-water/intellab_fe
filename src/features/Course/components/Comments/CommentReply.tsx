@@ -210,7 +210,7 @@ export const CommentReply = (props: CommentReplyProps) => {
           {renderReplyButton()}
           {isOwner && (
             //{(isOwner ?? true) && ( // NOTE: for testing
-            <div className="hidden group-hover:flex space-x-4">
+            <div className="hidden space-x-4 group-hover:flex">
               {renderEditButton()}
               {renderDeleteButton()}
             </div>
@@ -242,7 +242,7 @@ export const CommentReply = (props: CommentReplyProps) => {
               <AvatarIcon src={reduxUser?.photoUrl ?? DEFAULT_AVATAR} alt={userName} />
               <textarea
                 placeholder="Type your reply..."
-                className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"
+                className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify focus:outline-none"
                 rows={1}
                 onInput={(e) => {
                   e.currentTarget.style.height = "auto";
@@ -309,7 +309,7 @@ export const CommentReply = (props: CommentReplyProps) => {
           <AvatarIcon src={avatarUrl} alt={userName} />
           <textarea
             placeholder="Type your edit..."
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"
+            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify focus:outline-none"
             rows={1}
             onInput={(e) => {
               e.currentTarget.style.height = "auto";

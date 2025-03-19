@@ -17,17 +17,30 @@ import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 import { Toaster } from "@/components/ui/shadcn/toaster";
 import { CertificatePage } from "./features/Certificate/pages";
-import { PaymentStatusPage } from "./features/Payment/pages";
+import { PaymentResultPage } from "./features/Payment/pages";
 import { LeaderboardPage } from "./features/Leaderboard/pages/LeaderboardPage";
 
 // Layout component to include conditional Navbar
-const Layout = () => {
+import { useState, useEffect } from "react";
+
+export const Layout = () => {
   const location = useLocation();
   const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [darkMode]);
 
   return (
     <>
-      {!hideNavbar && <Navbar />}
+      {!hideNavbar && <Navbar isDarkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />}
       <Outlet />
     </>
   );
@@ -104,8 +117,8 @@ const router = createBrowserRouter([
         element: <ViewAllSubmissionPage />
       },
       {
-        path: "/payment/status",
-        element: <PaymentStatusPage />
+        path: "/payment-result",
+        element: <PaymentResultPage />
       },
       {
         path: "/leaderboard",

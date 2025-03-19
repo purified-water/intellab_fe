@@ -26,7 +26,7 @@ export const SortByButton = (props: SortByButtonProps) => {
         <div
           role="combobox"
           aria-expanded={sortByOpen}
-          className="w-[200px] flex text-sm space-x-2 items-center cursor-pointer"
+          className="inline-flex text-sm space-x-2 items-center cursor-pointer"
         >
           <span className="font-normal">{title}</span>
           <span className="font-semibold ">{items.find((item) => item.value === selectedValue)?.label}</span>

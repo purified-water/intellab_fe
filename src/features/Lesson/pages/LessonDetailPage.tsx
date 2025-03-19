@@ -7,25 +7,26 @@ import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { MarkdownRender } from "../components/MarkdownRender";
+// import { MarkdownRender } from "../components/MarkdownRender";
 import { Button } from "@/components/ui";
 // import MarkdownEditor from "../components/MarkdownRender2";
+import { RenderMarkdown } from "../components/RenderLessonContent";
 // import { testData } from "../components/testData";
+import { TOCItem, TableOfContents } from "../components";
+import { AppFooter } from "@/components/AppFooter";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<ILesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [hasQuiz, setHasQuiz] = useState<boolean>(false);
-
-  // Leave this here in case test case where there are questions in 2 consecutive lessons
-  // const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [isScrolledToBottom, setIsScrolledToBottom] = useState<boolean>(false);
   const [isLessonDone, setIsLessonDone] = useState<boolean>(false);
+  const [tocItems, setTocItems] = useState<TOCItem[]>([]);
+  const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  // Get learning id, course id from query params
   const [searchParams] = useSearchParams();
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
@@ -35,7 +36,65 @@ export const LessonDetailPage = () => {
     if (!isAuthenticated) {
       navigate("/");
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    getCourseDetail();
+    getLessonDetail();
+  }, [id]);
+
+  useEffect(() => {
+    updateTheoryDone();
+  }, [hasQuiz, isScrolledToBottom]);
+
+  // Setup intersection observer for headings
+  useEffect(() => {
+    if (!tocItems.length) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setActiveHeading(entry.target.id);
+          }
+        });
+      },
+      {
+        rootMargin: "-100px 0px -80% 0px",
+        threshold: 0
+      }
+    );
+
+    // Observe all heading elements
+    tocItems.forEach((item) => {
+      const element = document.getElementById(item.id);
+      if (element) {
+        observer.observe(element);
+      }
+    });
+
+    return () => {
+      // Cleanup observer
+      observer.disconnect();
+    };
+  }, [tocItems]);
+
+  // Setup scroll detection to determine if user reached bottom
+  useEffect(() => {
+    const handleScroll = () => {
+      // Check if scrolled to bottom (with a small buffer)
+      const scrolledToBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight - 100;
+
+      if (scrolledToBottom) {
+        setIsScrolledToBottom(true);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
 
   const getCourseDetail = async () => {
     if (courseId) {
@@ -62,7 +121,7 @@ export const LessonDetailPage = () => {
       const response = await courseAPI.getLessonDetail(id);
       const { result } = response;
 
-      console.log("Lesson detail", result);
+      // console.log("Lesson detail", result);
       if (result.exerciseId) {
         setHasQuiz(true);
       }
@@ -70,6 +129,8 @@ export const LessonDetailPage = () => {
         setIsLessonDone(true);
       }
       setLesson(result);
+      // Set document title
+      document.title = `${result.lessonName} - ${course?.courseName} | Intellab`;
       setLoading(false);
     }
   };
@@ -77,11 +138,10 @@ export const LessonDetailPage = () => {
   const updateTheoryDone = async () => {
     try {
       // if not quiz, mark as done when scrolled to bottom
-      if (!hasQuiz && isScrolledToBottom) {
-        await courseAPI.updateTheoryDone(lesson!.learningId!, lesson!.courseId!);
-        console.log("Mark as done");
+      if (!hasQuiz && isScrolledToBottom && lesson) {
+        await courseAPI.updateTheoryDone(lesson.learningId!, lesson.courseId!);
         // Remove bookmark after lesson is done
-        clearBookmark(userId!, lesson!.lessonId!);
+        clearBookmark(userId!, lesson.lessonId!);
         setIsLessonDone(true);
       }
     } catch (error) {
@@ -91,8 +151,6 @@ export const LessonDetailPage = () => {
 
   const navigateToNextLesson = () => {
     if (lesson?.nextLessonId) {
-      console.log("Has next lesson");
-      // setIsCorrect(null);
       setIsLessonDone(false);
       setIsScrolledToBottom(false);
       setLesson(null);
@@ -106,21 +164,13 @@ export const LessonDetailPage = () => {
   };
 
   const navigateToProblem = () => {
-    navigate(
-      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${course!.courseId}&courseName=${course!.courseName}&learningId=${lesson!.learningId}`
+    window.open(
+      `/problems/${lesson!.problemId}?lessonId=${lesson!.lessonId}&lessonName=${lesson!.lessonName}&courseId=${lesson!.courseId}&courseName=${course!.courseName}&learningId=${lesson!.learningId}`,
+      "_blank"
     );
   };
 
-  useEffect(() => {
-    getCourseDetail();
-    getLessonDetail();
-  }, [id]);
-
-  useEffect(() => {
-    updateTheoryDone();
-  }, [hasQuiz, isScrolledToBottom]);
-
-  const renderCourseName = () => {
+  const renderReturnToCourse = () => {
     if (course) {
       return (
         <div className="flex items-center gap-2 cursor-pointer" onClick={navigateToCourse}>
@@ -129,42 +179,27 @@ export const LessonDetailPage = () => {
         </div>
       );
     }
-  };
-
-  // const renderContent = () => {
-  //   if (lesson && lesson.content != null) {
-  //     return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
-  //   }
-  // };
-
-  // TESTING
-  const renderContent = () => {
-    if (lesson && lesson.content != null) {
-      return <MarkdownRender lesson={lesson} setIsScrolledToBottom={setIsScrolledToBottom} />;
-      // return <MarkdownEditor markdown={testData} />;
-    }
+    return null;
   };
 
   const renderProblem = () => {
-    let content = null;
-    if (lesson?.problemId && isLessonDone) {
-      content = (
-        <div
-          className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
-          onClick={navigateToProblem}
-        >
-          <p>Solve this lesson's problem</p>
-          <div className="ml-auto">
-            <ChevronRight style={{ color: "gray" }} size={22} />
-          </div>
+    if (!lesson?.problemId) return null;
+
+    return (
+      <div
+        className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
+        onClick={navigateToProblem}
+      >
+        <p>Solve this lesson's problem</p>
+        <div className="ml-auto">
+          <ChevronRight style={{ color: "gray" }} size={22} />
         </div>
-      );
-    }
-    return content;
+      </div>
+    );
   };
 
   const renderNextLesson = () => {
-    if (!lesson?.nextLessonId || !isLessonDone) return null;
+    if (!lesson?.nextLessonId) return null;
 
     return (
       <div
@@ -199,7 +234,7 @@ export const LessonDetailPage = () => {
 
   const renderSkeleton = () => {
     return (
-      <div className="space-y-8 ">
+      <div className="space-y-8">
         <Skeleton className="h-20 bg-gray5" />
         <Skeleton className="h-6 bg-gray5" />
         <Skeleton className="h-6 bg-gray5" />
@@ -208,7 +243,7 @@ export const LessonDetailPage = () => {
     );
   };
 
-  const renderQuizPage = () => {
+  const renderContinueToQuiz = () => {
     if (!lesson?.exerciseId) return null;
 
     return (
@@ -228,21 +263,42 @@ export const LessonDetailPage = () => {
     );
   };
 
-  return (
-    <div className="p-5 px-6 pb-24 space-y-6 sm:px-20">
-      {loading ? (
-        renderSkeleton()
-      ) : (
-        <>
-          {renderCourseName()}
-          {renderContent()}
-          {renderQuizPage()}
+  const renderContent = () => {
+    if (lesson && lesson.content != null) {
+      return (
+        <div className="pr-4 space-y-6">
+          <RenderMarkdown lesson={lesson} setTocItems={setTocItems} />
+          {renderContinueToQuiz()}
           {isLessonDone && lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}
           {renderProblem()}
           {renderNextLesson()}
           {renderFinishLesson()}
-        </>
-      )}
-    </div>
+        </div>
+      );
+    }
+    return null;
+  };
+
+  return (
+    <>
+      <div className="grid grid-cols-1 gap-2 p-6 sm:pl-24 lg:grid-cols-5 md:pl-32 md:pr-8">
+        {loading ? (
+          <div className="col-span-1 lg:col-span-4">{renderSkeleton()}</div>
+        ) : (
+          <>
+            <div className="col-span-1 lg:col-span-4">
+              {renderReturnToCourse()}
+              {renderContent()}
+            </div>
+            <div className="hidden col-span-1 lg:block">
+              <div className="sticky top-5 lg:right-4">
+                <TableOfContents items={tocItems} activeId={activeHeading} />
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+      <AppFooter />
+    </>
   );
 };

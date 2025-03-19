@@ -104,7 +104,6 @@ export const SubmissionResults = ({
     const fetchTestCaseDetail = async () => {
       try {
         const response = await problemAPI.getTestCaseDetail(selectedTestCase.testCaseOutputID.testcaseId);
-        console.log("Test case detail", response);
         setSelectedTestCaseDetail(response);
       } catch (error) {
         console.log("Error getting test case detail", error);
@@ -207,8 +206,6 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
     // If theres no history, which is recently submitted code, get the code from the store
     const initializeData = async () => {
       if (historyInformation) {
-        // console.log("History information", historyInformation);
-        // console.log("Test cases", historyInformation.testCasesOutput);
         setSubmissionResult(historyInformation);
         setTestCases(historyInformation.testCasesOutput);
         setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });

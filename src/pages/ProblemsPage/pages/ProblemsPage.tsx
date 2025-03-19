@@ -26,6 +26,10 @@ export const ProblemsPage = () => {
   const [query, setQuery] = useState<string>("");
 
   useEffect(() => {
+    document.title = "Problems | Intellab";
+  }, []);
+
+  useEffect(() => {
     dispatch(fetchPaginatedProblems({ keyword: "", page: 0, size: 20 })); // Fetch first page initially
   }, [dispatch]);
 
@@ -79,7 +83,7 @@ export const ProblemsPage = () => {
 
   return (
     <>
-      <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
+      <div className="flex flex-col w-full pt-3 mx-auto px-12 md:max-w-5xl lg:max-w-[90rem] md:px-28">
         <div className="flex items-center pt-10">
           <FilterButton
             onClick={() => {
@@ -115,14 +119,14 @@ export const ProblemsPage = () => {
                   {query && problems.length === 0 ? "Not found" : "Search results"}
                 </div>
               ) : (
-                <div className="w-full h-[106px] flex flex-col mb-4">
+                <div className="flex flex-col w-full mb-4">
                   <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
                     Welcome to Intellab problems!
                   </div>
-                  <div>Improve your problem solving skills here!</div>
+                  <span className="mt-2 text-xl font-light text-gray3">Improve your problem solving skills here!</span>
                 </div>
               )}
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full mt-8">
                 <ProblemListItem problems={problems} />
                 {totalPages != 0 && (
                   <Pagination

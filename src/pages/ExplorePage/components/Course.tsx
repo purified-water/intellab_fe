@@ -8,7 +8,6 @@ import { getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-
 interface CourseProps {
   course: ICourse;
   skeletonLoading?: boolean;
@@ -21,9 +20,7 @@ export default function Course(props: CourseProps) {
   const [internalLoading, setInternalLoading] = useState(false);
 
   const navigate = useNavigate();
-
   const userId = getUserIdFromLocalStorage();
-
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const isFinished = detailCourse?.progressPercent === 100;
@@ -35,60 +32,68 @@ export default function Course(props: CourseProps) {
     setInternalLoading(false);
   };
 
-  useEffect(() => {
-    if (!skeletonLoading) {
-      getCourseDetail();
-    }
-  }, [skeletonLoading]);
-
   const handleTitleClick = () => {
     navigate(`/course/${detailCourse?.courseId}`);
   };
 
-  const handleButtonClick = (id: string) => {
-    if (isAuthenticated && detailCourse?.userEnrolled) {
-      if (isFinished) {
-        navigate(`/certificate/${detailCourse.certificateId}`);
-      } else {
-        if (detailCourse?.latestLessonId) {
-          navigate(`/lesson/${detailCourse.latestLessonId}`);
+  const handleButtonClick = async (id: string) => {
+    if (isAuthenticated) {
+      if (detailCourse?.userEnrolled) {
+        if (isFinished) {
+          navigate(`/certificate/${detailCourse.certificateId}`);
         } else {
-          navigate(`/course/${id}`);
+          if (detailCourse?.latestLessonId) {
+            navigate(`/lesson/${detailCourse.latestLessonId}`);
+          } else {
+            navigate(`/course/${id}`);
+          }
         }
+      } else {
+        navigate(`/course/${id}`);
       }
     } else {
       navigate(`/course/${id}`);
     }
   };
 
+  useEffect(() => {
+    if (!skeletonLoading) {
+      getCourseDetail();
+    }
+  }, [skeletonLoading]);
+
   const priceText = (price: number, unitPrice: string) => {
     let result;
     if (price == 0) {
       result = "Free";
     } else {
-      result = `${price} ${unitPrice}`;
+      result = `${price.toLocaleString()} ${unitPrice}`;
     }
     return result;
   };
 
-  const buttonText = () => {
+  const buttonText = (courseObject: ICourse) => {
     let text;
-    if (detailCourse?.userEnrolled) {
-      if (isFinished) {
+    if (courseObject?.userEnrolled) {
+      if (courseObject.progressPercent === 100) {
         text = "View Certificate";
       } else {
         text = "Continue";
       }
     } else {
-      text = "Enroll";
+      if (courseObject?.price > 0) {
+        text = "Purchase";
+      } else {
+        text = "Enroll";
+      }
     }
     return text;
   };
 
   const renderContent = () => (
-    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
+    <div className="flex flex-col transition-shadow duration-200 ease-in-out bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
       {/* Header section with background gradient and reviews */}
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col items-end justify-between p-2">
+      <div className="flex flex-col items-end justify-between h-40 p-2 w-80 bg-gradient-to-tr from-appSecondary to-appFadedPrimary rounded-tl-xl rounded-tr-xl">
         <div className="flex flex-col items-center justify-between">
           <div className="flex items-center justify-end px-2 pt-2 mb-5">
             <div className="text-sm font-medium text-white">
@@ -130,7 +135,7 @@ export default function Course(props: CourseProps) {
           className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
           onClick={() => handleButtonClick(detailCourse?.courseId ?? course.courseId)}
         >
-          {buttonText()}
+          {buttonText(detailCourse!)}
         </button>
         <span className="text-lg font-bold text-appPrimary">
           {priceText(detailCourse?.price ?? DEFAULT_COURSE.price, detailCourse?.unitPrice ?? DEFAULT_COURSE.unitPrice)}
@@ -141,7 +146,7 @@ export default function Course(props: CourseProps) {
 
   const renderSkeleton = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
-      <div className="w-80 h-40 bg-gradient-to-l from-[#6b60ca] via-appSecondary to-[#231e55] rounded-tl-xl rounded-tr-xl flex flex-col p-2">
+      <div className="flex flex-col h-40 p-2 w-80 bg-gray5 rounded-tl-xl rounded-tr-xl">
         <Skeleton className="self-end w-40 h-10 mb-9 bg-gray5" />
         <Skeleton className="h-10 mb-5 w-50 bg-gray5" />
         {/* <Skeleton className="self-end w-20 h-20 bg-gray5" /> */}

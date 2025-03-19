@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "@/components/ui/Resizable";
-import { RenderDescTabs } from "../components/RenderDescription/RenderDescTabs";
-import { RenderPGTabs } from "../components/RenderPlayground/RenderPlaygroundTabs";
-import { RenderTCTabs } from "../components/RenderTestCase/RenderTestCaseTabs";
-import { Button } from "@/components/ui/Button";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button } from "@/components/ui";
+import { RenderDescTabs, RenderPGTabs, RenderTCTabs, RenderAllProblems, RenderAIAssistant } from "../components";
 import { MdList } from "rocketicons/md";
+import { HiOutlineSparkles } from "rocketicons/hi2";
 import { FaPlay, FaSpinner, FaUpload } from "rocketicons/fa6";
-import { RenderAllProblems } from "../components/RenderAllProblems/RenderAllProblemsList";
 import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
@@ -14,16 +11,20 @@ import { useSearchParams } from "react-router-dom";
 // import { useNavigate } from "react-router-dom";
 // import { useSelector } from "react-redux";
 // import { RootState } from "@/redux/rootReducer";
-import { TestCaseAfterSubmit, TestCaseType } from "../types/TestCaseType";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { SubmissionTypeNoProblem } from "../types/SubmissionType";
+import {
+  SubmissionTypeNoProblem,
+  RunCodeResponseType,
+  RunCodeTestCase,
+  TestCaseAfterSubmit,
+  TestCaseType
+} from "../types";
 import { saveCode } from "@/redux/problem/problemSlice";
 import { useDispatch } from "react-redux";
 import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
-import { RunCodeResponseType, RunCodeTestCase } from "../types/RunCodeType";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,6 +37,7 @@ export const ProblemDetail = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [runCodeResult, setRunCodeResult] = useState<RunCodeResponseType | null>(null);
   const [isRunningCode, setIsRunningCode] = useState(false);
+  const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
 
   // const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -49,7 +51,6 @@ export const ProblemDetail = () => {
   const { toast } = useToast();
 
   const submissionValidation = () => {
-    console.log("code in validation", code);
     if (!code) {
       toast({
         variant: "destructive",
@@ -69,13 +70,14 @@ export const ProblemDetail = () => {
   };
 
   const dispatch = useDispatch();
-  console.log("user id from local storage", userId);
+
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-
+      // console.log("Problem detail", problemDetail);
       if (problemDetail) {
         setProblemDetail(problemDetail);
+        document.title = `${problemDetail.problemName} | Intellab`;
         setTestCases(problemDetail.testCases.slice(0, 3));
       }
     } catch (error) {
@@ -93,7 +95,7 @@ export const ProblemDetail = () => {
       if (problemId && languageId) {
         const response = await problemAPI.postRunCode(code, languageId, problemId);
         const result = response.result;
-        console.log("Run code response", result);
+
         if (result) {
           pollRunCode(result.runCodeId);
         }
@@ -118,7 +120,7 @@ export const ProblemDetail = () => {
 
       try {
         const response = await problemAPI.getRunCodeUpdate(runCodeId);
-        console.log("Run code update response", response);
+
         if (response) {
           const updateResponse = response.result;
 
@@ -214,7 +216,7 @@ export const ProblemDetail = () => {
 
       try {
         const response = await problemAPI.getUpdateSubmission(submissionId);
-        console.log("Submission update response", response);
+        // console.log("Submission update response", response);
         if (response) {
           const updateResponse = response;
 
@@ -279,7 +281,13 @@ export const ProblemDetail = () => {
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-          <ResizablePanel defaultSize={40} minSize={35} id="description" className="bg-white rounded-t-lg">
+          <ResizablePanel
+            order={1}
+            defaultSize={isAIAssistantOpen ? 30 : 40}
+            minSize={10}
+            id="description"
+            className="bg-white rounded-t-lg"
+          >
             <RenderDescTabs
               problemDetail={problemDetail}
               courseId={courseId}
@@ -292,15 +300,16 @@ export const ProblemDetail = () => {
 
           <ResizableHandle withHandle className="w-2 bg-gray5" />
 
-          {/* Right Panel: Playground and test case */}
+          {/* Middle Panel: Playground and test case */}
           <ResizablePanel
-            defaultSize={60}
+            order={2}
+            defaultSize={isAIAssistantOpen ? 50 : 60}
             minSize={30}
             id="playground"
             className="overflow-y-auto bg-white rounded-t-lg"
           >
             <ResizablePanelGroup direction="vertical" className="h-full">
-              <ResizablePanel defaultSize={60} minSize={40} className="bg-white">
+              <ResizablePanel order={3} defaultSize={60} minSize={40} className="bg-white">
                 <RenderPGTabs
                   setLanguagePackage={(langJudge0, code) => {
                     setLanguage(langJudge0.name);
@@ -311,11 +320,36 @@ export const ProblemDetail = () => {
 
               <ResizableHandle withHandle className="h-[10px] bg-gray5" />
 
-              <ResizablePanel id="test-cases" defaultSize={40} minSize={20} className="overflow-y-auto bg-white">
+              <ResizablePanel
+                order={4}
+                id="test-cases"
+                defaultSize={40}
+                minSize={20}
+                className="overflow-y-auto bg-white"
+              >
                 <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
               </ResizablePanel>
             </ResizablePanelGroup>
           </ResizablePanel>
+
+          {isAIAssistantOpen && <ResizableHandle withHandle className="w-2 bg-gray5" />}
+
+          {/* Right Panel: AI Assistant */}
+          {isAIAssistantOpen && (
+            <ResizablePanel
+              order={5}
+              defaultSize={20}
+              minSize={20}
+              id="ai-assistant"
+              className="overflow-y-auto bg-white rounded-t-lg"
+            >
+              <RenderAIAssistant
+                isAIAssistantOpen={true}
+                setIsAIAssistantOpen={setIsAIAssistantOpen}
+                problem={problemDetail}
+              />
+            </ResizablePanel>
+          )}
         </ResizablePanelGroup>
       </div>
 
@@ -324,12 +358,24 @@ export const ProblemDetail = () => {
 
       {/* Bottom bar */}
       <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-6 bg-white border-t h-14">
-        <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={toggleSidebar}>
-          <MdList className="inline-block icon-base icon-gray3" />
-          All Problems
-        </Button>
+        <div className="flex space-x-2">
+          <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={toggleSidebar}>
+            <MdList className="inline-block icon-base icon-gray3" />
+            All Problems
+          </Button>
 
-        <div className="flex space-x-4">
+          {userId && (
+            <Button
+              className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
+              onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
+            >
+              <HiOutlineSparkles className="inline-block w-4 h-4 icon-white" />
+              Ask AI
+            </Button>
+          )}
+        </div>
+
+        <div className="flex space-x-2">
           <Button
             className={`font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4 ${isRunningCode ? "cursor-not-allowed" : ""}`}
             onClick={handleRunCode}
@@ -340,7 +386,7 @@ export const ProblemDetail = () => {
             ) : (
               <FaPlay className="inline-block icon-sm icon-gray3" />
             )}
-            Run Code
+            Run
           </Button>
 
           <Button

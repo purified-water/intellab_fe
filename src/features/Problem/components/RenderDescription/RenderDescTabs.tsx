@@ -64,6 +64,16 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         return <SubmissionInformation isPassed={false} />;
       case "Passed":
         return <SubmissionInformation isPassed={true} />;
+      default:
+        return (
+          <ProblemDescription
+            problemDetail={problemDetail}
+            courseId={courseId}
+            courseName={courseName}
+            lessonId={lessonId}
+            lessonName={lessonName}
+          />
+        );
     }
   };
 
@@ -71,7 +81,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
     <>
       <div
         id="tab-buttons"
-        className="flex items-center justify-around px-2 py-3 overflow-x-scroll border-b h-18 scrollbar-hide"
+        className="flex items-center justify-around w-full px-4 py-3 space-x-2 overflow-x-scroll border-b max-h-18 scrollbar-hide shrink-0"
       >
         {renderDescriptionTabButton("Description")}
         {renderDescriptionTabButton("Comments")}

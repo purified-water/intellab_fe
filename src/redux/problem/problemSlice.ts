@@ -1,18 +1,24 @@
-import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProblemState, UserCodeState } from "./problemType";
 import { problemAPI } from "@/lib/api/problemApi";
+import { Problem } from "@/pages/ProblemsPage/types/resonseType";
+import { ICategory } from "@/pages/HomePage/types/responseTypes";
 // Async thunk for fetching paginated problems
 interface FetchPaginatedProblemsParams {
   keyword: string;
   page: number;
   size: number;
+  selectedCategories: ICategory[] | null;
+  status: boolean | null;
+  level: string | null;
 }
 
 export const fetchPaginatedProblems = createAsyncThunk(
   "problems/fetchPaginated",
-  async ({ keyword, page, size }: FetchPaginatedProblemsParams, thunkAPI) => {
+  async ({ keyword, page, size, selectedCategories, status, level }: FetchPaginatedProblemsParams, thunkAPI) => {
+    const categoryIds: number[] = selectedCategories?.map((category) => category.categoryId) || [];
     try {
-      const response = await problemAPI.getProblems(keyword, page, size);
+      const response = await problemAPI.getProblems(keyword, page, size, categoryIds, level, status);
 
       return response.result; // Assume the API returns { data: [...], totalPages: 5 }
     } catch {
@@ -27,7 +33,10 @@ const initialState: ProblemState = {
   status: "idle",
   currentPage: 0,
   totalPages: 0,
-  pageSize: 10 // Default page size
+  pageSize: 10, // Default page size
+  exploreProblems: [],
+  originalExploreProblems: [],
+  hasFilter: false
 };
 
 // Slice
@@ -37,6 +46,34 @@ const problemSlice = createSlice({
   reducers: {
     setPage: (state, action) => {
       state.currentPage = action.payload;
+    },
+
+    resetFilters: (state) => {
+      state.exploreProblems = state.originalExploreProblems; // Reset to the original list
+      state.hasFilter = false;
+    },
+
+    setExploreProblems: (state, action: PayloadAction<Problem[]>) => {
+      state.exploreProblems = action.payload; // Display the same data initially
+    },
+
+    filterProblems: (
+      state
+      // action: PayloadAction<{
+      //   // select edLevel: string;
+      // }>
+    ) => {
+      // const { selectedLevel } = action.payload;
+
+      // state.problems = state.problems.filter((problem) => {
+      //   const matchLevels = selectedLevel == problem.level;
+      //   return matchLevels;
+      // });
+      if (state.problems.length === state.originalExploreProblems.length) {
+        state.hasFilter = false;
+      } else {
+        state.hasFilter = true;
+      }
     }
   },
   extraReducers: (builder) => {
@@ -47,6 +84,9 @@ const problemSlice = createSlice({
       .addCase(fetchPaginatedProblems.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.problems = action.payload.content;
+        if (!state.hasFilter) {
+          state.originalExploreProblems = state.problems;
+        }
         state.totalPages = action.payload.totalPages;
       })
       .addCase(fetchPaginatedProblems.rejected, (state) => {
@@ -75,7 +115,7 @@ const userCodeSlice = createSlice({
 export const selectCodeByProblemId = (state: { userCode: UserCodeState }, problemId: string) =>
   state.userCode.codeByProblemId[problemId] || { code: "", language: "" };
 
-export const { setPage } = problemSlice.actions;
+export const { setPage, filterProblems } = problemSlice.actions;
 export const { saveCode } = userCodeSlice.actions;
 export const userCodeReducer = userCodeSlice.reducer;
 

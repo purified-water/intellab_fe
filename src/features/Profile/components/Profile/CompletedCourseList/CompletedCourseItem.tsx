@@ -1,5 +1,5 @@
 import { ICompletedCourse } from "@/types";
-import { formatDate } from "@/utils";
+import { shortenDate } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
@@ -51,7 +51,7 @@ export function CompletedCourseItem(props: CompletedCourseItemProps) {
               </div>
             ))}
           </div>
-          <p className="text-gray2">Completed on {formatDate(course?.completedDate)}</p>
+          <p className="text-gray2">Completed on {shortenDate(course?.completedDate)}</p>
         </div>
       );
     };

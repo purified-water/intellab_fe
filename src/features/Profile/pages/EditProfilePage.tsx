@@ -14,13 +14,17 @@ export function EditProfilePage() {
   const [activeTab, setActiveTab] = useState<TEditProfileTab>(EDIT_PROFILE_TABS.ACCOUNT);
 
   useEffect(() => {
+    document.title = "Edit Profile | Intellab";
+  }, []);
+
+  useEffect(() => {
     if (!isAuthenticated) {
       navigate("/");
     }
   }, [isAuthenticated]);
 
   return (
-    <div className="flex min-h-screen py-8 space-x-4 bg-gray6 justify-center">
+    <div className="flex justify-center min-h-screen py-8 space-x-4 bg-gray6">
       <SideBar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="w-[800px] mt-3">
         {activeTab === EDIT_PROFILE_TABS.ACCOUNT ? <EditProfileSection /> : <NotificationSection />}

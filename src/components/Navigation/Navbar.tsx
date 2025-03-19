@@ -8,9 +8,9 @@ import {
   MdMenu,
   MdOutlinePerson,
   MdOutlineSettings,
-  MdOutlineWbSunny,
   MdLogout
 } from "rocketicons/md";
+import { Sun, Moon } from "lucide-react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
@@ -18,7 +18,12 @@ import { clearUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 
-const Navbar = () => {
+interface NavbarProps {
+  isDarkMode: boolean;
+  toggleDarkMode: () => void;
+}
+
+const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,7 +75,7 @@ const Navbar = () => {
     let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 rounded-full border border-gray4" />;
+      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 border rounded-full border-gray4" />;
     }
     return content;
   };
@@ -89,7 +94,7 @@ const Navbar = () => {
           </div>
 
           <Link to="/">
-            <img src={intellab_side} alt="Intellab Logo" className="w-24 h-auto mr-4" />
+            <img src={intellab_side} alt="Intellab Logo" className="w-24 h-auto mr-2" />
           </Link>
 
           <div
@@ -113,13 +118,6 @@ const Navbar = () => {
               onClick={() => setIsMenuOpen(false)}
             >
               Problems
-            </Link>
-            <Link
-              to="/community"
-              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/community")}`}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              Community
             </Link>
           </div>
         </div>
@@ -176,15 +174,22 @@ const Navbar = () => {
                       </Link>
                     </li>
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to="#">
-                        <div className="flex items-center space-x-2">
-                          <MdOutlineWbSunny className="icon-lg icon-gray3" />
-                          <span>Light theme</span>
-                        </div>
-                      </Link>
+                      <div onClick={toggleDarkMode} className="flex items-center space-x-2 cursor-pointer">
+                        {isDarkMode ? (
+                          <>
+                            <Moon className="icon-lg icon-gray3" />
+                            <span>Dark Mode</span>
+                          </>
+                        ) : (
+                          <>
+                            <Sun className="icon-lg icon-gray3" />
+                            <span>Light Mode</span>
+                          </>
+                        )}
+                      </div>
                     </li>
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-2 cursor-pointer">
                         <MdLogout className="icon-lg icon-gray3" />
                         <button onClick={handleLogout}>Logout</button>
                       </div>

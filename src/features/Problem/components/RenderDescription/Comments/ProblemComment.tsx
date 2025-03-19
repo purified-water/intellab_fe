@@ -5,13 +5,15 @@ import { Pencil, Trash2 } from "lucide-react";
 import { FaRegComment } from "rocketicons/fa6";
 import { Button, AlertDialog, AvatarIcon } from "@/components/ui";
 import { ProblemCommentType, ProblemCommentsResponse } from "@/features/Problem/types/ProblemCommentType";
-import { formatDate } from "@/utils";
+import { formatDateInProblem } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useSelector } from "react-redux";
 import { selectUserId } from "@/redux/user/userSlice";
 import { problemAPI } from "@/lib/api/problemApi";
 import { useParams } from "react-router-dom";
 import { RootState } from "@/redux/rootReducer";
+import { useNavigate } from "react-router-dom";
+
 interface ProblemCommentProps {
   comment: ProblemCommentType;
   updateCommentList: () => void;
@@ -41,6 +43,8 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
   // Pagination
   const [currentPage, setCurrentPage] = useState(comment.childrenComments?.number ?? 0);
   const [totalPages] = useState(comment.childrenComments?.totalPages ?? 0);
+  // Navigation
+  const navigate = useNavigate();
 
   const handleLoadMoreReplies = async (pageNumber: number = 0) => {
     try {
@@ -157,6 +161,12 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
     }
   };
 
+  const handleUsernameClick = () => {
+    if (comment.userUid) {
+      navigate(`/profile/${comment.userUid}`);
+    }
+  };
+
   const renderUserReply = () => {
     return (
       <div className="mt-4 ml-8">
@@ -168,7 +178,7 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
 
           <textarea
             placeholder="Type your reply..."
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"
+            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify focus:outline-none"
             rows={1}
             value={mainReplyContent}
             onInput={(e) => {
@@ -219,12 +229,14 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
               <img src={comment.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
             ) : null}
           </div>
-          <p className="text-lg font-semibold">{comment.username ? comment.username : "User"}</p>
+          <p onClick={handleUsernameClick} className="text-lg font-semibold cursor-pointer hover:text-appPrimary">
+            {comment.username ? comment.username : "User"}
+          </p>
         </div>
         <p className="text-sm font-medium text-gray3">
           {comment.isModified
-            ? `Edited at ${formatDate(comment.lastModifiedAt, { monthFormat: "short" })}`
-            : formatDate(comment.createdAt, { monthFormat: "short" })}
+            ? `Edited at ${formatDateInProblem(comment.lastModifiedAt, { monthFormat: "short" })}`
+            : formatDateInProblem(comment.createdAt, { monthFormat: "short" })}
         </p>
       </div>
 
@@ -232,7 +244,7 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
       {isEditing ? (
         <div className="mt-2">
           <textarea
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60"
+            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 focus:outline-none"
             value={editedContent}
             onChange={(e) => setEditedContent(e.target.value)}
             rows={2}

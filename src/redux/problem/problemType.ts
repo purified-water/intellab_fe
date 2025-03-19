@@ -6,6 +6,9 @@ export interface ProblemState {
   currentPage: number;
   totalPages: number;
   pageSize: number; // Default page size
+  exploreProblems: Problem[];
+  originalExploreProblems: Problem[];
+  hasFilter: boolean;
 }
 export interface UserCodeState {
   codeByProblemId: {

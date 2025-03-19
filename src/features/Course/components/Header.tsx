@@ -1,25 +1,28 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
 import { amountTransformer } from "@/utils";
 import { ICourse } from "../types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
+import { NA_VALUE } from "@/constants";
+import { showToastError } from "@/utils/toastUtils";
 
 interface HeaderProps {
   course: ICourse;
   onEnroll: () => void;
   onContinue: () => void;
   onViewCertificate: () => void;
+  onPurchase: () => Promise<void>;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { course, onEnroll, onContinue, onViewCertificate } = props;
+  const { course, onEnroll, onContinue, onViewCertificate, onPurchase } = props;
   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
   const [summaryContent, setSummaryContent] = useState("");
   const toast = useToast();
   const [loading, setLoading] = useState(false);
-
+  const abortControllerRef = useRef<AbortController | null>(null);
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
   const isFinished = course.progressPercent == 100;
@@ -27,7 +30,9 @@ export const Header = (props: HeaderProps) => {
   const renderReview = () => {
     return (
       <div className="mt-2 text-xs">
-        <span className="px-2 py-1 text-white bg-black rounded-full">⭐ {course.averageRating}</span>
+        <span className="px-2 py-1 text-white bg-black rounded-full">
+          ⭐ {course.averageRating != 0 ? course.averageRating.toFixed(1) : NA_VALUE}
+        </span>
         <span> • {amountTransformer(course.reviewCount)} reviews</span>
       </div>
     );
@@ -46,8 +51,13 @@ export const Header = (props: HeaderProps) => {
         onClick = onContinue;
       }
     } else {
-      buttonText = "Enroll";
-      onClick = onEnroll;
+      if (course.price > 0) {
+        buttonText = "Purchase";
+        onClick = onPurchase;
+      } else {
+        buttonText = "Enroll";
+        onClick = onEnroll;
+      }
     }
 
     return (
@@ -64,18 +74,20 @@ export const Header = (props: HeaderProps) => {
     setLoading(true);
     try {
       // remove the special characters and the space at start and end from the course name
-      const response = await aiAPI.getSummaryContent(formattedCourseName, course.courseId, "false");
+      const response = await aiAPI.getCourseSummary(formattedCourseName, course.courseId, "false");
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
     } catch (error) {
-      toast.toast({
-        variant: "destructive",
-        title: "An error occurred",
-        description: `Failed to generate AI summary: ${error.message}`
-      });
+      showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
     }
     setLoading(false);
+  };
+
+  const handleCancelClick = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
   };
 
   const renderRightButton = () => {
@@ -101,7 +113,10 @@ export const Header = (props: HeaderProps) => {
         courseName={formattedCourseName}
         isOpen={showSummaryDialog}
         summaryContent={summaryContent}
-        onClose={() => setShowSummaryDialog(false)}
+        onClose={() => {
+          setShowSummaryDialog(false);
+          handleCancelClick();
+        }}
       />
       {loading && <Spinner overlay loading={loading} />}
     </div>

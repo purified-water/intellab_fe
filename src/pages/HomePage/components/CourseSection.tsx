@@ -1,6 +1,7 @@
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { CourseSectionCard } from "./CourseSectionItem";
 import { ICourse } from "@/features/Course/types";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 interface CourseSectionProps {
   title: string;
@@ -29,11 +30,11 @@ export const CourseSection = (props: CourseSectionProps) => {
         {loading ? (
           renderSkeletonList()
         ) : (
-          <div className="flex py-4 space-x-4 flex-nowrap">
+          <ScrollableList>
             {courses.map((course: ICourse, index: number) => (
               <CourseSectionCard key={index} course={course} skeletonLoading={loading} />
             ))}
-          </div>
+          </ScrollableList>
         )}
       </div>
     </section>

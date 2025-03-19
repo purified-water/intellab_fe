@@ -2,8 +2,6 @@ import { useEffect, useState } from "react";
 import { Playground } from "./Playground";
 import { SupportedLanguages } from "@/features/Problem/constants/SupportedLanguages";
 import { BsCode } from "rocketicons/bs";
-import { FaRobot } from "rocketicons/fa";
-import { Separator } from "@/components/ui/Separator";
 import { MdKeyboardArrowDown } from "rocketicons/md";
 import {
   DropdownMenu,
@@ -95,8 +93,6 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
       switch (tabName) {
         case "Solution":
           return <BsCode className={`inline-block mr-2 ${iconColorClass}`} />;
-        case "Chatbot":
-          return <FaRobot className={`inline-block mr-2 ${iconColorClass}`} />;
         default:
           return null;
       }
@@ -133,11 +129,9 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
       {/* Tab Buttons */}
       <div
         id="tab-buttons"
-        className="flex items-center px-4 py-2 overflow-y-hidden border-b h-18 gap-x-4 sm:overflow-x-auto scrollbar-hide shrink-0"
+        className="flex items-center px-4 py-2 overflow-y-hidden border-b max-h-18 gap-x-4 sm:overflow-x-auto scrollbar-hide shrink-0"
       >
         {renderPlaygroundTabButton("Solution")}
-        <Separator orientation="vertical" className="h-6" />
-        {renderPlaygroundTabButton("Chatbot")}
 
         {/* Language Selector */}
         <div id="language-selector" className="ml-auto">

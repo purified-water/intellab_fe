@@ -46,8 +46,12 @@ export const ProfileSection = (props: ProfileSectionProps) => {
     getProfileSinglePublicAPI();
   }, [userId]);
 
+  useEffect(() => {
+    document.title = `${user?.displayName ?? "Loading"} | Intellab`;
+  }, [user]);
+
   const renderProfilePhoto = () => {
-    let content = <i className="text-9xl fa-solid fa-circle-user"></i>;
+    let content = <i className="text-7xl fa-solid fa-circle-user"></i>;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
       content = (
@@ -57,9 +61,9 @@ export const ProfileSection = (props: ProfileSectionProps) => {
     return content;
   };
 
-  let nameWidth = width / 11;
+  let nameWidth = width / 9;
   if (width < 1025) {
-    nameWidth = 900;
+    nameWidth = width / 2.5;
   }
   const fullName = `${user?.firstName} ${user?.lastName}`;
 
@@ -70,10 +74,10 @@ export const ProfileSection = (props: ProfileSectionProps) => {
           <Skeleton className="w-20 h-20 rounded-full" />
           <div className="flex flex-col items-start justify-center pl-4">
             <Skeleton className="w-48 h-6 mb-2" />
-            <Skeleton className="w-36 h-5 mb-5" />
+            <Skeleton className="h-5 mb-5 w-36" />
             <div>
-              <Skeleton className="w-12 h-6 inline-block" />
-              <Skeleton className="w-16 h-6 inline-block ml-2" />
+              <Skeleton className="inline-block w-12 h-6" />
+              <Skeleton className="inline-block w-16 h-6 ml-2" />
             </div>
           </div>
         </div>
@@ -97,7 +101,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             </p>
             <div className="mb-5 text-base font-normal truncate text-gray3" style={{ maxWidth: nameWidth }}>
               {fullName}
-            </div>{" "}
+            </div>
             <div>
               <span className="text-lg font-normal text-black1">Rank:</span>
               <span className="text-lg font-semibold text-black1"> 1,000</span>
@@ -106,7 +110,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
         </div>
         {isMe && (
           <button
-            className="min-w-full h-[50px] font-bold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary mt-[42px]"
+            className="min-w-full h-[50px] font-bold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary mt-[42px] hover:opacity-80"
             onClick={() => navigate("/profile/edit")}
           >
             Edit Profile

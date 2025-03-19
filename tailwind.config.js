@@ -19,6 +19,8 @@ export default {
         appHard: "#EB5757",
         appFadedPrimary: "#D8B3F2",
         appFadedAccent: "#FFD5DE",
+        appAIFrom: "#e75a76",
+        appAITo: "#fb7cf2",
         gray1: "#333333",
         gray2: "#4F4F4F",
         gray3: "#828282",
@@ -29,6 +31,7 @@ export default {
         black1: "#01000f",
         gold: "#FFC13F",
         bronze: "#EB8657",
+        appOutputBG: "#2a2a2a",
         appLightThemeText: "#FFFFFF",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
@@ -96,6 +99,11 @@ export default {
       },
       animation: {
         disco: "disco 1.5s linear infinite"
+      },
+      boxShadow: {
+        gold: "0 4px 6px 0 rgba(255, 215, 0, 0.025), 0 2px 4px 0 rgba(255, 215, 0, 0.015)",
+        bronze: "0 4px 6px 0 rgba(205, 127, 50, 0.025), 0 2px 4px 0 rgba(205, 127, 50, 0.015)",
+        gray3: "0 4px 6px 0 rgba(128, 128, 128, 0.025), 0 2px 4px 0 rgba(128, 128, 128, 0.015)"
       }
     }
   },

@@ -22,7 +22,6 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
 
   const accessToken = getAccessToken();
   const userId = getUserIdFromLocalStorage();
-
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getCourseDetail = async () => {
@@ -34,17 +33,22 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     setInternalLoading(false);
   };
 
-  const handleCourseClicked = () => {
+  const handleTitleClick = () => {
+    navigate(`/course/${detailCourse?.courseId}`);
+  };
+
+  const handleCourseClicked = async () => {
     if (isAuthenticated) {
-      if (detailCourse)
+      if (detailCourse) {
         if (detailCourse.userEnrolled) {
           navigate(`/lesson/${detailCourse?.latestLessonId}`);
+        } else {
+          navigate(`/course/${course.courseId}`);
         }
+      }
     } else {
       navigate(`/course/${course.courseId}`);
     }
-    // User not logged in can still view course detail
-    navigate(`/course/${course.courseId}`);
   };
 
   useEffect(() => {
@@ -53,33 +57,50 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
     }
   }, [skeletonLoading]);
 
-  const renderCourseDetail = () => (
-    <div
-      className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg cursor-pointer hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0"
-      onClick={handleCourseClicked}
-    >
-      <div>
-        <h3 className="text-xl font-bold line-clamp-2">{detailCourse?.courseName}</h3>
-        <p
-          className={`text-sm mb-2 ${detailCourse?.courseName && detailCourse.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
-        >
-          {detailCourse?.description}
-        </p>
-        {detailCourse?.userEnrolled && (
-          <ProgressBar progress={detailCourse!.progressPercent} showText={false} height={5} />
+  const buttonText = (courseObject: ICourse) => {
+    let buttonText = null;
+    if (courseObject?.userEnrolled) {
+      buttonText = "Continue";
+    } else if (courseObject.price > 0) {
+      buttonText = "Purchase";
+    } else {
+      buttonText = "Enroll";
+    }
+    return buttonText;
+  };
+
+  const renderCourseDetail = () => {
+    return (
+      <div className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg hover:shadow-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+        <div>
+          <h3 className="text-xl font-bold cursor-pointer line-clamp-2" onClick={handleTitleClick}>
+            {detailCourse?.courseName}
+          </h3>
+          <p
+            className={`text-sm mb-2 ${detailCourse?.courseName && detailCourse.courseName.length > 20 ? "line-clamp-1" : "line-clamp-2"}`}
+          >
+            {detailCourse?.description}
+          </p>
+          {detailCourse?.userEnrolled && (
+            <ProgressBar progress={detailCourse!.progressPercent} showText={false} height={5} />
+          )}
+        </div>
+        {detailCourse && (
+          <div className="flex justify-between mt-2">
+            <button
+              className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
+              onClick={handleCourseClicked}
+            >
+              {buttonText(detailCourse!)}
+            </button>
+            <p className="self-end mt-2 font-bold">
+              {detailCourse?.price ? `đ${detailCourse?.price.toLocaleString()}` : "Free"}
+            </p>
+          </div>
         )}
       </div>
-      <div className="flex justify-between mt-2">
-        <button
-          className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
-          onClick={handleCourseClicked}
-        >
-          {detailCourse?.userEnrolled ? "Continue" : "Enroll"}
-        </button>
-        <p className="self-end mt-2 font-bold">{detailCourse?.price ? `đ${detailCourse?.price}` : "Free"}</p>
-      </div>
-    </div>
-  );
+    );
+  };
 
   const renderDetail = () => (
     <div className="flex flex-col justify-between w-64 h-40 p-4 text-white rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
@@ -96,7 +117,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
           className="self-end px-4 py-1 text-base font-bold text-black bg-white rounded-lg"
           onClick={handleCourseClicked}
         >
-          {course?.userEnrolled ? "Continue" : "Enroll"}
+          {buttonText(course)}
         </button>
         <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
       </div>

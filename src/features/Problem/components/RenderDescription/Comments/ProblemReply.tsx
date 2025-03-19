@@ -1,5 +1,5 @@
 import { ProblemCommentType } from "@/features/Problem/types/ProblemCommentType";
-import { formatDate } from "@/utils";
+import { formatDateInProblem } from "@/utils";
 import { useState } from "react";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { Pencil, Trash2 } from "lucide-react";
@@ -11,6 +11,7 @@ import { useParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/redux/rootReducer";
 import { AvatarIcon } from "@/components/ui";
+import { useNavigate } from "react-router-dom";
 interface ProblemReplyProps {
   reply: ProblemCommentType;
   updateCommentList: () => void;
@@ -33,6 +34,8 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
   const [isHovering, setIsHovering] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(reply.content);
+
+  const navigate = useNavigate();
 
   const handleUpvote = async () => {
     if (userId === reply.userUid) return;
@@ -125,6 +128,12 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
     }
   };
 
+  const handleUsernameClick = () => {
+    if (reply.userUid) {
+      navigate(`/profile/${reply.userUid}`);
+    }
+  };
+
   const renderUserReply = () => {
     return (
       <div className="mt-4">
@@ -136,7 +145,7 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
 
           <textarea
             placeholder="Type your reply..."
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify"
+            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify focus:outline-none"
             rows={1}
             value={secondLevelReplyContent} // Ensure value is controlled
             onInput={(e) => {
@@ -189,17 +198,19 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
         <div className="flex-col w-full gap-y-4">
           <div className="w-full text-sm px-4 py-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-gray6">
             <div id="reply-info" className="flex items-center justify-between">
-              <p className="font-semibold">{reply.username ? reply.username : "User"}</p>
+              <p onClick={handleUsernameClick} className="font-semibold cursor-pointer hover:text-appPrimary">
+                {reply.username ? reply.username : "User"}
+              </p>
               <p className="text-xs font-medium text-gray3">
                 {reply.isModified
-                  ? `Edited at ${formatDate(reply.lastModifiedAt, { monthFormat: "short" })}`
-                  : formatDate(reply.createdAt, { monthFormat: "short" })}
+                  ? `Edited at ${formatDateInProblem(reply.lastModifiedAt, { monthFormat: "short" })}`
+                  : formatDateInProblem(reply.createdAt, { monthFormat: "short" })}
               </p>
             </div>
             {isEditing ? (
               <div className="mt-2">
                 <textarea
-                  className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60"
+                  className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 focus:outline-none"
                   value={editedContent}
                   onChange={(e) => setEditedContent(e.target.value)}
                   rows={2}

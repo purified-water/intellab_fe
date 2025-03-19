@@ -12,7 +12,6 @@ const initialState: CourseState = {
   hasFilter: false
 };
 
-// Async thunk để gọi API
 export const fetchExploreCourses = createAsyncThunk(
   "course/fetchExploreCourses",
   async (
@@ -28,23 +27,21 @@ export const fetchExploreCourses = createAsyncThunk(
     try {
       const { keyword, selectedCategories, selectedRating, selectedPrices } = payload;
       const categoryIds = selectedCategories.map((category) => category.categoryId);
-      // Gọi API với danh sách courseId được chọn
+
       const response = await apiClient.get("course/courses/search", {
         params: {
           keyword: keyword,
           categories: categoryIds.join(","),
           ratings: selectedRating ? (parseFloat(selectedRating) > 0 ? parseFloat(selectedRating) : null) : null,
           price: selectedPrices.length === 1 && selectedPrices.some((value) => value === "Paid")
-        } // Định dạng tham số truy vấn
+        }
       });
 
-      // Kết quả trả về
       const courses = response.data.result.content;
-      console.log("COURSES", courses);
-      // Lưu vào state
+
       dispatch(courseSlice.actions.setExploreCourses(courses));
     } catch (error) {
-      console.error("Lỗi khi gọi API fetchExploreCourses:", error);
+      console.error("Error fetching explore courses:", error);
       throw error;
     }
   }
@@ -94,7 +91,7 @@ const courseSlice = createSlice({
     setExploreCourses: (state, action: PayloadAction<ICourse[]>) => {
       // state.originalExploreCourses = action.payload;
       state.exploreCourses = action.payload; // Display the same data initially
-      console.log("Set Explore courses length", state.exploreCourses.length);
+      // console.log("Set Explore courses length", state.exploreCourses.length);
     },
 
     filterCourses: (
@@ -115,7 +112,7 @@ const courseSlice = createSlice({
       }
       // const { selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange } = action.payload;
       const { selectedLevels, selectedPrices, priceRange } = action.payload;
-      console.log("Explore Courses State:", state.exploreCourses);
+
       state.exploreCourses = state.exploreCourses.filter((course) => {
         // const matchCategories =
         //   selectedCategories.length === 0 ||
@@ -148,8 +145,8 @@ const courseSlice = createSlice({
         // state.originalExploreCourses.length !== 0
       ) {
         state.hasFilter = false;
-        console.log("Explore courses length", state.exploreCourses.length);
-        console.log("Original courses length", state.originalExploreCourses.length);
+        // console.log("Explore courses length", state.exploreCourses.length);
+        // console.log("Original courses length", state.originalExploreCourses.length);
       } else {
         state.hasFilter = true;
       }
