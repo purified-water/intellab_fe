@@ -22,15 +22,15 @@ export function CompletedCourseItem(props: CompletedCourseItemProps) {
         className={`flex items-center justify-between py-4 px-7 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer`}
       >
         <div className="space-y-3">
-          <Skeleton className="h-6 w-48" />
+          <Skeleton className="w-48 h-6" />
           <div className="flex space-x-2">
             {categoriesPlaceHolder.map((_, index) => (
-              <Skeleton key={index} className="h-8 w-20 rounded-full" />
+              <Skeleton key={index} className="w-20 h-6 rounded-full" />
             ))}
           </div>
           <Skeleton className="h-5 w-36" />
         </div>
-        <Skeleton className="h-6 w-24" />
+        <Skeleton className="w-24 h-6" />
       </div>
     );
   };
@@ -43,15 +43,15 @@ export function CompletedCourseItem(props: CompletedCourseItemProps) {
 
       return (
         <div className="space-y-2 cursor-pointer" onClick={handleCourseClick}>
-          <p className="font-bold text-xl">{course?.course.courseName}</p>
+          <p className="text-base font-bold">{course?.course.courseName}</p>
           <div className="flex space-x-2">
             {course?.course.categories.map((category, index) => (
-              <div key={index} className="text-gray2 bg-gray5 py-1 px-3 rounded-full font-bold">
+              <div key={index} className="px-2 py-1 text-xs font-bold rounded-full line-clamp-1 text-gray2 bg-gray5">
                 {category.name}
               </div>
             ))}
           </div>
-          <p className="text-gray2">Completed on {shortenDate(course?.completedDate)}</p>
+          <p className="text-sm text-gray3">Completed on {shortenDate(course?.completedDate)}</p>
         </div>
       );
     };
@@ -62,7 +62,10 @@ export function CompletedCourseItem(props: CompletedCourseItemProps) {
       };
 
       return (
-        <p className="font-bold text-xl text-appPrimary cursor-pointer" onClick={handleViewCertificateClick}>
+        <p
+          className="text-base font-bold cursor-pointer text-appPrimary hover:text-opacity-80"
+          onClick={handleViewCertificateClick}
+        >
           View Certificate
         </p>
       );

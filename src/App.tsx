@@ -17,7 +17,7 @@ import { ProblemDetail } from "@/features/Problem/pages/ProblemDetailPage";
 import { LessonQuiz } from "./features/Quiz/pages/LessonQuiz";
 import { Toaster } from "@/components/ui/shadcn/toaster";
 import { CertificatePage } from "./features/Certificate/pages";
-import { PaymentResultPage } from "./features/Payment/pages";
+import { MyPurchasesPage, PaymentResultPage, ReceiptPage } from "./features/Payment/pages";
 import { LeaderboardPage } from "./features/Leaderboard/pages/LeaderboardPage";
 
 // Layout component to include conditional Navbar
@@ -123,6 +123,14 @@ const router = createBrowserRouter([
       {
         path: "/leaderboard",
         element: <LeaderboardPage />
+      },
+      {
+        path: "/my-purchases",
+        element: <MyPurchasesPage />
+      },
+      {
+        path: "/my-purchases/receipt/:id",
+        element: <ReceiptPage />
       }
     ]
   }
