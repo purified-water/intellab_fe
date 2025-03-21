@@ -1,9 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CourseState, ReduxCourse } from "./courseType";
-import { ICourse } from "@/features/Course/types";
-import { PriceRange } from "@/pages/ExplorePage/components/FilterComponent";
+import { PriceRange, TCategory, ICourse } from "@/types";
 import { apiClient } from "@/lib/api/apiClient";
-import { ICategory } from "@/pages/HomePage/types/responseTypes";
 
 const initialState: CourseState = {
   courses: [],
@@ -17,7 +15,7 @@ export const fetchExploreCourses = createAsyncThunk(
   async (
     payload: {
       keyword: string;
-      selectedCategories: ICategory[];
+      selectedCategories: TCategory[];
       selectedRating: string | null;
       selectedPrices: string[];
     },
@@ -113,7 +111,7 @@ const courseSlice = createSlice({
       // const { selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange } = action.payload;
       const { selectedLevels, selectedPrices, priceRange } = action.payload;
 
-      state.exploreCourses = state.exploreCourses.filter((course) => {
+      state.exploreCourses = state.exploreCourses.filter((course: ICourse) => {
         // const matchCategories =
         //   selectedCategories.length === 0 ||
         //   selectedCategories.some((category) => {

@@ -51,7 +51,7 @@ export function CompletedCourseItem(props: CompletedCourseItemProps) {
               </div>
             ))}
           </div>
-          <p className="text-gray2">Completed on {shortenDate(course?.completedDate)}</p>
+          <p className="text-gray2">Completed on {shortenDate(course!.completedDate)}</p>
         </div>
       );
     };

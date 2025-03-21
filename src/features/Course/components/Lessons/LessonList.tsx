@@ -1,4 +1,5 @@
-import { ILesson, IEnrolledLesson, ICourse } from "../../types";
+import { ICourse, ILesson } from "@/types";
+import { IEnrolledLesson } from "../../types";
 import LessonListItem from "./LessonListItem";
 
 interface LessonListProps {

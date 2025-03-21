@@ -1,14 +1,15 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { ProblemState, UserCodeState } from "./problemType";
 import { problemAPI } from "@/lib/api/problemApi";
-import { Problem } from "@/pages/ProblemsPage/types/resonseType";
-import { ICategory } from "@/pages/HomePage/types/responseTypes";
+import { Problem } from "@/features/Problem/types";
+import { TCategory } from "@/types";
+
 // Async thunk for fetching paginated problems
 interface FetchPaginatedProblemsParams {
   keyword: string;
   page: number;
   size: number;
-  selectedCategories: ICategory[] | null;
+  selectedCategories: TCategory[] | null;
   status: boolean | null;
   level: string | null;
 }

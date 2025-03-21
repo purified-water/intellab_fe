@@ -1,4 +1,4 @@
-import { ICourse } from "@/features/Course/types";
+import { ICourse } from "@/types";
 
 export interface ReduxCourse {
   courseId: string | null;

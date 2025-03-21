@@ -1,4 +1,4 @@
-import { Problem } from "@/pages/ProblemsPage/types/resonseType";
+import { Problem } from "../../types";
 import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { MdCheckCircleOutline } from "rocketicons/md";
 import { useNavigate } from "react-router-dom";
@@ -26,15 +26,13 @@ export const AllProblemsListItem = ({ problems, toggleSidebar }: AllProblemsList
               className={`cursor-pointer hover:cursor-pointer ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
             >
               <td className="w-6 px-4 py-2 text-center">
-                {row.done == true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                {row.isDone == true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>
 
               <td className="w-4/6 px-4 py-2 font-semibold">{row.problemName}</td>
 
               <td
-                className={`px-4 py-2 w-1/6 font-semibold ${
-                  row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"
-                }`}
+                className={`px-4 py-2 w-1/6 font-semibold ${row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"}`}
               >
                 {capitalizeFirstLetter(row.level)}
               </td>

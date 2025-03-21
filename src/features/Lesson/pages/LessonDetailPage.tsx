@@ -2,10 +2,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI } from "@/lib/api";
-import { ILesson, ICourse } from "@/features/Course/types";
+import { ILesson, ICourse } from "@/types";
 import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 // import { MarkdownRender } from "../components/MarkdownRender";
 import { Button } from "@/components/ui";
@@ -26,17 +24,10 @@ export const LessonDetailPage = () => {
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [searchParams] = useSearchParams();
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
   const [course, setCourse] = useState<ICourse | null>(null);
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     getCourseDetail();
@@ -99,7 +90,7 @@ export const LessonDetailPage = () => {
   const getCourseDetail = async () => {
     if (courseId) {
       try {
-        const response = await courseAPI.getCourseDetail(courseId, userId!);
+        const response = await courseAPI.getCourseDetail(courseId);
         const { result } = response;
 
         setCourse(result);

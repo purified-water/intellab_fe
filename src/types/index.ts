@@ -6,3 +6,5 @@ export * from "./apiResponseType";
 export * from "./lesson";
 export * from "./course";
 export * from "./leaderboardRank";
+export * from "./price";
+export * from "./category";
