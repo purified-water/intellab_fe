@@ -1,4 +1,4 @@
-import { Problem } from "@/pages/ProblemsPage/types/resonseType";
+import { Problem } from "@/features/Problem/types";
 
 export interface ProblemState {
   problems: Problem[];

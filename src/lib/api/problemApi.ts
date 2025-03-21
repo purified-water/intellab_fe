@@ -1,8 +1,8 @@
 import { apiClient } from "./apiClient";
 import { ProblemType } from "@/types/ProblemType";
-import { ProblemsResponse } from "@/pages/ProblemsPage/types/resonseType";
+import { ProblemsResponse } from "@/features/Problem/types";
 import { TGetSubmissionListMeResponse } from "@/features/Profile/types";
-import { IGetCategories } from "@/pages/HomePage/types/responseTypes";
+import { IGetCategories } from "@/features/StudentOverall/types";
 
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_CHILDREN_SIZE = 10;

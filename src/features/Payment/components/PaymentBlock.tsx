@@ -51,14 +51,14 @@ export function PaymentBlock(props: PaymentBlockProps) {
     const renderInformation = () => {
       return (
         <div className="w-full space-y-2 mt-10">
-          <InformationRow label="Payment Status" value={payment?.transactionStatusDescription} />
-          <InformationRow label="Order ID" value={payment?.paymentId} />
-          <InformationRow label="Order information" value={payment?.transactionReference} />
+          <InformationRow label="Payment Status" value={payment!.transactionStatusDescription} />
+          <InformationRow label="Order ID" value={payment!.paymentId} />
+          <InformationRow label="Order information" value={payment!.transactionReference} />
           <InformationRow
             label="Payment Amount"
             value={`${payment?.totalPaymentAmount.toLocaleString()} ${payment?.currency}`}
           />
-          <InformationRow label="Created at" value={shortenDate(payment?.createdAt)} />
+          <InformationRow label="Created at" value={shortenDate(payment!.createdAt)} />
           {payment?.receivedAt && <InformationRow label="Received at" value={shortenDate(payment?.receivedAt)} />}
         </div>
       );

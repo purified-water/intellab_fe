@@ -27,7 +27,9 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
   }, [isOpen]);
 
   useEffect(() => {
-    dispatch(fetchPaginatedProblems({ keyword: "", page: 0, size: 20 })); // Fetch first page initially
+    dispatch(
+      fetchPaginatedProblems({ keyword: "", page: 0, size: 20, selectedCategories: null, status: null, level: null })
+    ); // Fetch first page initially
   }, [dispatch]);
 
   const handleClose = () => {
@@ -54,7 +56,9 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
 
   useEffect(() => {
     if (page > 0) {
-      dispatch(fetchPaginatedProblems({ keyword: "", page, size: 20 }));
+      dispatch(
+        fetchPaginatedProblems({ keyword: "", page, size: 20, selectedCategories: null, status: null, level: null })
+      );
     }
   }, [page, dispatch]);
 

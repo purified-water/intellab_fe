@@ -1,5 +1,5 @@
 import { TestCaseType, TestCaseResultWithIO, TestCaseAfterSubmit } from "./TestCaseType";
-import { TCategory } from "@/types/category";
+import { TCategory } from "@/types";
 
 export interface ProblemType {
   problemId: string;

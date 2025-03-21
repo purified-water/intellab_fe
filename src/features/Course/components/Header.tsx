@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
 import { amountTransformer } from "@/utils";
-import { ICourse } from "../types";
+import { ICourse } from "@/types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";

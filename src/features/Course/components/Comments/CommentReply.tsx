@@ -5,13 +5,12 @@ import { AvatarIcon, AlertDialog } from "@/components/ui";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
-import { TComment, ICourse } from "@/features/Course/types";
-import { formatDateTime } from "@/utils";
-import { showToastError } from "@/utils/toastUtils";
+import { TComment } from "@/features/Course/types";
+import { formatDateTime, showToastError, getUserIdFromLocalStorage } from "@/utils";
 import { Trash2, Pencil } from "lucide-react";
-import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { ICourse } from "@/types";
 
 const parseReplyContent = (reply: string) => {
   const regex = /^\[@(.*?)\]\s(.*)$/;

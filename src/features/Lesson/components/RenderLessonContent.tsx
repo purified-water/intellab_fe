@@ -3,7 +3,7 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { LessonHeader } from "./LessonHeader";
-import { ILesson } from "@/features/Course/types";
+import { ILesson } from "@/types";
 import { LANGUAGE_MAP } from "../constants/languageMap";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";

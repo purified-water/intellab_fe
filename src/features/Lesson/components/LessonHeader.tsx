@@ -1,4 +1,4 @@
-import { ILesson } from "@/features/Course/types";
+import { ILesson } from "@/types";
 
 interface HeaderProps {
   lesson: ILesson;

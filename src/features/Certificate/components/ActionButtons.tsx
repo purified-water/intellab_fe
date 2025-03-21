@@ -13,10 +13,10 @@ type ActionButtonsProps = {
 };
 
 export function ActionButtons(props: ActionButtonsProps) {
-  const { loading, certificateId, certificate, showToastError, showToastSuccess } = props;
+  const { loading, certificate, showToastError, showToastSuccess } = props;
 
   const handleShareClick = async () => {
-    const link = `http://localhost:3000/certificate/${certificateId}`;
+    const link = window.location.href;
     await navigator.clipboard.writeText(link);
     showToastSuccess("Certificate link copied to clipboard");
   };
