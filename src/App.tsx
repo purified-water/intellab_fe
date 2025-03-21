@@ -3,10 +3,7 @@ import "./App.css";
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
 import { Toaster } from "@/components/ui/shadcn/toaster";
-import { CertificatePage } from "./features/Certificate/pages";
-import { MyPurchasesPage, PaymentResultPage, ReceiptPage } from "./features/Payment/pages";
-import { LeaderboardPage } from "./features/Leaderboard/pages/LeaderboardPage";
-// Every feature has it own route file which contains the related pages and its route configuration
+// Importing route configurations
 import AuthRoute from "./features/Auth/route";
 import CertificateRoute from "./features/Certificate/route";
 import CourseRoute from "./features/Course/route";
@@ -50,14 +47,6 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      {
-        path: "/my-purchases",
-        element: <MyPurchasesPage />
-      },
-      {
-        path: "/my-purchases/receipt/:id",
-        element: <ReceiptPage />
-      }
       ...StudentOverallRoute, // The index page "HomePage" is included in here
       ...AuthRoute,
       ...CertificateRoute,
