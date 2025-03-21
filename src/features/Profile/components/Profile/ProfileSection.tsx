@@ -51,7 +51,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   }, [user]);
 
   const renderProfilePhoto = () => {
-    let content = <i className="text-7xl fa-solid fa-circle-user"></i>;
+    let content = <i className="text-7xl fa-solid fa-circle-user text-gray3"></i>;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
       content = (
@@ -71,9 +71,9 @@ export const ProfileSection = (props: ProfileSectionProps) => {
     return (
       <div className="flex flex-col w-full">
         <div className="flex items-center">
-          <Skeleton className="w-20 h-20 rounded-full" />
+          <Skeleton className="w-16 h-16 rounded-full" />
           <div className="flex flex-col items-start justify-center pl-4">
-            <Skeleton className="w-48 h-6 mb-2" />
+            <Skeleton className="w-40 h-6 mb-2" />
             <Skeleton className="h-5 mb-5 w-36" />
             <div>
               <Skeleton className="inline-block w-12 h-6" />
@@ -81,7 +81,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             </div>
           </div>
         </div>
-        <Skeleton className="min-w-full h-[50px] mt-[42px] rounded-[10px]" />
+        {/* <Skeleton className="min-w-full h-[50px] mt-[42px] rounded-[10px]" /> */}
       </div>
     );
   };

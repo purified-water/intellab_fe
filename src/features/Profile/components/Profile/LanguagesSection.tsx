@@ -41,8 +41,8 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
 
     return skeletons.map((_, index) => (
       <div key={index} className="flex items-center justify-between pt-3">
-        <Skeleton className="h-6 w-2/3" />
-        <Skeleton className="h-6 w-1/4" />
+        <Skeleton className="w-2/3 h-6" />
+        <Skeleton className="w-1/4 h-6" />
       </div>
     ));
   };
@@ -50,26 +50,19 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
   const renderStatistic = () => {
     if (!languages) return null;
 
-    const renderLanguage = (language: { name: string; solved: number }) => {
+    return Object.entries(languages).map(([key, language]) => {
+      if (!language) return null;
       return (
-        <div className="flex items-center justify-between pt-3 text-base text-black1">
-          <p> {language.name}</p>
+        <div key={key} className="flex items-center justify-between pt-3 text-base">
+          <p>{language.name}</p>
           <p>{language.solved}</p>
         </div>
       );
-    };
-
-    return (
-      <>
-        {renderLanguage(languages.top1)}
-        {renderLanguage(languages.top2)}
-        {renderLanguage(languages.top3)}
-      </>
-    );
+    });
   };
 
   const renderEmpty = () => {
-    return <div className="text-base font-normal text-gray3 mt-4">No data available</div>;
+    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
   };
 
   let content = null;

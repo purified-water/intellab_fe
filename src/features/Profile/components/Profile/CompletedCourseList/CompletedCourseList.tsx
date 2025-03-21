@@ -22,6 +22,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
     setLoading(true);
     try {
       const response = await courseAPI.getCompletedCourseListMe(userId);
+      console.log("response", response);
       const { code, message, result } = response;
       if (code == API_RESPONSE_CODE.SUCCESS) {
         setCourses(result);

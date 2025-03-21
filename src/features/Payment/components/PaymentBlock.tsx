@@ -5,8 +5,7 @@ import { InformationRow } from "./InformationRow";
 import { TIntellabPayment } from "../types";
 import { shortenDate } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-
-const VNPAY_TRANSACTION_CODE_SUCCESS = "00";
+import { VNPAY_TRANSACTION_CODE } from "../constants";
 
 type PaymentBlockProps = {
   payment: TIntellabPayment | null;
@@ -22,7 +21,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
     navigate("/");
   };
 
-  const success = payment?.transactionStatus === VNPAY_TRANSACTION_CODE_SUCCESS;
+  const success = payment?.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS;
 
   const renderContent = () => {
     const renderStatus = () => {
@@ -41,7 +40,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
       }
 
       return (
-        <div className="justify-items-center space-y-4">
+        <div className="space-y-4 justify-items-center">
           {icon}
           <p className={`text-${color} font-bold text-2xl`}>{title}</p>
         </div>
@@ -66,7 +65,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
 
     const renderBackButton = () => {
       return (
-        <Button className="mt-16 bg-appPrimary hover:bg-appPrimary/80 font-bold" onClick={onBackHomeClick}>
+        <Button className="mt-16 font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={onBackHomeClick}>
           Back to Home Page
         </Button>
       );
@@ -75,7 +74,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
     return (
       <>
         {renderStatus()}
-        <p className="font-semibold text-lg mt-4">PAYMENT DETAIL</p>
+        <p className="mt-4 text-lg font-semibold">PAYMENT DETAIL</p>
         {renderInformation()}
         {renderBackButton()}
       </>
@@ -84,17 +83,17 @@ export function PaymentBlock(props: PaymentBlockProps) {
 
   const renderSkeleton = () => {
     return (
-      <div className="space-y-4 w-full">
-        <Skeleton className="h-20 w-20 mx-auto" />
-        <Skeleton className="h-8 w-3/4 mx-auto" />
-        <Skeleton className="h-6 w-1/2 mx-auto" />
-        <div className="w-full space-y-2 mt-10">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-full" />
+      <div className="w-full space-y-4">
+        <Skeleton className="w-20 h-20 mx-auto" />
+        <Skeleton className="w-3/4 h-8 mx-auto" />
+        <Skeleton className="w-1/2 h-6 mx-auto" />
+        <div className="w-full mt-10 space-y-2">
+          <Skeleton className="w-full h-6" />
+          <Skeleton className="w-full h-6" />
+          <Skeleton className="w-full h-6" />
+          <Skeleton className="w-full h-6" />
         </div>
-        <Skeleton className="h-12 w-1/2 mx-auto mt-16" />
+        <Skeleton className="w-1/2 h-12 mx-auto mt-16" />
       </div>
     );
   };

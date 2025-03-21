@@ -29,7 +29,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
           <Skeleton className="w-48 h-6" />
           <div className="flex space-x-2">
             {categoriesPlaceholder.map((_, index) => (
-              <Skeleton key={index} className="w-20 h-8 rounded-full" />
+              <Skeleton key={index} className="w-20 h-6 rounded-full" />
             ))}
           </div>
           <Skeleton className="h-5 w-36" />
@@ -43,16 +43,16 @@ export function SubmissionItem(props: SubmissionItemProps) {
     const renderSubmissionInformation = () => {
       return (
         <div className="space-y-2">
-          <p className="text-xl font-bold">{submission?.problem.problemName}</p>
+          <p className="text-base font-bold">{submission?.problem.problemName}</p>
           <div className="flex space-x-2">
             {submission &&
               submission?.problem.categories.map((category, index) => (
-                <div key={index} className="px-3 py-1 font-bold rounded-full text-gray2 bg-gray5">
+                <div key={index} className="px-2 py-1 text-xs font-bold rounded-full text-gray2 bg-gray5 line-clamp-1">
                   {category.name}
                 </div>
               ))}
           </div>
-          <p className="text-gray2">Submitted on {shortenDate(submission!.submitDate)}</p>
+          <p className="text-sm text-gray3">Submitted on {shortenDate(submission!.submitDate)}</p>
         </div>
       );
     };
@@ -71,14 +71,14 @@ export function SubmissionItem(props: SubmissionItemProps) {
 
       return (
         <div>
-          <p className={`font-bold text-xl ${textColor}`}>{status}</p>
+          <p className={`font-bold text-base ${textColor}`}>{status}</p>
         </div>
       );
     };
 
     return (
       <div
-        className={`flex items-center justify-between py-4 px-7 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer hover:opacity-80`}
+        className={`flex items-center justify-between py-3 px-6 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer hover:opacity-80`}
         onClick={handleClick}
       >
         {renderSubmissionInformation()}

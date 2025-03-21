@@ -5,3 +5,4 @@ export * from "./ProfileSection";
 export * from "./StatsSection";
 export * from "./SubmissionList/SubmissionList";
 export * from "./CompletedCourseList/CompletedCourseList";
+export * from "./SubscriptionCard";
