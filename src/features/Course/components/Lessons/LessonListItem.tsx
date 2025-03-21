@@ -1,10 +1,11 @@
-import { ICourse, IEnrolledLesson, ILesson } from "../../types";
+import { ICourse, ILesson } from "@/types";
+import { IEnrolledLesson } from "../../types";
 import { BookOpenText, Code } from "lucide-react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { showToastError } from "@/utils/toastUtils";
+import { showToastError } from "@/utils";
 
 const EMPTY_SPACE = <div className="w-8" />;
 const FINISHED_ICON = <FontAwesomeIcon icon={faCircleCheck} className="w-8 h-8" color="#27AE60" />;

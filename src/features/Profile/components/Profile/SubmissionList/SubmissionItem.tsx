@@ -52,7 +52,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
                 </div>
               ))}
           </div>
-          <p className="text-sm text-gray3">Submitted on {shortenDate(submission?.submitDate)}</p>
+          <p className="text-sm text-gray3">Submitted on {shortenDate(submission!.submitDate)}</p>
         </div>
       );
     };

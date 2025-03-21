@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { CourseComment } from "./CourseComment";
 import { Button } from "@/components/ui/shadcn/Button";
 import { Spinner, SortByButton, ISortByItem, Pagination } from "@/components/ui";
-import { ICourse, TComment } from "@/features/Course/types";
+import { TComment } from "@/features/Course/types";
 import { useToast } from "@/hooks/use-toast";
 import { courseAPI } from "@/lib/api";
 import { API_RESPONSE_CODE } from "@/constants";
-import { showToastError } from "@/utils/toastUtils";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { getUserIdFromLocalStorage } from "@/utils";
+import { showToastError, getUserIdFromLocalStorage } from "@/utils";
+import { ICourse } from "@/types";
 import * as commentStore from "@/redux/comment/commentSlice";
 
 const SORT_ITEMS: ISortByItem[] = [

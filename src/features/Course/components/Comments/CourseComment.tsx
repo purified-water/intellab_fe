@@ -6,18 +6,17 @@ import { Button } from "@/components/ui/shadcn/Button";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
-import { TComment, ICourse } from "@/features/Course/types";
-import { formatDateTime } from "@/utils";
-import { showToastError } from "@/utils/toastUtils";
+import { TComment } from "@/features/Course/types";
+import { formatDateTime, showToastError, getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { API_RESPONSE_CODE } from "@/constants";
 import { Pencil, Trash2 } from "lucide-react";
 import { AlertDialog, AvatarIcon } from "@/components/ui";
-import { getUserIdFromLocalStorage } from "@/utils";
 import * as commentStore from "@/redux/comment/commentSlice";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { ICourse } from "@/types";
 
 type CourseCommentProps = {
   comment: TComment;

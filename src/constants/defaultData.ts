@@ -1,10 +1,8 @@
-import { ICourse, ILesson } from "@/features/Course/types";
-import hierarchy from "@/assets/hierarchy.png";
+import { ICourse, ILesson } from "@/types";
 
 const DEFAULT_COURSE: ICourse = {
   averageRating: 4.5,
   courseId: "course_id",
-  courseLogo: hierarchy,
   courseName: "Course Name",
   description: "Course Description",
   latestLessonId: "latest_lesson_id",
@@ -15,7 +13,10 @@ const DEFAULT_COURSE: ICourse = {
   progressPercent: 25.6,
   reviewCount: 1000,
   userEnrolled: false,
-  userUid: null
+  userUid: null,
+  certificateId: "",
+  certificateUrl: "",
+  categories: []
 };
 
 const DEFAULT_LESSON: ILesson = {
@@ -30,7 +31,8 @@ const DEFAULT_LESSON: ILesson = {
   isDonePractice: false,
   learningId: "learning_id",
   nextLessonId: "next_lesson_id",
-  nextLessonName: "Next Lesson Name"
+  nextLessonName: "Next Lesson Name",
+  problemId: ""
 };
 
 const NA_VALUE = "N/A";

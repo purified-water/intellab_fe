@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
-import { ICourse, ILesson, IEnrolledLesson } from "../types";
+import { IEnrolledLesson } from "../types";
+import { ICourse, ILesson } from "@/types";
 import { Spinner, Pagination } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
@@ -48,7 +49,7 @@ export const CourseDetailPage = () => {
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourseDetail(id!, userId!);
+    const response = await courseAPI.getCourseDetail(id!);
     const { result } = response;
 
     // If the user already enrolled in the course, update the Redux store to get the correct lessons type

@@ -6,9 +6,10 @@ import {
   IEnrollCourseResponse,
   IGetLessonDetailResponse,
   IGetUserEnrolledCoursesResponse,
-  IGetCategories
-} from "../../pages/HomePage/types/responseTypes";
-import { IReviewsResponse, ReviewStatsResponse } from "../../pages/HomePage/types/reviewResponse";
+  IGetCategories,
+  IReviewsResponse,
+  ReviewStatsResponse
+} from "@/features/StudentOverall/types";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 import {
@@ -20,7 +21,7 @@ import {
   TGetCommentChildrenResponse,
   TModifyCommentResponse,
   TUpvoteCommentResponse
-} from "@/features/Course/types/apiResponseType";
+} from "@/features/Course/types";
 import { TGetCompletedCourseListMeResponse } from "@/features/Profile/types";
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -44,7 +45,7 @@ export const courseAPI = {
     return data;
   },
 
-  getReviews: async (courseId: string, page: number, size: number, rating: string) => {
+  getReviews: async (courseId: string, page: number, size: number, rating: string | null) => {
     const rating_param = rating === "all" ? null : Number(rating);
     const response = await apiClient.get(`course/courses/${courseId}/reviews`, {
       params: {
@@ -75,8 +76,8 @@ export const courseAPI = {
     return data;
   },
 
-  getCourseDetail: async (courseId: string, userUid: string) => {
-    const response = await apiClient.get(`/course/courses/${courseId}?userUid=${userUid}`);
+  getCourseDetail: async (courseId: string) => {
+    const response = await apiClient.get(`/course/courses/${courseId}`);
     const data: IGetCourseDetailResponse = response.data;
     return data;
   },

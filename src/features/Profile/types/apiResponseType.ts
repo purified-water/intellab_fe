@@ -1,4 +1,4 @@
-import { TApiResponse, IUser, IUser, TProgress, TRankLanguages, ICompletedCourse } from "@/types";
+import { TApiResponse, IUser, TProgress, TRankLanguages, ICompletedCourse } from "@/types";
 import { SendSubmissionType } from "@/features/Problem/types/SubmissionType";
 
 type TGetProfilePublicResponse = TApiResponse<IUser>;
