@@ -1,5 +1,5 @@
 type TNavigationState = {
-  from: string;
+  from?: string;
 };
 
 export type { TNavigationState };

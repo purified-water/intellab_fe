@@ -4,7 +4,7 @@ import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
-import { navigateWithPreviousPagePassed } from "@/utils";
+import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
 
 export const SignUpPage = () => {
@@ -67,8 +67,13 @@ export const SignUpPage = () => {
     return isValid;
   };
 
+  const goBack = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateToPreviousPage(navigate, state);
+  };
+
   const handleLogin = () => {
-    const state = { from: previousNavigationState.from } as TNavigationState;
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateWithPreviousPagePassed(navigate, state, "/login");
   };
 
@@ -96,7 +101,7 @@ export const SignUpPage = () => {
     }
 
     // NOTE: for testing
-    // handleLogin();
+    //handleLogin();
   };
 
   return (
@@ -205,7 +210,7 @@ export const SignUpPage = () => {
           </button>
         </form>
 
-        <LoginGoogle callback={handleLogin} />
+        <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
           <p className="text-sm">Already have an account?</p>

@@ -5,7 +5,7 @@ export const navigateWithPreviousPagePassed = (navigate: NavigateFunction, state
   navigate(to, { state: state });
 };
 
-export const navigateToPreviousPage = (navigate: NavigateFunction, state: TNavigationState) => {
+export const navigateToPreviousPage = (navigate: NavigateFunction, state: TNavigationState | null) => {
   let previousPage = "/";
   if (state && state.from) {
     previousPage = state.from;

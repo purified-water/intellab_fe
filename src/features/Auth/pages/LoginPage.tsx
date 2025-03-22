@@ -64,7 +64,7 @@ export const LoginPage = () => {
   };
 
   const goBack = () => {
-    const state = { from: previousNavigationState.from } as TNavigationState;
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateToPreviousPage(navigate, state);
   };
 
@@ -112,7 +112,7 @@ export const LoginPage = () => {
   };
 
   const handleSignup = () => {
-    const state = { from: previousNavigationState.from } as TNavigationState;
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateWithPreviousPagePassed(navigate, state, "/signup");
   };
 
