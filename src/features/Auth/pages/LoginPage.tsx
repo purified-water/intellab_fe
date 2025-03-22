@@ -1,7 +1,7 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import Cookies from "js-cookie";
@@ -11,6 +11,8 @@ import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
+import { TNavigationState } from "@/types";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -19,6 +21,9 @@ export const LoginPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
+  const location = useLocation();
+
+  const previousNavigationState = location.state as TNavigationState;
 
   useEffect(() => {
     document.title = "Login | Intellab";
@@ -58,6 +63,11 @@ export const LoginPage = () => {
     }
   };
 
+  const goBack = () => {
+    const state = { from: previousNavigationState.from } as TNavigationState;
+    navigateToPreviousPage(navigate, state);
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
@@ -86,7 +96,8 @@ export const LoginPage = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
-        navigate("/");
+
+        goBack();
       }
     } catch (error) {
       if (error.response) {
@@ -98,6 +109,11 @@ export const LoginPage = () => {
       }
       console.error("Login error", error);
     }
+  };
+
+  const handleSignup = () => {
+    const state = { from: previousNavigationState.from } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/signup");
   };
 
   return (
@@ -167,14 +183,14 @@ export const LoginPage = () => {
           </button>
         </form>
 
-        <LoginGoogle />
+        <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
           <div className="text-sm">
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="font-bold text-appPrimary hover:underline">
+            <button onClick={handleSignup} className="font-bold text-appPrimary hover:underline">
               Sign Up
-            </a>
+            </button>
           </div>
         </div>
       </div>

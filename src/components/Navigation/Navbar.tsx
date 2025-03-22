@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import intellab_side from "@/assets/logos/intellab_side.svg";
 import {
@@ -17,6 +17,8 @@ import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { navigateWithPreviousPagePassed } from "@/utils";
+import { TNavigationState } from "@/types";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -32,6 +34,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileIconRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -67,6 +70,11 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     Cookies.remove("accessToken");
     localStorage.removeItem("userId");
     setIsLoggedIn(false);
+  };
+
+  const handleLogin = () => {
+    const state = { from: location.pathname } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/login");
   };
 
   const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
@@ -199,12 +207,12 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
               )}
             </>
           ) : (
-            <Link
-              to="/login"
+            <button
+              onClick={handleLogin}
               className="px-3 py-1 text-base font-semibold transition border text-appPrimary border-appPrimary rounded-xl hover:opacity-90"
             >
               Sign In
-            </Link>
+            </button>
           )}
         </div>
       </nav>

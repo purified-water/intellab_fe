@@ -1,9 +1,11 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
+import { navigateWithPreviousPagePassed } from "@/utils";
+import { TNavigationState } from "@/types";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -20,6 +22,9 @@ export const SignUpPage = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const previousNavigationState = location.state as TNavigationState;
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -62,6 +67,11 @@ export const SignUpPage = () => {
     return isValid;
   };
 
+  const handleLogin = () => {
+    const state = { from: previousNavigationState.from } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/login");
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
@@ -75,7 +85,7 @@ export const SignUpPage = () => {
       const response = await authAPI.signUp(displayName, signUpInfo.email, signUpInfo.password);
 
       if (response.status === 201 || response.status === 200) {
-        navigate("/login");
+        handleLogin();
       } else {
         // TODO Handle errors
         setInputErrors({ ...inputErrors, username: "Unable to sign up" });
@@ -84,6 +94,9 @@ export const SignUpPage = () => {
       setInputErrors({ ...inputErrors, username: "Something wrong happened!" });
       console.log("Sign up error", error);
     }
+
+    // NOTE: for testing
+    // handleLogin();
   };
 
   return (
@@ -192,15 +205,13 @@ export const SignUpPage = () => {
           </button>
         </form>
 
-        <LoginGoogle />
+        <LoginGoogle callback={handleLogin} />
 
         <div className="mt-6 text-center">
-          <p className="text-sm">
-            Already have an account?{" "}
-            <a href="/login" className="font-bold text-appPrimary hover:underline">
-              Log In
-            </a>
-          </p>
+          <p className="text-sm">Already have an account?</p>
+          <button onClick={handleLogin} className="font-bold text-appPrimary hover:underline">
+            Log In
+          </button>
         </div>
       </div>
     </div>
