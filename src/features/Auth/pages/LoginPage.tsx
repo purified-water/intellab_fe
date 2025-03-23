@@ -73,8 +73,13 @@ export const LoginPage = () => {
           // if production, will use HTTPS and secure cookie
           secure: process.env.NODE_ENV === "production",
           sameSite: "Strict", // Mitigate CSRF
-          expires: 1 / 24 // Token expiry (1 hour)
+            expires: 1 / 8640 // Token expiry (10 seconds)
         });
+        Cookies.set("refreshToken", response.data.refreshToken, {
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Strict",
+        });
+        localStorage.setItem("refreshToken", response.data.refreshToken);
 
         const decodedToken = jwtDecode<JwtPayload>(response.data.accessToken);
         const userId = decodedToken.sub; // sub is the user id
