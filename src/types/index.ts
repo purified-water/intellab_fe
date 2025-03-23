@@ -8,3 +8,4 @@ export * from "./course";
 export * from "./leaderboardRank";
 export * from "./price";
 export * from "./category";
+export * from "./navigation";

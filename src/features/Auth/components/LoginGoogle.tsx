@@ -1,7 +1,6 @@
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/features/Auth/firebase/firebaseAuth";
 import { FcGoogle } from "rocketicons/fc";
-import { useNavigate } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
@@ -11,8 +10,12 @@ import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 
-const GoogleLogin = () => {
-  const navigate = useNavigate();
+type TLoginGoogleProps = {
+  callback: () => void;
+};
+
+const GoogleLogin = (props: TLoginGoogleProps) => {
+  const { callback } = props;
   const dispatch = useDispatch();
   const toast = useToast();
 
@@ -47,7 +50,8 @@ const GoogleLogin = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
-        navigate("/");
+
+        callback();
       }
     } catch (error) {
       console.log("Login with Google error", error);
