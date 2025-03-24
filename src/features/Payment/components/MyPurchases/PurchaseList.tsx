@@ -1,49 +1,48 @@
-import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { useNavigate } from "react-router-dom";
-
-const purchases: Purchase[] = [
-  {
-    dateIssued: "Jan 22, 2025",
-    description: "Intellab Course Plan (Month)",
-    amount: "199,000 VND",
-    status: "Paid"
-  },
-  {
-    dateIssued: "Jan 22, 2025",
-    description: "Intellab Course Plan (Month)",
-    amount: "199,000 VND",
-    status: "Failed"
-  }
-];
-
-// interface ProblemListItemProps {
-//   purchases: Purchase[];
-// };
-
-type Purchase = {
-  dateIssued: string;
-  description: string;
-  amount: string;
-  status: "Paid" | "Failed" | "Pending";
-};
+import { TIntellabPayment } from "../../types";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { paymentAPI } from "@/lib/api";
+import { shortenDate, showToastError } from "@/utils";
+import { VNPAY_TRANSACTION_CODE } from "../../constants";
+import { Pagination } from "@/components/ui";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 export const PurchaseList = () => {
   const navigate = useNavigate();
+  const toast = useToast();
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [purchases, setPurchases] = useState<TIntellabPayment[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const handlePurchaseClicked = () => {
-    navigate("/my-purchases/receipt/123");
+  const getPaymentHistory = async (page: number = 0) => {
+    setLoading(true);
+    try {
+      const response = await paymentAPI.getPaymentMe(page);
+      console.log("Payment history: ", response);
+      setTotalPages(response.result.totalPages);
+      setCurrentPage(response.result.number);
+      setPurchases(response.result.content);
+    } catch (error) {
+      showToastError({ toast: toast.toast, title: "Failed to fetch payment history", message: error.message });
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    getPaymentHistory();
+    document.title = "My Purchases | Intellab";
+  }, []);
+
   return (
-    <div className="flex justify-center overflow-x-auto">
+    <div className="flex flex-col items-center justify-center overflow-x-auto">
       <table className="min-w-fit w-[1000px] table-auto">
         <thead className="border-b">
           <tr className="text-xs sm:text-base">
             {["Date Issued", "Description", "Amount", "Status"].map((header, index) => (
-              <th
-                key={index}
-                className="px-4 py-2 text-center cursor-pointer text-gray2"
-                // onClick={() => handleSort(header.toLowerCase() as keyof Problem)}
-              >
+              <th key={index} className="px-4 py-2 text-center cursor-pointer text-gray2">
                 <div className="flex items-center">
                   <p>{header}</p>
                 </div>
@@ -51,27 +50,64 @@ export const PurchaseList = () => {
             ))}
           </tr>
         </thead>
+
         <tbody>
-          {purchases.map((row, index) => (
-            <tr
-              key={index}
-              className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
-              onClick={handlePurchaseClicked}
-            >
-              <td className="w-12 py-2 pl-4 text-left">{row.dateIssued}</td>
-              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.description}</td>
-              <td className="w-20 px-4 py-2 text-left">{row.amount}</td>
-              <td
-                className={`px-4 py-2 w-28 font-semibold ${
-                  row.status === "Paid" ? "text-appEasy" : row.status === "Pending" ? "text-appMedium" : "text-appHard"
-                }`}
-              >
-                {capitalizeFirstLetter(row.status)}
+          {loading ? (
+            <tr>
+              <td className="px-4 py-3">
+                <Skeleton className="w-1/2 h-4" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="w-1/2 h-4" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="w-1/2 h-4" />
+              </td>
+              <td className="px-4 py-3">
+                <Skeleton className="w-1/2 h-4" />
               </td>
             </tr>
-          ))}
+          ) : (
+            purchases.map((row, index) => (
+              <tr
+                key={index}
+                className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+                onClick={() => {
+                  navigate(`/my-purchases/receipt/${row.paymentId}`);
+                }}
+              >
+                <td className="w-12 py-2 pl-4 text-left">{shortenDate(row.receivedAt)}</td>
+                <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.orderDescription}</td>
+                <td className="w-20 px-4 py-2 text-left">{`${row?.totalPaymentAmount.toLocaleString()} ${row?.currency}`}</td>
+                <td
+                  className={`px-4 py-2 w-28 font-semibold ${
+                    row.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS ? "text-appEasy" : "text-appHard"
+                  }`}
+                >
+                  {row.responseCodeDescription}
+                </td>
+              </tr>
+            ))
+          )}
+
+          {!loading && purchases.length === 0 && (
+            <tr>
+              <td className="px-4 py-3 text-center" colSpan={4}>
+                No payment history
+              </td>
+            </tr>
+          )}
         </tbody>
       </table>
+      <div className="mb-16">
+        {totalPages != 0 && (
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page) => getPaymentHistory(page)}
+          />
+        )}
+      </div>
     </div>
   );
 };

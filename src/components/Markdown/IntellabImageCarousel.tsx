@@ -11,7 +11,7 @@ interface ImageCarouselProps {
   images: CarouselImage[];
 }
 
-const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
+export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
@@ -55,5 +55,3 @@ const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
     </div>
   );
 };
-
-export default ImageCarousel;

@@ -40,9 +40,9 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
     <div className={clsx("flex", message.type === "user" ? "justify-end" : "justify-start")}>
       <div
         className={clsx(
-          "px-4 py-1 rounded-lg",
+          "px-4 py-1 rounded-lg border-[0.5px] border-gray7/40",
           variantClasses[variant] || "text-base",
-          message.type === "user" ? "bg-appFadedPrimary/50" : `${variant === "problemAI" ? "bg-gray6/50" : "bg-white"}`,
+          message.type === "user" ? "bg-appAIUserChat" : `${variant === "problemAI" ? "bg-gray6/50" : "bg-white"}`,
           "max-w-lg md:max-w-3xl"
         )}
       >

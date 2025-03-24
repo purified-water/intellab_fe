@@ -6,6 +6,7 @@ import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
+import { FaSpinner } from "rocketicons/fa6";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -21,6 +22,7 @@ export const SignUpPage = () => {
     confirmPassword: ""
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -83,12 +85,14 @@ export const SignUpPage = () => {
 
     if (!inputValidation()) return;
 
+    setIsSigningUp(true);
+
     // Change to displayName to match the API
     const displayName = signUpInfo.username;
 
     try {
       const response = await authAPI.signUp(displayName, signUpInfo.email, signUpInfo.password);
-
+      setIsSigningUp(false);
       if (response.status === 201 || response.status === 200) {
         handleLogin();
       } else {
@@ -96,6 +100,7 @@ export const SignUpPage = () => {
         setInputErrors({ ...inputErrors, username: "Unable to sign up" });
       }
     } catch (error) {
+      setIsSigningUp(false);
       setInputErrors({ ...inputErrors, username: "Something wrong happened!" });
       console.log("Sign up error", error);
     }
@@ -204,19 +209,31 @@ export const SignUpPage = () => {
 
           <button
             type="submit"
-            className="w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+            disabled={isSigningUp}
+            className={`w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90 ${
+              isSigningUp ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Sign Up
+            {isSigningUp ? (
+              <div className="flex items-center justify-center">
+                <FaSpinner className="inline-block mr-2 icon-sm animate-spin icon-white" />
+                Signing Up...
+              </div>
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 
         <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
-          <p className="text-sm">Already have an account?</p>
-          <button onClick={handleLogin} className="font-bold text-appPrimary hover:underline">
-            Log In
-          </button>
+          <div className="text-sm">
+            Already have an account?{" "}
+            <button onClick={handleLogin} className="font-bold text-appPrimary hover:underline">
+              Log In
+            </button>
+          </div>
         </div>
       </div>
     </div>

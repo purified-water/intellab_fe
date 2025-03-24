@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 // import { MarkdownRender } from "../components/MarkdownRender";
 import { Button } from "@/components/ui";
 // import MarkdownEditor from "../components/MarkdownRender2";
-import { RenderMarkdown } from "../components/RenderLessonContent";
+import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 // import { testData } from "../components/testData";
 import { TOCItem, TableOfContents } from "../components";
 import { AppFooter } from "@/components/AppFooter";
@@ -258,7 +258,7 @@ export const LessonDetailPage = () => {
     if (lesson && lesson.content != null) {
       return (
         <div className="pr-4 space-y-6">
-          <RenderMarkdown lesson={lesson} setTocItems={setTocItems} />
+          <RenderLessonMarkdown lesson={lesson} setTocItems={setTocItems} />
           {renderContinueToQuiz()}
           {isLessonDone && lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}
           {renderProblem()}

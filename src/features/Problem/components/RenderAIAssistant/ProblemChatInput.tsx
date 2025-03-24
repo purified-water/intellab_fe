@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Check, ChevronDown, SendHorizonal } from "lucide-react";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
-import { CHATBOT_MODELS } from "@/constants/enums/chatbotModels";
+import { CHATBOT_MODELS } from "@/constants/chatbotModels";
 import { Button } from "@/components/ui";
 import { FaSpinner, FaSquare } from "rocketicons/fa6";
 

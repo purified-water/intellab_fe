@@ -1,5 +1,8 @@
 import { TestCaseType } from "@/features/Problem/types/TestCaseType";
-
+export type ProblemSolutionType = {
+  problemId: string;
+  content: string;
+};
 export type ProblemType = {
   problemId: string;
   problemName: string;
@@ -11,5 +14,5 @@ export type ProblemType = {
   isPublished: boolean;
   testCases: TestCaseType[];
   submissions: string[];
-  solutions: string[];
+  solution: ProblemSolutionType;
 };

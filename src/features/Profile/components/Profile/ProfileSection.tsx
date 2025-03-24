@@ -69,12 +69,12 @@ export const ProfileSection = (props: ProfileSectionProps) => {
 
   const renderSkeleton = () => {
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full pt-6">
         <div className="flex items-center">
-          <Skeleton className="w-16 h-16 rounded-full" />
+          <Skeleton className="w-20 h-20 rounded-full" />
           <div className="flex flex-col items-start justify-center pl-4">
-            <Skeleton className="w-40 h-6 mb-2" />
-            <Skeleton className="h-5 mb-5 w-36" />
+            <Skeleton className="w-20 h-6 mb-2" />
+            <Skeleton className="w-20 h-5 mb-5" />
             <div>
               <Skeleton className="inline-block w-12 h-6" />
               <Skeleton className="inline-block w-16 h-6 ml-2" />
@@ -91,7 +91,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
       <div className="flex flex-col w-full">
         <div className="flex items-center">
           {renderProfilePhoto()}
-          <div className="flex flex-col items-start justify-center pl-4">
+          <div className="flex flex-col items-start justify-center py-4 pl-4 ">
             <p
               className="text-xl font-semibold truncate text-black1"
               style={{ maxWidth: nameWidth }}
@@ -99,18 +99,18 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             >
               {user?.displayName ?? "User_name"}
             </p>
-            <div className="mb-5 text-base font-normal truncate text-gray3" style={{ maxWidth: nameWidth }}>
+            <div className="mb-2 text-base font-normal truncate text-gray3" style={{ maxWidth: nameWidth }}>
               {fullName}
             </div>
             <div>
-              <span className="text-lg font-normal text-black1">Rank:</span>
-              <span className="text-lg font-semibold text-black1"> 1,000</span>
+              <span className="text-base font-normal text-black1">Rank:</span>
+              <span className="text-base font-semibold text-black1"> 1,000</span>
             </div>
           </div>
         </div>
         {isMe && (
           <button
-            className="min-w-full h-[50px] font-bold bg-transparent rounded-[10px] border-appPrimary border-[1px] text-appPrimary mt-[42px] hover:opacity-80"
+            className="min-w-full py-2 font-bold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary mt-2 hover:opacity-80"
             onClick={() => navigate("/profile/edit")}
           >
             Edit Profile

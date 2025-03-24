@@ -94,7 +94,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
               {buttonText(detailCourse!)}
             </button>
             <p className="self-end mt-2 font-bold">
-              {detailCourse?.price ? `đ${detailCourse?.price.toLocaleString()}` : "Free"}
+              {detailCourse?.price ? `${detailCourse?.price.toLocaleString()} VND` : "Free"}
             </p>
           </div>
         )}
@@ -121,13 +121,13 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
         >
           {buttonText(course)}
         </button>
-        <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price} VND` : "Free"}</p>
+        <p className="self-end mt-2 font-bold">{course?.price ? `${course?.price.toLocaleString()} VND` : "Free"}</p>
       </div>
     </div>
   );
 
   const renderSkeleton = () => (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0">
+    <div className="flex flex-col justify-between w-64 h-40 p-4 rounded-lg bg-gray6 shrink-0">
       <Skeleton className="h-6 mb-2 bg-gray5" />
       <Skeleton className="h-4 mb-2 bg-gray5" />
       <Skeleton className="h-4 mb-2 bg-gray5" />

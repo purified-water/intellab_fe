@@ -10,7 +10,7 @@ import {
   MdOutlineSettings,
   MdLogout
 } from "rocketicons/md";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, ReceiptText } from "lucide-react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
@@ -173,6 +173,16 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
                         </div>
                       </Link>
                     </li>
+
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+                      <Link to="/my-purchases">
+                        <div className="flex items-center space-x-2">
+                          <ReceiptText className=" icon-gray3" />
+                          <span>My Purchases</span>
+                        </div>
+                      </Link>
+                    </li>
+
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="/profile/edit">
                         <div className="flex items-center space-x-2">
