@@ -11,12 +11,12 @@ import {
   MdLogout
 } from "rocketicons/md";
 import { Sun, Moon } from "lucide-react";
-import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { userLocalStorageCleanUp } from "@/utils";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -26,12 +26,12 @@ interface NavbarProps {
 const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const user = useSelector((state: RootState) => state.user.user);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const profileIconRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -51,12 +51,6 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     };
   }, []);
 
-  useEffect(() => {
-    // Check if the access token exists in cookies
-    const token = Cookies.get("accessToken");
-    setIsLoggedIn(!!token);
-  }, []);
-
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
   };
@@ -64,9 +58,8 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const handleLogout = () => {
     dispatch(clearUser());
     dispatch(logoutSuccess());
-    Cookies.remove("accessToken");
-    localStorage.removeItem("userId");
-    setIsLoggedIn(false);
+
+    userLocalStorageCleanUp();
   };
 
   const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
@@ -128,7 +121,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
               Premium
             </button>
           </Link>
-          {isLoggedIn ? (
+          {isAuthenticated ? (
             <>
               <button className="p-1 transition text-gray3 hover:text-gray1">
                 <MdNotifications className="icon-xl" />

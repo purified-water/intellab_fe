@@ -68,17 +68,23 @@ export const LoginPage = () => {
       const response = await authAPI.login(loginInfo.email, loginInfo.password);
 
       if (response.status === 200) {
+        // For testing purposes
         Cookies.set("accessToken", response.data.accessToken, {
           // process.env.NODE_ENV is automatically set by Vite development/production
           // if production, will use HTTPS and secure cookie
           secure: process.env.NODE_ENV === "production",
           sameSite: "Strict", // Mitigate CSRF
-            expires: 1 / 8640 // Token expiry (10 seconds)
+          expires: 1 / 8640 // Token expiry (10 seconds)
         });
-        Cookies.set("refreshToken", response.data.refreshToken, {
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict",
-        });
+
+        // Cookies.set("accessToken", response.data.accessToken, {
+        // process.env.NODE_ENV is automatically set by Vite development/production
+        // if production, will use HTTPS and secure cookie
+        //   secure: process.env.NODE_ENV === "production",
+        //   sameSite: "Strict",
+        //   expires: 1 / 24 // Token expiry (1 hour)
+        // });
+        localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
 
         const decodedToken = jwtDecode<JwtPayload>(response.data.accessToken);

@@ -5,13 +5,16 @@ import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { getUserIdFromLocalStorage } from "@/utils";
+import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
+import { IUserCourse } from "../types";
 
 export const HomePage = () => {
+  const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [yourCourseLoading, setYourCourseLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userUid = getUserIdFromLocalStorage();
 
@@ -36,12 +39,32 @@ export const HomePage = () => {
     setFreeCourses(freeCourses);
   };
 
+  const getUserEnrolledCourseIds = async () => {
+    if (userUid) {
+      setYourCourseLoading(true);
+      try {
+        const response = await courseAPI.getUserEnrolledCourses();
+        const userEnrolledCourses = response.result.content;
+        setUserEnrollCourses(userEnrolledCourses);
+      } catch (e) {
+        setYourCourseLoading(false);
+        showToastError({ toast: toast.toast, message: e.message ?? "Error getting enrolled courses" });
+      } finally {
+        setYourCourseLoading(false);
+      }
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       await getFeaturedCourses();
       await getFreeCourses();
       setLoading(false);
+
+      if (isAuthenticated) {
+        await getUserEnrolledCourseIds();
+      }
     };
     fetchData();
   }, [isAuthenticated]);
@@ -52,7 +75,7 @@ export const HomePage = () => {
         <Header />
         <div id="content" className="flex flex-col gap-4 mt-4 md:flex-row">
           <div id="courses" className="w-full px-4 py-4 border rounded-lg md:w-3/4 border-gray5">
-            <YourCourseSection />
+            {isAuthenticated && <YourCourseSection userEnrollCourses={userEnrollCourses} loading={yourCourseLoading} />}
             <CourseSection title="Featured Courses" courses={featuredCourses} loading={loading} />
             <CourseSection title="Free Courses" courses={freeCourses} loading={loading} />
           </div>
