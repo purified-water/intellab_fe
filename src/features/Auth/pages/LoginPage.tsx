@@ -1,7 +1,7 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import Cookies from "js-cookie";
@@ -11,14 +11,22 @@ import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
+import { TNavigationState } from "@/types";
+import { FaSpinner } from "rocketicons/fa6";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [inputErrors, setInputErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
+  const location = useLocation();
+
+  const previousNavigationState = location.state as TNavigationState;
 
   useEffect(() => {
     document.title = "Login | Intellab";
@@ -45,17 +53,29 @@ export const LoginPage = () => {
     return isValid;
   };
 
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+        await getPremiumStatusAPI(user.userId);
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
+  const goBack = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateToPreviousPage(navigate, state);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -63,6 +83,8 @@ export const LoginPage = () => {
     e.preventDefault();
 
     if (!inputValidation()) return;
+
+    setIsLoggingIn(true);
 
     try {
       const response = await authAPI.login(loginInfo.email, loginInfo.password);
@@ -97,9 +119,12 @@ export const LoginPage = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
-        navigate("/");
+        setIsLoggingIn(false);
+
+        goBack();
       }
     } catch (error) {
+      setIsLoggingIn(false);
       if (error.response) {
         const errorMessage = error.response.data.message || "Invalid email or password";
         setInputErrors({ ...inputErrors, email: errorMessage });
@@ -109,6 +134,11 @@ export const LoginPage = () => {
       }
       console.error("Login error", error);
     }
+  };
+
+  const handleSignup = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/signup");
   };
 
   return (
@@ -172,20 +202,30 @@ export const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+            disabled={isLoggingIn}
+            className={`w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90 ${
+              isLoggingIn ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Log In
+            {isLoggingIn ? (
+              <div className="flex items-center justify-center">
+                <FaSpinner className="inline-block mr-2 icon-sm animate-spin icon-white" />
+                Logging In...
+              </div>
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
 
-        <LoginGoogle />
+        <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
           <div className="text-sm">
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="font-bold text-appPrimary hover:underline">
+            <button onClick={handleSignup} className="font-bold text-appPrimary hover:underline">
               Sign Up
-            </a>
+            </button>
           </div>
         </div>
       </div>

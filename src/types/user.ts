@@ -10,6 +10,7 @@ interface IUser {
   role: string;
   lastSignIn: string;
   disabled: boolean;
+  courseCount?: number;
 }
 
 export type { IUser };

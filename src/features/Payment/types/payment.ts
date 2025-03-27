@@ -24,6 +24,8 @@ type TIntellabPayment = {
   currency: string;
   paidAmount?: number;
   paymentId: string;
+  orderDescription: string;
+  paymentFor: string;
   paymentUrl?: string;
   receivedAt: string;
   responseCode?: string;
@@ -35,6 +37,8 @@ type TIntellabPayment = {
   transactionStatusDescription: string;
   userUid: string;
   userUuid: string;
+  orderDescription: string;
+  paymentFor: string;
 };
 
 export type { TVnpayPayment, TIntellabPayment };

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button } from "@/components/ui";
-import { RenderDescTabs, RenderPGTabs, RenderTCTabs, RenderAllProblems, RenderAIAssistant } from "../components";
+import {
+  RenderDescTabs,
+  RenderPGTabs,
+  RenderTCTabs,
+  RenderAllProblems,
+  RenderAIAssistant,
+  LockProblemOverlay
+} from "../components";
 import { MdList } from "rocketicons/md";
 import { HiOutlineSparkles } from "rocketicons/hi2";
 import { FaPlay, FaSpinner, FaUpload } from "rocketicons/fa6";
@@ -50,6 +57,9 @@ export const ProblemDetail = () => {
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
 
+  // Lock problem
+  const [isPrivate] = useState(false);
+
   const submissionValidation = () => {
     if (!code) {
       toast({
@@ -74,7 +84,7 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-      // console.log("Problem detail", problemDetail);
+      console.log("Problem detail", problemDetail);
       if (problemDetail) {
         setProblemDetail(problemDetail);
         document.title = `${problemDetail.problemName} | Intellab`;
@@ -276,6 +286,10 @@ export const ProblemDetail = () => {
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  if (isPrivate) {
+    return <LockProblemOverlay />;
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">

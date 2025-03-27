@@ -1,5 +1,6 @@
 import { MyPurchasesPage, PaymentResultPage, PricingPage, ReceiptPage } from "./pages";
 import { RouteObject } from "react-router-dom";
+import { ProtectedRoute } from "@/components/Navigation";
 
 const PaymentRoute: RouteObject[] = [
   {
@@ -8,7 +9,11 @@ const PaymentRoute: RouteObject[] = [
   },
   {
     path: "/payment-result",
-    element: <PaymentResultPage />
+    element: (
+      <ProtectedRoute>
+        <PaymentResultPage />
+      </ProtectedRoute>
+    )
   },
   {
     path: "/my-purchases",

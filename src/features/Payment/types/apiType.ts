@@ -1,4 +1,4 @@
-import { TApiResponse, TSort, IPageable } from "@/types";
+import { TApiResponse, TSort, IPageable, TPostApiParams, TGetApiParams } from "@/types";
 import { TVnpayPayment, TIntellabPayment } from "./payment";
 
 type TRefundResponse = TApiResponse<TVnpayPayment>;
@@ -9,7 +9,7 @@ type TGetVNPayPaymentResponse = TApiResponse<TVnpayPayment>;
 
 type TGetIntellabPaymentResponse = TApiResponse<TIntellabPayment>;
 
-type TGetPaymenMe = TApiResponse<{
+type TGetPaymenMeResponse = TApiResponse<{
   totalPages: number;
   totalElements: number;
   size: number;
@@ -23,10 +23,31 @@ type TGetPaymenMe = TApiResponse<{
   empty: boolean;
 }>;
 
+type TCreatePremiumPaymentResponse = TApiResponse<TIntellabPayment>;
+
+type TGetIntellabPaymentParams = TGetApiParams<
+  {
+    paymentId: string;
+  },
+  TIntellabPayment
+>;
+
+type TCreatePremiumPaymentParams = TPostApiParams<
+  undefined,
+  {
+    premiumPackage: string;
+    premiumDuration: string;
+  },
+  TIntellabPayment
+>;
+
 export type {
   TRefundResponse,
   TCreateCoursePaymentResponse,
   TGetVNPayPaymentResponse,
   TGetIntellabPaymentResponse,
-  TGetPaymenMe
+  TGetPaymenMeResponse,
+  TCreatePremiumPaymentResponse,
+  TGetIntellabPaymentParams,
+  TCreatePremiumPaymentParams
 };

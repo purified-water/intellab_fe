@@ -4,10 +4,18 @@ import {
   TCreateCoursePaymentResponse,
   TGetVNPayPaymentResponse,
   TGetIntellabPaymentResponse,
-  TGetPaymenMe
+  TGetPaymenMeResponse,
+  TCreatePremiumPaymentResponse,
+  TGetIntellabPaymentParams,
+  TCreatePremiumPaymentParams
 } from "@/features/Payment/types";
+import { API_RESPONSE_CODE } from "@/constants";
+import { LANGUAGE, VNPAY_BANK_CODE, VNPAY_CURRENCY_CODE } from "@/features/Payment/constants";
 
 const DEFAULT_PAGE_SIZE = 10;
+const DEFAULT_LANGUAGE = LANGUAGE.VIETNAMESE;
+const DEFAULT_CURRENCY = VNPAY_CURRENCY_CODE.VND;
+const DEFAULT_BANK_CODE = VNPAY_BANK_CODE.VNBANK;
 
 export const paymentAPI = {
   refund: async (paymentId: string) => {
@@ -21,10 +29,10 @@ export const paymentAPI = {
 
   createCoursePayment: async (courseId: string) => {
     const bodyData = {
-      language: "VIETNAMESE",
+      language: DEFAULT_LANGUAGE,
       courseId,
-      vnpayBankCode: "VNBANK",
-      vnpayCurrencyCode: "VND"
+      vnpayBankCode: DEFAULT_BANK_CODE,
+      vnpayCurrencyCode: DEFAULT_CURRENCY
     };
     const response = await apiClient.post("identity/payment/vnpay/checkout/single-course", bodyData);
     const data: TCreateCoursePaymentResponse = response.data;
@@ -37,20 +45,69 @@ export const paymentAPI = {
     return data;
   },
 
-  getIntellabPayment: async (paymentId: string) => {
-    const response = await apiClient.get(`identity/payment/vnpay/get-payment/${paymentId}`);
-    const data: TGetIntellabPaymentResponse = response.data;
+  getIntellabPayment: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetIntellabPaymentParams) => {
+    const DEFAULT_ERROR = "Error getting payment information";
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const paymentId = query?.paymentId;
+      const response = await apiClient.get(`identity/payment/vnpay/get-payment/${paymentId}`);
+      const data: TGetIntellabPaymentResponse = response.data;
+      const { code, message, result } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  getPaymentMe: async (page: number, size?: number, sort?: string) => {
+    const queryParams = {
+      page,
+      size: size ?? DEFAULT_PAGE_SIZE,
+      sort: sort ?? ""
+    };
+    const response = await apiClient.get("identity/payment/vnpay/get-payments/me", { params: queryParams });
+    const data: TGetPaymenMeResponse = response.data;
     return data;
   },
 
-  getPaymentMe: async (page: number, size = DEFAULT_PAGE_SIZE, sort: string) => {
-    const queryParams = {
-      page,
-      size,
-      sort
-    };
-    const response = await apiClient.get("identity/payment/vnpay/get-payments/me", { params: queryParams });
-    const data: TGetPaymenMe = response.data;
-    return data;
+  createPremiumPayemnt: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreatePremiumPaymentParams) => {
+    const DEFAULT_ERROR = "Error creating premium payment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const bodyData = {
+        language: DEFAULT_LANGUAGE,
+        vnpayBankCode: DEFAULT_BANK_CODE,
+        vnpayCurrencyCode: DEFAULT_CURRENCY,
+        premiumPackage: body!.premiumPackage,
+        premiumDuration: body!.premiumDuration
+      };
+      const response = await apiClient.post("identity/payment/vnpay/checkout/premium-package", bodyData);
+      const data: TCreatePremiumPaymentResponse = response.data;
+      const { code, message, result } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   }
 };

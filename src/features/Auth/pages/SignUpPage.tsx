@@ -1,9 +1,12 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
+import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
+import { TNavigationState } from "@/types";
+import { FaSpinner } from "rocketicons/fa6";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -19,7 +22,11 @@ export const SignUpPage = () => {
     confirmPassword: ""
   });
   const [showPassword, setShowPassword] = useState(false);
+  const [isSigningUp, setIsSigningUp] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const previousNavigationState = location.state as TNavigationState;
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
@@ -62,28 +69,44 @@ export const SignUpPage = () => {
     return isValid;
   };
 
+  const goBack = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateToPreviousPage(navigate, state);
+  };
+
+  const handleLogin = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/login");
+  };
+
   const handleSignUp = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
 
     if (!inputValidation()) return;
 
+    setIsSigningUp(true);
+
     // Change to displayName to match the API
     const displayName = signUpInfo.username;
 
     try {
       const response = await authAPI.signUp(displayName, signUpInfo.email, signUpInfo.password);
-
+      setIsSigningUp(false);
       if (response.status === 201 || response.status === 200) {
-        navigate("/login");
+        handleLogin();
       } else {
         // TODO Handle errors
         setInputErrors({ ...inputErrors, username: "Unable to sign up" });
       }
     } catch (error) {
+      setIsSigningUp(false);
       setInputErrors({ ...inputErrors, username: "Something wrong happened!" });
       console.log("Sign up error", error);
     }
+
+    // NOTE: for testing
+    //handleLogin();
   };
 
   return (
@@ -186,21 +209,31 @@ export const SignUpPage = () => {
 
           <button
             type="submit"
-            className="w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+            disabled={isSigningUp}
+            className={`w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90 ${
+              isSigningUp ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Sign Up
+            {isSigningUp ? (
+              <div className="flex items-center justify-center">
+                <FaSpinner className="inline-block mr-2 icon-sm animate-spin icon-white" />
+                Signing Up...
+              </div>
+            ) : (
+              "Sign Up"
+            )}
           </button>
         </form>
 
-        <LoginGoogle />
+        <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
-          <p className="text-sm">
+          <div className="text-sm">
             Already have an account?{" "}
-            <a href="/login" className="font-bold text-appPrimary hover:underline">
+            <button onClick={handleLogin} className="font-bold text-appPrimary hover:underline">
               Log In
-            </a>
-          </p>
+            </button>
+          </div>
         </div>
       </div>
     </div>

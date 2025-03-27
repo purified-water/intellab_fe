@@ -4,6 +4,7 @@ import { BookOpen, Code, Crown } from "lucide-react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { useNavigate } from "react-router-dom";
 
 type PlanType = "course" | "algorithm" | "premium";
 
@@ -16,7 +17,7 @@ interface SubscriptionCardProps {
 const planDetails = {
   course: {
     title: "Course Plan",
-    color: "from-pink-50 to-appFadedAccent text-appAccent",
+    color: "from-white to-appFadedAccent text-appAccent",
     icon: <BookOpen className="w-10 h-10 text-appAccent" />
   },
   algorithm: {
@@ -35,12 +36,13 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ type, userId
   const { title, color, icon } = planDetails[type];
   const reduxUser = useSelector((state: RootState) => state.user.user);
   const isMe = userId === reduxUser?.userId;
+  const navigate = useNavigate();
 
   if (!userId || !isMe) return null;
 
   if (loading) {
     return (
-      <div className="w-full h-[130px] bg-white rounded-t-lg">
+      <div className="w-full h-[130px] bg-white rounded-lg">
         <Skeleton className="w-full h-20 p-4 rounded-t-lg " />
         <div className="flex items-center justify-between px-4 py-3">
           <Skeleton className="w-1/2 h-4" />
@@ -52,11 +54,12 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ type, userId
 
   return (
     <div className="w-full h-[130px] bg-white rounded-lg">
-      <div className={cn("p-4 bg-gradient-to-tr rounded-t-lg", color)}>
+      <div className={cn("px-4 py-5 bg-gradient-to-tr rounded-t-lg", color)}>
         <div className="flex items-center justify-between pr-2">
           <div className="flex flex-col">
-            <p className="text-sm text-gray1">Current Plan</p>
-            <h2 className="text-lg font-bold">{title}</h2>
+            {/* <p className={`text-xs ${type === "course" ? "text-appHard" : type === "algorithm" ? "text-appSecondary" : "text-appPrimary"} `}>Current Plan</p> */}
+            <p className="text-xs text-gray2">Current Plan</p>
+            <h2 className="text-xl font-bold">{title}</h2>
           </div>
           {icon}
         </div>
@@ -64,7 +67,9 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ type, userId
 
       <div className="flex items-center justify-between px-4 py-3 border-t">
         <p className="text-xs text-gray-600">Renew on January 25, 2025</p>
-        <button className="text-sm text-appPrimary hover:underline">View all plans &gt;</button>
+        <button onClick={() => navigate("/pricing")} className="text-sm text-appPrimary hover:underline">
+          View all plans &gt;
+        </button>
       </div>
     </div>
   );

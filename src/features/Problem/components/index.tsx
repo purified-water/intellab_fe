@@ -9,3 +9,4 @@ export * from "./RenderTestCase/Output";
 export * from "./RenderTestCase/RenderTestCaseTabs";
 export * from "./RenderTestCase/TestCases";
 export * from "./ProblemPage";
+export * from "./LockProblemOverlay";

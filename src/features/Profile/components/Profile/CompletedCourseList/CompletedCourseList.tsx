@@ -65,7 +65,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   const renderEmpty = () => {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-lg text-gray3">No completed courses yet</p>
+        <p className="text-lg text-gray3">Finish courses to display your accomplishment here!</p>
       </div>
     );
   };

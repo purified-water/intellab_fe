@@ -16,7 +16,9 @@ export const HomePage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [yourCourseLoading, setYourCourseLoading] = useState<boolean>(true);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userUid = getUserIdFromLocalStorage();
+  const userRedux = useSelector((state: RootState) => state.user.user);
+  const isAuthenticated = userRedux != null;
+  const userUid = userRedux?.userId;
 
   useEffect(() => {
     document.title = "Home | Intellab";

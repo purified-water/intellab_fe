@@ -18,8 +18,8 @@ export const ProfilePage = () => {
     <div className="bg-gray5">
       <div className="flex flex-col items-start justify-between min-h-screen px-8 pt-10 sm:px-20 lg:flex-row">
         <div className="flex flex-col space-y-4 items-start w-full lg:w-[470px] h-fit h:full mb-10 lg:mb-20">
-          <SubscriptionCard type="premium" userId={id!} loading={false} />
-          <div className="flex flex-col items-start w-full p-4 mb-10 bg-white rounded-lg sm:p-10 h-fit h:full lg:mb-20">
+          <SubscriptionCard type="course" userId={id!} loading={false} />
+          <div className="flex flex-col items-start w-full p-6 mb-10 bg-white rounded-lg sm:p-6 h-fit h:full lg:mb-20">
             <ProfileSection userId={id!} />
             <StatsSection userId={id!} />
             <LanguagesSection userId={id!} />
@@ -27,7 +27,7 @@ export const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="flex flex-col w-full min-h-screen ml-2 space-y-2 lg:space-y-4 lg:ml-4">
+        <div className="flex flex-col w-full min-h-screen ml-0 space-y-2 sm:ml-2 lg:space-y-4 lg:ml-4">
           <Badges />
           <SubmissionList userId={id!} />
           <CompletedCourseList userId={id!} />

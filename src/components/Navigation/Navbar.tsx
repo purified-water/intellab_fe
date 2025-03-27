@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
 import intellab_side from "@/assets/logos/intellab_side.svg";
 import {
@@ -10,13 +10,16 @@ import {
   MdOutlineSettings,
   MdLogout
 } from "rocketicons/md";
-import { Sun, Moon } from "lucide-react";
+import { Sun, Moon, ReceiptText } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { userLocalStorageCleanUp } from "@/utils";
+import { navigateWithPreviousPagePassed } from "@/utils";
+import { TNavigationState } from "@/types";
+import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -32,6 +35,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const profileIconRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -56,10 +60,16 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   };
 
   const handleLogout = () => {
+    dispatch(clearPremiumStatus());
     dispatch(clearUser());
     dispatch(logoutSuccess());
 
     userLocalStorageCleanUp();
+  };
+
+  const handleLogin = () => {
+    const state = { from: location.pathname } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/login");
   };
 
   const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
@@ -158,6 +168,16 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
                         </div>
                       </Link>
                     </li>
+
+                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+                      <Link to="/my-purchases">
+                        <div className="flex items-center space-x-2">
+                          <ReceiptText className=" icon-gray3" />
+                          <span>My Purchases</span>
+                        </div>
+                      </Link>
+                    </li>
+
                     <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <Link to="/profile/edit">
                         <div className="flex items-center space-x-2">
@@ -192,12 +212,12 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
               )}
             </>
           ) : (
-            <Link
-              to="/login"
+            <button
+              onClick={handleLogin}
               className="px-3 py-1 text-base font-semibold transition border text-appPrimary border-appPrimary rounded-xl hover:opacity-90"
             >
               Sign In
-            </Link>
+            </button>
           )}
         </div>
       </nav>
