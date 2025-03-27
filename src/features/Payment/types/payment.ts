@@ -35,6 +35,8 @@ type TIntellabPayment = {
   transactionStatusDescription: string;
   userUid: string;
   userUuid: string;
+  orderDescription: string;
+  paymentFor: string;
 };
 
 export type { TVnpayPayment, TIntellabPayment };

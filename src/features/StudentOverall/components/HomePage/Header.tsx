@@ -6,12 +6,12 @@ const DEFAULT_GREETING = "Welcome to Intellab!";
 
 export const Header = () => {
   const [greeting, setGreeting] = useState(DEFAULT_GREETING);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const user = useSelector((state: RootState) => state.user.user);
+  const userRedux = useSelector((state: RootState) => state.user.user);
+  const isAuthenticated = userRedux != null;
 
   useEffect(() => {
     if (isAuthenticated) {
-      const userName = user?.displayName;
+      const userName = userRedux?.displayName;
       if (userName) {
         setGreeting(`Welcome back, ${userName}!`);
       }
@@ -46,7 +46,7 @@ export const Header = () => {
 
         <div id="courses">
           <p className="mb-2 text-xs font-semibold text-black md:mb-10">YOUR COURSES</p>
-          <p className="text-3xl font-bold text-black md:text-4xl">6</p>
+          <p className="text-3xl font-bold text-black md:text-4xl">{userRedux?.courseCount ?? 0}</p>
           <p className="text-xs text-black">Courses</p>
         </div>
       </div>

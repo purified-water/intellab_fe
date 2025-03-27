@@ -13,21 +13,22 @@ export const Leaderboard = () => {
   const toast = useToast();
   const navigate = useNavigate();
 
-  const getLeaderboard = async () => {
-    try {
-      const response = await leaderboardAPI.getLeaderboard("all", 0, 3);
-      if (response) {
-        setRanks(response.content);
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "An error occurred while fetching leaderboard data" });
-    } finally {
-      setLoading(false);
-    }
+  const getLeaderboardAPI = async () => {
+    await leaderboardAPI.getLeaderboard({
+      query: {
+        filter: "all",
+        page: 0,
+        size: 3
+      },
+      onStart: () => setLoading(true),
+      onSuccess: (response) => setRanks(response.content),
+      onFail: (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: () => setLoading(false)
+    });
   };
 
   useEffect(() => {
-    getLeaderboard();
+    getLeaderboardAPI();
   }, []);
 
   const LeaderboardItem = ({ rank, item }: { rank: number; item: TLeaderboardRank }) => {

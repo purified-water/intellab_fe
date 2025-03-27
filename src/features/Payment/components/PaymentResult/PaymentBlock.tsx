@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { CircleCheck, CircleX } from "lucide-react";
 import { InformationRow } from "./InformationRow";
-import { TIntellabPayment } from "../types";
+import { TIntellabPayment } from "../../types";
 import { shortenDate } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { VNPAY_TRANSACTION_CODE } from "../constants";
+import { VNPAY_TRANSACTION_CODE } from "../../constants";
 
 type PaymentBlockProps = {
   payment: TIntellabPayment | null;
@@ -52,7 +52,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
         <div className="w-full space-y-2 mt-10">
           <InformationRow label="Payment Status" value={payment!.transactionStatusDescription} />
           <InformationRow label="Order ID" value={payment!.paymentId} />
-          <InformationRow label="Order information" value={payment!.transactionReference} />
+          <InformationRow label="Order information" value={payment!.orderDescription} />
           <InformationRow
             label="Payment Amount"
             value={`${payment?.totalPaymentAmount.toLocaleString()} ${payment?.currency}`}
