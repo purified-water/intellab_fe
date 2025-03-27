@@ -49,7 +49,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
 
     const renderInformation = () => {
       return (
-        <div className="w-full space-y-2 mt-10">
+        <div className="w-full mt-10 space-y-2">
           <InformationRow label="Payment Status" value={payment!.transactionStatusDescription} />
           <InformationRow label="Order ID" value={payment!.paymentId} />
           <InformationRow label="Order information" value={payment!.orderDescription} />

@@ -13,12 +13,14 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
+import { FaSpinner } from "rocketicons/fa6";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [inputErrors, setInputErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
@@ -82,6 +84,8 @@ export const LoginPage = () => {
 
     if (!inputValidation()) return;
 
+    setIsLoggingIn(true);
+
     try {
       const response = await authAPI.login(loginInfo.email, loginInfo.password);
 
@@ -104,10 +108,12 @@ export const LoginPage = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
+        setIsLoggingIn(false);
 
         goBack();
       }
     } catch (error) {
+      setIsLoggingIn(false);
       if (error.response) {
         const errorMessage = error.response.data.message || "Invalid email or password";
         setInputErrors({ ...inputErrors, email: errorMessage });
@@ -185,9 +191,19 @@ export const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+            disabled={isLoggingIn}
+            className={`w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90 ${
+              isLoggingIn ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Log In
+            {isLoggingIn ? (
+              <div className="flex items-center justify-center">
+                <FaSpinner className="inline-block mr-2 icon-sm animate-spin icon-white" />
+                Logging In...
+              </div>
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
 

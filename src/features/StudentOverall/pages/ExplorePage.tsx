@@ -206,6 +206,7 @@ export const ExplorePage = () => {
           )}
         </motion.div>
       </div>
+
       <AppFooter />
 
       <AIOrb />

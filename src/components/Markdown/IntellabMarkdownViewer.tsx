@@ -2,15 +2,11 @@ import React, { useState, useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
-import { LessonHeader } from "./LessonHeader";
-import { ILesson } from "@/types";
 import { LANGUAGE_MAP } from "@/constants";
-import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
-import { TOCItem } from "./TableOfContents";
 import remarkGfm from "remark-gfm";
-import { ImageCarousel } from "@/components/Markdown";
 import { CarouselImage, isImageMarkdown, extractImageInfo } from "@/utils";
+import { ImageCarousel } from "./IntellabImageCarousel";
 // Type definitions
 interface CodeBlock {
   language: string;
@@ -95,39 +91,6 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
       </div>
     </div>
   );
-};
-
-// Extract TOC from markdown content
-const extractTOC = (content: string): TOCItem[] => {
-  const toc: TOCItem[] = [];
-  const lines = content.split("\n");
-
-  const headingRegex = /^(#{1,3})\s+(.+)$/;
-  let inCodeBlock = false;
-
-  for (const line of lines) {
-    if (line.startsWith("```")) {
-      inCodeBlock = !inCodeBlock; // Toggle code block state
-      continue;
-    }
-
-    if (!inCodeBlock) {
-      const match = line.match(headingRegex);
-      if (match) {
-        const level = match[1].length;
-        const text = match[2].trim();
-
-        const slug = text
-          .toLowerCase()
-          .replace(/[^a-z0-9 -]/g, "")
-          .replace(/\s+/g, "-");
-
-        toc.push({ id: slug, text, level });
-      }
-    }
-  }
-
-  return toc;
 };
 
 // Parser function with carousel support
@@ -290,32 +253,28 @@ const parseContent = (content: string): ContentBlock[] => {
   return blocks;
 };
 
+interface RenderMarkdownProps {
+  content: string;
+}
+
 // Main component for rendering a lesson
-export const RenderLessonMarkdown: React.FC<{
-  lesson: ILesson;
-  setTocItems: (items: TOCItem[]) => void;
-}> = ({ lesson, setTocItems }) => {
+export const RenderMarkdown = ({ content }: RenderMarkdownProps) => {
   const [blocks, setBlocks] = useState<ContentBlock[]>([]);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     // Parse content blocks
-    setBlocks(parseContent(lesson.content));
-
-    // Extract TOC items
-    const tocItems = extractTOC(lesson.content);
-    setTocItems(tocItems);
-  }, [lesson, setTocItems]);
+    setBlocks(parseContent(content));
+  }, [content]);
 
   return (
     <div className="mb-8">
-      <LessonHeader lesson={lesson} />
       <div className="lesson-content markdown" ref={contentRef}>
         {blocks.map((block, index) => {
           if (block.type === "text") {
             return (
               <div key={index} className="mb-4">
-                <ReactMarkdown rehypePlugins={[remarkGfm, rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}>
+                <ReactMarkdown rehypePlugins={[remarkGfm, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}>
                   {block.content as string}
                 </ReactMarkdown>
               </div>

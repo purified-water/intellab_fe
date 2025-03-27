@@ -8,3 +8,5 @@ export { default as reactIcon } from "./react.svg";
 
 // Images
 export { default as unavailableImage } from "./unavailable_image.jpg";
+export { default as AIBackground } from "./AIBackground.svg";
+export { default as AIBackground2 } from "./AIBackground2.svg";

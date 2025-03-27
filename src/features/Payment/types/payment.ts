@@ -24,6 +24,8 @@ type TIntellabPayment = {
   currency: string;
   paidAmount?: number;
   paymentId: string;
+  orderDescription: string;
+  paymentFor: string;
   paymentUrl?: string;
   receivedAt: string;
   responseCode?: string;

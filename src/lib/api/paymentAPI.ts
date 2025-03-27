@@ -69,11 +69,11 @@ export const paymentAPI = {
     }
   },
 
-  getPaymentMe: async (page: number, size = DEFAULT_PAGE_SIZE, sort: string) => {
+  getPaymentMe: async (page: number, size?: number, sort?: string) => {
     const queryParams = {
       page,
-      size,
-      sort
+      size: size ?? DEFAULT_PAGE_SIZE,
+      sort: sort ?? ""
     };
     const response = await apiClient.get("identity/payment/vnpay/get-payments/me", { params: queryParams });
     const data: TGetPaymenMeResponse = response.data;

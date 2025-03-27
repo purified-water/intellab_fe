@@ -65,7 +65,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
     return (
       <>
         <div>
-          <h3 className="text-xl font-bold line-clamp-2 cursor-pointer" onClick={handleViewCourseDetail}>
+          <h3 className="text-xl font-bold cursor-pointer line-clamp-2" onClick={handleViewCourseDetail}>
             {courseDetail?.courseName}
           </h3>
           <p
@@ -101,7 +101,9 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg bg-gradient-to-tr from-appSecondary to-appFadedPrimary shrink-0 hover:shadow-lg">
+    <div
+      className={`flex flex-col justify-between w-64 h-40 p-4 text-white transition-shadow duration-200 ease-in-out rounded-lg ${skeletonLoading || apiLoading ? "bg-gray6" : "bg-gradient-to-tr from-appSecondary to-appFadedPrimary"}  shrink-0 hover:shadow-lg`}
+    >
       {skeletonLoading || apiLoading ? renderSkeleton() : renderContent()}
     </div>
   );

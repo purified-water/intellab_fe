@@ -71,7 +71,7 @@ export const ChatSidebar = ({ isOpen, isLoading, chatHistoryItems, onSelectChat 
     >
       {isOpen && (
         <Sidebar variant="modal" className="w-64 h-full rounded-l-lg">
-          <SidebarContent className="rounded-l-lg">
+          <SidebarContent className="bg-white rounded-l-lg">
             {sortedDates.map((date) => (
               <SidebarGroup key={date}>
                 <SidebarGroupLabel>{format(parseISO(date), "MMMM dd, yyyy")}</SidebarGroupLabel>
