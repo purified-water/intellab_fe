@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { CircleCheck, CircleX } from "lucide-react";
 import { InformationRow } from "./InformationRow";
-import { TIntellabPayment } from "../types";
+import { TIntellabPayment } from "../../types";
 import { shortenDate } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { VNPAY_TRANSACTION_CODE } from "../constants";
+import { VNPAY_TRANSACTION_CODE } from "../../constants";
 
 type PaymentBlockProps = {
   payment: TIntellabPayment | null;

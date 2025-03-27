@@ -19,6 +19,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { navigateWithPreviousPagePassed } from "@/utils";
 import { TNavigationState } from "@/types";
+import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -65,6 +66,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   };
 
   const handleLogout = () => {
+    dispatch(clearPremiumStatus());
     dispatch(clearUser());
     dispatch(logoutSuccess());
     Cookies.remove("accessToken");

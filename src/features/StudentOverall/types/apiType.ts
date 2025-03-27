@@ -1,4 +1,4 @@
-import { ICourse, ILesson, IPageable, TCategory } from "@/types";
+import { ICourse, ILesson, IPageable, TCategory, TGetApiParams, TPremiumStatus } from "@/types";
 
 export interface IGetCoursesResponse {
   code: number;
@@ -85,3 +85,12 @@ export interface IGetCategories {
   code: number;
   result: TCategory[];
 }
+
+export type TGetPremiumStatusResponse = TPremiumStatus;
+
+export type TGetPreimumStatusParams = TGetApiParams<
+  {
+    uid: string;
+  },
+  TGetPremiumStatusResponse
+>;

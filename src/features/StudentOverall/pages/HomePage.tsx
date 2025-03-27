@@ -5,15 +5,15 @@ import { courseAPI } from "@/lib/api";
 import { ICourse } from "@/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { getUserIdFromLocalStorage } from "@/utils";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 
 export const HomePage = () => {
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userUid = getUserIdFromLocalStorage();
+  const userRedux = useSelector((state: RootState) => state.user.user);
+  const isAuthenticated = userRedux != null;
+  const userUid = userRedux?.userId;
 
   useEffect(() => {
     document.title = "Home | Intellab";

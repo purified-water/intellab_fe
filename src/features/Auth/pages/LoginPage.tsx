@@ -14,6 +14,7 @@ import { showToastError } from "@/utils/toastUtils";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -52,17 +53,24 @@ export const LoginPage = () => {
     return isValid;
   };
 
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+        await getPremiumStatusAPI(user.userId);
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
   };
 
   const goBack = () => {
