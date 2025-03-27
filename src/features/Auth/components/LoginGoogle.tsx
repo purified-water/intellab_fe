@@ -9,6 +9,7 @@ import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 
 type TLoginGoogleProps = {
   callback: () => void;
@@ -19,17 +20,24 @@ const GoogleLogin = (props: TLoginGoogleProps) => {
   const dispatch = useDispatch();
   const toast = useToast();
 
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+        await getPremiumStatusAPI(user.userId);
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
   };
 
   const handleGoogleLogin = async () => {

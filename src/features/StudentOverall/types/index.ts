@@ -1,3 +1,3 @@
 export * from "./SmCourseCardType";
-export * from "./responseTypes";
+export * from "./apiType";
 export * from "./reviewResponse";
