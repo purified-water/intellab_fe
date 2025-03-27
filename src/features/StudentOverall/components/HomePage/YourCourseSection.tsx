@@ -12,11 +12,11 @@ export const YourCourseSection = ({ userEnrollCourses, loading }: YourCourseSect
   const userId = getUserIdFromLocalStorage();
 
   const renderSkeletonList = () => {
-    const skeletonCount = 2;
+    const skeletonCount = 1;
     return (
       <section>
         <h1 className="text-3xl font-bold">Your Courses</h1>
-        <div className="flex flex-wrap gap-4">
+        <div className="flex flex-wrap gap-4 mt-4">
           {[...Array(skeletonCount)].map((_, index) => (
             <YourCourseCard key={index} courseId="" userId="" progress={0} skeletonLoading={true} />
           ))}

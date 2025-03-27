@@ -32,7 +32,7 @@ export function PricingBlock(props: PrickingBlockProps) {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const premiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
 
-  const isCurrentPlan = (premiumStatus?.planType === planPackage)
+  const isCurrentPlan = premiumStatus?.planType === planPackage;
   //const isCurrentPlan = (PACKAGES.COURSE == planPackage && duration == DURATION.MONTHLY); // Note: for tesing
 
   const toast = useToast();

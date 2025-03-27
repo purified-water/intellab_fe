@@ -127,7 +127,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   );
 
   const renderSkeleton = () => (
-    <div className="flex flex-col justify-between w-64 h-40 p-4 rounded-lg bg-gray6 shrink-0">
+    <div className="flex flex-col justify-between w-64 h-40 p-4 mt-2 rounded-lg bg-gray6 shrink-0">
       <Skeleton className="h-6 mb-2 bg-gray5" />
       <Skeleton className="h-4 mb-2 bg-gray5" />
       <Skeleton className="h-4 mb-2 bg-gray5" />

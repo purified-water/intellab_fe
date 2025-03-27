@@ -8,17 +8,19 @@ import { RootState } from "@/redux/rootReducer";
 import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { IUserCourse } from "../types";
+import { toast } from "@/hooks/use-toast";
 
 export const HomePage = () => {
   const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
   const [featuredCourses, setFeaturedCourses] = useState<ICourse[]>([]);
   const [freeCourses, setFreeCourses] = useState<ICourse[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [yourCourseLoading, setYourCourseLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState({
+    featuredCourses: true,
+    freeCourses: true,
+    yourCourses: true
+  });
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userRedux = useSelector((state: RootState) => state.user.user);
-  const isAuthenticated = userRedux != null;
-  const userUid = userRedux?.userId;
+  const userUid = getUserIdFromLocalStorage();
 
   useEffect(() => {
     document.title = "Home | Intellab";
@@ -31,38 +33,49 @@ export const HomePage = () => {
   };
 
   const getFeaturedCourses = async () => {
-    const allCourses = await getCourses();
-    setFeaturedCourses(allCourses);
+    try {
+      setLoading((prev) => ({ ...prev, featuredCourses: true }));
+      const allCourses = await getCourses();
+      setFeaturedCourses(allCourses);
+    } catch (error) {
+      console.log("Error getting featured courses", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, featuredCourses: false }));
+    }
   };
 
   const getFreeCourses = async () => {
-    const allCourses = await getCourses();
-    const freeCourses = allCourses.filter((course: ICourse) => course.price === 0);
-    setFreeCourses(freeCourses);
+    try {
+      setLoading((prev) => ({ ...prev, freeCourses: true }));
+      const allCourses = await getCourses();
+      const freeCourses = allCourses.filter((course: ICourse) => course.price === 0);
+      setFreeCourses(freeCourses);
+    } catch (error) {
+      console.log("Error getting free courses", error);
+    } finally {
+      setLoading((prev) => ({ ...prev, freeCourses: false }));
+    }
   };
 
   const getUserEnrolledCourseIds = async () => {
     if (userUid) {
-      setYourCourseLoading(true);
+      setLoading((prev) => ({ ...prev, yourCourses: true }));
       try {
         const response = await courseAPI.getUserEnrolledCourses();
         const userEnrolledCourses = response.result.content;
         setUserEnrollCourses(userEnrolledCourses);
       } catch (e) {
-        setYourCourseLoading(false);
         showToastError({ toast: toast.toast, message: e.message ?? "Error getting enrolled courses" });
       } finally {
-        setYourCourseLoading(false);
+        setLoading((prev) => ({ ...prev, yourCourses: false }));
       }
     }
   };
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
       await getFeaturedCourses();
       await getFreeCourses();
-      setLoading(false);
 
       if (isAuthenticated) {
         await getUserEnrolledCourseIds();
@@ -77,9 +90,11 @@ export const HomePage = () => {
         <Header />
         <div id="content" className="flex flex-col gap-4 mt-4 md:flex-row">
           <div id="courses" className="w-full px-4 py-4 border rounded-lg md:w-3/4 border-gray5">
-            {isAuthenticated && <YourCourseSection userEnrollCourses={userEnrollCourses} loading={yourCourseLoading} />}
-            <CourseSection title="Featured Courses" courses={featuredCourses} loading={loading} />
-            <CourseSection title="Free Courses" courses={freeCourses} loading={loading} />
+            {isAuthenticated && (
+              <YourCourseSection userEnrollCourses={userEnrollCourses} loading={loading.yourCourses} />
+            )}
+            <CourseSection title="Featured Courses" courses={featuredCourses} loading={loading.featuredCourses} />
+            <CourseSection title="Free Courses" courses={freeCourses} loading={loading.freeCourses} />
           </div>
 
           <div id="sidebar" className="w-full md:w-1/4">
