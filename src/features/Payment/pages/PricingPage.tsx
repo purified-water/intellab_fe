@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { PricingBlock } from "../components";
-import { PLANS, DURATION } from "../constants";
+import { PLANS } from "../constants";
+import { PREMIUM_DURATION } from "@/constants";
 
 export function PricingPage() {
-  const [selectedDuration, setSelectedDuration] = useState<(typeof DURATION)[keyof typeof DURATION]>(DURATION.MONTHLY);
+  const [selectedDuration, setSelectedDuration] = useState<(typeof PREMIUM_DURATION)[keyof typeof PREMIUM_DURATION]>(
+    PREMIUM_DURATION.MONTHLY
+  );
   const renderPlans = () => {
     return PLANS.map((plan, index) => <PricingBlock key={index} plan={plan} duration={selectedDuration} />);
   };
@@ -22,13 +25,13 @@ export function PricingPage() {
       <div className="space-x-2 font-bold mb-4">
         <Button
           label="Monthly"
-          isSelected={selectedDuration === DURATION.MONTHLY}
-          onClick={() => setSelectedDuration(DURATION.MONTHLY)}
+          isSelected={selectedDuration === PREMIUM_DURATION.MONTHLY}
+          onClick={() => setSelectedDuration(PREMIUM_DURATION.MONTHLY)}
         />
         <Button
           label="Yearly"
-          isSelected={selectedDuration === DURATION.YEARLY}
-          onClick={() => setSelectedDuration(DURATION.YEARLY)}
+          isSelected={selectedDuration === PREMIUM_DURATION.YEARLY}
+          onClick={() => setSelectedDuration(PREMIUM_DURATION.YEARLY)}
         />
       </div>
     );

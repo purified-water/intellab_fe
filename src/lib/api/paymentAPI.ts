@@ -92,7 +92,8 @@ export const paymentAPI = {
         vnpayBankCode: DEFAULT_BANK_CODE,
         vnpayCurrencyCode: DEFAULT_CURRENCY,
         premiumPackage: body!.premiumPackage,
-        premiumDuration: body!.premiumDuration
+        premiumDuration: body!.premiumDuration,
+        isChangePlan: body!.isChangePlan
       };
       const response = await apiClient.post("identity/payment/vnpay/checkout/premium-package", bodyData);
       const data: TCreatePremiumPaymentResponse = response.data;

@@ -1,8 +1,6 @@
 import { apiClient } from "./apiClient";
 import { TGetPreimumStatusParams, TGetPremiumStatusResponse } from "@/features/StudentOverall/types";
 import { HTTPS_STATUS_CODE } from "@/constants";
-// NOTE: for testing
-// import { TPremiumStatus } from "@/types";
 
 export const authAPI = {
   login: async (email: string, password: string) => {
@@ -25,16 +23,7 @@ export const authAPI = {
       const response = await apiClient.get("identity/auth/premium", { params: query });
       if (response.status === HTTPS_STATUS_CODE.OK) {
         const data: TGetPremiumStatusResponse = response.data;
-        await onSuccess(data);
-
-        // NOTE: For testing
-        // const testData: TPremiumStatus = {
-        //   startDate: "2025-03-23T16:14:49.771Z",
-        //   endDate: "2025-03-23T16:14:49.771Z",
-        //   status: "string",
-        //   planType: "string"
-        // };
-        //onSuccess(testData);
+        onSuccess(data);
       } else {
         await onFail(DEFAULT_ERROR);
       }
