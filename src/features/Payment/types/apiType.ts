@@ -37,6 +37,7 @@ type TCreatePremiumPaymentParams = TPostApiParams<
   {
     premiumPackage: string;
     premiumDuration: string;
+    isChangePlan: boolean;
   },
   TIntellabPayment
 >;

@@ -20,10 +20,10 @@ export const Leaderboard = () => {
         page: 0,
         size: 3
       },
-      onStart: () => setLoading(true),
-      onSuccess: (response) => setRanks(response.content),
-      onFail: (error) => showToastError({ toast: toast.toast, message: error }),
-      onEnd: () => setLoading(false)
+      onStart: async () => setLoading(true),
+      onSuccess: async (response) => setRanks(response.content),
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
     });
   };
 

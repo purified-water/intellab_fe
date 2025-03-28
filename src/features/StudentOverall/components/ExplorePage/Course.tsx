@@ -7,6 +7,8 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
+
 interface CourseProps {
   course: ICourse | null;
   skeletonLoading?: boolean;
@@ -22,6 +24,12 @@ export function Course(props: CourseProps) {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const isFinished = detailCourse?.progressPercent === 100;
+
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const isCurrentPlanActive = reduxPremiumStatus?.status == PREMIUM_STATUS.ACTIVE;
+  const includedInPremiumPlan =
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
 
   const getCourseDetail = async () => {
     setInternalLoading(true);
@@ -67,7 +75,7 @@ export function Course(props: CourseProps) {
 
   const priceText = (price: number, unitPrice: string) => {
     let result;
-    if (price == 0) {
+    if (price == 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
       result = "Free";
     } else {
       result = `${price.toLocaleString()} ${unitPrice}`;
@@ -84,10 +92,10 @@ export function Course(props: CourseProps) {
         text = "Continue";
       }
     } else {
-      if (courseObject?.price > 0) {
-        text = "Purchase";
-      } else {
+      if (courseObject?.price == 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
         text = "Enroll";
+      } else {
+        text = "Purchase";
       }
     }
     return text;

@@ -5,19 +5,18 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { DURATION, PACKAGES } from "../../constants";
+import { PREMIUM_DURATION, PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { AlertDialog } from "@/components/ui";
 
 type PrickingBlockProps = {
   plan: TPlan;
-  duration: (typeof DURATION)[keyof typeof DURATION];
+  duration: (typeof PREMIUM_DURATION)[keyof typeof PREMIUM_DURATION];
 };
 
 export function PricingBlock(props: PrickingBlockProps) {
   const { plan, duration } = props;
 
   const {
-    isFreePlan,
     title,
     titleColor,
     monthPrice,
@@ -25,23 +24,28 @@ export function PricingBlock(props: PrickingBlockProps) {
     eachMonthPrice,
     description,
     perks,
-    planPackage,
+    requestPackage,
+    responsePackage,
     purchaseButtonText
   } = plan;
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const premiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
 
-  const isCurrentPlan = premiumStatus?.planType === planPackage;
-  //const isCurrentPlan = (PACKAGES.COURSE == planPackage && duration == DURATION.MONTHLY); // Note: for tesing
+  const usingFreePlan = reduxPremiumStatus?.planType === PREMIUM_PACKAGES.RESPONSE.FREE;
+  const isCurrentPlan =
+    reduxPremiumStatus?.planType === responsePackage && reduxPremiumStatus?.durationEnums === duration;
+  const isFreePlan = requestPackage === PREMIUM_PACKAGES.REQUEST.FREE;
+  const isCurrenPlanActive = reduxPremiumStatus?.status == PREMIUM_STATUS.ACTIVE;
 
   const toast = useToast();
 
   const createPremiumPaymentAPI = async () => {
     await paymentAPI.createPremiumPayemnt({
       body: {
-        premiumPackage: planPackage!,
-        premiumDuration: duration
+        premiumPackage: requestPackage!,
+        premiumDuration: duration,
+        isChangePlan: isCurrenPlanActive
       },
       onSuccess: async (data) => {
         window.location.href = data.paymentUrl!;
@@ -60,13 +64,13 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   const renderPrices = () => {
     let displayPrice = monthPrice;
-    if (!isFreePlan && duration == DURATION.YEARLY) {
+    if (!isFreePlan && duration == PREMIUM_DURATION.YEARLY) {
       displayPrice = eachMonthPrice!;
     }
 
     return (
       <>
-        {!isFreePlan && duration == DURATION.YEARLY && <p>Billed anually ({yearPrice} VNĐ)</p>}
+        {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && <p>Billed anually ({yearPrice.toLocaleString()} VNĐ)</p>}
         <div className="items-end mb-2">
           <span className="text-[32px] font-bold">đ{displayPrice.toLocaleString()}</span>
           <span className="text-2xl font-medium">/</span>
@@ -90,7 +94,7 @@ export function PricingBlock(props: PrickingBlockProps) {
     };
 
     let button = null;
-    if (premiumStatus?.planType == PACKAGES.FREE) {
+    if (!isAuthenticated || isFreePlan || usingFreePlan) {
       button = (
         <button
           onClick={handlePurchaseClick}
@@ -108,9 +112,9 @@ export function PricingBlock(props: PrickingBlockProps) {
           }
           onConfirm={handlePurchaseClick}
         >
-          <button className="w-[242px] h-[45px] font-bold text-white bg-appPrimary rounded-[10px] hover:opacity-80">
+          <div className="w-[242px] h-[45px] font-bold text-white bg-appPrimary rounded-[10px] hover:opacity-80 flex items-center justify-center">
             {purchaseButtonText}
-          </button>
+          </div>
         </AlertDialog>
       );
     }
@@ -120,7 +124,11 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   return (
     <div>
-      {isAuthenticated && !isFreePlan && isCurrentPlan ? renderCurrentPlan() : <div className="mt-10" />}
+      {isAuthenticated && !isFreePlan && isCurrentPlan && isCurrenPlanActive ? (
+        renderCurrentPlan()
+      ) : (
+        <div className="mt-10" />
+      )}
       <div className="w-[338px] h-[600px]  rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1">
         <p className={`text-2xl text-${titleColor} font-bold mb-2`}>{title}</p>
         {renderPrices()}

@@ -7,6 +7,9 @@ import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { NA_VALUE } from "@/constants";
 import { showToastError } from "@/utils/toastUtils";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 
 interface HeaderProps {
   course: ICourse;
@@ -26,6 +29,12 @@ export const Header = (props: HeaderProps) => {
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
   const isFinished = course.progressPercent == 100;
+
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const isCurrentPlanActive = reduxPremiumStatus?.status == PREMIUM_STATUS.ACTIVE;
+  const includedInPremiumPlan =
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
 
   const renderReview = () => {
     return (
@@ -51,12 +60,12 @@ export const Header = (props: HeaderProps) => {
         onClick = onContinue;
       }
     } else {
-      if (course.price > 0) {
-        buttonText = "Purchase";
-        onClick = onPurchase;
-      } else {
+      if (course.price == 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
         buttonText = "Enroll";
         onClick = onEnroll;
+      } else {
+        buttonText = "Purchase";
+        onClick = onPurchase;
       }
     }
 

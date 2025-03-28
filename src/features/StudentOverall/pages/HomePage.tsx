@@ -8,7 +8,7 @@ import { RootState } from "@/redux/rootReducer";
 import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { IUserCourse } from "../types";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const HomePage = () => {
   const [userEnrollCourses, setUserEnrollCourses] = useState<IUserCourse[]>([]);
@@ -21,6 +21,7 @@ export const HomePage = () => {
   });
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userUid = getUserIdFromLocalStorage();
+  const toast = useToast();
 
   useEffect(() => {
     document.title = "Home | Intellab";
