@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ICourse } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { getUserIdFromLocalStorage, getAccessToken } from "@/utils";
+import { getUserIdFromLocalStorage } from "@/utils";
 import { courseAPI } from "@/lib/api";
 import { ProgressBar } from "@/components/ui/ProgressBar";
 import { useSelector } from "react-redux";
@@ -21,7 +21,6 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   const [internalLoading, setInternalLoading] = useState(false);
   const [detailCourse, setCourse] = useState<ICourse | null>(null);
 
-  const accessToken = getAccessToken();
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -157,7 +156,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   if (skeletonLoading || internalLoading) {
     content = renderSkeleton();
   } else {
-    if (userId && accessToken) {
+    if (userId && isAuthenticated) {
       content = renderCourseDetail();
     } else {
       content = renderDetail();

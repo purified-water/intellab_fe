@@ -29,7 +29,7 @@ export const PLANS: TPlan[] = [
     requestPackage: PREMIUM_PACKAGES.REQUEST.PROBLEM,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.PROBLEM,
     perks: [
-      "All perks from Free plan",
+      "All perks from Free Plan",
       "Access to all problems",
       "Access to all AI models",
       "Unlimited messages/day with problem AI Assistant"
@@ -46,7 +46,7 @@ export const PLANS: TPlan[] = [
     requestPackage: PREMIUM_PACKAGES.REQUEST.COURSE,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.COURSE,
     perks: [
-      "All perks from Free plan",
+      "All perks from Free Plan",
       "Access to all courses",
       "Access to all AI models",
       "20 messages/day with problem AI Assistant"
@@ -63,7 +63,7 @@ export const PLANS: TPlan[] = [
     requestPackage: PREMIUM_PACKAGES.REQUEST.PREMIUM,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.PREMIUM,
     perks: [
-      "All perks from Algorithm plan",
+      "All perks from Free Plan",
       "Access to all problems",
       "Access to all courses",
       "Access to all AI models",
