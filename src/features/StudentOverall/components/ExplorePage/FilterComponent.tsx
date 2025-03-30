@@ -77,7 +77,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
       style={{
         boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" // Adjust the values for position and blur
       }}
-      className="w-4/5 p-6 mx-auto text-black rounded-lg shadow-lg shadow-spread-2"
+      className="w-[1100px] p-6 mx-auto text-black rounded-lg shadow-lg shadow-spread-2"
     >
       <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
       <div className="space-y-4">

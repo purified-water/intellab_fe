@@ -84,7 +84,7 @@ export const ProblemsPage = () => {
 
   return (
     <>
-      <div className="flex flex-col w-full pt-3 mx-auto px-12 md:max-w-5xl lg:max-w-[90rem] md:px-28">
+      <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
         <div className="flex items-center pt-10">
           <FilterButton
             onClick={() => {
@@ -100,7 +100,7 @@ export const ProblemsPage = () => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.5 }}
             style={{ overflow: "hidden" }}
-            className="py-2"
+            className="flex items-center py-2 pl-[100px]"
           >
             <FilterComponent />
           </motion.div>

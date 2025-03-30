@@ -3,7 +3,7 @@ import { ChatbotMessageInputType } from "@/features/MainChatBot/types/ChatbotMes
 import { AI_AGENT } from "@/constants";
 import { ChatbotHistoryItemType, ChatTitleGeneratorPayload } from "@/features/MainChatBot/types";
 import { removeChatTitleQuotes } from "@/utils";
-const BASE_URL = "http://localhost:8006/ai"; // Wait for AI service to connect with API gateway
+const BASE_URL = "http://localhost:8106/ai"; // Wait for AI service to connect with API gateway
 
 export const aiAPI = {
   // *********** //
