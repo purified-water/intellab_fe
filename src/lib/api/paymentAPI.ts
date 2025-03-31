@@ -69,8 +69,9 @@ export const paymentAPI = {
     }
   },
 
-  getPaymentMe: async (page: number, size?: number, sort?: string) => {
+  getPaymentMe: async (paymentFor: string, page: number, size?: number, sort?: string) => {
     const queryParams = {
+      paymentFor: paymentFor === "SUBSCRIPTION" ? "SUBSCRIPTION" : "COURSE",
       page,
       size: size ?? DEFAULT_PAGE_SIZE,
       sort: sort ?? ""

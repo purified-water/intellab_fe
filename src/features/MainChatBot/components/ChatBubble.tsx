@@ -23,7 +23,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
   if (isLoadingResponse || message?.content === "") {
     return (
       <div className="flex justify-start my-2">
-        <div className="max-w-xs px-4 py-3 text-base bg-white rounded-lg md:max-w-md">
+        <div className="max-w-xs px-4 py-3 text-base bg-white rounded-xl md:max-w-md">
           <div className="flex items-center space-x-1">
             <span className="w-[5px] h-[5px] bg-black rounded-full animate-bounce"></span>
             <span className="w-[5px] h-[5px] delay-100 bg-black rounded-full animate-bounce"></span>
@@ -40,14 +40,14 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
     <div className={clsx("flex", message.type === "user" ? "justify-end" : "justify-start")}>
       <div
         className={clsx(
-          "px-4 py-1 rounded-lg border-[0.5px] border-gray7/40",
+          "px-4 py-2 rounded-xl border-[0.5px] border-gray7/40",
           variantClasses[variant] || "text-base",
           message.type === "user" ? "bg-appAIUserChat" : `${variant === "problemAI" ? "bg-gray6/50" : "bg-white"}`,
-          "max-w-lg md:max-w-3xl"
+          variant === "mainAI" ? "max-w-lg md:max-w-3xl" : " max-w-[100%]",
         )}
       >
         {message.type === "user" ? (
-          <p className="py-2">{message.content}</p>
+          <p className="">{message.content}</p>
         ) : (
           <ReactMarkdown
             className="prose-sm prose md:prose-base markdown"

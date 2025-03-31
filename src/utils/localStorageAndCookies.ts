@@ -5,8 +5,6 @@ export const getAccessToken = () => {
 };
 
 export const tokenCleanUp = () => {
-  Cookies.remove("accessToken");
-  Cookies.remove("refreshToken");
   localStorage.removeItem("refreshToken");
   localStorage.removeItem("accessToken");
 };

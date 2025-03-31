@@ -56,7 +56,7 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   const renderCurrentPlan = () => {
     return (
-      <div className="bg-appPrimary inline-flex py-2 px-5 rounded-t-xl ml-5">
+      <div className="inline-flex px-5 py-2 ml-5 bg-appPrimary rounded-t-xl">
         <p className="font-semibold text-white">Your Current Plan</p>
       </div>
     );
@@ -132,7 +132,7 @@ export function PricingBlock(props: PrickingBlockProps) {
       <div className="w-[338px] h-[600px]  rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1">
         <p className={`text-2xl text-${titleColor} font-bold mb-2`}>{title}</p>
         {renderPrices()}
-        <div className="text-lg font-light mb-4">{description}</div>
+        <div className="mb-4 text-lg font-light">{description}</div>
         {renderPerks()}
         <div className="flex-grow mt-20"></div>
         {!isFreePlan && !isCurrentPlan && renderPurchaseButton()}

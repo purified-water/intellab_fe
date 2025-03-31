@@ -1,7 +1,10 @@
 // Testing refresh token
+import { LOGIN_TYPES } from "@/constants";
 import { tokenCleanUp } from "@/utils";
 import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
-import Cookies from "js-cookie";
+import { getAuth } from "firebase/auth";
+
+const PUBLIC_ROUTES = ["/auth/login", "/auth/register"];
 
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_SERVER_DOCKER_URL,
@@ -24,14 +27,10 @@ class TokenRefreshManager {
    * @param token - New access token (if refresh successful)
    */
   static processQueue(error?: AxiosError | null, token?: string) {
-    // If there's an error, reject all queued requests
     if (error) {
       this.failedQueue.forEach(({ reject }) => reject(error));
-    }
-    // If token is available, retry all queued requests
-    else if (token) {
+    } else if (token) {
       this.failedQueue.forEach(({ config, resolve, reject }) => {
-        // Create a new config object with updated Authorization header
         const updatedConfig = {
           ...config,
           headers: {
@@ -40,51 +39,61 @@ class TokenRefreshManager {
           }
         };
 
-        // Retry the request
         axios(updatedConfig).then(resolve).catch(reject);
       });
     }
 
-    // Clear the queue
     this.failedQueue = [];
   }
 
   /**
-   * Refresh the access token
+   * Refresh the access token based on login type
    * @returns Promise resolving to new access token
    */
   static async refreshToken(): Promise<string> {
+    const loginType = localStorage.getItem("loginType");
+
     try {
-      const refreshToken = localStorage.getItem("refreshToken");
-      if (!refreshToken) {
-        throw new Error("No refresh token found");
-      }
-
-      const { data } = await axios.post(
-        `${import.meta.env.VITE_SERVER_DOCKER_URL}/identity/auth/refresh`,
-        { token: refreshToken },
-        {
-          headers: { "Content-Type": "application/json" },
-          withCredentials: true
+      if (loginType === LOGIN_TYPES.EMAIL) {
+        // Email login refresh token flow
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
         }
-      );
 
-      // For testing Update tokens
-      // Cookies.set("accessToken", data.accessToken, {
-      //   secure: import.meta.env.NODE_ENV === "production",
-      //   sameSite: "Strict",
-      //   expires: 1 / 8640
-      // });
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_SERVER_DOCKER_URL}/identity/auth/refresh`,
+          { token: refreshToken },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true
+          }
+        );
 
-      Cookies.set("accessToken", data.accessToken, {
-        secure: import.meta.env.NODE_ENV === "production",
-        sameSite: "Strict",
-        expires: 1 / 24
-      });
-      localStorage.setItem("accessToken", data.accessToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
 
-      return data.accessToken;
+        return data.accessToken;
+      } else if (loginType === LOGIN_TYPES.GOOGLE) {
+        console.log("Refreshing Google token");
+        // Google login (Firebase) token refresh
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+          throw new Error("No authenticated Google user");
+        }
+
+        // Force refresh to get a new token
+        const newToken = await currentUser.getIdToken(true);
+
+        localStorage.setItem("accessToken", newToken);
+
+        // You might want to send this token to your backend for validation/exchange
+        return newToken;
+      } else {
+        throw new Error("Unknown login type");
+      }
     } catch (error) {
       // Handle token refresh failure
       tokenCleanUp();
@@ -125,15 +134,13 @@ class TokenRefreshManager {
 }
 
 apiClient.interceptors.request.use(
-  (config: InternalAxiosRequestConfig) => {
-    const publicRoutes = ["/auth/login", "/auth/register"];
-
-    if (config.url && publicRoutes.some((route) => config.url?.includes(route))) {
+  async (config: InternalAxiosRequestConfig) => {
+    if (config.url && PUBLIC_ROUTES.some((route) => config.url?.includes(route))) {
       return config;
     }
-    // For testing as cookies can set expire time
-    // const token = Cookies.get("accessToken");
+
     const token = localStorage.getItem("accessToken");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -147,9 +154,11 @@ apiClient.interceptors.response.use(
   (response: AxiosResponse) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const isAuthRoute = PUBLIC_ROUTES.some((route) => originalRequest.url?.includes(route));
 
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
+      console.log("Token expired, refreshing...");
 
       try {
         const newToken = await TokenRefreshManager.handleTokenRefresh();
@@ -159,8 +168,6 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest);
       } catch (refreshError) {
         console.error("Token refresh failed", refreshError);
-        // Optional: Redirect to login
-        // window.location.href = "/login";
         return Promise.reject(refreshError);
       }
     }

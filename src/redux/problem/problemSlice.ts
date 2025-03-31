@@ -20,7 +20,6 @@ export const fetchPaginatedProblems = createAsyncThunk(
     const categoryIds: number[] = selectedCategories?.map((category) => category.categoryId) || [];
     try {
       const response = await problemAPI.getProblems(keyword, page, size, categoryIds, level, status);
-
       return response.result; // Assume the API returns { data: [...], totalPages: 5 }
     } catch {
       console.log("Failed to fetch problems");
