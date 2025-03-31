@@ -6,9 +6,9 @@ export const PREMIUM_PACKAGES = {
     FREE: "FREE"
   },
   RESPONSE: {
-    PREMIUM: "premium plan",
-    PROBLEM: "problem plan",
-    COURSE: "course plan",
+    PREMIUM: "PREMIUM_PLAN",
+    PROBLEM: "PROBLEM_PLAN",
+    COURSE: "COURSE_PLAN",
     FREE: "free"
   }
 };

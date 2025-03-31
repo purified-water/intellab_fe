@@ -8,13 +8,12 @@ import { Spinner, Pagination } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
-import { increateUserCourseCount } from "@/redux/user/userSlice";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -33,7 +32,6 @@ export const CourseDetailPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
-  const dispatch = useDispatch();
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -166,7 +164,6 @@ export const CourseDetailPage = () => {
       const response = await courseAPI.enrollCourse(userId!, id!);
       if (response.code === 0) {
         // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
-        dispatch(increateUserCourseCount());
         setIsEnrolled(true);
         showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {

@@ -45,7 +45,7 @@ export const Header = () => {
         </div>
 
         <div id="courses">
-          <p className="mb-2 text-xs font-semibold text-black md:mb-10">YOUR COURSES</p>
+          <p className="mb-2 text-xs font-semibold text-black md:mb-10">YOUR COMPLETED COURSES</p>
           <p className="text-3xl font-bold text-black md:text-4xl">{userRedux?.courseCount ?? 0}</p>
           <p className="text-xs text-black">Courses</p>
         </div>

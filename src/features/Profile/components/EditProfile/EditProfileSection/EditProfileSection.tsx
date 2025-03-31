@@ -89,8 +89,10 @@ export function EditProfileSection() {
 
   const getProfileMeAPI = async () => {
     await userAPI.getProfileMe({
-      onSuccess: (user) => dispatch(setUser(user)),
-      onFail: (message) => showToastError({ toast: toast.toast, message })
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
     });
   };
 

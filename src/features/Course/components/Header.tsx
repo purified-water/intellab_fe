@@ -50,11 +50,15 @@ export const Header = (props: HeaderProps) => {
   const renderLeftButton = () => {
     let buttonText;
     let onClick;
+    let disable = false;
 
     if (course.userEnrolled) {
       if (isFinished) {
         buttonText = "View Certificate";
         onClick = onViewCertificate;
+        if (!course.certificateId || !course.certificateUrl) {
+          disable = true;
+        }
       } else {
         buttonText = "Continue";
         onClick = onContinue;
@@ -71,6 +75,7 @@ export const Header = (props: HeaderProps) => {
 
     return (
       <button
+        disabled={disable}
         className="px-6 py-1 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >
