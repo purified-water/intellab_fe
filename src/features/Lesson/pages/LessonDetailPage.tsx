@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { courseAPI } from "@/lib/api";
+import { courseAPI, userAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/types";
 import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
@@ -12,6 +12,9 @@ import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 // import { testData } from "../components/testData";
 import { TOCItem, TableOfContents } from "../components";
 import { AppFooter } from "@/components/AppFooter";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { setUser } from "@/redux/user/userSlice";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -28,6 +31,9 @@ export const LessonDetailPage = () => {
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
   const [course, setCourse] = useState<ICourse | null>(null);
+
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     getCourseDetail();
@@ -86,6 +92,24 @@ export const LessonDetailPage = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
+  useEffect(() => {
+    // since we can't cover all the case to check is course is finish and update the completedCourseCount in Redux
+    // we will just call getProfileMeAPI to update the user profile
+    // this is not the best solution but it works for now
+    if (isAuthenticated && lesson && !lesson?.nextLessonId && isLessonDone) {
+      getProfileMeAPI();
+    }
+  }, [isLessonDone]);
+
+  const getProfileMeAPI = async () => {
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+      },
+      onFail: async (message) => console.log("--> Error get profile", message)
+    });
+  };
 
   const getCourseDetail = async () => {
     if (courseId) {

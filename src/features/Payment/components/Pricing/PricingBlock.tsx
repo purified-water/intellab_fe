@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_DURATION, PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { AlertDialog } from "@/components/ui";
+import useWindowDimensions from "@/hooks/use-window-dimensions";
 
 type PrickingBlockProps = {
   plan: TPlan;
@@ -15,6 +16,8 @@ type PrickingBlockProps = {
 
 export function PricingBlock(props: PrickingBlockProps) {
   const { plan, duration } = props;
+
+  const { width } = useWindowDimensions();
 
   const {
     title,
@@ -70,9 +73,11 @@ export function PricingBlock(props: PrickingBlockProps) {
 
     return (
       <>
-        {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && <p>Billed anually ({yearPrice.toLocaleString()} VNĐ)</p>}
+        {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && (
+          <p className="text-sm font-medium">Billed anually ({yearPrice.toLocaleString()} VNĐ)</p>
+        )}
         <div className="items-end mb-2">
-          <span className="text-[32px] font-bold">đ{displayPrice.toLocaleString()}</span>
+          <span className="text-[32px] font-bold text-2xl">đ{displayPrice.toLocaleString()}</span>
           <span className="text-2xl font-medium">/</span>
           <span className="text-lg font-medium">month</span>
         </div>
@@ -98,7 +103,7 @@ export function PricingBlock(props: PrickingBlockProps) {
       button = (
         <button
           onClick={handlePurchaseClick}
-          className="w-[242px] h-[45px] font-bold text-white bg-appPrimary rounded-[10px] hover:opacity-80"
+          className="w-[242px] h-[45px] font-bold text-base text-white bg-appPrimary rounded-[10px] hover:opacity-80"
         >
           {purchaseButtonText}
         </button>
@@ -112,7 +117,7 @@ export function PricingBlock(props: PrickingBlockProps) {
           }
           onConfirm={handlePurchaseClick}
         >
-          <div className="w-[242px] h-[45px] font-bold text-white bg-appPrimary rounded-[10px] hover:opacity-80 flex items-center justify-center">
+          <div className="w-[242px] h-[45px] font-bold text-white text-base bg-appPrimary rounded-[10px] hover:opacity-80 flex items-center justify-center">
             {purchaseButtonText}
           </div>
         </AlertDialog>
@@ -129,8 +134,15 @@ export function PricingBlock(props: PrickingBlockProps) {
       ) : (
         <div className="mt-10" />
       )}
-      <div className="w-[338px] h-[600px]  rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1">
-        <p className={`text-2xl text-${titleColor} font-bold mb-2`}>{title}</p>
+      <div
+        className="rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1"
+        style={{
+          width: width / 7,
+          height: "570px",
+          minWidth: "300px"
+        }}
+      >
+        <p className={`text-xl text-${titleColor} font-bold mb-2`}>{title}</p>
         {renderPrices()}
         <div className="mb-4 text-lg font-light">{description}</div>
         {renderPerks()}

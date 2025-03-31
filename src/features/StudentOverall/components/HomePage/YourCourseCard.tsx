@@ -4,9 +4,10 @@ import { ICourse } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { ProgressBar } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
-import { getAccessToken } from "@/utils";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 interface YourCourseCardProps {
   courseId: string;
@@ -26,7 +27,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   const [courseDetail, setCourseDetail] = useState<ICourse | null>(null);
   const [apiLoading, setAPILoading] = useState(false);
 
-  const accessToken = getAccessToken();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const getCourseDetail = async () => {
     setAPILoading(true);
@@ -42,7 +43,7 @@ export const YourCourseCard = (props: YourCourseCardProps) => {
   }, [skeletonLoading]);
 
   const handleContinueCourse = () => {
-    if (accessToken && userId) {
+    if (isAuthenticated && userId) {
       if (isFinished) {
         navigate(`/certificate/${courseDetail?.certificateId}`);
       } else {

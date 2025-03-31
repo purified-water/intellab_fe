@@ -15,7 +15,7 @@ const userSlice = createSlice({
     clearUser(state) {
       state.user = null;
     },
-    increateUserCourseCount(state) {
+    increateCompletedCourseCount(state) {
       if (state.user) {
         state.user.courseCount! += 1;
       }
@@ -23,7 +23,7 @@ const userSlice = createSlice({
   }
 });
 
-export const { setUser, clearUser, increateUserCourseCount } = userSlice.actions;
+export const { setUser, clearUser, increateCompletedCourseCount } = userSlice.actions;
 export default userSlice.reducer;
 
 // Selector to get userId from Redux store
