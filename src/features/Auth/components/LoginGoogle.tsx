@@ -2,7 +2,6 @@ import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/features/Auth/firebase/firebaseAuth";
 import { FcGoogle } from "rocketicons/fc";
 import { authAPI, userAPI } from "@/lib/api";
-import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
@@ -10,6 +9,7 @@ import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { LOGIN_TYPES } from "@/constants";
 
 type TLoginGoogleProps = {
   callback: () => void;
@@ -47,7 +47,10 @@ const GoogleLogin = (props: TLoginGoogleProps) => {
       const response = await authAPI.continueWithGoogle(idToken);
 
       if (response.status === 200 || response.status === 201) {
-        Cookies.set("accessToken", idToken);
+        localStorage.setItem("accessToken", idToken);
+        // Use login type to determine whether it uses refreshtoken or firebase
+        localStorage.setItem("loginType", LOGIN_TYPES.GOOGLE);
+
         const decodedToken = jwtDecode<JwtPayload>(idToken);
         const userId = decodedToken.sub; // sub is the user id
 

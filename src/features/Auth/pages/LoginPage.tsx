@@ -4,7 +4,6 @@ import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
-import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
@@ -15,6 +14,7 @@ import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils"
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { LOGIN_TYPES } from "@/constants";
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -90,24 +90,11 @@ export const LoginPage = () => {
       const response = await authAPI.login(loginInfo.email, loginInfo.password);
 
       if (response.status === 200) {
-        // For testing purposes
-        Cookies.set("accessToken", response.data.accessToken, {
-          // process.env.NODE_ENV is automatically set by Vite development/production
-          // if production, will use HTTPS and secure cookie
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict", // Mitigate CSRF
-          expires: 1 / 8640 // Token expiry (10 seconds)
-        });
-
-        // Cookies.set("accessToken", response.data.accessToken, {
-        // process.env.NODE_ENV is automatically set by Vite development/production
-        // if production, will use HTTPS and secure cookie
-        //   secure: process.env.NODE_ENV === "production",
-        //   sameSite: "Strict",
-        //   expires: 1 / 24 // Token expiry (1 hour)
-        // });
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
+
+        // Use login type to determine whether it uses refreshtoken or firebase
+        localStorage.setItem("loginType", LOGIN_TYPES.EMAIL);
 
         const decodedToken = jwtDecode<JwtPayload>(response.data.accessToken);
         const userId = decodedToken.sub; // sub is the user id

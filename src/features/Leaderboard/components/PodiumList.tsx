@@ -45,7 +45,7 @@ export function PodiumList() {
   };
 
   return (
-    <div className="flex items-end justify-between space-x-7 w-full">
+    <div className="flex items-end justify-between w-full space-x-7">
       {loading ? renderSkeleton() : renderContent()}
     </div>
   );

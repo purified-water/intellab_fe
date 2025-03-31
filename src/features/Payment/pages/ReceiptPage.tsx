@@ -22,9 +22,18 @@ export const ReceiptPage = () => {
       if (!id) {
         throw new Error("Invalid receipt ID");
       }
-      const response = await paymentAPI.getIntellabPayment(id);
-      console.log("Receipt detail: ", response);
-      setPayment(response.result);
+      await paymentAPI.getIntellabPayment({
+        query: {
+          paymentId: id
+        },
+        onStart: async () => setLoading(true),
+        onSuccess: async (result) => {
+          setPayment(result);
+        },
+        onFail: async (message) => showToastError({ toast: toast.toast, message }),
+        onEnd: async () => setLoading(false)
+      });
+
       setLoading(false);
     } catch (error) {
       console.log(error);

@@ -8,7 +8,11 @@ import { VNPAY_TRANSACTION_CODE } from "../../constants";
 import { Pagination } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
-export const PurchaseList = () => {
+interface PurchaseListProps {
+  paymentFor: string;
+}
+
+export const PurchaseList = ({ paymentFor }: PurchaseListProps) => {
   const navigate = useNavigate();
   const toast = useToast();
   const [currentPage, setCurrentPage] = useState(0);
@@ -19,7 +23,7 @@ export const PurchaseList = () => {
   const getPaymentHistory = async (page: number = 0) => {
     setLoading(true);
     try {
-      const response = await paymentAPI.getPaymentMe(page);
+      const response = await paymentAPI.getPaymentMe(paymentFor, page);
       console.log("Payment history: ", response);
       setTotalPages(response.result.totalPages);
       setCurrentPage(response.result.number);
@@ -34,7 +38,7 @@ export const PurchaseList = () => {
   useEffect(() => {
     getPaymentHistory();
     document.title = "My Purchases | Intellab";
-  }, []);
+  }, [paymentFor]);
 
   return (
     <div className="flex flex-col items-center justify-center overflow-x-auto">
@@ -55,7 +59,7 @@ export const PurchaseList = () => {
           {loading ? (
             <tr>
               <td className="px-4 py-3">
-                <Skeleton className="w-1/2 h-4" />
+                <Skeleton className="w-12 h-4" />
               </td>
               <td className="px-4 py-3">
                 <Skeleton className="w-1/2 h-4" />
@@ -84,7 +88,7 @@ export const PurchaseList = () => {
                     row.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS ? "text-appEasy" : "text-appHard"
                   }`}
                 >
-                  {row.responseCodeDescription}
+                  {row.responseCodeDescription ? row.responseCodeDescription : row.transactionStatusDescription}
                 </td>
               </tr>
             ))

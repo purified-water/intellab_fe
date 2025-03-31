@@ -4,26 +4,26 @@ import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export const MyPurchasesPage = () => {
-  const [activeTab, setActiveTab] = useState("Payment History");
+  const [activeTab, setActiveTab] = useState("COURSE");
   const navigate = useNavigate();
 
-  const TAB_BUTTONS = {
-    PAYMENT: "Payment History",
-    SUBSCRIPTION: "Subscription History"
+  const TAB_BUTTONS: { [key: string]: string } = {
+    "Payment History": "COURSE",
+    "Subscription History": "SUBSCRIPTION"
   };
 
   useEffect(() => {
     document.title = "My Purchases | Intellab";
   }, []);
 
-  const renderTabButton = (tab: string, key: number) => {
+  const renderTabButton = (label: string, key: number) => {
     return (
       <button
         key={key}
-        onClick={() => setActiveTab(tab)}
-        className={`text-xs sm:text-base ${activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}`}
+        onClick={() => setActiveTab(TAB_BUTTONS[label])}
+        className={`text-xs sm:text-base ${activeTab === TAB_BUTTONS[label] ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}`}
       >
-        {tab}
+        {label}
       </button>
     );
   };
@@ -38,9 +38,9 @@ export const MyPurchasesPage = () => {
         My Purchases
       </h1>
       <div className="flex justify-center gap-8 mb-8 ml-8 text-base font-bold sm:justify-normal">
-        {Object.values(TAB_BUTTONS).map((tab, index) => renderTabButton(tab, index))}
+        {Object.keys(TAB_BUTTONS).map((label, index) => renderTabButton(label, index))}
       </div>
-      <PurchaseList />
+      <PurchaseList paymentFor={activeTab} />
     </div>
   );
 };

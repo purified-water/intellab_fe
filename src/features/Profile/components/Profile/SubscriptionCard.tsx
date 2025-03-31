@@ -5,38 +5,49 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { useNavigate } from "react-router-dom";
-
-type PlanType = "course" | "algorithm" | "premium";
+import { shortenDate } from "@/utils";
+import { PREMIUM_PACKAGES } from "@/constants";
 
 interface SubscriptionCardProps {
-  type: PlanType;
   userId: string;
   loading: boolean;
 }
 
 const planDetails = {
-  course: {
+  free: {
+    title: "Free Plan",
+    color: "from-white to-appFadedAccent text-appAccent",
+    icon: <BookOpen className="w-10 h-10 text-appAccent" />
+  },
+  "course plan": {
     title: "Course Plan",
     color: "from-white to-appFadedAccent text-appAccent",
     icon: <BookOpen className="w-10 h-10 text-appAccent" />
   },
-  algorithm: {
+  "algorithm plan": {
     title: "Algorithm Plan",
     color: "from-blue-50 to-appFadedSecondary text-appSecondary",
     icon: <Code className="w-10 h-10 text-appSecondary" />
   },
-  premium: {
+  "premium plan": {
     title: "Premium Plan",
     color: "from-appFadedAccent to-appFadedSecondary text-appPrimary",
     icon: <Crown className="w-10 h-10 text-appPrimary" />
   }
 };
 
-export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ type, userId, loading }) => {
-  const { title, color, icon } = planDetails[type];
+export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, loading }) => {
   const reduxUser = useSelector((state: RootState) => state.user.user);
   const isMe = userId === reduxUser?.userId;
   const navigate = useNavigate();
+  // Get the premium status from the Redux store
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  if (!reduxPremiumStatus || reduxPremiumStatus.planType === PREMIUM_PACKAGES.RESPONSE.FREE) return null;
+  console.log("reduxPremiumStatus", reduxPremiumStatus);
+  const userPlan = reduxPremiumStatus?.planType.toLowerCase() as keyof typeof planDetails;
+  // Get the plan details based on the user's plan
+  const { title, color, icon } = planDetails[userPlan] || planDetails["free"];
+  const planEndDate = reduxPremiumStatus?.endDate;
 
   if (!userId || !isMe) return null;
 
@@ -66,7 +77,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ type, userId
       </div>
 
       <div className="flex items-center justify-between px-4 py-3 border-t">
-        <p className="text-xs text-gray-600">Renew on January 25, 2025</p>
+        <p className="text-xs text-gray-600">Renew on {shortenDate(planEndDate)}</p>
         <button onClick={() => navigate("/pricing")} className="text-sm text-appPrimary hover:underline">
           View all plans &gt;
         </button>

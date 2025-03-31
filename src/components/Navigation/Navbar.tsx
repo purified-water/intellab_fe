@@ -1,6 +1,6 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState, useEffect, useRef } from "react";
-import intellab_side from "@/assets/logos/intellab_side.svg";
+import { intellabSideLogo, intellabSidePremiumLogo } from "@/assets";
 import {
   MdNotifications,
   MdAccountCircle,
@@ -20,6 +20,7 @@ import { userLocalStorageCleanUp } from "@/utils";
 import { navigateWithPreviousPagePassed } from "@/utils";
 import { TNavigationState } from "@/types";
 import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -37,6 +38,12 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const navigate = useNavigate();
 
+  // Premium UI
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
+  const isPremiumPlan = reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE;
+
+  console.log("premiumStatus", reduxPremiumStatus);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -97,7 +104,11 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
           </div>
 
           <Link to="/">
-            <img src={intellab_side} alt="Intellab Logo" className="w-24 h-auto mr-2" />
+            {isCurrentPlanActive && isPremiumPlan ? (
+              <img src={intellabSidePremiumLogo} alt="Intellab Logo" className="h-auto mr-2 w-44" />
+            ) : (
+              <img src={intellabSideLogo} alt="Intellab Logo" className="w-24 h-auto mr-2" />
+            )}
           </Link>
 
           <div
@@ -126,11 +137,15 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
         </div>
 
         <div id="premium" className="relative flex items-center space-x-4">
-          <Link to="/pricing">
-            <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
-              Premium
-            </button>
-          </Link>
+          {(!isCurrentPlanActive ||
+            !isPremiumPlan) && (
+              <Link to="/pricing">
+                <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
+                  Premium
+                </button>
+              </Link>
+            )}
+
           {isAuthenticated ? (
             <>
               <button className="p-1 transition text-gray3 hover:text-gray1">
