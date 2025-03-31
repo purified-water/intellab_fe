@@ -143,7 +143,7 @@ export const ExplorePage = () => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.5 }}
             style={{ overflow: "hidden" }}
-            className="py-2"
+            className="flex items-center py-2 pl-[100px]"
           >
             <FilterComponent keyword={query} />
           </motion.div>
@@ -177,7 +177,7 @@ export const ExplorePage = () => {
                       <div className="text-2xl font-bold text-black sm:text-4xl">Fundamental For Beginner</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
                       <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
-                        <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
+                        <button className="text-lg underline text-black-50">View all &gt;</button>
                       </Link>
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
