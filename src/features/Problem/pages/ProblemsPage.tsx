@@ -30,6 +30,7 @@ export const ProblemsPage = () => {
     dispatch(
       fetchPaginatedProblems({ keyword: "", page: 0, size: 20, selectedCategories: [], status: null, level: null })
     ); // Fetch first page initially
+    console.log("fetchPaginatedProblems", problems);
   }, [dispatch]);
 
   // Fetch search results based on query parameter in URL
@@ -100,7 +101,7 @@ export const ProblemsPage = () => {
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.5 }}
             style={{ overflow: "hidden" }}
-            className="flex items-center py-2 pl-[100px]"
+            className="flex items-center py-2 pl-[100px] shadow-none"
           >
             <FilterComponent />
           </motion.div>

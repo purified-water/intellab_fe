@@ -27,7 +27,7 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
         <input
           value={query}
           type="text"
-          className="w-full h-[40px] p-2 pl-10 border border-gray-500 rounded-[10px] bg-white"
+          className="w-full h-[40px] p-2 pl-10 border border-gray3 rounded-[10px] bg-white focus-visible:outline-none"
           placeholder="Search"
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={handleKeyPress}

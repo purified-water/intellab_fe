@@ -14,7 +14,7 @@ export const LockProblemOverlay = () => {
         </p>
         <button
           onClick={() => navigate("/pricing")}
-          className="px-4 py-2 mt-4 text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+          className="px-4 py-2 mt-4 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
         >
           Subscribe
         </button>

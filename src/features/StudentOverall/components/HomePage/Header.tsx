@@ -23,7 +23,9 @@ export const Header = () => {
   const renderGreeting = () => {
     return (
       <div className="mt-8 mb-6 text-left sm:mt-0 md:mb-0">
-        <h1 className="mb-2 text-4xl font-bold md:text-5xl text-appPrimary">{greeting}</h1>
+        <h1 className="mb-2 text-4xl font-bold text-transparent md:text-5xl bg-gradient-to-tr from-appPrimary to-appSecondary bg-clip-text">
+          {greeting}
+        </h1>
         <span className="mt-2 text-xl font-light text-gray3">Continue your studies or start a new course!</span>
       </div>
     );
@@ -45,7 +47,7 @@ export const Header = () => {
         </div>
 
         <div id="courses">
-          <p className="mb-2 text-xs font-semibold text-black md:mb-10">YOUR COMPLETED COURSES</p>
+          <p className="mb-2 text-xs font-semibold text-black md:mb-10">COMPLETED COURSES</p>
           <p className="text-3xl font-bold text-black md:text-4xl">{userRedux?.courseCount ?? 0}</p>
           <p className="text-xs text-black">Courses</p>
         </div>

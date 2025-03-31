@@ -43,7 +43,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
   const isPremiumPlan = reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE;
 
-  console.log("premiumStatus", reduxPremiumStatus);
+  // console.log("premiumStatus", reduxPremiumStatus);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -137,14 +137,13 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
         </div>
 
         <div id="premium" className="relative flex items-center space-x-4">
-          {(!isCurrentPlanActive ||
-            !isPremiumPlan) && (
-              <Link to="/pricing">
-                <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
-                  Premium
-                </button>
-              </Link>
-            )}
+          {(!isCurrentPlanActive || !isPremiumPlan) && (
+            <Link to="/pricing">
+              <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
+                Premium
+              </button>
+            </Link>
+          )}
 
           {isAuthenticated ? (
             <>
@@ -201,7 +200,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
                         </div>
                       </Link>
                     </li>
-                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+                    <li className="hidden px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
                       <div onClick={toggleDarkMode} className="flex items-center space-x-2 cursor-pointer">
                         {isDarkMode ? (
                           <>

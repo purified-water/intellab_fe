@@ -43,7 +43,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
           "px-4 py-2 rounded-xl border-[0.5px] border-gray7/40",
           variantClasses[variant] || "text-base",
           message.type === "user" ? "bg-appAIUserChat" : `${variant === "problemAI" ? "bg-gray6/50" : "bg-white"}`,
-          variant === "mainAI" ? "max-w-lg md:max-w-3xl" : " max-w-[100%]",
+          variant === "mainAI" ? "max-w-lg md:max-w-3xl" : " max-w-[100%]"
         )}
       >
         {message.type === "user" ? (

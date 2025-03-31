@@ -19,17 +19,17 @@ const planDetails = {
     color: "from-white to-appFadedAccent text-appAccent",
     icon: <BookOpen className="w-10 h-10 text-appAccent" />
   },
-  "course plan": {
+  COURSE_PLAN: {
     title: "Course Plan",
     color: "from-white to-appFadedAccent text-appAccent",
     icon: <BookOpen className="w-10 h-10 text-appAccent" />
   },
-  "algorithm plan": {
+  ALGORITHM_PLAN: {
     title: "Algorithm Plan",
     color: "from-blue-50 to-appFadedSecondary text-appSecondary",
     icon: <Code className="w-10 h-10 text-appSecondary" />
   },
-  "premium plan": {
+  PREMIUM_PLAN: {
     title: "Premium Plan",
     color: "from-appFadedAccent to-appFadedSecondary text-appPrimary",
     icon: <Crown className="w-10 h-10 text-appPrimary" />
@@ -77,7 +77,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
       </div>
 
       <div className="flex items-center justify-between px-4 py-3 border-t">
-        <p className="text-xs text-gray-600">Renew on {shortenDate(planEndDate)}</p>
+        <p className="text-xs text-gray-600">Renew on {shortenDate(planEndDate!)}</p>
         <button onClick={() => navigate("/pricing")} className="text-sm text-appPrimary hover:underline">
           View all plans &gt;
         </button>

@@ -26,6 +26,7 @@ export interface Problem {
   hintCount: number;
   categories: Category[];
   isDone: boolean;
+  isPublished: boolean;
 }
 
 export interface ProblemsResult {

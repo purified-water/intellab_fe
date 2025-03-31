@@ -59,7 +59,7 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   const renderCurrentPlan = () => {
     return (
-      <div className="inline-flex px-5 py-2 ml-5 bg-appPrimary rounded-t-xl">
+      <div className="inline-flex px-5 py-1 mt-2 ml-5 bg-appPrimary rounded-t-xl">
         <p className="font-semibold text-white">Your Current Plan</p>
       </div>
     );
@@ -138,7 +138,7 @@ export function PricingBlock(props: PrickingBlockProps) {
         className="rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1"
         style={{
           width: width / 7,
-          height: "570px",
+          height: "550px",
           minWidth: "300px"
         }}
       >

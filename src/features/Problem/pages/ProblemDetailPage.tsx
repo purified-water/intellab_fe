@@ -58,7 +58,7 @@ export const ProblemDetail = () => {
   const { toast } = useToast();
 
   // Lock problem
-  const [isPrivate] = useState(false);
+  const [isPublished, setIsPublished] = useState(true);
 
   const submissionValidation = () => {
     if (!code) {
@@ -79,6 +79,7 @@ export const ProblemDetail = () => {
     return true;
   };
 
+  console.log("isPublished", isPublished);
   const dispatch = useDispatch();
 
   const fetchProblemDetail = async () => {
@@ -91,6 +92,9 @@ export const ProblemDetail = () => {
         setTestCases(problemDetail.testCases.slice(0, 3));
       }
     } catch (error) {
+      if (error.response.status === 403) {
+        setIsPublished(false);
+      }
       console.error("Failed to fetch problem detail", error);
     }
   };
@@ -287,7 +291,7 @@ export const ProblemDetail = () => {
     setSidebarOpen(!sidebarOpen);
   };
 
-  if (isPrivate) {
+  if (isPublished === false) {
     return <LockProblemOverlay />;
   }
 

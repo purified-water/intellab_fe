@@ -15,6 +15,8 @@ type PodiumItemProps = {
 export function PodiumItem(props: PodiumItemProps) {
   const { item, color = "gray3", height = 90, loading } = props;
 
+  if (!item) return null;
+
   const navigate = useNavigate();
   const width = useWindowDimensions().width;
 
@@ -49,20 +51,18 @@ export function PodiumItem(props: PodiumItemProps) {
     return (
       <div
         className={clsx(
-          `${color === "gold" ? "shadow-gold" : color === "bronze" ? "shadow-bronze" : "shadow-gray3"}`,
+          `${color === "gold" ? "shadow-gold/50" : color === "bronze" ? "shadow-bronze/50" : "shadow-gray3/50"}`,
           "w-[400px]",
-          "shadow-md",
           "rounded-lg",
           "space-y-8",
           "cursor-pointer",
-          "hover:bg-gray6",
           "shadow-md"
         )}
         onClick={handleItemClick}
       >
         <div className="py-2 space-y-1 justify-items-center" style={{ height }}>
           {renderAvatar()}
-          <h3 className="text-base font-semibold text-gray-800 truncate" style={{ maxWidth: width / 10 }}>
+          <h3 className="text-base font-semibold truncate text-gray2" style={{ maxWidth: width / 10 }}>
             {item?.displayName}
           </h3>
           <p

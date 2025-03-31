@@ -80,7 +80,7 @@ export const PurchaseList = ({ paymentFor }: PurchaseListProps) => {
                   navigate(`/my-purchases/receipt/${row.paymentId}`);
                 }}
               >
-                <td className="w-12 py-2 pl-4 text-left">{shortenDate(row.receivedAt)}</td>
+                <td className="w-12 py-2 pl-4 text-left">{shortenDate(row.createdAt)}</td>
                 <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.orderDescription}</td>
                 <td className="w-20 px-4 py-2 text-left">{`${row?.totalPaymentAmount.toLocaleString()} ${row?.currency}`}</td>
                 <td

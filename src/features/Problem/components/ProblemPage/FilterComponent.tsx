@@ -49,7 +49,7 @@ export const FilterComponent: React.FC = () => {
   const handleCategoryClick = (topic: TCategory) => {
     setSelectedCategories((prev) => {
       const newGenres = prev.includes(topic) ? prev.filter((g) => g !== topic) : [...prev, topic];
-      console.log("selected genres:", newGenres);
+
       return newGenres;
     });
   };
@@ -67,7 +67,7 @@ export const FilterComponent: React.FC = () => {
     if (selectedLevel === "All" || selectedLevel === null) {
       myLevel = null;
     }
-    console.log("------- LEVEL AND STATUS -----", myLevel, myStatus);
+
     dispatch(
       fetchPaginatedProblems({
         keyword: "",
@@ -86,7 +86,7 @@ export const FilterComponent: React.FC = () => {
       style={{
         boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" // Adjust the values for position and blur
       }}
-      className="w-[1100px] p-6 mx-auto text-black rounded-lg shadow-lg shadow-spread-2"
+      className="w-[1100px] p-6 mx-auto text-black rounded-lg"
     >
       <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
       <div className="mt-6 space-y-4">
@@ -107,8 +107,8 @@ export const FilterComponent: React.FC = () => {
                       id={`level-${level}`}
                     />
                     <div
-                      className={`w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center ${
-                        selectedLevel === level ? "border-appPrimary bg-appPrimary" : "bg-white"
+                      className={`w-5 h-5 rounded-full border  flex items-center justify-center ${
+                        selectedLevel === level ? "bg-appPrimary" : "bg-white"
                       }`}
                     >
                       {selectedLevel === level && <div className="w-3 h-3 bg-white rounded-full"></div>}
@@ -167,11 +167,14 @@ export const FilterComponent: React.FC = () => {
 
       {/* Filter Button */}
       <div className="flex gap-4 mt-6">
-        <button className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
+        <button
+          className="px-4 py-[5px] text-white rounded-lg bg-appPrimary hover:bg-opacity-75"
+          onClick={handleFilter}
+        >
           Filter
         </button>
         <button
-          className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
+          className="px-4 py-[5px] bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
             setSelectedCategories([]);
             setSelectedLevel("All");

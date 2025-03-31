@@ -1,4 +1,4 @@
-import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown } from "rocketicons/md";
+import { MdCheckCircleOutline, MdKeyboardArrowUp, MdKeyboardArrowDown, MdLock } from "rocketicons/md";
 import { useState } from "react";
 import { Problem } from "../../types";
 import { capitalizeFirstLetter } from "@/utils/stringUtils";
@@ -73,9 +73,20 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
               onClick={() => handleProblemListItemClicked(row.problemId)}
             >
               <td className="w-12 py-2 pl-8 text-center">
-                {row.isDone === true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                {row.isDone === true ? (
+                  <MdCheckCircleOutline className="icon-appEasy" />
+                ) : !row.isPublished ? (
+                  <MdLock className="icon-appAccent" />
+                ) : (
+                  ""
+                )}
               </td>
-              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">{row.problemName}</td>
+              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">
+                {row.problemName}
+                {!row.isPublished && (
+                  <div className="inline px-2 py-1 ml-2 text-xs rounded text-appAccent bg-appFadedAccent">Premium</div>
+                )}
+              </td>
               <td className="w-20 px-4 py-2 font-semibold justify-items-center">
                 {row.hintCount > 0 ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
               </td>

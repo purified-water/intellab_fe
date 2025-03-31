@@ -368,15 +368,17 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     <SidebarProvider>
       <div
         id="overlay"
-        className={`fixed z-50 ${isMinimized
-          ? "bottom-4 right-4 max-w-[520px] max-h-[1200px]"
-          : "inset-0 flex items-center justify-center bg-black/50"
-          }`}
+        className={`fixed z-50 ${
+          isMinimized
+            ? "bottom-4 right-4 max-w-[520px] max-h-[1200px]"
+            : "inset-0 flex items-center justify-center bg-black/50"
+        }`}
       >
         <div
           id="chat-container"
-          className={`relative flex flex-col border-[0.5px] bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-md shadow-appAITo/30 transition-all duration-300 ease-in-out ${isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
-            }`}
+          className={`relative flex flex-col border-[0.5px] bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-md shadow-appAITo/30 transition-all duration-300 ease-in-out ${
+            isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
+          }`}
           style={{
             transformOrigin: "bottom right",
             transition: "transform 0.15s ease-in-out, opacity 0.15s ease-in-out"

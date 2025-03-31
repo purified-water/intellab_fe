@@ -14,7 +14,7 @@ export const aiAPI = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
       model: "llama3.2"
     };
-    const response = await apiClient.post(`ai/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
+    const response = await apiClient.post(`/ai/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
   },
 
@@ -33,7 +33,7 @@ export const aiAPI = {
 
     try {
       // Use apiClient to prepare the request URL and headers
-      const url = `${apiClient.defaults.baseURL}ai/stream/${AI_AGENT.SUMMARIZE_ASSISTANT}`;
+      const url = `${apiClient.defaults.baseURL}/ai/stream/${AI_AGENT.SUMMARIZE_ASSISTANT}`;
       // const headers = Object.fromEntries(
       //   Object.entries(apiClient.defaults.headers.common)
       //     .filter(([, value]) => value != null) // Remove null or undefined values
@@ -114,7 +114,7 @@ export const aiAPI = {
   },
 
   getPDFSummaryFile: async () => {
-    const response = await apiClient.get(`ai/${AI_AGENT.PDF_SUMMARY}`, {
+    const response = await apiClient.get(`/ai/${AI_AGENT.PDF_SUMMARY}`, {
       responseType: "arraybuffer" // Important for binary data like PDFs
     });
     return response;
@@ -138,7 +138,7 @@ export const aiAPI = {
     if (threadId) {
       bodyParams.thread_id = threadId;
     }
-    const response = await apiClient.post(`ai/invoke/${agent}`, bodyParams);
+    const response = await apiClient.post(`/ai/invoke/${agent}`, bodyParams);
     return response.data;
   },
   postGenerateTitle: async (
@@ -163,11 +163,11 @@ export const aiAPI = {
       bodyParams.problem_id = problemId;
     }
 
-    const response = await apiClient.post(`ai/invoke/${AI_AGENT.TITLE_GENERATOR}`, bodyParams);
+    const response = await apiClient.post(`/ai/invoke/${AI_AGENT.TITLE_GENERATOR}`, bodyParams);
     return response.data;
   },
   getThreadsHistory: async (userId: string) => {
-    const response = await apiClient.get(`ai/conversation/${userId}/threads`);
+    const response = await apiClient.get(`/ai/conversation/${userId}/threads`);
     // Remove quotes from chat title
     response.data.data.map((thread: ChatbotHistoryItemType) => {
       thread.title = removeChatTitleQuotes(thread.title);
@@ -175,7 +175,7 @@ export const aiAPI = {
     return response.data;
   },
   getThreadDetails: async (userId: string, threadId: string) => {
-    const response = await apiClient.get(`ai/conversation/${userId}/thread/${threadId}`);
+    const response = await apiClient.get(`/ai/conversation/${userId}/thread/${threadId}`);
     return response.data;
   },
   // AI MAIN CHATBOT/PROBLEM ASSISTANT STREAMING DATA - SSE
@@ -198,7 +198,7 @@ export const aiAPI = {
 
     try {
       // Use apiClient to prepare the request URL and headers
-      const url = `${apiClient.defaults.baseURL}ai/stream/${agent}`;
+      const url = `${apiClient.defaults.baseURL}/ai/stream/${agent}`;
       const headers = {
         ...apiClient.defaults.headers.common, // Include common headers from apiClient
         "Content-Type": "application/json"
@@ -276,7 +276,7 @@ export const aiAPI = {
 
   // GET PROBLEM CHATBOT HISTORY
   getProblemThreadsHistory: async (userId: string, problemId: string) => {
-    const response = await apiClient.get(`ai/conversation/${userId}/problem/${problemId}/threads`);
+    const response = await apiClient.get(`/ai/conversation/${userId}/problem/${problemId}/threads`);
     // Remove quotes from chat title
     response.data.data.map((thread: ChatbotHistoryItemType) => {
       thread.title = removeChatTitleQuotes(thread.title);
@@ -285,7 +285,7 @@ export const aiAPI = {
   },
   // GET PROBLEM CHATBOT THREAD DETAILS
   getProblemThreadDetails: async (userId: string, problemId: string, threadId: string) => {
-    const response = await apiClient.get(`ai/conversation/${userId}/problem/${problemId}/thread/${threadId}`);
+    const response = await apiClient.get(`/ai/conversation/${userId}/problem/${problemId}/thread/${threadId}`);
     return response.data;
   }
 };
