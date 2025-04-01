@@ -47,9 +47,11 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
   const [isLoadingResponse, setIsLoadingResponse] = useState(false); // When waiting for response
   const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
   const [abortController, setAbortController] = useState<AbortController | null>(null);
+  const [remainingMessageCount, setRemainingMessageCount] = useState(0);
 
   useEffect(() => {
     fetchChatHistory();
+    getChabotUsage();
   }, []);
 
   useEffect(() => {
@@ -236,6 +238,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
     } finally {
       setIsLoadingResponse(false);
       setIsStreaming(false);
+      getChabotUsage();
     }
   };
 
@@ -251,6 +254,17 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
       console.error(error);
     }
   };
+
+
+  const getChabotUsage = async () => {
+    try {
+      const data = await aiAPI.getProblemChatbotUsage();
+
+      setRemainingMessageCount(data.remaining_usage);
+    } catch (error) {
+      console.error("Error fetching chatbot usage:", error);
+    }
+  }
 
   if (!isAIAssistantOpen) return null;
 
@@ -286,6 +300,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
         isLoading={isLoadingResponse}
         isSubmitting={isStreaming}
         handleCancel={handleStopStreaming}
+        messageCount={remainingMessageCount}
       />
     </div>
   );

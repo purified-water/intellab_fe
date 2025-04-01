@@ -66,6 +66,7 @@ export const ExplorePage = () => {
     // }
     try {
       const response = await courseAPI.search(query, 0);
+      console.log("Search response:", response);
 
       dispatch(getExploreCourse(response.result.content));
     } catch (error) {
@@ -156,8 +157,7 @@ export const ExplorePage = () => {
           className="pb-10"
         >
           {query ? (
-            <div className="sm:pl-10">
-              {" "}
+            <div className="flex items-center justify-center w-full">
               <SearchResultComponent loading={loading} courses={displayedCourses} query={query} />
             </div>
           ) : (

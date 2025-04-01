@@ -418,7 +418,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.ctrlKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessageStream();
                   }

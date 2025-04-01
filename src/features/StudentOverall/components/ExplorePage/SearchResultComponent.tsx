@@ -16,23 +16,23 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
 
   // Display loading message if loading is true
   if (loading) {
-    //return <div className="pl-10 mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">Loading...</div>;
     return <Spinner loading={loading} />;
   }
 
   return (
-    <div className="">
-      {/* Display the search results title or "Not found" if no courses match the query */}
+    <div className="flex flex-col items-center">
       {query !== "" && (
-        <div className="mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">
-          {query && courses.length === 0 ? "Not found" : "Search results"}
+        <div className="self-start mb-6 text-xl font-bold text-black sm:text-2xl sm:mb-8">
+          {query && courses.length === 0 ? "Course not found!" : "Search results"}
         </div>
       )}
-      {/* Courses grid */}
-      <div className="flex flex-wrap gap-7">
-        {courses.map((course) => (
-          <Course key={course.courseId} course={course} skeletonLoading={loading} />
-        ))}
+
+      <div className="flex justify-center w-full">
+        <div className="flex flex-wrap gap-4 justify-start max-w-[1000px]">
+          {courses.map((course) => (
+            <Course key={course.courseId} course={course} skeletonLoading={loading} />
+          ))}
+        </div>
       </div>
     </div>
   );

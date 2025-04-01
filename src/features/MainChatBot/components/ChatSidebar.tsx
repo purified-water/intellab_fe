@@ -45,9 +45,8 @@ export const ChatSidebar = ({ isOpen, isLoading, chatHistoryItems, onSelectChat 
   if (chatHistoryItems.length === 0) {
     return (
       <div
-        className={`fixed left-0 top-0 bottom-0 h-full transition-all duration-300 ${
-          isOpen ? "w-64 opacity-100" : "w-0 opacity-0"
-        }`}
+        className={`fixed left-0 top-0 bottom-0 h-full transition-all duration-300 ${isOpen ? "w-64 opacity-100" : "w-0 opacity-0"
+          }`}
       >
         {isOpen && (
           <Sidebar variant="modal" className="w-64 h-full rounded-l-lg">
@@ -80,7 +79,7 @@ export const ChatSidebar = ({ isOpen, isLoading, chatHistoryItems, onSelectChat 
       className={`fixed left-0 top-0 bottom-0 h-full transition-all duration-300 ${isOpen ? "w-64 opacity-100" : "w-0 opacity-0"}`}
     >
       {isOpen && (
-        <Sidebar variant="modal" className="w-64 h-full rounded-l-lg">
+        <Sidebar key={isOpen ? "open" : "closed"} variant="modal" className="w-64 h-full rounded-l-lg">
           <SidebarContent className="relative overflow-hidden rounded-l-lg">
             <div
               className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-50"
@@ -97,9 +96,8 @@ export const ChatSidebar = ({ isOpen, isLoading, chatHistoryItems, onSelectChat 
                       {groupedHistory[date].map((item) => (
                         <SidebarMenuItem key={item.thread_id}>
                           <SidebarMenuButton
-                            className={`px-4 py-4 w-full text-left rounded-md transition-colors hover:bg-appFadedAccent/30 ${
-                              selectedChatId === item.thread_id ? "bg-appFadedAccent/50" : ""
-                            }`}
+                            className={`px-4 py-4 w-full text-left rounded-md transition-colors hover:bg-appFadedAccent/30 ${selectedChatId === item.thread_id ? "bg-appFadedAccent/50" : ""
+                              }`}
                             asChild
                           >
                             <a
