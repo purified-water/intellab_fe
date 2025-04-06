@@ -50,7 +50,7 @@ export const ReceiptPage = () => {
   return (
     <div className="container px-8 py-8 mx-auto sm:px-24">
       <h1
-        className="flex items-center mb-8 text-2xl font-bold cursor-pointer hover:text-appPrimary"
+        className="flex items-center mb-8 text-2xl font-bold cursor-pointer w-fit hover:text-appPrimary"
         onClick={() => navigate(-1)}
       >
         <ChevronLeft className="mr-1" />

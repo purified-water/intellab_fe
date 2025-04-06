@@ -160,7 +160,7 @@ export const ProblemCommentSection = () => {
         <div className="flex justify-end">
           <Button
             onClick={() => handleSubmitComment()}
-            className="px-4 py-2 mt-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            className="px-4 py-2 mt-2 font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
           >
             Comment
           </Button>

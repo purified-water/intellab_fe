@@ -61,7 +61,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         return <ProblemCommentSection />;
       case "Submissions":
         return <SubmissionHistory />;
-      case "Solution":
+      case "Solutions":
         return <ProblemSolution solutionContent={problemDetail.solution.content} />;
       case "Failed":
         return <SubmissionInformation isPassed={false} />;
@@ -89,7 +89,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         {renderDescriptionTabButton("Description")}
         {renderDescriptionTabButton("Comments")}
         {renderDescriptionTabButton("Submissions")}
-        {renderDescriptionTabButton("Solution")}
+        {renderDescriptionTabButton("Solutions")}
         {isPassed !== null && (isPassed ? renderDescriptionTabButton("Passed") : renderDescriptionTabButton("Failed"))}
       </div>
       {renderDescriptionTabContent()}

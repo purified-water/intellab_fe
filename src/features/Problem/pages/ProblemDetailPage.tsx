@@ -25,10 +25,11 @@ import {
   TestCaseType
 } from "../types";
 import { saveCode } from "@/redux/problem/problemSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
+import { RootState } from "@/redux/rootReducer";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -53,6 +54,8 @@ export const ProblemDetail = () => {
   // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   // Lock problem
   const [isPublished, setIsPublished] = useState(true);
@@ -371,7 +374,7 @@ export const ProblemDetail = () => {
             All Problems
           </Button>
 
-          {userId && (
+          {isAuthenticated && (
             <Button
               className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
               onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}

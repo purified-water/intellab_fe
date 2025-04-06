@@ -255,7 +255,6 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
     }
   };
 
-
   const getChabotUsage = async () => {
     try {
       const data = await aiAPI.getProblemChatbotUsage();
@@ -264,7 +263,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
     } catch (error) {
       console.error("Error fetching chatbot usage:", error);
     }
-  }
+  };
 
   if (!isAIAssistantOpen) return null;
 

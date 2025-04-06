@@ -153,7 +153,9 @@ export const ProblemsPage = () => {
           )}
         </motion.div>
       </div>
+
       <AppFooter />
+
       <AIOrb />
     </>
   );

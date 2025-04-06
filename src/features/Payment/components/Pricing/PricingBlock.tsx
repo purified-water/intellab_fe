@@ -77,7 +77,7 @@ export function PricingBlock(props: PrickingBlockProps) {
           <p className="text-sm font-medium">Billed anually ({yearPrice.toLocaleString()} VNĐ)</p>
         )}
         <div className="items-end mb-2">
-          <span className="text-[32px] font-bold text-2xl">đ{displayPrice.toLocaleString()}</span>
+          <span className="text-3xl font-bold">{displayPrice.toLocaleString()} VND</span>
           <span className="text-2xl font-medium">/</span>
           <span className="text-lg font-medium">month</span>
         </div>

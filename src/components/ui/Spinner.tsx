@@ -28,7 +28,7 @@ export function Spinner(props: SpinnerProps) {
 
   if (overlay) {
     content = (
-      <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 bg-gray3">
+      <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 bg-gray3 z-[100]">
         <div className="flex flex-col items-center justify-center rounded-lg size-40">
           {renderSpinner()}
         </div>

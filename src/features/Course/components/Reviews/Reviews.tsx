@@ -143,7 +143,10 @@ export function Reviews({
             ></ComboboxDemo>
 
             {hasCompleted && hasFetched.current && (
-              <Button className="w-32 mr-4 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+              <Button
+                className="w-32 mr-4 text-sm font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+                onClick={openModal}
+              >
                 Add Review
               </Button>
             )}

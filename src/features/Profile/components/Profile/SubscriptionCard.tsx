@@ -41,9 +41,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
   const isMe = userId === reduxUser?.userId;
   const navigate = useNavigate();
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
-  
-  if (!reduxPremiumStatus || reduxPremiumStatus.planType === PREMIUM_PACKAGES.RESPONSE.FREE)
-    return null;
+
+  if (!reduxPremiumStatus || reduxPremiumStatus.planType === PREMIUM_PACKAGES.RESPONSE.FREE) return null;
 
   const userPlan = reduxPremiumStatus?.planType as keyof typeof planDetails;
   // Get the plan details based on the user's plan

@@ -124,7 +124,10 @@ export default function Reviews({
         )}
         <div className="flex flex-col items-start w-full grow-0">
           {hasCompleted && !loading && (
-            <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+            <Button
+              className="w-32 text-sm font-semibold text-white rounded-lg hover:bg-appPrimary/80 bg-appPrimary"
+              onClick={openModal}
+            >
               Add Review
             </Button>
           )}

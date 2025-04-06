@@ -3,6 +3,9 @@ import { useState } from "react";
 import { Problem } from "../../types";
 import { capitalizeFirstLetter } from "@/utils/stringUtils";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 
 type ProblemListItemProps = {
   problems: Problem[];
@@ -14,6 +17,13 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
     order: "asc"
   });
   const navigate = useNavigate();
+
+  // Premium UI
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
+  const isAlgorithmUnlocked =
+    reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE &&
+    reduxPremiumStatus?.status !== PREMIUM_PACKAGES.RESPONSE.COURSE;
 
   const handleSort = (key: keyof Problem) => {
     setSortConfig((prevConfig) =>
@@ -75,7 +85,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
               <td className="w-12 py-2 pl-8 text-center">
                 {row.isDone === true ? (
                   <MdCheckCircleOutline className="icon-appEasy" />
-                ) : !row.isPublished ? (
+                ) : !row.isPublished && (!isAlgorithmUnlocked || !isCurrentPlanActive) ? (
                   <MdLock className="icon-appAccent" />
                 ) : (
                   ""

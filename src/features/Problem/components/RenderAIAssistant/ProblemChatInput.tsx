@@ -34,9 +34,8 @@ export const ProblemChatInput = ({
   const [modelChangeOpen, setModelChangeOpen] = useState(false);
   let isUnlimited = false;
 
-  if (messageCount > 1000)
-    isUnlimited = true;
-  
+  if (messageCount > 1000) isUnlimited = true;
+
   return (
     <div className="sticky z-10 flex-col items-end px-2 mx-2 mt-4 border rounded-lg bottom-4">
       <textarea
@@ -59,11 +58,7 @@ export const ProblemChatInput = ({
         <div className="flex items-center justify-center space-x-1 models-message-count">
           <div className="flex items-center justify-center text-xs font-semibold">
             <Lightbulb className=" w-3 h-3 mr-[2px]" />
-            {isUnlimited ? (
-              <span className="">&infin;</span>
-            ) : (
-              <span>{messageCount}</span>
-            )}
+            {isUnlimited ? <span className="">&infin;</span> : <span>{messageCount}</span>}
           </div>
           <Popover open={modelChangeOpen} onOpenChange={setModelChangeOpen}>
             <PopoverTrigger asChild>
@@ -103,7 +98,6 @@ export const ProblemChatInput = ({
             </PopoverContent>
           </Popover>
         </div>
-
 
         {isLoading ? (
           <FaSpinner className="inline-block cursor-not-allowed icon-sm animate-spin icon-gray3" />

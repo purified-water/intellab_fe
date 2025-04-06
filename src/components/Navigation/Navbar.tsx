@@ -1,16 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { intellabSideLogo, intellabSidePremiumLogo } from "@/assets";
-import {
-  MdNotifications,
-  MdAccountCircle,
-  MdClose,
-  MdMenu,
-  MdOutlinePerson,
-  MdOutlineSettings,
-  MdLogout
-} from "rocketicons/md";
-import { Sun, Moon, ReceiptText } from "lucide-react";
+import { MdNotifications, MdAccountCircle, MdClose, MdMenu } from "rocketicons/md";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser } from "@/redux/user/userSlice";
@@ -21,6 +12,8 @@ import { navigateWithPreviousPagePassed } from "@/utils";
 import { TNavigationState } from "@/types";
 import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
+import { NotificationMenu } from "@/features/Notification/components";
+import { ProfileMenu } from "./ProfileMenu";
 
 interface NavbarProps {
   isDarkMode: boolean;
@@ -30,10 +23,9 @@ interface NavbarProps {
 const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const user = useSelector((state: RootState) => state.user.user);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const profileIconRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const navigate = useNavigate();
@@ -42,25 +34,6 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
   const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
   const isPremiumPlan = reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE;
-
-  // console.log("premiumStatus", reduxPremiumStatus);
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        profileIconRef.current &&
-        !profileIconRef.current.contains(event.target as Node)
-      ) {
-        setIsDropdownOpen(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -147,81 +120,37 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
 
           {isAuthenticated ? (
             <>
-              <button className="p-1 transition text-gray3 hover:text-gray1">
-                <MdNotifications className="icon-xl" />
-              </button>
+              <div className="relative notification-menu">
+                <button
+                  className="p-1 transition text-gray3 hover:text-gray1"
+                  onClick={() => setIsNotificationOpen((prev) => !prev)}
+                >
+                  <MdNotifications className="icon-xl" />
+                </button>
+                {isNotificationOpen && (
+                  <div className="absolute right-0">
+                    <NotificationMenu isOpen={isNotificationOpen} setIsOpen={setIsNotificationOpen} />
+                  </div>
+                )}
+              </div>
+
               <div
-                ref={profileIconRef}
-                className="p-1 transition text-gray3 hover:text-gray1 hover:cursor-pointer"
+                className="p-1 transition text-gray3 hover:text-gray1 hover:cursor-pointer profile-menu"
                 onClick={toggleDropdown}
               >
                 {renderUserPhoto()}
               </div>
+
               {isDropdownOpen && (
-                <div
-                  id="dropdown"
-                  ref={dropdownRef}
-                  className="absolute right-0 z-10 w-56 mt-2 bg-white rounded-lg shadow-md top-10"
-                >
-                  <div className="flex flex-row items-center px-3">
-                    {renderUserPhoto()}
-                    <div className="flex flex-col px-4 py-2">
-                      <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
-                      <div className="text-sm text-gray-500">100 points</div>
-                    </div>
-                  </div>
-
-                  <hr className="border-gray5" />
-
-                  <ul className="py-3 space-y-2">
-                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to={`/profile/${user?.userId}`}>
-                        <div className="flex items-center space-x-2">
-                          <MdOutlinePerson className="icon-lg icon-gray3" />
-                          <span>Profile</span>
-                        </div>
-                      </Link>
-                    </li>
-
-                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to="/my-purchases">
-                        <div className="flex items-center space-x-2">
-                          <ReceiptText className=" icon-gray3" />
-                          <span>My Purchases</span>
-                        </div>
-                      </Link>
-                    </li>
-
-                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <Link to="/profile/edit">
-                        <div className="flex items-center space-x-2">
-                          <MdOutlineSettings className="icon-lg icon-gray3" />
-                          <span>Settings</span>
-                        </div>
-                      </Link>
-                    </li>
-                    <li className="hidden px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <div onClick={toggleDarkMode} className="flex items-center space-x-2 cursor-pointer">
-                        {isDarkMode ? (
-                          <>
-                            <Moon className="icon-lg icon-gray3" />
-                            <span>Dark Mode</span>
-                          </>
-                        ) : (
-                          <>
-                            <Sun className="icon-lg icon-gray3" />
-                            <span>Light Mode</span>
-                          </>
-                        )}
-                      </div>
-                    </li>
-                    <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
-                      <div className="flex items-center space-x-2 cursor-pointer">
-                        <MdLogout className="icon-lg icon-gray3" />
-                        <button onClick={handleLogout}>Logout</button>
-                      </div>
-                    </li>
-                  </ul>
+                <div className="absolute right-0">
+                  <ProfileMenu
+                    user={user}
+                    isDropdownOpen={isDropdownOpen}
+                    toggleDropdown={toggleDropdown}
+                    handleLogout={handleLogout}
+                    toggleDarkMode={toggleDarkMode}
+                    isDarkMode={isDarkMode}
+                  />
                 </div>
               )}
             </>
