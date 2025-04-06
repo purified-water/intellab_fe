@@ -22,17 +22,17 @@ export function CourseInformationSection(props: CourseInformationSectionProps) {
   if (loading) {
     content = (
       <div className="items-center p-4 space-y-3 text-white rounded-lg bg-gradient-to-r from-appPrimary to-appSecondary">
-        <Skeleton className="h-8 w-3/4" />
+        <Skeleton className="w-3/4 h-8" />
         <div className="flex items-center space-x-2">
-          <Skeleton className="h-6 w-12" />
-          <Skeleton className="h-6 w-24" />
+          <Skeleton className="w-12 h-6" />
+          <Skeleton className="w-24 h-6" />
         </div>
-        <Skeleton className="h-10 w-32" />
+        <Skeleton className="w-32 h-10" />
       </div>
     );
   } else {
     content = (
-      <div className="items-center py-4 px-7 space-y-3 text-white rounded-xl bg-gradient-to-r from-appPrimary to-appSecondary">
+      <div className="items-center py-4 space-y-3 text-white px-7 rounded-xl bg-gradient-to-tr from-appPrimary to-appSecondary">
         <p className="text-2xl font-bold">{certificate?.course.name}</p>
         <div className="flex items-center space-x-2">
           <div className="flex items-center px-2 py-1 rounded-lg bg-gray1 text-appMedium">

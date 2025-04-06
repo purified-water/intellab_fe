@@ -287,5 +287,10 @@ export const aiAPI = {
   getProblemThreadDetails: async (userId: string, problemId: string, threadId: string) => {
     const response = await apiClient.get(`/ai/conversation/${userId}/problem/${problemId}/thread/${threadId}`);
     return response.data;
+  },
+  // GET PROBLEM CHATBOT MESSAGE COUNT
+  getProblemChatbotUsage: async () => {
+    const response = await apiClient.get(`/ai/stream/problem_chatbot/usage`);
+    return response.data;
   }
 };

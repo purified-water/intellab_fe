@@ -111,9 +111,9 @@ export function Course(props: CourseProps) {
               {`${amountTransformer(detailCourse?.reviewCount ?? 0)} reviews`}
             </div>
             <div className="ml-1 text-sm font-normal text-white">•</div>
-            <div className="flex items-center justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
-              <img className="w-3 h-3 mr-1" src="../../src/assets/rate.svg" alt="Rating" />
-              <div className="text-white">
+            <div className="flex items-center px-2 justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
+              <img className="w-3 h-3 mr-[6px]" src="../../src/assets/rate.svg" alt="Rating" />
+              <div className="text-sm text-white">
                 {detailCourse?.averageRating != 0 ? detailCourse?.averageRating : NA_VALUE}
               </div>
             </div>

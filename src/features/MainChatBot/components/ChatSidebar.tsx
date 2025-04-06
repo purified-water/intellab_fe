@@ -80,7 +80,7 @@ export const ChatSidebar = ({ isOpen, isLoading, chatHistoryItems, onSelectChat 
       className={`fixed left-0 top-0 bottom-0 h-full transition-all duration-300 ${isOpen ? "w-64 opacity-100" : "w-0 opacity-0"}`}
     >
       {isOpen && (
-        <Sidebar variant="modal" className="w-64 h-full rounded-l-lg">
+        <Sidebar key={isOpen ? "open" : "closed"} variant="modal" className="w-64 h-full rounded-l-lg">
           <SidebarContent className="relative overflow-hidden rounded-l-lg">
             <div
               className="absolute inset-0 bg-center bg-no-repeat bg-cover opacity-50"

@@ -40,16 +40,16 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
   const reduxUser = useSelector((state: RootState) => state.user.user);
   const isMe = userId === reduxUser?.userId;
   const navigate = useNavigate();
-  // Get the premium status from the Redux store
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+
   if (!reduxPremiumStatus || reduxPremiumStatus.planType === PREMIUM_PACKAGES.RESPONSE.FREE) return null;
-  console.log("reduxPremiumStatus", reduxPremiumStatus);
-  const userPlan = reduxPremiumStatus?.planType.toLowerCase() as keyof typeof planDetails;
+
+  const userPlan = reduxPremiumStatus?.planType as keyof typeof planDetails;
   // Get the plan details based on the user's plan
   const { title, color, icon } = planDetails[userPlan] || planDetails["free"];
   const planEndDate = reduxPremiumStatus?.endDate;
 
-  if (!userId || !isMe) return null;
+  if (!userId || !isMe || reduxPremiumStatus.status !== "Active") return null;
 
   if (loading) {
     return (

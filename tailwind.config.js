@@ -17,6 +17,7 @@ export default {
         appEasy: "#27AE60",
         appMedium: "#E2B93B",
         appHard: "#EB5757",
+        appInfo: "#2F80ED",
         appFadedPrimary: "#D8B3F2",
         appFadedSecondary: "#ABB0FF",
         appFadedAccent: "#ffcfd7",

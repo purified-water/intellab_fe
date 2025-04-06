@@ -7,3 +7,4 @@ export * from "./Comments/ProblemComment";
 export * from "./Comments/ProblemCommentSection";
 export * from "./Comments/ProblemReply";
 export * from "./ProblemSolution";
+export * from "./LockProblemSolutionOverlay";

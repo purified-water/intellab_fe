@@ -14,6 +14,7 @@ import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
+import { AppFooter } from "@/components/AppFooter";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -304,10 +305,13 @@ export const CourseDetailPage = () => {
   };
 
   return (
-    <div className="pb-8 mx-auto max-w-7xl">
-      {renderHeader()}
-      {renderBody()}
-      {renderSpinner()}
-    </div>
+    <>
+      <div className="pb-8 mx-auto max-w-7xl">
+        {renderHeader()}
+        {renderBody()}
+        {renderSpinner()}
+      </div>
+      <AppFooter />
+    </>
   );
 };

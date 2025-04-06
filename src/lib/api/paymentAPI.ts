@@ -74,7 +74,7 @@ export const paymentAPI = {
       paymentFor: paymentFor === "SUBSCRIPTION" ? "SUBSCRIPTION" : "COURSE",
       page,
       size: size ?? DEFAULT_PAGE_SIZE,
-      sort: sort ?? ""
+      sort: sort ?? "createdAt,desc"
     };
     const response = await apiClient.get("identity/payment/vnpay/get-payments/me", { params: queryParams });
     const data: TGetPaymentMeResponse = response.data;

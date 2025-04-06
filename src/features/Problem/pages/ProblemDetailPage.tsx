@@ -15,9 +15,6 @@ import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
 import { useSearchParams } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import {
@@ -60,6 +57,8 @@ export const ProblemDetail = () => {
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
 
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
   // Lock problem
   const [isPublished, setIsPublished] = useState(true);
 
@@ -82,7 +81,6 @@ export const ProblemDetail = () => {
     return true;
   };
 
-  console.log("isPublished", isPublished);
   const dispatch = useDispatch();
 
   const fetchProblemDetail = async () => {
@@ -292,13 +290,6 @@ export const ProblemDetail = () => {
     }
   }, [problemId]);
 
-  // WAIT for isPrivate problem to redirect user, now problem is open to all
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     navigate(`/course/${courseId}`);
-  //   }
-  // }, [isAuthenticated]);
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
@@ -394,7 +385,7 @@ export const ProblemDetail = () => {
             All Problems
           </Button>
 
-          {userId && (
+          {isAuthenticated && (
             <Button
               className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
               onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
