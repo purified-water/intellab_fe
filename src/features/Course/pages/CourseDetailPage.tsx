@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
-import { ICourse, ILesson, IEnrolledLesson } from "../types";
+import { IEnrolledLesson } from "../types";
+import { ICourse, ILesson } from "@/types";
 import { Spinner, Pagination } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
@@ -13,6 +14,7 @@ import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
+import { AppFooter } from "@/components/AppFooter";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -34,6 +36,7 @@ export const CourseDetailPage = () => {
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
+  const userRedux = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const courses = useSelector((state: RootState) => state.course.courses);
 
@@ -48,7 +51,7 @@ export const CourseDetailPage = () => {
 
   const getCourseDetail = async () => {
     setLoading(true);
-    const response = await courseAPI.getCourseDetail(id!, userId!);
+    const response = await courseAPI.getCourseDetail(id!);
     const { result } = response;
 
     // If the user already enrolled in the course, update the Redux store to get the correct lessons type
@@ -150,10 +153,18 @@ export const CourseDetailPage = () => {
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
-    if (isAuthenticated) {
-      enrollCourseHandler();
-    } else {
+    if (!isAuthenticated) {
       showToastError({ toast: toast.toast, title: "Login required", message: "Please login to enroll in the course" });
+    }
+    // NOTE: comment this else-if for testing
+    else if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast.toast,
+        title: "Email verification required",
+        message: "Please verify your email to enroll in the course"
+      });
+    } else {
+      enrollCourseHandler();
     }
   };
 
@@ -190,10 +201,16 @@ export const CourseDetailPage = () => {
   };
 
   const handlePurchaseClick = async () => {
-    if (isAuthenticated) {
-      await createCoursePaymentAPI();
+    if (!isAuthenticated) {
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to purchase the course" });
+    } else if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast.toast,
+        title: "Email verification required",
+        message: "Please verify your email to purchase the course"
+      });
     } else {
-      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to buy the course" });
+      await createCoursePaymentAPI();
     }
   };
 
@@ -288,10 +305,13 @@ export const CourseDetailPage = () => {
   };
 
   return (
-    <div className="pb-8 mx-auto max-w-7xl">
-      {renderHeader()}
-      {renderBody()}
-      {renderSpinner()}
-    </div>
+    <>
+      <div className="pb-8 mx-auto max-w-7xl">
+        {renderHeader()}
+        {renderBody()}
+        {renderSpinner()}
+      </div>
+      <AppFooter />
+    </>
   );
 };

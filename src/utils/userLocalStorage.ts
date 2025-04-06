@@ -3,4 +3,10 @@ const getUserIdFromLocalStorage = () => {
   return userId;
 };
 
-export { getUserIdFromLocalStorage };
+const userLocalStorageCleanUp = () => {
+  localStorage.removeItem("userId");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+};
+
+export { getUserIdFromLocalStorage, userLocalStorageCleanUp };

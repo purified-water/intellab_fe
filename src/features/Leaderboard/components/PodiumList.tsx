@@ -11,21 +11,22 @@ export function PodiumList() {
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState<TLeaderboardRank[]>([]);
 
-  const getLeaderboard = async () => {
-    try {
-      const response = await leaderboardAPI.getLeaderboard("all", 0, 3);
-      if (response) {
-        setData(response.content);
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "An error occurred while fetching leaderboard data" });
-    } finally {
-      setLoading(false);
-    }
+  const getLeaderboardAPI = async () => {
+    await leaderboardAPI.getLeaderboard({
+      query: {
+        filter: "all",
+        page: 0,
+        size: 3
+      },
+      onStart: async () => setLoading(true),
+      onSuccess: async (response) => setData(response.content),
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   useEffect(() => {
-    getLeaderboard();
+    getLeaderboardAPI();
   }, []);
 
   const renderSkeleton = () => {
@@ -44,7 +45,7 @@ export function PodiumList() {
   };
 
   return (
-    <div className="flex items-end justify-between space-x-7 w-full">
+    <div className="flex items-end justify-between w-full space-x-7">
       {loading ? renderSkeleton() : renderContent()}
     </div>
   );

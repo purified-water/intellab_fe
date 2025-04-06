@@ -88,16 +88,12 @@ export function EditProfileSection() {
   };
 
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
   };
 
   const updateProfileAPI = async () => {

@@ -1,108 +1,145 @@
-// import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
-// import Cookies from "js-cookie";
+// Testing refresh token
+import { LOGIN_TYPES } from "@/constants";
+import { tokenCleanUp } from "@/utils";
+import axios, { AxiosError, InternalAxiosRequestConfig, AxiosResponse } from "axios";
+import { getAuth } from "firebase/auth";
 
-// export const apiClient = axios.create({
-//   baseURL: import.meta.env.VITE_SERVER_DOCKER_URL,
-//   withCredentials: true // Ensures cookies (like refreshToken) are sent with requests
-// });
-
-// let isRefreshing = false;
-// let failedQueue: Array<{ resolve: (token: string) => void; reject: (error: AxiosError) => void }> = [];
-
-// const processQueue = (error: AxiosError | null, token?: string | null) => {
-//   failedQueue.forEach(({ resolve, reject }) => {
-//     token ? resolve(token) : reject(error as AxiosError);
-//   });
-//   failedQueue = [];
-// };
-
-// const refreshToken = async (): Promise<string> => {
-//   try {
-//     const { data } = await axios.post<{ accessToken: string }>(
-//       `${import.meta.env.VITE_SERVER_DOCKER_URL}/auth/refresh`,
-//       {},
-//       { withCredentials: true } // Ensures refresh token is sent automatically
-//     );
-
-//     Cookies.set("accessToken", data.accessToken, { expires: 1 });
-//     return data.accessToken;
-//   } catch (refreshError) {
-//     Cookies.remove("accessToken");
-//     window.location.href = "/login";
-//     throw refreshError;
-//   }
-// };
-
-// // Request Interceptor - Attach Access Token (No Preemptive Check)
-// apiClient.interceptors.request.use(
-//   (config: InternalAxiosRequestConfig) => {
-//     const token = Cookies.get("accessToken");
-
-//     if (token && config.headers) {
-//       config.headers.Authorization = `Bearer ${token}`;
-//     }
-
-//     return config;
-//   },
-//   (error: AxiosError) => Promise.reject(error)
-// );
-
-// // Response Interceptor - Handle 401 Unauthorized
-// apiClient.interceptors.response.use(
-//   (response: AxiosResponse) => response,
-//   async (error: AxiosError) => {
-//     const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
-//     // If token is invalid or expired, try refreshing it
-//     if (error.response?.status === 401 && !originalRequest._retry) {
-//       originalRequest._retry = true;
-
-//       if (!isRefreshing) {
-//         isRefreshing = true;
-
-//         try {
-//           const newToken = await refreshToken();
-//           processQueue(null, newToken);
-//           isRefreshing = false;
-
-//           // Retry the original request with new token
-//           originalRequest.headers.Authorization = `Bearer ${newToken}`;
-//           return apiClient(originalRequest);
-//         } catch (refreshError) {
-//           processQueue(refreshError as AxiosError, null);
-//           isRefreshing = false;
-//           return Promise.reject(refreshError);
-//         }
-//       } else {
-//         return new Promise<string>((resolve, reject) => {
-//           failedQueue.push({ resolve, reject });
-//         })
-//           .then((token) => {
-//             originalRequest.headers.Authorization = `Bearer ${token}`;
-//             return apiClient(originalRequest);
-//           })
-//           .catch((err) => Promise.reject(err));
-//       }
-//     }
-
-//     return Promise.reject(error);
-//   }
-// );
-
-// export default apiClient;
-
-// OLD API CLIENT WITHOUT REFRESH TOKEN
-import axios from "axios";
-import Cookies from "js-cookie";
+const PUBLIC_ROUTES = ["/auth/login", "/auth/register"];
 
 export const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_SERVER_DOCKER_URL
+  baseURL: import.meta.env.VITE_SERVER_DOCKER_URL,
+  withCredentials: true
 });
 
-// Add an interceptor to include the token in the Authorization header
+interface QueuedRequest {
+  resolve: (value: AxiosResponse) => void;
+  reject: (error: AxiosError) => void;
+  config: InternalAxiosRequestConfig;
+}
+
+class TokenRefreshManager {
+  private static isRefreshing = false;
+  private static failedQueue: QueuedRequest[] = [];
+
+  /**
+   * Process all queued requests after token refresh
+   * @param error - Error from token refresh (if any)
+   * @param token - New access token (if refresh successful)
+   */
+  static processQueue(error?: AxiosError | null, token?: string) {
+    if (error) {
+      this.failedQueue.forEach(({ reject }) => reject(error));
+    } else if (token) {
+      this.failedQueue.forEach(({ config, resolve, reject }) => {
+        const updatedConfig = {
+          ...config,
+          headers: {
+            ...config.headers,
+            Authorization: `Bearer ${token}`
+          }
+        };
+
+        axios(updatedConfig).then(resolve).catch(reject);
+      });
+    }
+
+    this.failedQueue = [];
+  }
+
+  /**
+   * Refresh the access token based on login type
+   * @returns Promise resolving to new access token
+   */
+  static async refreshToken(): Promise<string> {
+    const loginType = localStorage.getItem("loginType");
+
+    try {
+      if (loginType === LOGIN_TYPES.EMAIL) {
+        // Email login refresh token flow
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+          throw new Error("No refresh token found");
+        }
+
+        const { data } = await axios.post(
+          `${import.meta.env.VITE_SERVER_DOCKER_URL}/identity/auth/refresh`,
+          { token: refreshToken },
+          {
+            headers: { "Content-Type": "application/json" },
+            withCredentials: true
+          }
+        );
+
+        localStorage.setItem("accessToken", data.accessToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+
+        return data.accessToken;
+      } else if (loginType === LOGIN_TYPES.GOOGLE) {
+        console.log("Refreshing Google token");
+        // Google login (Firebase) token refresh
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+
+        if (!currentUser) {
+          throw new Error("No authenticated Google user");
+        }
+
+        // Force refresh to get a new token
+        const newToken = await currentUser.getIdToken(true);
+
+        localStorage.setItem("accessToken", newToken);
+
+        // You might want to send this token to your backend for validation/exchange
+        return newToken;
+      } else {
+        throw new Error("Unknown login type");
+      }
+    } catch (error) {
+      // Handle token refresh failure
+      tokenCleanUp();
+      window.location.href = "/login";
+      throw error;
+    }
+  }
+
+  /**
+   * Handle token refresh, preventing multiple simultaneous attempts
+   * @returns Promise resolving to new access token
+   */
+  static async handleTokenRefresh(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      if (!this.isRefreshing) {
+        this.isRefreshing = true;
+        this.refreshToken()
+          .then((token) => {
+            this.isRefreshing = false;
+            this.processQueue(null, token);
+            resolve(token);
+          })
+          .catch((error) => {
+            this.isRefreshing = false;
+            this.processQueue(error);
+            reject(error);
+          });
+      } else {
+        // If refresh is in progress, add to queue
+        this.failedQueue.push({
+          resolve: (response: AxiosResponse) => resolve(response.data),
+          reject,
+          config: {} as InternalAxiosRequestConfig
+        });
+      }
+    });
+  }
+}
+
 apiClient.interceptors.request.use(
-  (config) => {
-    const token = Cookies.get("accessToken");
+  async (config: InternalAxiosRequestConfig) => {
+    if (config.url && PUBLIC_ROUTES.some((route) => config.url?.includes(route))) {
+      return config;
+    }
+
+    const token = localStorage.getItem("accessToken");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -110,7 +147,33 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => {
+  (error: AxiosError) => Promise.reject(error)
+);
+
+apiClient.interceptors.response.use(
+  (response: AxiosResponse) => response,
+  async (error: AxiosError) => {
+    const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const isAuthRoute = PUBLIC_ROUTES.some((route) => originalRequest.url?.includes(route));
+
+    if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
+      originalRequest._retry = true;
+      console.log("Token expired, refreshing...");
+
+      try {
+        const newToken = await TokenRefreshManager.handleTokenRefresh();
+
+        // Retry the original request with new token
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return apiClient(originalRequest);
+      } catch (refreshError) {
+        console.error("Token refresh failed", refreshError);
+        return Promise.reject(refreshError);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
+
+export default apiClient;

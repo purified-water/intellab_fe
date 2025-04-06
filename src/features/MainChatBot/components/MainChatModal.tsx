@@ -5,7 +5,7 @@ import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
 import { ChatBubble } from "./ChatBubble";
-import { aiOrbLogo } from "@/assets";
+import { AIBackground, aiOrbLogo } from "@/assets";
 import {
   PanelLeft,
   PanelLeftClose,
@@ -34,7 +34,7 @@ import {
   updateLastMessage
 } from "@/redux/mainChatbot/mainChatbotSlice";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
-import { CHATBOT_MODELS } from "@/constants/enums/chatbotModels";
+import { CHATBOT_MODELS } from "@/constants/chatbotModels";
 import { AI_AGENT } from "@/constants/enums/aiAgents";
 import { FaSpinner, FaSquare } from "rocketicons/fa6";
 interface ChatbotModalProps {
@@ -337,13 +337,31 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       <div
         ref={chatContentRef}
         style={{ scrollBehavior: "smooth" }} // Add this style for smooth scrolling
-        className="flex flex-col flex-grow max-h-full px-2 py-12 space-y-4 overflow-y-auto"
+        className="flex flex-col flex-grow max-h-full px-2 py-12 space-y-4 overflow-y-auto scrollbar-hide"
       >
         {chatDetail?.messages.map((message, index) => <ChatBubble key={index} message={message} />)}
         {isLoadingResponse && <ChatBubble isLoadingResponse />}
         {/* <div ref={chatEndRef} /> */}
       </div>
     );
+  };
+
+  const renderSidebar = () => {
+    if (!isMinimized) {
+      return (
+        <>
+          {isSidebarOpen && (
+            <ChatSidebar
+              isOpen={isSidebarOpen}
+              isLoading={isLoadingHistory}
+              chatHistoryItems={chatHistoryItems}
+              onSelectChat={handleGetChatDetail}
+            />
+          )}
+        </>
+      );
+    }
+    return null;
   };
 
   return (
@@ -353,12 +371,12 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         className={`fixed z-50 ${
           isMinimized
             ? "bottom-4 right-4 max-w-[520px] max-h-[1200px]"
-            : "inset-0 flex items-center justify-center bg-gray3/30"
+            : "inset-0 flex items-center justify-center bg-black/50"
         }`}
       >
         <div
           id="chat-container"
-          className={`relative flex flex-col bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-appFadedPrimary shadow-xl transition-all duration-300 ease-in-out ${
+          className={`relative flex flex-col border-[0.5px] bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-md shadow-appAITo/30 transition-all duration-300 ease-in-out ${
             isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
           }`}
           style={{
@@ -366,53 +384,56 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
             transition: "transform 0.15s ease-in-out, opacity 0.15s ease-in-out"
           }}
         >
+          {/* Background Layer - Moved to the top level container */}
+          <div
+            className="absolute inset-0 bg-center bg-no-repeat opacity-70 bg-fit"
+            style={{ backgroundImage: `url(${AIBackground})` }}
+          />
+
+          {/* Glassmorphism Overlay - Also moved to top level */}
+          <div className="absolute inset-0 bg-white/65 backdrop-blur-2xl"></div>
+
           {/* Top Bar */}
           {renderChatTopBar()}
 
           {/* Sidebar */}
-          {!isMinimized && (
-            <ChatSidebar
-              isOpen={isSidebarOpen}
-              isLoading={isLoadingHistory}
-              chatHistoryItems={chatHistoryItems}
-              onSelectChat={handleGetChatDetail}
-            />
-          )}
+          {renderSidebar()}
 
           <div
             id="chat-content"
-            className={`relative flex flex-col flex-grow ${isMinimized ? "px-2 pb-6 sm:px-4 sm:pb-6" : "px-2 pb-6 sm:px-16 sm:pb-12"} pt-2 h-full transition-all duration-300 ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
+            className={`relative flex flex-col flex-grow ${isMinimized ? "px-2 pb-6 sm:px-4 sm:pb-8" : "px-2 pb-6 sm:px-16 sm:pb-12"} pt-2 h-full transition-all duration-300 ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
           >
-            {/* Chat Content or Welcome Message */}
-            <div id="chat-messages" className="flex flex-col flex-grow max-h-screen overflow-scroll">
+            {/* Chat Messages (Ensure content stays above the background) */}
+            <div className="relative z-10 flex flex-col flex-grow max-h-screen overflow-scroll">
               {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
             </div>
 
-            {/* Input Field (Moves to Bottom on User Interaction) */}
+            {/* Input Field */}
             <div id="chat-input" className="sticky z-10 flex items-end px-2 mt-4 bottom-8">
               <textarea
                 ref={textAreaRef}
                 rows={1}
-                placeholder="Ask Intellab anything..."
+                placeholder="Don't know where to start? Ask me anything!"
                 className={`flex-grow border shadow-sm ${isMinimized ? "max-h-[100px]" : "max-h-[300px]"} min-h-11 px-4 py-2 overflow-y-auto bg-white rounded-lg focus:outline-none leading-relaxed`}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.ctrlKey) {
+                  if (e.key === "Enter" && !e.shiftKey) {
                     e.preventDefault();
                     handleSendMessageStream();
                   }
                 }}
-                disabled={isLoadingResponse || isStreaming} // Disable input when submitting or streaming
+                disabled={isLoadingResponse || isStreaming}
               />
 
+              {/* Button logic remains the same */}
               {isLoadingResponse ? (
                 <div className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm cursor-not-allowed h-11 w-11 bg-gradient-to-tr from-appAIFrom/80 to-appAITo/80">
                   <FaSpinner className="inline-block cursor-not-allowed icon-sm animate-spin icon-white" />
                 </div>
               ) : isStreaming ? (
                 <button
-                  onClick={handleStopStreaming} // Stop streaming on click
+                  onClick={handleStopStreaming}
                   className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
                 >
                   <FaSquare className="w-4 h-4 icon-white" />

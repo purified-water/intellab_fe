@@ -6,8 +6,10 @@ import {
   TGetProgressLevelResponse,
   TGetProgressLanguageResponse,
   TGetProfileResponse,
-  TGetProfileMeResponse
-} from "@/features/Profile/types/apiResponseType";
+  TGetProfileMeResponse,
+  TGetProfileMeParams
+} from "@/features/Profile/types/apiType";
+import { HTTPS_STATUS_CODE } from "@/constants";
 
 export const userAPI = {
   updateProfile: async (
@@ -84,9 +86,26 @@ export const userAPI = {
     return data;
   },
 
-  getProfileMe: async () => {
-    const response = await apiClient.get("/identity/profile/me");
-    const data: TGetProfileMeResponse = response.data;
-    return data;
+  getProfileMe: async ({ onStart, onSuccess, onFail, onEnd }: TGetProfileMeParams) => {
+    const DEFAULT_ERROR = "Error getting user profile";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const response = await apiClient.get("/identity/profile/me");
+      if (response.status === HTTPS_STATUS_CODE.OK) {
+        const data: TGetProfileMeResponse = response.data;
+        await onSuccess(data);
+      } else {
+        await onFail(DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   }
 };

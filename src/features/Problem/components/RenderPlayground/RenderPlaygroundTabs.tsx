@@ -22,7 +22,7 @@ interface RenderPGTabsProps {
 }
 
 export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
-  const [playgroundActive, setPlaygroundActive] = useState("Solution");
+  const [playgroundActive, setPlaygroundActive] = useState("Solutions");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
   const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
   const [code, setCode] = useState("");
@@ -91,7 +91,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     const getIcon = () => {
       const iconColorClass = playgroundActive === tabName ? "icon-appAccent" : "icon-gray3";
       switch (tabName) {
-        case "Solution":
+        case "Solutions":
           return <BsCode className={`inline-block mr-2 ${iconColorClass}`} />;
         default:
           return null;
@@ -113,7 +113,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
 
   const renderPlaygroundTabContent = () => {
     switch (playgroundActive) {
-      case "Solution":
+      case "Solutions":
         return (
           <div className="flex-grow overflow-hidden">
             <Playground language={language} code={code} onCodeChange={handleCodeChange} />
@@ -131,7 +131,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
         id="tab-buttons"
         className="flex items-center px-4 py-2 overflow-y-hidden border-b max-h-18 gap-x-4 sm:overflow-x-auto scrollbar-hide shrink-0"
       >
-        {renderPlaygroundTabButton("Solution")}
+        {renderPlaygroundTabButton("Solutions")}
 
         {/* Language Selector */}
         <div id="language-selector" className="ml-auto">

@@ -1,6 +1,13 @@
 import { useEffect, useState } from "react";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button } from "@/components/ui";
-import { RenderDescTabs, RenderPGTabs, RenderTCTabs, RenderAllProblems, RenderAIAssistant } from "../components";
+import {
+  RenderDescTabs,
+  RenderPGTabs,
+  RenderTCTabs,
+  RenderAllProblems,
+  RenderAIAssistant,
+  LockProblemOverlay
+} from "../components";
 import { MdList } from "rocketicons/md";
 import { HiOutlineSparkles } from "rocketicons/hi2";
 import { FaPlay, FaSpinner, FaUpload } from "rocketicons/fa6";
@@ -8,9 +15,6 @@ import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
 import { useSearchParams } from "react-router-dom";
-// import { useNavigate } from "react-router-dom";
-// import { useSelector } from "react-redux";
-// import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import {
@@ -21,10 +25,12 @@ import {
   TestCaseType
 } from "../types";
 import { saveCode } from "@/redux/problem/problemSlice";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
+import { RootState } from "@/redux/rootReducer";
+import { showToastError } from "@/utils";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -47,8 +53,14 @@ export const ProblemDetail = () => {
   const lessonName = searchParams.get("lessonName");
   const learningId = searchParams.get("learningId");
   // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const userRedux = useSelector((state: RootState) => state.user.user);
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
+
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  // Lock problem
+  const [isPublished, setIsPublished] = useState(true);
 
   const submissionValidation = () => {
     if (!code) {
@@ -74,13 +86,16 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-      // console.log("Problem detail", problemDetail);
+      console.log("Problem detail", problemDetail);
       if (problemDetail) {
         setProblemDetail(problemDetail);
         document.title = `${problemDetail.problemName} | Intellab`;
         setTestCases(problemDetail.testCases.slice(0, 3));
       }
     } catch (error) {
+      if (error.response.status === 403) {
+        setIsPublished(false);
+      }
       console.error("Failed to fetch problem detail", error);
     }
   };
@@ -172,6 +187,15 @@ export const ProblemDetail = () => {
   };
 
   const handleSubmitCode = async () => {
+    if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast,
+        title: "Email verification required",
+        message: "Please verify your email to submit problem"
+      });
+      return;
+    }
+
     if (!submissionValidation()) return;
     setIsSubmitting(true);
 
@@ -266,16 +290,13 @@ export const ProblemDetail = () => {
     }
   }, [problemId]);
 
-  // WAIT for isPrivate problem to redirect user, now problem is open to all
-  // useEffect(() => {
-  //   if (!isAuthenticated) {
-  //     navigate(`/course/${courseId}`);
-  //   }
-  // }, [isAuthenticated]);
-
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  if (isPublished === false) {
+    return <LockProblemOverlay />;
+  }
 
   return (
     <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
@@ -364,7 +385,7 @@ export const ProblemDetail = () => {
             All Problems
           </Button>
 
-          {userId && (
+          {isAuthenticated && (
             <Button
               className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
               onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}

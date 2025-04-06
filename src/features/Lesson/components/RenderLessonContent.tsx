@@ -3,13 +3,13 @@ import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
 import { LessonHeader } from "./LessonHeader";
-import { ILesson } from "@/features/Course/types";
-import { LANGUAGE_MAP } from "../constants/languageMap";
+import { ILesson } from "@/types";
+import { LANGUAGE_MAP } from "@/constants";
 import rehypeSlug from "rehype-slug";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { TOCItem } from "./TableOfContents";
 import remarkGfm from "remark-gfm";
-import ImageCarousel from "./ImageCarousel";
+import { ImageCarousel } from "@/components/Markdown";
 import { CarouselImage, isImageMarkdown, extractImageInfo } from "@/utils";
 // Type definitions
 interface CodeBlock {
@@ -291,7 +291,7 @@ const parseContent = (content: string): ContentBlock[] => {
 };
 
 // Main component for rendering a lesson
-export const RenderMarkdown: React.FC<{
+export const RenderLessonMarkdown: React.FC<{
   lesson: ILesson;
   setTocItems: (items: TOCItem[]) => void;
 }> = ({ lesson, setTocItems }) => {

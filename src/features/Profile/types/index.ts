@@ -1,2 +1,2 @@
-export * from "./apiResponseType";
+export * from "./apiType";
 export * from "./editProfileTab";

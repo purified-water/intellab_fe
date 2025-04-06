@@ -1,24 +1,37 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
 import { useEffect, useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
 import LoginGoogle from "@/features/Auth/components/LoginGoogle";
-import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
-import { showToastError } from "@/utils/toastUtils";
+import { showToastError, showToastSuccess } from "@/utils/toastUtils";
+import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
+import { TNavigationState } from "@/types";
+import { FaSpinner } from "rocketicons/fa6";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { LOGIN_TYPES } from "@/constants";
+
+type inputValidationParams = {
+  emailRequired: boolean;
+  passwordRequired: boolean;
+};
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
   const [inputErrors, setInputErrors] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const toast = useToast();
+  const location = useLocation();
+
+  const previousNavigationState = location.state as TNavigationState;
 
   useEffect(() => {
     document.title = "Login | Intellab";
@@ -27,16 +40,16 @@ export const LoginPage = () => {
     setShowPassword(!showPassword);
   };
 
-  const inputValidation = () => {
+  const inputValidation = ({ emailRequired, passwordRequired }: inputValidationParams) => {
     let isValid = true;
     // Prevent override other error not showing
     const errors = { email: "", password: "" };
 
-    if (!loginInfo.email) {
+    if (emailRequired && !loginInfo.email) {
       errors.email = "Email is required";
       isValid = false;
     }
-    if (!loginInfo.password) {
+    if (passwordRequired && !loginInfo.password) {
       errors.password = "Password is required";
       isValid = false;
     }
@@ -45,36 +58,67 @@ export const LoginPage = () => {
     return isValid;
   };
 
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+        await getPremiumStatusAPI(user.userId);
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
+  const resetPasswordAPI = async (sendingEmail: string) => {
+    await authAPI.resetPassword({
+      body: { email: sendingEmail },
+      onSuccess: async (data) => {
+        if (data) {
+          showToastSuccess({
+            toast: toast.toast,
+            title: "Reset link sent successfully!",
+            message: `We sent a password reset link to ${sendingEmail}, please check your inbox.`,
+            duration: 5000
+          });
+        } else {
+          showToastError({ toast: toast.toast, message: "Failed to send password reset email" });
+        }
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
+  const goBack = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateToPreviousPage(navigate, state);
   };
 
   const handleLogin = async (e: React.FormEvent) => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
 
-    if (!inputValidation()) return;
+    if (!inputValidation({ emailRequired: true, passwordRequired: true })) return;
+
+    setIsLoggingIn(true);
 
     try {
       const response = await authAPI.login(loginInfo.email, loginInfo.password);
 
       if (response.status === 200) {
-        Cookies.set("accessToken", response.data.accessToken, {
-          // process.env.NODE_ENV is automatically set by Vite development/production
-          // if production, will use HTTPS and secure cookie
-          secure: process.env.NODE_ENV === "production",
-          sameSite: "Strict", // Mitigate CSRF
-          expires: 1 / 24 // Token expiry (1 hour)
-        });
+        localStorage.setItem("accessToken", response.data.accessToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+
+        // Use login type to determine whether it uses refreshtoken or firebase
+        localStorage.setItem("loginType", LOGIN_TYPES.EMAIL);
 
         const decodedToken = jwtDecode<JwtPayload>(response.data.accessToken);
         const userId = decodedToken.sub; // sub is the user id
@@ -86,9 +130,12 @@ export const LoginPage = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
-        navigate("/");
+        setIsLoggingIn(false);
+
+        goBack();
       }
     } catch (error) {
+      setIsLoggingIn(false);
       if (error.response) {
         const errorMessage = error.response.data.message || "Invalid email or password";
         setInputErrors({ ...inputErrors, email: errorMessage });
@@ -98,6 +145,17 @@ export const LoginPage = () => {
       }
       console.error("Login error", error);
     }
+  };
+
+  const handleSignup = () => {
+    const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
+    navigateWithPreviousPagePassed(navigate, state, "/signup");
+  };
+
+  const handleForgotPassword = async () => {
+    if (!inputValidation({ emailRequired: true, passwordRequired: false })) return;
+
+    await resetPasswordAPI(loginInfo.email);
   };
 
   return (
@@ -153,28 +211,42 @@ export const LoginPage = () => {
             {inputErrors.password && <p className="mt-2 text-sm text-appHard">{inputErrors.password}</p>}
 
             <div className="mt-2 text-right">
-              <a href="/forgot-password" className="text-sm text-appPrimary hover:underline">
+              <button
+                type="button" // Prevent form submission
+                onClick={handleForgotPassword}
+                className="text-sm text-appPrimary hover:underline"
+              >
                 Forgot password?
-              </a>
+              </button>
             </div>
           </div>
 
           <button
             type="submit"
-            className="w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90"
+            disabled={isLoggingIn}
+            className={`w-full py-2 font-semibold text-white transition rounded-lg bg-appPrimary hover:opacity-90 ${
+              isLoggingIn ? "opacity-70 cursor-not-allowed" : ""
+            }`}
           >
-            Log In
+            {isLoggingIn ? (
+              <div className="flex items-center justify-center">
+                <FaSpinner className="inline-block mr-2 icon-sm animate-spin icon-white" />
+                Logging In...
+              </div>
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
 
-        <LoginGoogle />
+        <LoginGoogle callback={goBack} />
 
         <div className="mt-6 text-center">
           <div className="text-sm">
             Don&apos;t have an account?{" "}
-            <a href="/signup" className="font-bold text-appPrimary hover:underline">
+            <button onClick={handleSignup} className="font-bold text-appPrimary hover:underline">
               Sign Up
-            </a>
+            </button>
           </div>
         </div>
       </div>

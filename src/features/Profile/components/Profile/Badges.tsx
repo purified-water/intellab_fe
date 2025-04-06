@@ -2,7 +2,7 @@ export const Badges = () => {
   const renderEmpty = () => {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-lg text-gray3">No badges yet</p>
+        <p className="text-lg text-gray3">Solve problems and study to earn badges!</p>
       </div>
     );
   };

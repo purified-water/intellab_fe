@@ -6,7 +6,7 @@ import rootReducer from "@/redux/rootReducer";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "course", "problem", "user", "submission", "comment", "mainChatbot"]
+  whitelist: ["auth", "course", "problem", "user", "submission", "comment", "mainChatbot", "premiumStatus"] // Add the slices you want to persist
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

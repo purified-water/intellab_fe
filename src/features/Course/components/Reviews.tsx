@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import RatingModal from "./RatingModal";
-import { IReview, ReviewStatsResult } from "@/pages/HomePage/types/reviewResponse";
+import { IReview, ReviewStatsResult } from "@/features/StudentOverall/types";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
 
@@ -39,7 +39,7 @@ export default function Reviews({
     try {
       setLoading(true);
       if (refetch) {
-        const response = await courseAPI.getReviews(courseId, 0, numOfElements);
+        const response = await courseAPI.getReviews(courseId, 0, numOfElements, null);
         setReviews([...response.result.content]);
         setPage(1);
         setTotalElements(response.result.totalElements);
@@ -47,7 +47,7 @@ export default function Reviews({
         fetchReviewStats();
         return;
       }
-      const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements);
+      const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements, null);
 
       // Assuming response.result.content is the reviews array
       if (numOfElements === 1) {
@@ -124,7 +124,10 @@ export default function Reviews({
         )}
         <div className="flex flex-col items-start w-full grow-0">
           {hasCompleted && !loading && (
-            <Button className="w-32 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+            <Button
+              className="w-32 text-sm font-semibold text-white rounded-lg hover:bg-appPrimary/80 bg-appPrimary"
+              onClick={openModal}
+            >
               Add Review
             </Button>
           )}

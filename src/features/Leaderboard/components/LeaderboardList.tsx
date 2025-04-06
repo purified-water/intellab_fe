@@ -31,22 +31,25 @@ export function LeaderboardList() {
   const [currentPage, setCurrentPage] = useState(0);
 
   const getLeaderboardAPI = async (page: number) => {
-    setLoading(true);
-    try {
-      const response = await leaderboardAPI.getLeaderboard(filterValue, page);
-      setData(response.content);
-      if (!totalPages) {
-        setTotalPages(response.totalPages);
-      } else {
-        if (response.totalPages == 0) {
-          setTotalPages(null);
+    await leaderboardAPI.getLeaderboard({
+      query: {
+        filter: filterValue,
+        page: page
+      },
+      onStart: async () => setLoading(true),
+      onSuccess: async (response) => {
+        setData(response.content);
+        if (!totalPages) {
+          setTotalPages(response.totalPages);
+        } else {
+          if (response.totalPages == 0) {
+            setTotalPages(null);
+          }
         }
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Failed to get leaderboard data" });
-    } finally {
-      setLoading(false);
-    }
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message: message }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   useEffect(() => {

@@ -5,3 +5,5 @@ export * from "./SubmissionHistoryType";
 export * from "./SubmissionInformationType";
 export * from "./TestCaseType";
 export * from "./SubmissionType";
+export * from "./resonseType";
+export * from "./AIAssistantType";

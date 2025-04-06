@@ -1,2 +1,3 @@
-export * from "./PaymentBlock";
-export * from "./InformationRow";
+export * from "./PaymentResult";
+export * from "./MyPurchases";
+export * from "./Pricing";

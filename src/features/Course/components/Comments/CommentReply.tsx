@@ -2,16 +2,17 @@ import { useEffect, useState } from "react";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { Button } from "@/components/ui/shadcn/Button";
 import { AvatarIcon, AlertDialog } from "@/components/ui";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
-import { TComment, ICourse } from "@/features/Course/types";
-import { formatDateTime } from "@/utils";
-import { showToastError } from "@/utils/toastUtils";
+import { TComment } from "@/features/Course/types";
+import { formatDateTime, showToastError, getUserIdFromLocalStorage, isEmptyString } from "@/utils";
 import { Trash2, Pencil } from "lucide-react";
-import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { ICourse } from "@/types";
+import { courseAPI } from "@/lib/api";
+import * as commentStore from "@/redux/comment/commentSlice";
 
 const parseReplyContent = (reply: string) => {
   const regex = /^\[@(.*?)\]\s(.*)$/;
@@ -28,29 +29,11 @@ const parseReplyContent = (reply: string) => {
 type CommentReplyProps = {
   replyComment: TComment;
   enrolledCourse: ICourse;
-  createCommentAPI: (
-    courseId: string,
-    content: string,
-    replyCommentId: string | null,
-    parentCommentId: string | null,
-    onSuccess: () => void
-  ) => Promise<void>;
   deleteCommentAPI: (comment: TComment) => Promise<void>;
-  editCommentAPI: (commentId: string, content: string, onSuccess: () => void) => Promise<void>;
-  upvoteCommentAPI: (commentId: string) => Promise<void>;
-  cancelUpvoteCommentAPI: (commentId: string) => Promise<void>;
 };
 
 export const CommentReply = (props: CommentReplyProps) => {
-  const {
-    replyComment,
-    enrolledCourse,
-    createCommentAPI,
-    deleteCommentAPI,
-    editCommentAPI,
-    upvoteCommentAPI,
-    cancelUpvoteCommentAPI
-  } = props;
+  const { replyComment, enrolledCourse, deleteCommentAPI } = props;
 
   const { courseId, userEnrolled } = enrolledCourse;
   const {
@@ -72,6 +55,7 @@ export const CommentReply = (props: CommentReplyProps) => {
   const toast = useToast();
   const localUserUid = getUserIdFromLocalStorage();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const isOwner = userUid == localUserUid;
 
@@ -79,6 +63,67 @@ export const CommentReply = (props: CommentReplyProps) => {
   const [replyContent, setReplyContent] = useState("");
   const [isEdit, setIsEdit] = useState(false);
   const [editReplyContent, setEditReplyContent] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const upvoteCommentAPI = async (commentId: string) => {
+    await courseAPI.upvoteComment({
+      query: { commentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (numberOfLikes) => {
+        console.log("--> Number of like after upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+        dispatch(commentStore.upvoteComment(replyComment));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const cancelUpvoteCommentAPI = async (commentId: string) => {
+    await courseAPI.cancelUpvoteComment({
+      query: { commentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (numberOfLikes) => {
+        console.log("--> Number of like after cancel upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+        dispatch(commentStore.cancelUpvoteComment(replyComment));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const editCommentAPI = async (commentId: string, content: string) => {
+    await courseAPI.modifyComment({
+      body: { commentId, content },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        setIsEdit(false);
+        setEditReplyContent("");
+        dispatch(commentStore.editComment(data));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const createCommentAPI = async (
+    courseId: string,
+    content: string,
+    parentCommentId: string | null,
+    repliedCommentId: string | null
+  ) => {
+    await courseAPI.createComment({
+      query: { courseId },
+      body: { content, parentCommentId, repliedCommentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        setIsReply(false);
+        setReplyContent("");
+        dispatch(commentStore.createComment(data));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
 
   useEffect(() => {
     setEditReplyContent(`${content} `);
@@ -105,6 +150,10 @@ export const CommentReply = (props: CommentReplyProps) => {
     };
 
     const renderContent = () => {
+      const handleUsernameClick = () => {
+        navigate(`/profile/${userUid}`);
+      };
+
       let actualContent = null;
       if (parentCommentId == repliedCommentId) {
         // reply is first level
@@ -114,7 +163,12 @@ export const CommentReply = (props: CommentReplyProps) => {
         const parsedReply = parseReplyContent(content);
         actualContent = (
           <>
-            <span className="font-semibold text-appPrimary">@{parsedReply?.userName}</span>
+            <span
+              className="font-semibold text-appPrimary cursor-pointer hover:text-opacity-80"
+              onClick={handleUsernameClick}
+            >
+              @{parsedReply?.userName}
+            </span>
             <span> {parsedReply?.replyContent}</span>
           </>
         );
@@ -126,20 +180,27 @@ export const CommentReply = (props: CommentReplyProps) => {
     const renderActions = () => {
       const renderUpvoteButton = () => {
         const handleToggleUpvote = () => {
-          if (isAuthenticated) {
-            if (userEnrolled) {
-              if (isUpvoted) {
-                cancelUpvoteCommentAPI(commentId);
-              } else {
-                upvoteCommentAPI(commentId);
-              }
-            } else {
-              showToastError({ toast: toast.toast, message: "Please enroll in the course to upvote" });
-            }
+          if (!isAuthenticated) {
+            showToastError({
+              toast: toast.toast,
+              title: "Login required",
+              message: "You must be logged in to upvote comments"
+            });
+          } else if (!userEnrolled) {
+            showToastError({
+              toast: toast.toast,
+              title: "Enrollment required",
+              message: "You must enroll in this course to upvote comments"
+            });
           } else {
-            showToastError({ toast: toast.toast, message: "Please login to upvote" });
+            if (isUpvoted) {
+              cancelUpvoteCommentAPI(commentId);
+            } else {
+              upvoteCommentAPI(commentId);
+            }
           }
         };
+
         let content = null;
         if (isUpvoted) {
           content = <BiSolidUpvote className="w-4 h-4 icon-appPrimary" />;
@@ -148,23 +209,33 @@ export const CommentReply = (props: CommentReplyProps) => {
         }
 
         return (
-          <div className="flex items-center space-x-1 cursor-pointer" onClick={handleToggleUpvote}>
+          <button
+            className="flex items-center space-x-1 cursor-pointer"
+            onClick={handleToggleUpvote}
+            disabled={loading}
+          >
             {content}
             <p className="text-xs text-gray2 hover:text-black">{numberOfLikes}</p>
-          </div>
+          </button>
         );
       };
 
       const renderReplyButton = () => {
         const handleReply = () => {
-          if (isAuthenticated) {
-            if (userEnrolled) {
-              setIsReply(true);
-            } else {
-              showToastError({ toast: toast.toast, message: "Please enroll in the course to reply" });
-            }
+          if (!isAuthenticated) {
+            showToastError({
+              toast: toast.toast,
+              title: "Login required",
+              message: "You must be logged in to make reply"
+            });
+          } else if (!userEnrolled) {
+            showToastError({
+              toast: toast.toast,
+              title: "Enrollment required",
+              message: "You must enroll in this course to make reply"
+            });
           } else {
-            showToastError({ toast: toast.toast, message: "Please login to reply" });
+            setIsReply(true);
           }
         };
 
@@ -226,13 +297,14 @@ export const CommentReply = (props: CommentReplyProps) => {
       };
 
       const handleReply = () => {
-        const actualContent = replyContent.trim();
+        const parsedReply = parseReplyContent(replyContent);
+        const actualContent = parsedReply!.replyContent.trim();
         const actualParentCommentId = parentCommentId ?? commentId;
-        const handleSuccess = () => {
-          setIsReply(false);
-          setReplyContent("");
-        };
-        createCommentAPI(courseId, actualContent, commentId, actualParentCommentId, handleSuccess);
+        if (isEmptyString(actualContent)) {
+          showToastError({ toast: toast.toast, message: "Reply cannot be empty" });
+        } else {
+          createCommentAPI(courseId, replyContent, actualParentCommentId, commentId);
+        }
       };
 
       return (
@@ -250,6 +322,7 @@ export const CommentReply = (props: CommentReplyProps) => {
                 }}
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
+                disabled={loading}
               />
             </div>
             <div className="flex justify-end space-x-2">
@@ -257,12 +330,14 @@ export const CommentReply = (props: CommentReplyProps) => {
                 variant={"outline"}
                 className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
                 onClick={handleCancel}
+                disabled={loading}
               >
                 Cancel
               </Button>
               <Button
                 className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
                 onClick={handleReply}
+                disabled={loading}
               >
                 Reply
               </Button>
@@ -294,13 +369,19 @@ export const CommentReply = (props: CommentReplyProps) => {
     };
 
     const handleEdit = () => {
-      const actualContent = editReplyContent.trim();
+      const parsedEditComment = parseReplyContent(editReplyContent);
+      const parsedComment = parseReplyContent(content);
 
-      const handleSuccess = () => {
-        setIsEdit(false);
-        setEditReplyContent("");
-      };
-      editCommentAPI(commentId, actualContent, handleSuccess);
+      const actualEditContent = parsedEditComment!.replyContent.trim();
+      const actualContent = parsedComment!.replyContent.trim();
+
+      if (isEmptyString(actualEditContent)) {
+        showToastError({ toast: toast.toast, message: "Comment cannot be empty" });
+      } else if (actualEditContent == actualContent) {
+        showToastError({ toast: toast.toast, message: "No changes detected" });
+      } else {
+        editCommentAPI(commentId, editReplyContent);
+      }
     };
 
     return (
@@ -317,6 +398,7 @@ export const CommentReply = (props: CommentReplyProps) => {
             }}
             value={editReplyContent}
             onChange={(e) => setEditReplyContent(e.target.value)}
+            disabled={loading}
           />
         </div>
         <div className="flex justify-end space-x-2">
@@ -324,10 +406,15 @@ export const CommentReply = (props: CommentReplyProps) => {
             variant={"outline"}
             className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
             onClick={handleCancel}
+            disabled={loading}
           >
             Cancel
           </Button>
-          <Button className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90" onClick={handleEdit}>
+          <Button
+            className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            onClick={handleEdit}
+            disabled={loading}
+          >
             Edit
           </Button>
         </div>

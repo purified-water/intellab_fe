@@ -1,32 +1,43 @@
 import { signInWithPopup } from "firebase/auth";
 import { auth, googleProvider } from "@/features/Auth/firebase/firebaseAuth";
 import { FcGoogle } from "rocketicons/fc";
-import { useNavigate } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
-import Cookies from "js-cookie";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { LOGIN_TYPES } from "@/constants";
 
-const GoogleLogin = () => {
-  const navigate = useNavigate();
+type TLoginGoogleProps = {
+  callback: () => void;
+};
+
+const GoogleLogin = (props: TLoginGoogleProps) => {
+  const { callback } = props;
   const dispatch = useDispatch();
   const toast = useToast();
 
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
-    try {
-      const response = await userAPI.getProfileMe();
-      if (response) {
-        dispatch(setUser(response));
-      } else {
-        showToastError({ toast: toast.toast, message: "Error getting user profile" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
-    }
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+        await getPremiumStatusAPI(user.userId);
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
   };
 
   const handleGoogleLogin = async () => {
@@ -36,7 +47,10 @@ const GoogleLogin = () => {
       const response = await authAPI.continueWithGoogle(idToken);
 
       if (response.status === 200 || response.status === 201) {
-        Cookies.set("accessToken", idToken);
+        localStorage.setItem("accessToken", idToken);
+        // Use login type to determine whether it uses refreshtoken or firebase
+        localStorage.setItem("loginType", LOGIN_TYPES.GOOGLE);
+
         const decodedToken = jwtDecode<JwtPayload>(idToken);
         const userId = decodedToken.sub; // sub is the user id
 
@@ -47,7 +61,8 @@ const GoogleLogin = () => {
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
         dispatch(loginSuccess());
-        navigate("/");
+
+        callback();
       }
     } catch (error) {
       console.log("Login with Google error", error);

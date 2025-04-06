@@ -1,12 +1,15 @@
 import { useRef, useState } from "react";
 import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
 import { amountTransformer } from "@/utils";
-import { ICourse } from "../types";
+import { ICourse } from "@/types";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { aiAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { NA_VALUE } from "@/constants";
 import { showToastError } from "@/utils/toastUtils";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 
 interface HeaderProps {
   course: ICourse;
@@ -27,6 +30,12 @@ export const Header = (props: HeaderProps) => {
 
   const isFinished = course.progressPercent == 100;
 
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const isCurrentPlanActive = reduxPremiumStatus?.status == PREMIUM_STATUS.ACTIVE;
+  const includedInPremiumPlan =
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
+
   const renderReview = () => {
     return (
       <div className="mt-2 text-xs">
@@ -41,27 +50,32 @@ export const Header = (props: HeaderProps) => {
   const renderLeftButton = () => {
     let buttonText;
     let onClick;
+    let disable = false;
 
     if (course.userEnrolled) {
       if (isFinished) {
         buttonText = "View Certificate";
         onClick = onViewCertificate;
+        if (!course.certificateId || !course.certificateUrl) {
+          disable = true;
+        }
       } else {
         buttonText = "Continue";
         onClick = onContinue;
       }
     } else {
-      if (course.price > 0) {
-        buttonText = "Purchase";
-        onClick = onPurchase;
-      } else {
+      if (course.price == 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
         buttonText = "Enroll";
         onClick = onEnroll;
+      } else {
+        buttonText = "Purchase";
+        onClick = onPurchase;
       }
     }
 
     return (
       <button
+        disabled={disable}
         className="px-6 py-1 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >

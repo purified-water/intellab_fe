@@ -5,6 +5,7 @@ import { TestCaseType } from "../../types/TestCaseType";
 import { SubmissionInformation } from "./SubmissionInformation";
 import { SubmissionHistory } from "./SubmissionHistory";
 import { ProblemCommentSection } from "./Comments/ProblemCommentSection";
+import { ProblemSolution } from "./ProblemSolution";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
   courseId: string | null;
@@ -43,6 +44,8 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
   };
 
   const renderDescriptionTabContent = () => {
+    if (!problemDetail) return null;
+
     switch (desActive) {
       case "Description":
         return (
@@ -58,8 +61,8 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         return <ProblemCommentSection />;
       case "Submissions":
         return <SubmissionHistory />;
-      case "Hints":
-        return <div>Hints</div>;
+      case "Solutions":
+        return <ProblemSolution solutionContent={problemDetail.solution.content} />;
       case "Failed":
         return <SubmissionInformation isPassed={false} />;
       case "Passed":
@@ -86,7 +89,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         {renderDescriptionTabButton("Description")}
         {renderDescriptionTabButton("Comments")}
         {renderDescriptionTabButton("Submissions")}
-        {renderDescriptionTabButton("Hints")}
+        {renderDescriptionTabButton("Solutions")}
         {isPassed !== null && (isPassed ? renderDescriptionTabButton("Passed") : renderDescriptionTabButton("Failed"))}
       </div>
       {renderDescriptionTabContent()}

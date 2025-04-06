@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { PaymentBlock } from "../components";
 import { TIntellabPayment } from "../types";
 import { useSearchParams } from "react-router-dom";
-import { paymentAPI } from "@/lib/api";
-import { API_RESPONSE_CODE } from "@/constants";
+import { paymentAPI, authAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { useDispatch, useSelector } from "react-redux";
+import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
+import { VNPAY_TRANSACTION_CODE, PAYMENT_FOR } from "../constants";
+import { RootState } from "@/redux/rootReducer";
 
 export function PaymentResultPage() {
   const [searchParams] = useSearchParams();
@@ -14,22 +17,40 @@ export function PaymentResultPage() {
 
   const [payment, setPayment] = useState<TIntellabPayment | null>(null);
   const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const userRedux = useSelector((state: RootState) => state.user.user);
+
+  const getPremiumStatusAPI = async (uid: string) => {
+    await authAPI.getPremiumStatus({
+      query: { uid },
+      onSuccess: async (data) => {
+        dispatch(setPremiumStatus(data));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
 
   const getPaymentAPI = async () => {
     if (paymentId) {
-      try {
-        const response = await paymentAPI.getIntellabPayment(paymentId);
-        const { code, message, result } = response;
-        if (code == API_RESPONSE_CODE.SUCCESS && result) {
+      await paymentAPI.getIntellabPayment({
+        query: {
+          paymentId
+        },
+        onStart: async () => setLoading(true),
+        onSuccess: async (result) => {
           setPayment(result);
-        } else {
-          showToastError({ toast: toast.toast, message: message ?? "Error getting payment" });
-        }
-      } catch (e) {
-        showToastError({ toast: toast.toast, message: e.message ?? "Error gettingpayment" });
-      } finally {
-        setLoading(false);
-      }
+          // Can't increate courseCount or update premium status with redux when making payment
+          // Since after payment, the user will be redirected to this page
+          // So we need to call getProfileMeAPI to update courseCount
+          if (result.userUid === userRedux?.userId && result.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS) {
+            if (result.paymentFor == PAYMENT_FOR.SUBCRIPTION) {
+              await getPremiumStatusAPI(result.userUid);
+            }
+          }
+        },
+        onFail: async (message) => showToastError({ toast: toast.toast, message }),
+        onEnd: async () => setLoading(false)
+      });
     } else {
       setLoading(false);
       showToastError({ toast: toast.toast, message: "Payment ID not found" });

@@ -1,19 +1,20 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { courseAPI } from "@/lib/api";
-import { ILesson, ICourse } from "@/features/Course/types";
+import { courseAPI, userAPI } from "@/lib/api";
+import { ILesson, ICourse } from "@/types";
 import { clearBookmark, getUserIdFromLocalStorage } from "@/utils";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 // import { MarkdownRender } from "../components/MarkdownRender";
 import { Button } from "@/components/ui";
 // import MarkdownEditor from "../components/MarkdownRender2";
-import { RenderMarkdown } from "../components/RenderLessonContent";
+import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 // import { testData } from "../components/testData";
 import { TOCItem, TableOfContents } from "../components";
 import { AppFooter } from "@/components/AppFooter";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
+import { setUser } from "@/redux/user/userSlice";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -26,17 +27,13 @@ export const LessonDetailPage = () => {
   const [activeHeading, setActiveHeading] = useState<string | null>(null);
   const { id } = useParams<{ id: string }>();
   const userId = getUserIdFromLocalStorage();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const [searchParams] = useSearchParams();
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
   const [course, setCourse] = useState<ICourse | null>(null);
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate("/");
-    }
-  }, [isAuthenticated, navigate]);
+  const dispatch = useDispatch();
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   useEffect(() => {
     getCourseDetail();
@@ -96,10 +93,28 @@ export const LessonDetailPage = () => {
     };
   }, []);
 
+  useEffect(() => {
+    // since we can't cover all the case to check is course is finish and update the completedCourseCount in Redux
+    // we will just call getProfileMeAPI to update the user profile
+    // this is not the best solution but it works for now
+    if (isAuthenticated && lesson && !lesson?.nextLessonId && isLessonDone) {
+      getProfileMeAPI();
+    }
+  }, [isLessonDone]);
+
+  const getProfileMeAPI = async () => {
+    await userAPI.getProfileMe({
+      onSuccess: async (user) => {
+        dispatch(setUser(user));
+      },
+      onFail: async (message) => console.log("--> Error get profile", message)
+    });
+  };
+
   const getCourseDetail = async () => {
     if (courseId) {
       try {
-        const response = await courseAPI.getCourseDetail(courseId, userId!);
+        const response = await courseAPI.getCourseDetail(courseId);
         const { result } = response;
 
         setCourse(result);
@@ -267,7 +282,7 @@ export const LessonDetailPage = () => {
     if (lesson && lesson.content != null) {
       return (
         <div className="pr-4 space-y-6">
-          <RenderMarkdown lesson={lesson} setTocItems={setTocItems} />
+          <RenderLessonMarkdown lesson={lesson} setTocItems={setTocItems} />
           {renderContinueToQuiz()}
           {isLessonDone && lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}
           {renderProblem()}

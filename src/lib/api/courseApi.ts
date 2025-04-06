@@ -6,9 +6,10 @@ import {
   IEnrollCourseResponse,
   IGetLessonDetailResponse,
   IGetUserEnrolledCoursesResponse,
-  IGetCategories
-} from "../../pages/HomePage/types/responseTypes";
-import { IReviewsResponse, ReviewStatsResponse } from "../../pages/HomePage/types/reviewResponse";
+  IGetCategories,
+  IReviewsResponse,
+  ReviewStatsResponse
+} from "@/features/StudentOverall/types";
 import { SubmitQuizType } from "@/features/Quiz/types/SubmitQuizType";
 import { LearningStatus } from "@/constants/enums/lessonLearningStatus";
 import {
@@ -19,9 +20,18 @@ import {
   TGetCommentResponse,
   TGetCommentChildrenResponse,
   TModifyCommentResponse,
-  TUpvoteCommentResponse
-} from "@/features/Course/types/apiResponseType";
+  TUpvoteCommentResponse,
+  TUpvoteCommentParams,
+  TCancelUpvoteCommentParams,
+  TModifyCommentParams,
+  TGetCourseCommentsParams,
+  TCreateCommentParams,
+  TGetCommentParams,
+  TGetCommentChildrenParams,
+  TDeleteCommentParams
+} from "@/features/Course/types";
 import { TGetCompletedCourseListMeResponse } from "@/features/Profile/types";
+import { API_RESPONSE_CODE } from "@/constants";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -44,7 +54,7 @@ export const courseAPI = {
     return data;
   },
 
-  getReviews: async (courseId: string, page: number, size: number, rating: string) => {
+  getReviews: async (courseId: string, page: number, size: number, rating: string | null) => {
     const rating_param = rating === "all" ? null : Number(rating);
     const response = await apiClient.get(`course/courses/${courseId}/reviews`, {
       params: {
@@ -75,8 +85,8 @@ export const courseAPI = {
     return data;
   },
 
-  getCourseDetail: async (courseId: string, userUid: string) => {
-    const response = await apiClient.get(`/course/courses/${courseId}?userUid=${userUid}`);
+  getCourseDetail: async (courseId: string) => {
+    const response = await apiClient.get(`/course/courses/${courseId}`);
     const data: IGetCourseDetailResponse = response.data;
     return data;
   },
@@ -164,96 +174,229 @@ export const courseAPI = {
     return data;
   },
 
-  // Comment APIs
-  upvoteComment: async (commentId: string) => {
-    const response = await apiClient.put(`/course/courses/comments/${commentId}/upvote`);
-    const data: TUpvoteCommentResponse = response.data;
-    return data;
+  upvoteComment: async ({ query, onStart, onSuccess, onFail, onEnd }: TUpvoteCommentParams) => {
+    const DEFAULT_ERROR = "Error upvoting comment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const commentId = query!.commentId;
+      const response = await apiClient.put(`/course/courses/comments/${commentId}/upvote`);
+      const data: TUpvoteCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  cancelUpvoteComment: async (commentId: string) => {
-    const response = await apiClient.put(`/course/courses/comments/${commentId}/cancelUpvote`);
-    const data: TCancelUpvoteCommentResponse = response.data;
-    return data;
+  cancelUpvoteComment: async ({ query, onStart, onSuccess, onFail, onEnd }: TCancelUpvoteCommentParams) => {
+    const DEFAULT_ERROR = "Error canceling upvote comment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { commentId } = query!;
+      const response = await apiClient.put(`/course/courses/comments/${commentId}/cancelUpvote`);
+      const data: TCancelUpvoteCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  modifyComment: async (commentId: string, content: string) => {
-    const response = await apiClient.put(`/course/courses/comments/modify`, { commentId, content });
-    const data: TModifyCommentResponse = response.data;
-    return data;
+  modifyComment: async ({ body, onStart, onSuccess, onFail, onEnd }: TModifyCommentParams) => {
+    const DEFAULT_ERROR = "Error modifying comment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { commentId, content } = body!;
+      const response = await apiClient.put(`/course/courses/comments/modify`, { commentId, content });
+      const data: TModifyCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  getCourseComments: async (
-    courseId: string,
-    userUid: string | null,
-    page: number | null,
-    sort: string | null
-    //childrenPage: number | null
-  ) => {
-    const queryParams = {
-      page,
-      userUid,
-      size: 10,
-      sort,
-      // childrenPage,
-      childrenSize: 1
-      // childrenSortBy: "created",
-      // childrenSortOrder: "desc"
-    };
-    const response = await apiClient.get(`/course/courses/${courseId}/comments`, { params: queryParams });
-    const data: TGetCourseCommentsResponse = response.data;
-    return data;
+  getCourseComments: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetCourseCommentsParams) => {
+    const DEFAULT_ERROR = "Error getting course comments";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { courseId, userUid, page, sort } = query!;
+      const response = await apiClient.get(`/course/courses/${courseId}/comments`, {
+        params: {
+          page,
+          userUid,
+          size: DEFAULT_PAGE_SIZE,
+          sort
+        }
+      });
+      const data: TGetCourseCommentsResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  createComment: async (
-    courseId: string,
-    content: string,
-    repliedCommentId: string | null,
-    parentCommentId: string | null
-  ) => {
-    const response = await apiClient.post(`/course/courses/${courseId}/comments`, {
-      content,
-      repliedCommentId,
-      parentCommentId
-    });
-    const data: TCreateCommentResponse = response.data;
-    return data;
+  createComment: async ({ query, body, onStart, onSuccess, onFail, onEnd }: TCreateCommentParams) => {
+    const DEFAULT_ERROR = "Error creating comment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { courseId } = query!;
+      const { content, repliedCommentId, parentCommentId } = body!;
+      const response = await apiClient.post(`/course/courses/${courseId}/comments`, {
+        content,
+        repliedCommentId,
+        parentCommentId
+      });
+      const data: TCreateCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  getComment: async (
-    commentId: string,
-    userUid: string | null,
-    page: number | null,
-    size: number | null,
-    sort: string[] | null
-  ) => {
-    const queryParams = {
-      userUid,
-      page,
-      size,
-      sort
-    };
+  getComment: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetCommentParams) => {
+    const DEFAULT_ERROR = "Error getting comment";
 
-    const response = await apiClient.get(`/course/courses/comments/${commentId}`, { params: queryParams });
-    const data: TGetCommentResponse = response.data;
-    return data;
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { commentId, userUid, page, size, sort } = query!;
+      const response = await apiClient.get(`/course/courses/comments/${commentId}`, {
+        params: {
+          userUid,
+          page,
+          size,
+          sort
+        }
+      });
+      const data: TGetCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  getCommentChildren: async (commentId: string, userUid: string | null, size: number | null) => {
-    const queryParams = {
-      userUid,
-      size,
-      sort: "created,desc"
-    };
-    const response = await apiClient.get(`/course/courses/comments/${commentId}/children`, { params: queryParams });
-    const data: TGetCommentChildrenResponse = response.data;
-    return data;
+  getCommentChildren: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetCommentChildrenParams) => {
+    const DEFAULT_ERROR = "Error getting comment children";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { commentId, userUid, size } = query!;
+      const response = await apiClient.get(`/course/courses/comments/${commentId}/children`, {
+        params: {
+          userUid,
+          size,
+          sort: "created,desc"
+        }
+      });
+      const data: TGetCommentChildrenResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
-  deleteComment: async (commentId: string) => {
-    const response = await apiClient.delete(`/course/courses/comments/${commentId}/delete`);
-    const data: TDeleteCommentResponse = response.data;
-    return data;
+  deleteComment: async ({ query, onStart, onSuccess, onFail, onEnd }: TDeleteCommentParams) => {
+    const DEFAULT_ERROR = "Error deleting comment";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { commentId } = query!;
+      const response = await apiClient.delete(`/course/courses/comments/${commentId}/delete`);
+      const data: TDeleteCommentResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   },
 
   getCompletedCourseListMe: async (UserUid: string) => {

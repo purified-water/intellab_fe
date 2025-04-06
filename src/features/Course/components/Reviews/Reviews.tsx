@@ -4,7 +4,7 @@ import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import RatingModal from "../RatingModal";
-import { IReview, ReviewStatsResult } from "@/pages/HomePage/types/reviewResponse";
+import { IReview, ReviewStatsResult } from "@/features/StudentOverall/types";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
 import ComboboxDemo from "../ComboboxDemo";
@@ -143,7 +143,10 @@ export function Reviews({
             ></ComboboxDemo>
 
             {hasCompleted && hasFetched.current && (
-              <Button className="w-32 mr-4 text-sm text-white rounded-lg bg-appPrimary" onClick={openModal}>
+              <Button
+                className="w-32 mr-4 text-sm font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+                onClick={openModal}
+              >
                 Add Review
               </Button>
             )}

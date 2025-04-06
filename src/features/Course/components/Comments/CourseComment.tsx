@@ -3,39 +3,27 @@ import { CommentReply } from "./CommentReply";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { FaRegComment } from "rocketicons/fa6";
 import { Button } from "@/components/ui/shadcn/Button";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
-import { TComment, ICourse } from "@/features/Course/types";
-import { formatDateTime } from "@/utils";
-import { showToastError } from "@/utils/toastUtils";
+import { TComment } from "@/features/Course/types";
+import { formatDateTime, showToastError, getUserIdFromLocalStorage, isEmptyString } from "@/utils";
 import { courseAPI } from "@/lib/api";
-import { API_RESPONSE_CODE } from "@/constants";
 import { Pencil, Trash2 } from "lucide-react";
 import { AlertDialog, AvatarIcon } from "@/components/ui";
-import { getUserIdFromLocalStorage } from "@/utils";
 import * as commentStore from "@/redux/comment/commentSlice";
-import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { ICourse } from "@/types";
 
 type CourseCommentProps = {
   comment: TComment;
   enrolledCourse: ICourse;
-  createCommentAPI: (
-    courseId: string,
-    content: string,
-    replyCommentId: string | null,
-    parentCommentId: string | null,
-    onSuccess: () => void
-  ) => Promise<void>;
-  deleteCommentAPI: (deleteComment: TComment) => Promise<void>;
-  editCommentAPI: (commentId: string, content: string, onSuccess: () => void) => Promise<void>;
-  getRepliesAPI: (commentId: string, size: number) => Promise<void>;
+  deleteCommentAPI: (comment: TComment) => Promise<void>;
 };
 
 export const CourseComment = (props: CourseCommentProps) => {
-  const { comment, enrolledCourse, createCommentAPI, deleteCommentAPI, editCommentAPI, getRepliesAPI } = props;
+  const { comment, enrolledCourse, deleteCommentAPI } = props;
 
   const { courseId, userEnrolled } = enrolledCourse;
   const {
@@ -67,6 +55,7 @@ export const CourseComment = (props: CourseCommentProps) => {
   const [replyContent, setReplyContent] = useState("");
   const [editContent, setEditContent] = useState("");
   const [shownRepliesNumber, setShownRepliesNumber] = useState(5);
+  const [loading, setLoading] = useState(false);
 
   const totalReplies = replies.totalElements;
 
@@ -75,31 +64,76 @@ export const CourseComment = (props: CourseCommentProps) => {
   }, [content]);
 
   const upvoteCommentAPI = async (commentId: string) => {
-    try {
-      const response = await courseAPI.upvoteComment(commentId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS) {
-        dispatch(commentStore.upvoteComment(result));
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error upvoting comment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error upvoting comment" });
-    }
+    await courseAPI.upvoteComment({
+      query: { commentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (numberOfLikes) => {
+        console.log("--> Number of like after upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+        dispatch(commentStore.upvoteComment(comment));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   const cancelUpvoteCommentAPI = async (commentId: string) => {
-    try {
-      const response = await courseAPI.cancelUpvoteComment(commentId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS) {
-        dispatch(commentStore.cancelUpvoteComment(result));
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error canceling upvote comment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error canceling upvote comment" });
-    }
+    await courseAPI.cancelUpvoteComment({
+      query: { commentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (numberOfLikes) => {
+        console.log("--> Number of like after cancel upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+        dispatch(commentStore.cancelUpvoteComment(comment));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const editCommentAPI = async (commentId: string, content: string) => {
+    await courseAPI.modifyComment({
+      body: { commentId, content },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        setIsEdit(false);
+        setEditContent("");
+        dispatch(commentStore.editComment(data));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const getRepliesAPI = async (commentId: string, size: number) => {
+    await courseAPI.getCommentChildren({
+      query: { commentId, userUid, size },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        dispatch(commentStore.setReplies({ commentId, replies: data.content }));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
+  };
+
+  const createCommentAPI = async (
+    courseId: string,
+    content: string,
+    parentCommentId: string | null,
+    repliedCommentId: string | null
+  ) => {
+    await courseAPI.createComment({
+      query: { courseId },
+      body: { content, parentCommentId, repliedCommentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        setShowReplyInput(false);
+        setReplyContent("");
+        setShowReplies(true);
+        dispatch(commentStore.createComment(data));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   const renderComment = () => {
@@ -128,18 +162,24 @@ export const CourseComment = (props: CourseCommentProps) => {
     const renderActions = () => {
       const renderUpvoteButton = () => {
         const handleToggleUpvote = () => {
-          if (isAuthenticated) {
-            if (userEnrolled) {
-              if (isUpvoted) {
-                cancelUpvoteCommentAPI(commentId);
-              } else {
-                upvoteCommentAPI(commentId);
-              }
-            } else {
-              showToastError({ toast: toast.toast, message: "You need to enroll in the course to upvote comments" });
-            }
+          if (!isAuthenticated) {
+            showToastError({
+              toast: toast.toast,
+              title: "Login required",
+              message: "You must be logged in to upvote comments"
+            });
+          } else if (!userEnrolled) {
+            showToastError({
+              toast: toast.toast,
+              title: "Enrollment required",
+              message: "You must enroll in this course to upvote comments"
+            });
           } else {
-            showToastError({ toast: toast.toast, message: "Login required" });
+            if (isUpvoted) {
+              cancelUpvoteCommentAPI(commentId);
+            } else {
+              upvoteCommentAPI(commentId);
+            }
           }
         };
 
@@ -151,10 +191,14 @@ export const CourseComment = (props: CourseCommentProps) => {
         }
 
         return (
-          <div className="flex items-center space-x-1 cursor-pointer" onClick={handleToggleUpvote}>
+          <button
+            className="flex items-center space-x-1 cursor-pointer"
+            onClick={handleToggleUpvote}
+            disabled={loading}
+          >
             {content}
             <p className="text-xs text-gray2 hover:text-black">{numberOfLikes}</p>
-          </div>
+          </button>
         );
       };
 
@@ -180,14 +224,20 @@ export const CourseComment = (props: CourseCommentProps) => {
 
       const renderReplyButton = () => {
         const handleReply = () => {
-          if (isAuthenticated) {
-            if (userEnrolled) {
-              setShowReplyInput(!showReplyInput);
-            } else {
-              showToastError({ toast: toast.toast, message: "You must enroll in this course to comment" });
-            }
+          if (!isAuthenticated) {
+            showToastError({
+              toast: toast.toast,
+              title: "Login required",
+              message: "You must be logged in to comment"
+            });
+          } else if (!userEnrolled) {
+            showToastError({
+              toast: toast.toast,
+              title: "Enrollment required",
+              message: "You must enroll in this course to comment"
+            });
           } else {
-            showToastError({ toast: toast.toast, message: "Login required" });
+            setShowReplyInput(!showReplyInput);
           }
         };
 
@@ -253,11 +303,7 @@ export const CourseComment = (props: CourseCommentProps) => {
                   key={index}
                   replyComment={reply}
                   enrolledCourse={enrolledCourse}
-                  createCommentAPI={createCommentAPI}
                   deleteCommentAPI={deleteCommentAPI}
-                  editCommentAPI={editCommentAPI}
-                  upvoteCommentAPI={upvoteCommentAPI}
-                  cancelUpvoteCommentAPI={cancelUpvoteCommentAPI}
                 />
               ))}
             </div>
@@ -283,12 +329,11 @@ export const CourseComment = (props: CourseCommentProps) => {
       const handleCreateComment = () => {
         const actualContent = `${replyContent.trim()}`;
         const actualParentCommentId = parentCommentId ?? commentId;
-        const handleSuccess = () => {
-          setShowReplyInput(false);
-          setReplyContent("");
-          setShowReplies(true);
-        };
-        createCommentAPI(courseId, actualContent, commentId, actualParentCommentId, handleSuccess);
+        if (isEmptyString(actualContent)) {
+          showToastError({ toast: toast.toast, message: "Comment content cannot be empty" });
+        } else {
+          createCommentAPI(courseId, actualContent, commentId, actualParentCommentId);
+        }
       };
 
       return (
@@ -306,6 +351,7 @@ export const CourseComment = (props: CourseCommentProps) => {
                 }}
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
+                disabled={loading}
               />
             </div>
             <div className="flex justify-end space-x-2">
@@ -313,12 +359,14 @@ export const CourseComment = (props: CourseCommentProps) => {
                 variant={"outline"}
                 className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
                 onClick={handleCancel}
+                disabled={loading}
               >
                 Cancel
               </Button>
               <Button
                 className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
                 onClick={handleCreateComment}
+                disabled={loading}
               >
                 Reply
               </Button>
@@ -347,12 +395,13 @@ export const CourseComment = (props: CourseCommentProps) => {
 
     const handleEdit = () => {
       const actualContent = `${editContent.trim()}`;
-
-      const handleSuccess = () => {
-        setIsEdit(false);
-        setEditContent("");
-      };
-      editCommentAPI(commentId, actualContent, handleSuccess);
+      if (isEmptyString(actualContent)) {
+        showToastError({ toast: toast.toast, message: "Comment content cannot be empty" });
+      } else if (actualContent === content) {
+        showToastError({ toast: toast.toast, message: "No changes detected" });
+      } else {
+        editCommentAPI(commentId, actualContent);
+      }
     };
 
     return (
@@ -369,6 +418,7 @@ export const CourseComment = (props: CourseCommentProps) => {
             }}
             value={editContent}
             onChange={(e) => setEditContent(e.target.value)}
+            disabled={loading}
           />
         </div>
         <div className="flex justify-end space-x-2">
@@ -376,10 +426,15 @@ export const CourseComment = (props: CourseCommentProps) => {
             variant={"outline"}
             className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
             onClick={handleCancel}
+            disabled={loading}
           >
             Cancel
           </Button>
-          <Button className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90" onClick={handleEdit}>
+          <Button
+            className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            onClick={handleEdit}
+            disabled={loading}
+          >
             Edit
           </Button>
         </div>
