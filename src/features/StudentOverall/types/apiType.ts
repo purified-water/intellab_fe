@@ -88,7 +88,7 @@ export interface IGetCategories {
 
 export type TGetPremiumStatusResponse = TPremiumStatus;
 
-export type TGetPreimumStatusParams = TGetApiParams<
+export type TGetPremiumStatusParams = TGetApiParams<
   {
     uid: string;
   },

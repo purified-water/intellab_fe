@@ -30,6 +30,7 @@ import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
 import { RootState } from "@/redux/rootReducer";
+import { showToastError } from "@/utils";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -52,6 +53,7 @@ export const ProblemDetail = () => {
   const lessonName = searchParams.get("lessonName");
   const learningId = searchParams.get("learningId");
   // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const userRedux = useSelector((state: RootState) => state.user.user);
   const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
 
@@ -185,6 +187,15 @@ export const ProblemDetail = () => {
   };
 
   const handleSubmitCode = async () => {
+    if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast,
+        title: "Email verification required",
+        message: "Please verify your email to submit problem"
+      });
+      return;
+    }
+
     if (!submissionValidation()) return;
     setIsSubmitting(true);
 

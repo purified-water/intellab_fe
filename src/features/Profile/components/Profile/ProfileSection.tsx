@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 type ProfileSectionProps = {
   userId: string;
@@ -51,14 +52,12 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   }, [user]);
 
   const renderProfilePhoto = () => {
-    let content = <i className="text-7xl fa-solid fa-circle-user text-gray3"></i>;
+    let avatar = DEFAULT_AVATAR;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = (
-        <img src={userPhoto} alt="profile" className="object-contain w-20 h-20 border rounded-full border-gray4" />
-      );
+      avatar = userPhoto;
     }
-    return content;
+    return <img src={avatar} alt="profile" className="object-contain w-20 h-20 rounded-full" />;
   };
 
   let nameWidth = width / 9;

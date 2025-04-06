@@ -6,3 +6,7 @@ export const capitalizeFirstLetter = (str: string) => {
 export const removeChatTitleQuotes = (title: string) => {
   return title.replace(/"/g, "");
 };
+
+export const isEmptyString = (str: string) => {
+  return str.trim().length === 0;
+};

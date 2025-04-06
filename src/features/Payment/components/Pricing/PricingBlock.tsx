@@ -34,6 +34,7 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const userRedux = useSelector((state: RootState) => state.user.user);
 
   const usingFreePlan = reduxPremiumStatus?.planType === PREMIUM_PACKAGES.RESPONSE.FREE;
   const isCurrentPlan =
@@ -44,7 +45,7 @@ export function PricingBlock(props: PrickingBlockProps) {
   const toast = useToast();
 
   const createPremiumPaymentAPI = async () => {
-    await paymentAPI.createPremiumPayemnt({
+    await paymentAPI.createPremiumPayment({
       body: {
         premiumPackage: requestPackage!,
         premiumDuration: duration,
@@ -74,7 +75,7 @@ export function PricingBlock(props: PrickingBlockProps) {
     return (
       <>
         {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && (
-          <p className="text-sm font-medium">Billed anually ({yearPrice.toLocaleString()} VNĐ)</p>
+          <p className="text-sm font-medium">Billed annually ({yearPrice.toLocaleString()} VNĐ)</p>
         )}
         <div className="items-end mb-2">
           <span className="text-3xl font-bold">{displayPrice.toLocaleString()} VND</span>
@@ -91,10 +92,12 @@ export function PricingBlock(props: PrickingBlockProps) {
 
   const renderPurchaseButton = () => {
     const handlePurchaseClick = async () => {
-      if (isAuthenticated) {
-        await createPremiumPaymentAPI();
-      } else {
+      if (!isAuthenticated) {
         showToastError({ toast: toast.toast, message: "Please login to purchase plan" });
+      } else if (!userRedux?.isEmailVerified) {
+        showToastError({ toast: toast.toast, message: "Please verify your email to purchase plan" });
+      } else {
+        await createPremiumPaymentAPI();
       }
     };
 

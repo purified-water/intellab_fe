@@ -5,10 +5,9 @@ import { Spinner, SortByButton, ISortByItem, Pagination } from "@/components/ui"
 import { TComment } from "@/features/Course/types";
 import { useToast } from "@/hooks/use-toast";
 import { courseAPI } from "@/lib/api";
-import { API_RESPONSE_CODE } from "@/constants";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { showToastError, getUserIdFromLocalStorage } from "@/utils";
+import { showToastError, getUserIdFromLocalStorage, isEmptyString } from "@/utils";
 import { ICourse } from "@/types";
 import * as commentStore from "@/redux/comment/commentSlice";
 
@@ -47,112 +46,74 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   const [commentContent, setCommentContent] = useState("");
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [spinnerVisible, setSpinnerVisible] = useState(false);
 
   const getCommentsAPI = async (page: number) => {
-    if (!loading) {
-      setLoading(true);
-    }
-    try {
-      const response = await courseAPI.getCourseComments(courseId, userUid, page, sortingValue);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        dispatch(commentStore.setComments(result.content));
-        setCurrentPage(result.number);
+    await courseAPI.getCourseComments({
+      query: {
+        courseId,
+        userUid,
+        page,
+        sort: sortingValue
+      },
+      onStart: async () => setSpinnerVisible(true),
+      onSuccess: async (data) => {
+        setCurrentPage(data.number);
         if (!totalPages) {
-          setTotalPages(result.totalPages);
+          setTotalPages(data.totalPages);
         } else {
-          if (result.totalPages == 0) {
+          if (data.totalPages == 0) {
             setTotalPages(null);
+          } else if (data.totalPages != totalPages) {
+            setTotalPages(data.totalPages);
           }
         }
-      } else {
-        if (comments.length > 0) {
-          dispatch(commentStore.setComments([]));
-        }
-        showToastError({ toast: toast.toast, message: message ?? "Error fetching comments" });
-      }
-    } catch (e) {
-      if (comments.length > 0) {
-        dispatch(commentStore.setComments([]));
-      }
-      showToastError({ toast: toast.toast, message: e.message ?? "Error fetching comments" });
-    } finally {
-      setLoading(false);
-    }
+        dispatch(commentStore.setComments(data.content));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setSpinnerVisible(false)
+    });
   };
 
-  const createCommentAPI = async (
-    courseId: string,
-    content: string,
-    repliedCommentId: string | null,
-    parentCommentId: string | null,
-    onSuccess: () => void
-  ) => {
+  const createCommentAPI = async (courseId: string, content: string) => {
     const actualContent = content.trim();
-    try {
-      const response = await courseAPI.createComment(courseId, actualContent, repliedCommentId, parentCommentId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        onSuccess();
-        dispatch(commentStore.createComment(result));
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error creating comment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error creating comment" });
-    }
+    await courseAPI.createComment({
+      query: { courseId },
+      body: {
+        content: actualContent,
+        repliedCommentId: null,
+        parentCommentId: null
+      },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        setCommentContent("");
+        dispatch(commentStore.createComment(data));
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   const deleteCommentAPI = async (comment: TComment) => {
-    try {
-      const response = await courseAPI.deleteComment(comment.commentId);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        if (comment.parentCommentId) {
-          // the comment is a child comment
-          dispatch(commentStore.deleteComment(comment));
+    await courseAPI.deleteComment({
+      query: { commentId: comment.commentId },
+      onStart: async () => setLoading(true),
+      onSuccess: async (data) => {
+        if (data) {
+          if (comment.parentCommentId) {
+            // the comment is a child comment
+            dispatch(commentStore.deleteComment(comment));
+          } else {
+            // the comment is a parent comment
+            await getCommentsAPI(currentPage);
+          }
         } else {
-          // the comment is a parent comment
-          getCommentsAPI(currentPage);
+          showToastError({ toast: toast.toast, message: "Error deleting comment" });
         }
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error deleting comment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error deleting comment" });
-    }
-  };
-
-  const editCommentAPI = async (commentId: string, content: string, onSuccess: () => void) => {
-    try {
-      const response = await courseAPI.modifyComment(commentId, content);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        onSuccess();
-        dispatch(commentStore.editComment(result));
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error editing comment" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error editing comment" });
-    }
-  };
-
-  const getRepliesAPI = async (commentId: string, size: number) => {
-    setLoading(true);
-    try {
-      const response = await courseAPI.getCommentChildren(commentId, userUid, size);
-      const { code, message, result } = response;
-      if (code == API_RESPONSE_CODE.SUCCESS && result) {
-        dispatch(commentStore.setReplies({ commentId, replies: result.content }));
-      } else {
-        showToastError({ toast: toast.toast, message: message ?? "Error fetching replies" });
-      }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error fetching replies" });
-    } finally {
-      setLoading(false);
-    }
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+      onEnd: async () => setLoading(false)
+    });
   };
 
   useEffect(() => {
@@ -162,29 +123,23 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   }, []);
 
   useEffect(() => {
-    if (!loading) {
-      getCommentsAPI(currentPage);
-    }
+    getCommentsAPI(currentPage);
   }, [sortingValue, isAuthenticated]);
 
   const renderCommentInput = () => {
     const handleCreateComment = (content: string) => {
-      const handleSuccess = () => {
-        setCommentContent("");
-      };
-
-      if (isAuthenticated) {
-        if (userEnrolled) {
-          if (content.length > 0) {
-            createCommentAPI(courseId, content, null, null, handleSuccess);
-          } else {
-            showToastError({ toast: toast.toast, message: "Comment cannot be empty" });
-          }
-        } else {
-          showToastError({ toast: toast.toast, message: "You must enroll in this course to comment" });
-        }
+      if (!isAuthenticated) {
+        showToastError({ toast: toast.toast, title: "Login required", message: "You must be logged in to comment" });
+      } else if (!userEnrolled) {
+        showToastError({
+          toast: toast.toast,
+          title: "Enrollment required",
+          message: "You must enroll in this course to comment"
+        });
+      } else if (isEmptyString(content)) {
+        showToastError({ toast: toast.toast, message: "Comment cannot be empty" });
       } else {
-        showToastError({ toast: toast.toast, message: "Login required" });
+        createCommentAPI(courseId, content);
       }
     };
 
@@ -200,11 +155,13 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
           }}
           value={commentContent}
           onChange={(e) => setCommentContent(e.target.value)}
+          disabled={loading}
         />
         <div className="flex justify-end">
           <Button
             className="px-4 py-2 mt-2 font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
             onClick={() => handleCreateComment(commentContent)}
+            disabled={loading}
           >
             Comment
           </Button>
@@ -235,10 +192,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
                 key={index}
                 comment={comment}
                 enrolledCourse={course}
-                createCommentAPI={createCommentAPI}
                 deleteCommentAPI={deleteCommentAPI}
-                editCommentAPI={editCommentAPI}
-                getRepliesAPI={getRepliesAPI}
               />
             ))}
           </div>
@@ -260,7 +214,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   };
 
   const renderSpinner = () => {
-    return <Spinner loading={loading} overlay />;
+    return <Spinner loading={spinnerVisible} overlay />;
   };
 
   return (

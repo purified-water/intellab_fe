@@ -36,6 +36,7 @@ export const CourseDetailPage = () => {
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
+  const userRedux = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const courses = useSelector((state: RootState) => state.course.courses);
 
@@ -152,10 +153,18 @@ export const CourseDetailPage = () => {
   }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
 
   const handleEnrollClick = () => {
-    if (isAuthenticated) {
-      enrollCourseHandler();
-    } else {
+    if (!isAuthenticated) {
       showToastError({ toast: toast.toast, title: "Login required", message: "Please login to enroll in the course" });
+    }
+    // NOTE: comment this else-if for testing
+    else if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast.toast,
+        title: "Email verification required",
+        message: "Please verify your email to enroll in the course"
+      });
+    } else {
+      enrollCourseHandler();
     }
   };
 
@@ -192,10 +201,16 @@ export const CourseDetailPage = () => {
   };
 
   const handlePurchaseClick = async () => {
-    if (isAuthenticated) {
-      await createCoursePaymentAPI();
+    if (!isAuthenticated) {
+      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to purchase the course" });
+    } else if (!userRedux?.isEmailVerified) {
+      showToastError({
+        toast: toast.toast,
+        title: "Email verification required",
+        message: "Please verify your email to purchase the course"
+      });
     } else {
-      showToastError({ toast: toast.toast, title: "Login required", message: "Please login to buy the course" });
+      await createCoursePaymentAPI();
     }
   };
 
