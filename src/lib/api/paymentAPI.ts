@@ -4,7 +4,7 @@ import {
   TCreateCoursePaymentResponse,
   TGetVNPayPaymentResponse,
   TGetIntellabPaymentResponse,
-  TGetPaymenMeResponse,
+  TGetPaymentMeResponse,
   TCreatePremiumPaymentResponse,
   TGetIntellabPaymentParams,
   TCreatePremiumPaymentParams
@@ -77,11 +77,11 @@ export const paymentAPI = {
       sort: sort ?? ""
     };
     const response = await apiClient.get("identity/payment/vnpay/get-payments/me", { params: queryParams });
-    const data: TGetPaymenMeResponse = response.data;
+    const data: TGetPaymentMeResponse = response.data;
     return data;
   },
 
-  createPremiumPayemnt: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreatePremiumPaymentParams) => {
+  createPremiumPayment: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreatePremiumPaymentParams) => {
     const DEFAULT_ERROR = "Error creating premium payment";
 
     if (onStart) {
