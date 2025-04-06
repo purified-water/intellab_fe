@@ -7,6 +7,8 @@ import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
+import { useToast } from "@/hooks/use-toast";
+import { showToastSuccess } from "@/utils";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -25,6 +27,7 @@ export const SignUpPage = () => {
   const [isSigningUp, setIsSigningUp] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const toast = useToast();
 
   const previousNavigationState = location.state as TNavigationState;
 
@@ -94,6 +97,12 @@ export const SignUpPage = () => {
       const response = await authAPI.signUp(displayName, signUpInfo.email, signUpInfo.password);
       setIsSigningUp(false);
       if (response.status === 201 || response.status === 200) {
+        showToastSuccess({
+          toast: toast.toast,
+          title: "Sign up successfully!",
+          message: `We sent a verification email to ${signUpInfo.email}, please check your inbox.`,
+          duration: 5000
+        });
         handleLogin();
       } else {
         // TODO Handle errors

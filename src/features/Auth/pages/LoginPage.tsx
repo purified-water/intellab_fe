@@ -9,12 +9,17 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
-import { showToastError } from "@/utils/toastUtils";
+import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 import { LOGIN_TYPES } from "@/constants";
+
+type inputValidationParams = {
+  emailRequired: boolean;
+  passwordRequired: boolean;
+};
 
 export const LoginPage = () => {
   const [loginInfo, setLoginInfo] = useState({ email: "", password: "" });
@@ -35,16 +40,16 @@ export const LoginPage = () => {
     setShowPassword(!showPassword);
   };
 
-  const inputValidation = () => {
+  const inputValidation = ({ emailRequired, passwordRequired }: inputValidationParams) => {
     let isValid = true;
     // Prevent override other error not showing
     const errors = { email: "", password: "" };
 
-    if (!loginInfo.email) {
+    if (emailRequired && !loginInfo.email) {
       errors.email = "Email is required";
       isValid = false;
     }
-    if (!loginInfo.password) {
+    if (passwordRequired && !loginInfo.password) {
       errors.password = "Password is required";
       isValid = false;
     }
@@ -73,6 +78,25 @@ export const LoginPage = () => {
     });
   };
 
+  const resetPasswordAPI = async (sendingEmail: string) => {
+    await authAPI.resetPassword({
+      body: { email: sendingEmail },
+      onSuccess: async (data) => {
+        if (data) {
+          showToastSuccess({
+            toast: toast.toast,
+            title: "Reset link sent successfully!",
+            message: `We sent a password reset link to ${sendingEmail}, please check your inbox.`,
+            duration: 5000
+          });
+        } else {
+          showToastError({ toast: toast.toast, message: "Failed to send password reset email" });
+        }
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const goBack = () => {
     const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateToPreviousPage(navigate, state);
@@ -82,7 +106,7 @@ export const LoginPage = () => {
     // Add preventDefault first so the page doesnt reload when the form is submitted
     e.preventDefault();
 
-    if (!inputValidation()) return;
+    if (!inputValidation({ emailRequired: true, passwordRequired: true })) return;
 
     setIsLoggingIn(true);
 
@@ -126,6 +150,12 @@ export const LoginPage = () => {
   const handleSignup = () => {
     const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateWithPreviousPagePassed(navigate, state, "/signup");
+  };
+
+  const handleForgotPassword = async () => {
+    if (!inputValidation({ emailRequired: true, passwordRequired: false })) return;
+
+    await resetPasswordAPI(loginInfo.email);
   };
 
   return (
@@ -181,9 +211,13 @@ export const LoginPage = () => {
             {inputErrors.password && <p className="mt-2 text-sm text-appHard">{inputErrors.password}</p>}
 
             <div className="mt-2 text-right">
-              <a href="/forgot-password" className="text-sm text-appPrimary hover:underline">
+              <button
+                type="button" // Prevent form submission
+                onClick={handleForgotPassword}
+                className="text-sm text-appPrimary hover:underline"
+              >
                 Forgot password?
-              </a>
+              </button>
             </div>
           </div>
 

@@ -9,7 +9,7 @@ type TGetVNPayPaymentResponse = TApiResponse<TVnpayPayment>;
 
 type TGetIntellabPaymentResponse = TApiResponse<TIntellabPayment>;
 
-type TGetPaymenMeResponse = TApiResponse<{
+type TGetPaymentMeResponse = TApiResponse<{
   totalPages: number;
   totalElements: number;
   size: number;
@@ -47,7 +47,7 @@ export type {
   TCreateCoursePaymentResponse,
   TGetVNPayPaymentResponse,
   TGetIntellabPaymentResponse,
-  TGetPaymenMeResponse,
+  TGetPaymentMeResponse,
   TCreatePremiumPaymentResponse,
   TGetIntellabPaymentParams,
   TCreatePremiumPaymentParams
