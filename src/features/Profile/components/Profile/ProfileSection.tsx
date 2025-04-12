@@ -10,6 +10,7 @@ import { showToastError } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+import { VerificationStatus } from "./VerificationStatus";
 
 type ProfileSectionProps = {
   userId: string;
@@ -87,7 +88,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
 
   const renderProfile = () => {
     return (
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full gap-4">
         <div className="flex items-center">
           {renderProfilePhoto()}
           <div className="flex flex-col items-start justify-center py-4 pl-4 ">
@@ -107,6 +108,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             </div>
           </div>
         </div>
+        {isMe && <VerificationStatus />}
         {isMe && (
           <button
             className="min-w-full py-2 font-bold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary mt-2 hover:opacity-80"

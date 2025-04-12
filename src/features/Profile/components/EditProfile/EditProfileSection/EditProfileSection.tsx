@@ -12,6 +12,7 @@ import { Button } from "@/components/ui";
 import { HTTPS_STATUS_CODE } from "@/constants";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { authAPI } from "@/lib/api";
+import { VerificationStatus } from "../../Profile";
 
 export function EditProfileSection() {
   const toast = useToast();
@@ -302,7 +303,7 @@ export function EditProfileSection() {
     const handleChangePassword = async () => {
       if (validateChangePassword()) {
         try {
-          const response = await authAPI.login(user?.email, formData.currentPassword);
+          const response = await authAPI.login(user!.email, formData.currentPassword);
           if (response.status == HTTPS_STATUS_CODE.OK) {
             await updateProfileAPI();
             setFormData((prev) => ({
@@ -383,6 +384,7 @@ export function EditProfileSection() {
   return (
     <div className="p-6 space-y-8 bg-white rounded-lg">
       {renderUserAvatar()}
+      <VerificationStatus showFull />
       {renderBasicInfo()}
       {renderAccountInfo()}
       {renderChangePassword()}

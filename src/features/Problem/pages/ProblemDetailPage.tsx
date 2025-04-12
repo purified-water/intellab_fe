@@ -191,7 +191,7 @@ export const ProblemDetail = () => {
       showToastError({
         toast: toast,
         title: "Email verification required",
-        message: "Please verify your email to submit problem"
+        message: "Please go to Setting Page and verify your email to submit problem"
       });
       return;
     }
@@ -412,9 +412,8 @@ export const ProblemDetail = () => {
 
           <Button
             onClick={handleSubmitCode}
-            className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${
-              isSubmitting ? "cursor-not-allowed" : ""
-            }`}
+            className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${isSubmitting ? "cursor-not-allowed" : ""
+              }`}
             disabled={isSubmitting}
           >
             {isSubmitting ? (

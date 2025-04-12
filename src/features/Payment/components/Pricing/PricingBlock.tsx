@@ -95,7 +95,11 @@ export function PricingBlock(props: PrickingBlockProps) {
       if (!isAuthenticated) {
         showToastError({ toast: toast.toast, message: "Please login to purchase plan" });
       } else if (!userRedux?.isEmailVerified) {
-        showToastError({ toast: toast.toast, message: "Please verify your email to purchase plan" });
+        showToastError({
+          toast: toast.toast,
+          title: "Email verification required",
+          message: "Please go to Setting Page and verify your email to purchase plan"
+        });
       } else {
         await createPremiumPaymentAPI();
       }

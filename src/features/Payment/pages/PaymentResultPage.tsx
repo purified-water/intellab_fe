@@ -39,7 +39,7 @@ export function PaymentResultPage() {
         onStart: async () => setLoading(true),
         onSuccess: async (result) => {
           setPayment(result);
-          // Can't increate courseCount or update premium status with redux when making payment
+          // Can't increase courseCount or update premium status with redux when making payment
           // Since after payment, the user will be redirected to this page
           // So we need to call getProfileMeAPI to update courseCount
           if (result.userUid === userRedux?.userId && result.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS) {
