@@ -3,8 +3,15 @@ export type ProblemSolutionType = {
   problemId: string;
   content: string;
 };
+
+export type ProblemCategoryType = {
+  categoryId: string;
+  name: string;
+};
+
 export type ProblemType = {
   problemId: string;
+  categories: ProblemCategoryType[];
   problemName: string;
   description: string;
   problemLevel: "easy" | "medium" | "hard";
@@ -12,7 +19,9 @@ export type ProblemType = {
   acceptanceRate: number;
   isAvailable: boolean;
   isPublished: boolean;
+  isSolved: boolean;
   testCases: TestCaseType[];
   submissions: string[];
   solution: ProblemSolutionType;
+  viewedSolution: boolean;
 };

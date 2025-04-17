@@ -1,10 +1,15 @@
+import { useImperativeHandle, forwardRef, useRef } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { vscodeLight } from "@uiw/codemirror-theme-vscode";
 import { SupportedLanguages, languageExtensions } from "@/features/Problem/constants/SupportedLanguages";
-import { keymap } from "@codemirror/view";
+import { keymap, EditorView } from "@codemirror/view";
 import { Prec } from "@codemirror/state";
 import { indentSelection } from "@codemirror/commands";
 import { indentUnit } from "@codemirror/language";
+
+export interface PlaygroundRef {
+  codeFormat: () => void;
+}
 
 interface PlaygroundProps {
   language: SupportedLanguages;
@@ -12,25 +17,20 @@ interface PlaygroundProps {
   onCodeChange: (code: string) => void;
 }
 
-export const Playground = ({ language, code, onCodeChange }: PlaygroundProps) => {
+export const Playground = forwardRef<PlaygroundRef, PlaygroundProps>(({ language, code, onCodeChange }, ref) => {
+  const viewRef = useRef<EditorView | null>(null);
   const extension = languageExtensions[language];
 
-  // Basic code formatting using CodeMirror's built-in indentation tools
-  const formatCode = (view: any) => {
+  const formatCode = () => {
+    const view = viewRef.current;
+    if (!view) return;
+
     try {
-      // Get the document's full range
-      const range = {
-        from: 0,
-        to: view.state.doc.length
-      };
+      const range = { from: 0, to: view.state.doc.length };
+      const selection = { anchor: range.from, head: range.to };
 
-      // Create a selection of the entire document
-      const selection = {
-        anchor: range.from,
-        head: range.to
-      };
+      console.log("Formatting code...");
 
-      // Apply indentation to the selection
       view.dispatch(
         view.state.update({
           selection,
@@ -38,36 +38,31 @@ export const Playground = ({ language, code, onCodeChange }: PlaygroundProps) =>
         })
       );
 
-      // Run the indent selection command on the current view
       indentSelection(view);
-
-      // Notify about the change
       onCodeChange(view.state.doc.toString());
-
-      return true;
-    } catch (error) {
-      console.error("Error formatting code:", error);
-      return false;
+    } catch (err) {
+      console.error("Formatting error:", err);
     }
   };
 
-  // Create a keyboard shortcut for formatting (Alt+Shift+F or Option+Shift+F)
+  useImperativeHandle(ref, () => ({
+    codeFormat: formatCode
+  }));
+
   const formatKeymap = keymap.of([
     {
       key: "Alt-Shift-f",
-      run: (view) => formatCode(view)
+      run: () => {
+        formatCode();
+        return true;
+      }
     }
   ]);
 
-  // Add extensions for better indentation
-  const indentationExtension = indentUnit.of("  "); // 2 spaces indentation
-
-  // Extensions array with formatting keymap added
+  const indentationExtension = indentUnit.of("  ");
   const extensions = [Prec.highest(formatKeymap), indentationExtension];
 
-  if (extension) {
-    extensions.push(extension);
-  }
+  if (extension) extensions.push(extension);
 
   return (
     <CodeMirror
@@ -75,8 +70,13 @@ export const Playground = ({ language, code, onCodeChange }: PlaygroundProps) =>
       placeholder={`// Write your ${language} code here`}
       theme={vscodeLight}
       extensions={extensions}
+      onChange={(value, viewUpdate) => {
+        viewRef.current = viewUpdate.view;
+        onCodeChange(value);
+      }}
       style={{ fontSize: "14px", height: "100%", overflowY: "auto" }}
-      onChange={(value) => onCodeChange(value)}
     />
   );
-};
+});
+
+Playground.displayName = "Playground";

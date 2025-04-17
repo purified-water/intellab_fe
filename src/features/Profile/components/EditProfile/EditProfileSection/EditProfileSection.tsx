@@ -281,7 +281,7 @@ export function EditProfileSection() {
           <div className="flex justify-end mt-4 space-x-2">
             <Button
               onClick={handleCancelAccountInfo}
-              variant={"outline"}
+              variant="outline"
               className="px-6 py-1 rounded-lg border-gray3 text-gray1 hover:opacity-80"
             >
               Cancel
@@ -336,6 +336,7 @@ export function EditProfileSection() {
             error={!!errors.currentPassword}
             errorMessage={errors.currentPassword}
           />
+
           <div className="flex justify-between w-full mt-4">
             <InputField
               label="New password"
@@ -359,7 +360,8 @@ export function EditProfileSection() {
             />
           </div>
         </div>
-        <div className="flex justify-end mt-4">
+
+        <div className="flex justify-end mt-8">
           <Button onClick={handleChangePassword} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
             Change password
           </Button>

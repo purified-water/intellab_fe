@@ -139,7 +139,6 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
       <div className="mt-4">
         <div className="flex items-start space-x-2">
           <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
-            {/* TODO: CHANGE THIS AVATAR TO USER AVA, NOT COMMENT's */}
             {user?.photoUrl ? <AvatarIcon src={user.photoUrl} alt="Avatar" /> : null}
           </div>
 
