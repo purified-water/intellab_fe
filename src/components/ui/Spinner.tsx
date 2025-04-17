@@ -13,7 +13,7 @@ export function Spinner(props: SpinnerProps) {
       <ClipLoader
         color="#5a3295"
         loading={loading}
-        size={40}
+        size={30}
         aria-label="Loading Spinner"
         data-testid="loader"
       />

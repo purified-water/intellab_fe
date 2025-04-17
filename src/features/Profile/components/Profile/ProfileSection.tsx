@@ -104,7 +104,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             </div>
             <div>
               <span className="text-base font-normal text-black1">Rank:</span>
-              <span className="text-base font-semibold text-black1"> 1,000</span>
+              <span className="text-base font-semibold text-black1"> EMPTY VALUE</span>
             </div>
           </div>
         </div>

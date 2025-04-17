@@ -31,10 +31,11 @@ export const NotificationCard = ({ type, notification }: NotificationCardProps) 
     if (!notification.redirectType) {
       return;
     }
+    navigate(notification.redirectContent);
 
-    //   if (notification.redirectType === NotificationRedirectTypes.COURSE_COMMENT || notification.redirectType === NotificationRedirectTypes.COURSE_REVIEW) {
-    //     navigate(notification.redirectContent);
-    //   }
+    // if (notification.redirectType === NotificationRedirectTypes.COURSE_COMMENT || notification.redirectType === NotificationRedirectTypes.COURSE_REVIEW) {
+    //   navigate(notification.redirectContent);
+    // }
   };
 
   if (type === "menu") {

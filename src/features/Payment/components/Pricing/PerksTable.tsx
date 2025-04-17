@@ -27,7 +27,7 @@ const perksData: Perk[] = [
 
 const PerkCell = ({ value }: { value: string | boolean }) => {
   if (typeof value === "boolean") {
-    return value ? <CheckCircle className="w-6 h-6 mx-auto" /> : <Minus className="w-4 h-6 mx-auto" />;
+    return value ? <CheckCircle className="w-5 h-5 mx-auto" /> : <Minus className="w-4 h-6 mx-auto" />;
   }
   return <span>{value}</span>;
 };
@@ -38,10 +38,10 @@ export function PerksTable() {
   return (
     <table className="w-full">
       <thead>
-        <tr className="text-left text-lg font-semibold border-b">
-          <th className="py-3 px-4 ">Perks</th>
+        <tr className="text-lg font-semibold text-left border-b">
+          <th className="px-4 py-3 ">Perks</th>
           {plans.map((plan, index) => (
-            <th key={index} className="py-3 px-12 text-center">
+            <th key={index} className="px-12 py-3 text-center">
               {plan}
             </th>
           ))}
@@ -49,18 +49,18 @@ export function PerksTable() {
       </thead>
       <tbody>
         {perksData.map((perk, index) => (
-          <tr key={index} className="border-b text-base font-semibold">
-            <td className="py-3 px-4  ">{perk.name}</td>
-            <td className="py-3 px-12 text-center">
+          <tr key={index} className="text-base font-semibold border-b">
+            <td className="px-4 py-3 ">{perk.name}</td>
+            <td className="px-12 py-3 text-center">
               <PerkCell value={perk.freePlan} />
             </td>
-            <td className="py-3 px-12 text-center">
+            <td className="px-12 py-3 text-center">
               <PerkCell value={perk.algorithmPlan} />
             </td>
-            <td className="py-3 px-12 text-center">
+            <td className="px-12 py-3 text-center">
               <PerkCell value={perk.coursePlan} />
             </td>
-            <td className="py-3 px-12 text-center">
+            <td className="px-12 py-3 text-center">
               <PerkCell value={perk.premiumPlan} />
             </td>
           </tr>

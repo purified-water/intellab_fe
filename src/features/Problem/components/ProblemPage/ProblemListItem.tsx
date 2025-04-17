@@ -81,19 +81,19 @@ export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
           {status === "loading"
             ? Array.from({ length: 5 }).map((_, i) => (
                 <tr key={i} className={`text-xs sm:text-base ${i % 2 === 0 ? "bg-white" : "bg-gray6"}`}>
-                  <td className="w-2/6 px-4 py-2">
+                  <td className="w-2/6 px-4 py-3">
                     <Skeleton className="w-3/4 h-4" />
                   </td>
-                  <td className="w-12 py-2 pl-8 text-center">
+                  <td className="w-12 py-3 pl-8 text-center">
                     <Skeleton className="w-4 h-4 mx-auto" />
                   </td>
-                  <td className="w-20 px-4 py-2">
+                  <td className="w-20 px-4 py-3">
                     <Skeleton className="w-6 h-4 mx-auto" />
                   </td>
-                  <td className="px-4 py-2 w-28">
+                  <td className="px-4 py-3 w-28">
                     <Skeleton className="w-3/5 h-4" />
                   </td>
-                  <td className="w-2/5 px-4 py-2">
+                  <td className="w-2/5 px-4 py-3">
                     <Skeleton className="w-4/5 h-4" />
                   </td>
                 </tr>

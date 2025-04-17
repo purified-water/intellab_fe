@@ -113,7 +113,7 @@ export function PricingBlock(props: PrickingBlockProps) {
       button = (
         <button
           onClick={handlePurchaseClick}
-          className="w-[242px] h-[45px] font-bold text-base text-white bg-appPrimary rounded-[10px] hover:opacity-80"
+          className="w-[242px] h-[45px] font-bold text-base text-white bg-appPrimary rounded-lg hover:opacity-80"
         >
           {purchaseButtonText}
         </button>
@@ -145,7 +145,7 @@ export function PricingBlock(props: PrickingBlockProps) {
         <div className="mt-10" />
       )}
       <div
-        className="rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1"
+        className="flex flex-col justify-start p-5 border rounded-lg border-gray4 text-gray1"
         style={{
           width: width / 7,
           height: "260px",
