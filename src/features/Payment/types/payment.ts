@@ -39,4 +39,28 @@ type TIntellabPayment = {
   paymentFor: string;
 };
 
-export type { TVnpayPayment, TIntellabPayment };
+type TCourseFromPayment = {
+  courseId: string;
+  courseName: string;
+  courseDescription: string;
+  level: string;
+  price: number;
+  unitPrice: string;
+  reviewCount: number;
+  averageRating: number;
+  lessonCount: number;
+  lessonId: string;
+  lessonContent: string;
+  lessonDescription: string;
+  lessonOrder: number;
+  lessonName: string;
+  exerciseId: string;
+  problemId: string;
+};
+
+type TDiscount = {
+  discountPercent: number;
+  discountValue: number;
+};
+
+export type { TVnpayPayment, TIntellabPayment, TCourseFromPayment, TDiscount };

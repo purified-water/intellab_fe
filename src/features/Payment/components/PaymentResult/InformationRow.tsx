@@ -1,5 +1,3 @@
-import React from "react";
-
 type InformationRowProps = {
   label: string;
   value: string;
@@ -10,8 +8,8 @@ export function InformationRow(props: InformationRowProps) {
 
   return (
     <div className="flex w-full justify-between">
-      <p className="font-bold">{label}</p>
-      <p>{value}</p>
+      <p className="font-bold flex-[4]">{label}</p>
+      <p className="flex-[6] text-right">{value}</p>
     </div>
   );
 }
