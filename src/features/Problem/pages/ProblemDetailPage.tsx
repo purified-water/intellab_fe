@@ -191,7 +191,7 @@ export const ProblemDetail = () => {
       showToastError({
         toast: toast,
         title: "Email verification required",
-        message: "Please verify your email to submit problem"
+        message: "Please go to Setting Page and verify your email to submit problem"
       });
       return;
     }

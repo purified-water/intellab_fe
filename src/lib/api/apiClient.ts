@@ -17,7 +17,7 @@ interface QueuedRequest {
   config: InternalAxiosRequestConfig;
 }
 
-class TokenRefreshManager {
+export class TokenRefreshManager {
   private static isRefreshing = false;
   private static failedQueue: QueuedRequest[] = [];
 

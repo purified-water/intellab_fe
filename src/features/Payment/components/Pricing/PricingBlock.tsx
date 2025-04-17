@@ -1,5 +1,5 @@
 import { TPlan } from "../../types";
-import { PerkInformationRow } from "./PerkInformationRow";
+///import { PerkInformationRow } from "./PerkInformationRow";
 import { paymentAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
@@ -12,10 +12,11 @@ import useWindowDimensions from "@/hooks/use-window-dimensions";
 type PrickingBlockProps = {
   plan: TPlan;
   duration: (typeof PREMIUM_DURATION)[keyof typeof PREMIUM_DURATION];
+  discountValue: number;
 };
 
 export function PricingBlock(props: PrickingBlockProps) {
-  const { plan, duration } = props;
+  const { plan, duration, discountValue } = props;
 
   const { width } = useWindowDimensions();
 
@@ -24,9 +25,9 @@ export function PricingBlock(props: PrickingBlockProps) {
     titleColor,
     monthPrice,
     yearPrice,
-    eachMonthPrice,
+    //eachMonthPrice,
     description,
-    perks,
+    //perks,
     requestPackage,
     responsePackage,
     purchaseButtonText
@@ -67,35 +68,41 @@ export function PricingBlock(props: PrickingBlockProps) {
   };
 
   const renderPrices = () => {
-    let displayPrice = monthPrice;
+    let displayPrice = monthPrice - discountValue;
     if (!isFreePlan && duration == PREMIUM_DURATION.YEARLY) {
-      displayPrice = eachMonthPrice!;
+      displayPrice = (yearPrice - discountValue) / 12;
     }
+
+    displayPrice = Math.round(displayPrice);
 
     return (
       <>
         {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && (
-          <p className="text-sm font-medium">Billed annually ({yearPrice.toLocaleString()} VNĐ)</p>
+          <p className="text-sm font-medium">Billed annually ({(yearPrice - discountValue).toLocaleString()} VNĐ)</p>
         )}
-        <div className="items-end mb-2">
-          <span className="text-3xl font-bold">{displayPrice.toLocaleString()} VND</span>
-          <span className="text-2xl font-medium">/</span>
-          <span className="text-lg font-medium">month</span>
+        <div className="flex items-end mb-2">
+          <p className="text-2xl font-bold">{isFreePlan ? 0 : displayPrice.toLocaleString()} VNĐ</p>
+          <p className="text-2xl font-medium">/</p>
+          <p className="text-lg font-medium">month</p>
         </div>
       </>
     );
   };
 
-  const renderPerks = () => {
-    return perks.map((perk, index) => <PerkInformationRow key={index} content={perk} />);
-  };
+  // const renderPerks = () => {
+  //   return perks.map((perk, index) => <PerkInformationRow key={index} content={perk} />);
+  // };
 
   const renderPurchaseButton = () => {
     const handlePurchaseClick = async () => {
       if (!isAuthenticated) {
         showToastError({ toast: toast.toast, message: "Please login to purchase plan" });
       } else if (!userRedux?.isEmailVerified) {
-        showToastError({ toast: toast.toast, message: "Please verify your email to purchase plan" });
+        showToastError({
+          toast: toast.toast,
+          title: "Email verification required",
+          message: "Please go to Setting Page and verify your email to purchase plan"
+        });
       } else {
         await createPremiumPaymentAPI();
       }
@@ -141,15 +148,15 @@ export function PricingBlock(props: PrickingBlockProps) {
         className="rounded-[10px] flex flex-col justify-start p-5 border border-gray4 text-gray1"
         style={{
           width: width / 7,
-          height: "550px",
-          minWidth: "300px"
+          height: "260px",
+          minWidth: "320px"
         }}
       >
-        <p className={`text-xl text-${titleColor} font-bold mb-2`}>{title}</p>
+        <p className={`text-2xl text-${titleColor} font-bold mb-2`}>{title}</p>
+        <div className="mb-4 text-sm font-light">{description}</div>
         {renderPrices()}
-        <div className="mb-4 text-lg font-light">{description}</div>
-        {renderPerks()}
-        <div className="flex-grow mt-20"></div>
+        {/* {renderPerks()} */}
+        <div className="flex-grow"></div>
         {!isFreePlan && !isCurrentPlan && renderPurchaseButton()}
       </div>
     </div>

@@ -2,10 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { CircleCheck, CircleX } from "lucide-react";
 import { InformationRow } from "./InformationRow";
-import { TIntellabPayment } from "../../types";
-import { shortenDate } from "@/utils";
+import { TCourseFromPayment, TIntellabPayment } from "../../types";
+import { shortenDate, showToastError } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { VNPAY_TRANSACTION_CODE } from "../../constants";
+import { PAYMENT_FOR, VNPAY_TRANSACTION_CODE } from "../../constants";
+import { paymentAPI } from "@/lib/api";
+import { useEffect, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 type PaymentBlockProps = {
   payment: TIntellabPayment | null;
@@ -15,13 +18,29 @@ type PaymentBlockProps = {
 export function PaymentBlock(props: PaymentBlockProps) {
   const { payment, loading } = props;
 
-  const navigate = useNavigate();
+  const [courseFromPayment, setCourseFromPayment] = useState<TCourseFromPayment | null>(null);
+  const [internalLoading, setInternalLoading] = useState(false);
 
-  const onBackHomeClick = () => {
-    navigate("/");
-  };
+  const navigate = useNavigate();
+  const toast = useToast();
 
   const success = payment?.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS;
+
+  const getCourseFromPaymentAPI = async (paymentId: string) => {
+    await paymentAPI.getCourseFromPayment({
+      query: { paymentId },
+      onStart: async () => setInternalLoading(true),
+      onSuccess: async (data) => setCourseFromPayment(data),
+      onFail: async (message) => showToastError({ toast: toast.toast, message }),
+      onEnd: async () => setInternalLoading(false)
+    });
+  };
+
+  useEffect(() => {
+    if (success && payment?.paymentFor === PAYMENT_FOR.COURSE) {
+      getCourseFromPaymentAPI(payment.paymentId);
+    }
+  }, [payment]);
 
   const renderContent = () => {
     const renderStatus = () => {
@@ -64,9 +83,25 @@ export function PaymentBlock(props: PaymentBlockProps) {
     };
 
     const renderBackButton = () => {
+      const handleBackButtonClick = () => {
+        navigate("/");
+      };
+
       return (
-        <Button className="mt-16 font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={onBackHomeClick}>
+        <Button className="font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleBackButtonClick}>
           Back to Home Page
+        </Button>
+      );
+    };
+
+    const renderGoToCourseButton = () => {
+      const handleGoToCourseClick = () => {
+        navigate(`/course/${courseFromPayment?.courseId}`);
+      };
+
+      return (
+        <Button className="font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleGoToCourseClick}>
+          Start Learning now!
         </Button>
       );
     };
@@ -76,7 +111,10 @@ export function PaymentBlock(props: PaymentBlockProps) {
         {renderStatus()}
         <p className="mt-4 text-lg font-semibold">PAYMENT DETAIL</p>
         {renderInformation()}
-        {renderBackButton()}
+        <div className="space-x-4 mt-16">
+          {renderBackButton()}
+          {courseFromPayment && renderGoToCourseButton()}
+        </div>
       </>
     );
   };
@@ -100,7 +138,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
 
   return (
     <div className="bg-white px-10 py-8 justify-items-center w-[500px] text-gray2 rounded-md shadow-md">
-      {loading ? renderSkeleton() : renderContent()}
+      {loading || internalLoading ? renderSkeleton() : renderContent()}
     </div>
   );
 }

@@ -10,4 +10,19 @@ type TResetPasswordParams = TPostApiParams<
   TResetPasswordResponse
 >;
 
-export type { TResetPasswordResponse, TResetPasswordParams };
+type TResentVerificationEmailResponse = boolean;
+
+type TResentVerificationEmailParams = TPostApiParams<
+  undefined,
+  {
+    email: string;
+  },
+  TResentVerificationEmailResponse
+>;
+
+export type {
+  TResetPasswordResponse,
+  TResetPasswordParams,
+  TResentVerificationEmailResponse,
+  TResentVerificationEmailParams
+};
