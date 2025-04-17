@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import ReactMarkdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/cjs/styles/prism";
@@ -29,7 +29,7 @@ const getHighlighterLanguage = (language: string): string => {
 };
 
 // Output block component
-const OutputBlock: React.FC<{ content: string }> = ({ content }) => {
+const OutputBlock = React.memo(({ content }: { content: string }) => {
   return (
     <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-md">
       <div className="px-4 py-3 text-sm font-semibold border-b text-appPrimary">Output</div>
@@ -41,10 +41,10 @@ const OutputBlock: React.FC<{ content: string }> = ({ content }) => {
       </div>
     </div>
   );
-};
+});
 
 // Code tabs component with syntax highlighting
-const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
+const CodeTabs = React.memo(({ codeBlocks }: { codeBlocks: CodeBlock[] }) => {
   const [activeTab, setActiveTab] = useState<string>(codeBlocks[0]?.language || "");
   const codeRef = useRef<HTMLDivElement>(null);
   const [codeHeight, setCodeHeight] = useState("auto");
@@ -95,7 +95,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
       </div>
     </div>
   );
-};
+});
 
 // Extract TOC from markdown content
 const extractTOC = (content: string): TOCItem[] => {
@@ -295,17 +295,14 @@ export const RenderLessonMarkdown: React.FC<{
   lesson: ILesson;
   setTocItems: (items: TOCItem[]) => void;
 }> = ({ lesson, setTocItems }) => {
-  const [blocks, setBlocks] = useState<ContentBlock[]>([]);
+  const blocks = useMemo(() => parseContent(lesson.content), [lesson.content]);
   const contentRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Parse content blocks
-    setBlocks(parseContent(lesson.content));
-
     // Extract TOC items
     const tocItems = extractTOC(lesson.content);
     setTocItems(tocItems);
-  }, [lesson, setTocItems]);
+  }, [lesson.content, setTocItems]);
 
   return (
     <div className="mb-8">
@@ -349,3 +346,7 @@ export const RenderLessonMarkdown: React.FC<{
     </div>
   );
 };
+
+RenderLessonMarkdown.displayName = "RenderLessonMarkdown";
+CodeTabs.displayName = "CodeTabs";
+OutputBlock.displayName = "OutputBlock";

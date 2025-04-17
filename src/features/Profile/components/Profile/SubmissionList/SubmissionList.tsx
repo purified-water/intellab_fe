@@ -68,7 +68,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
   const renderEmpty = () => {
     return (
       <div className="flex items-center justify-center h-full">
-        <p className="text-lg text-gray3">No submissions yet</p>
+        <p className="text-lg text-gray3">No submissions yet!</p>
       </div>
     );
   };
@@ -84,7 +84,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
 
   const renderViewAllSubmissions = () => {
     return (
-      <p className="text-gray3 text-lg cursor-pointer" onClick={handleViewAllSubmissionsClick}>
+      <p className="text-lg cursor-pointer text-gray3" onClick={handleViewAllSubmissionsClick}>
         {"View all submissions >"}
       </p>
     );

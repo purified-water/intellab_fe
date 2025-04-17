@@ -1,8 +1,9 @@
 import React, { useState, useRef } from "react";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
-import { X, RotateCcw, RotateCw, Save, FileImage } from "lucide-react";
+import { X, RotateCcw, RotateCw, FileImage } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
+import { Button } from "@/components/ui";
 
 type AvatarModalProps = {
   isOpen: boolean;
@@ -105,21 +106,21 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-4 rounded-lg shadow-md w-[550px]">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold">Upload a New Avatar</h2>
-          <X onClick={handleCancel} className="text-gray-500 hover:text-gray-700 cursor-pointer" />
+          <X onClick={handleCancel} className="text-gray-500 cursor-pointer hover:text-gray-700" />
         </div>
 
-        <div className="bg-gray-900 p-4 rounded-md flex flex-col items-center justify-center mb-4 relative">
+        <div className="relative flex flex-col items-center justify-center p-4 mb-4 bg-gray-900 rounded-md">
           <div className="relative mb-4">
             {previewUrl ? (
-              <div className="w-64 h-64 bg-gray5 flex items-center justify-center overflow-hidden rounded-full">
+              <div className="flex items-center justify-center w-64 h-64 overflow-hidden rounded-full bg-gray5">
                 <img
                   src={previewUrl}
                   alt="Avatar Preview"
-                  className="w-full h-full object-contain"
+                  className="object-contain w-full h-full"
                   style={{
                     transform: `rotate(${rotation}deg) scale(${scale})`,
                     transition: "transform 0.3s ease"
@@ -127,18 +128,18 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
                 />
               </div>
             ) : (
-              <div className="w-64 h-64 bg-gray-500 flex items-center justify-center text-white">No Image</div>
+              <div className="flex items-center justify-center w-64 h-64 text-white bg-gray-500">No Image</div>
             )}
           </div>
           <div className="flex space-x-2">
             <RotateCcw
               onClick={handleRotateClockwise}
-              className="px-2 py-1 bg-white border border-gray-300 text-black font-bold rounded hover:bg-gray-100 cursor-pointer"
+              className="px-2 py-1 font-bold text-black bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-100"
               size={40}
             />
             <RotateCw
               onClick={handleRotateCounterClockwise}
-              className="px-2 py-1 bg-white border border-gray-300 text-black font-bold rounded hover:bg-gray-100 cursor-pointer"
+              className="px-2 py-1 font-bold text-black bg-white border border-gray-300 rounded cursor-pointer hover:bg-gray-100"
               size={40}
             />
             <button
@@ -167,27 +168,24 @@ export function AvatarModal({ isOpen, onClose, onSave }: AvatarModalProps) {
           <input type="file" id="avatarInput" accept="image/*" onChange={handleImageUpload} className="hidden" />
           <label
             htmlFor="avatarInput"
-            className="flex justify-center items-center px-3 py-2 border border-gray-300 rounded-lg cursor-pointer text-center hover:bg-gray-200"
+            className="flex items-center justify-center px-3 py-2 text-center border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-200"
           >
             <FileImage size={16} className="mr-2" />
             Choose Image...
           </label>
         </div>
 
-        <div className="mt-4 flex justify-end space-x-2">
-          <button
-            onClick={handleSave}
-            className="flex items-center px-4 py-2 rounded-lg font-bold bg-appPrimary  hover:bg-appPrimary/80 text-white"
-          >
-            <Save size={16} className="mr-2" />
-            Save
-          </button>
-          <button
+        <div className="flex justify-end mt-4 space-x-2">
+          <Button
             onClick={handleCancel}
-            className="px-4 py-2 rounded-lg font-bold bg-appPrimary  hover:bg-appPrimary/80 text-white"
+            variant={"outline"}
+            className="px-6 py-1 rounded-lg border-gray3 text-gray1 hover:opacity-80"
           >
             Cancel
-          </button>
+          </Button>
+          <Button onClick={handleSave} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
+            Save
+          </Button>
         </div>
         <canvas ref={canvasRef} className="hidden"></canvas>
       </div>

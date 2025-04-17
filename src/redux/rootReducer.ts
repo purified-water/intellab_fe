@@ -8,6 +8,7 @@ import submissionReducer from "./problem/submissionSlice";
 import commentReducer from "./comment/commentSlice";
 import mainChatbotReducer from "./mainChatbot/mainChatbotSlice";
 import premiumStatusReducer from "./premiumStatus/premiumStatusSlice";
+import notifcationsReducer from "./notifications/notificationsSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   submission: submissionReducer,
   comment: commentReducer,
   mainChatbot: mainChatbotReducer,
-  premiumStatus: premiumStatusReducer
+  premiumStatus: premiumStatusReducer,
+  notifications: notifcationsReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

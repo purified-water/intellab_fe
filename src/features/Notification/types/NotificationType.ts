@@ -1,7 +1,12 @@
+import { NotificationRedirectTypes } from "../constants/NotificationRedirectTypes";
 export interface NotificationType {
-  id: number;
-  type: "comment" | "achievement" | "alert";
-  user?: string;
-  content: string;
-  modifiedDate: string;
+  id: string;
+  title: string;
+  message: string;
+  redirectType: keyof typeof NotificationRedirectTypes;
+  redirectContent: string;
+  type: string | null;
+  timestamp: number;
+  markAsRead: boolean;
+  recipientId: string;
 }

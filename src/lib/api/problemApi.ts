@@ -185,5 +185,10 @@ export const problemAPI = {
     const response = await apiClient.get(`problem/problem-submissions/submitList/me`, { params: queryParams });
     const data: TGetSubmissionListMeResponse = response.data;
     return data;
+  },
+
+  postViewSolutionBeforePassed: async (problemId: string) => {
+    const response = await apiClient.post(`problem/problems/viewSolution?problemId=${problemId}`);
+    return response.data;
   }
 };

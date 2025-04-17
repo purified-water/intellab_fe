@@ -62,7 +62,13 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
       case "Submissions":
         return <SubmissionHistory />;
       case "Solutions":
-        return <ProblemSolution solutionContent={problemDetail.solution.content} />;
+        return (
+          <ProblemSolution
+            solutionContent={problemDetail.solution.content}
+            isSolved={problemDetail?.isSolved}
+            viewedSolution={problemDetail?.viewedSolution}
+          />
+        );
       case "Failed":
         return <SubmissionInformation isPassed={false} />;
       case "Passed":
