@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
 import { setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
-import { showToastError, showToastSuccess } from "@/utils/toastUtils";
+import { showToastError } from "@/utils/toastUtils";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
@@ -78,25 +78,6 @@ export const LoginPage = () => {
     });
   };
 
-  const resetPasswordAPI = async (sendingEmail: string) => {
-    await authAPI.resetPassword({
-      body: { email: sendingEmail },
-      onSuccess: async (data) => {
-        if (data) {
-          showToastSuccess({
-            toast: toast.toast,
-            title: "Reset link sent successfully!",
-            message: `We sent a password reset link to ${sendingEmail}, please check your inbox.`,
-            duration: 5000
-          });
-        } else {
-          showToastError({ toast: toast.toast, message: "Failed to send password reset email" });
-        }
-      },
-      onFail: async (message) => showToastError({ toast: toast.toast, message })
-    });
-  };
-
   const goBack = () => {
     const state = { from: previousNavigationState?.from ?? "/" } as TNavigationState;
     navigateToPreviousPage(navigate, state);
@@ -153,9 +134,7 @@ export const LoginPage = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (!inputValidation({ emailRequired: true, passwordRequired: false })) return;
-
-    await resetPasswordAPI(loginInfo.email);
+    navigate("/forgot-password");
   };
 
   return (

@@ -43,7 +43,7 @@ export function PaymentResultPage() {
           // Since after payment, the user will be redirected to this page
           // So we need to call getProfileMeAPI to update courseCount
           if (result.userUid === userRedux?.userId && result.transactionStatus === VNPAY_TRANSACTION_CODE.SUCCESS) {
-            if (result.paymentFor == PAYMENT_FOR.SUBCRIPTION) {
+            if (result.paymentFor == PAYMENT_FOR.SUBSCRIPTION) {
               await getPremiumStatusAPI(result.userUid);
             }
           }
