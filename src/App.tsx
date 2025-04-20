@@ -23,7 +23,7 @@ import { useState, useEffect } from "react";
 
 export const Layout = () => {
   const location = useLocation();
-  const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
   const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   useEffect(() => {

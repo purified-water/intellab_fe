@@ -80,7 +80,7 @@ export function PricingBlock(props: PrickingBlockProps) {
         {!isFreePlan && duration == PREMIUM_DURATION.YEARLY && (
           <p className="text-sm font-medium">Billed annually ({(yearPrice - discountValue).toLocaleString()} VNĐ)</p>
         )}
-        <div className="flex items-end mb-2">
+        <div className="flex items-end ">
           <p className="text-2xl font-bold">{isFreePlan ? 0 : displayPrice.toLocaleString()} VNĐ</p>
           <p className="text-2xl font-medium">/</p>
           <p className="text-lg font-medium">month</p>
@@ -113,32 +113,32 @@ export function PricingBlock(props: PrickingBlockProps) {
       button = (
         <button
           onClick={handlePurchaseClick}
-          className="w-[242px] h-[45px] font-bold text-base text-white bg-appPrimary rounded-lg hover:opacity-80"
+          className="w-full h-[45px] font-bold text-base text-white bg-appPrimary rounded-[10px] hover:opacity-80"
         >
           {purchaseButtonText}
         </button>
       );
     } else {
       button = (
-        <AlertDialog
-          title={"Are you sure?"}
-          message={
-            "You are switching to a new plan. This action cannot be undone. Your current plan and perks will be overridden."
-          }
-          onConfirm={handlePurchaseClick}
-        >
-          <div className="w-[242px] h-[45px] font-bold text-white text-base bg-appPrimary rounded-[10px] hover:opacity-80 flex items-center justify-center">
+        <div className="h-[45px] font-bold text-white text-base bg-appPrimary rounded-[10px] hover:opacity-80 flex items-center justify-center">
+          <AlertDialog
+            title={"Are you sure?"}
+            message={
+              "You are switching to a new plan. This action cannot be undone. Your current plan and perks will be overridden."
+            }
+            onConfirm={handlePurchaseClick}
+          >
             {purchaseButtonText}
-          </div>
-        </AlertDialog>
+          </AlertDialog>
+        </div>
       );
     }
 
-    return <div className="mt-4 ml-auto mr-auto">{button}</div>;
+    return <div className="mt-5">{button}</div>;
   };
 
   return (
-    <div>
+    <>
       {isAuthenticated && !isFreePlan && isCurrentPlan && isCurrenPlanActive ? (
         renderCurrentPlan()
       ) : (
@@ -148,7 +148,7 @@ export function PricingBlock(props: PrickingBlockProps) {
         className="flex flex-col justify-start p-5 border rounded-lg border-gray4 text-gray1"
         style={{
           width: width / 7,
-          height: "260px",
+          height: duration == PREMIUM_DURATION.MONTHLY ? "240px" : "260px",
           minWidth: "320px"
         }}
       >
@@ -156,9 +156,8 @@ export function PricingBlock(props: PrickingBlockProps) {
         <div className="mb-4 text-sm font-light">{description}</div>
         {renderPrices()}
         {/* {renderPerks()} */}
-        <div className="flex-grow"></div>
         {!isFreePlan && !isCurrentPlan && renderPurchaseButton()}
       </div>
-    </div>
+    </>
   );
 }

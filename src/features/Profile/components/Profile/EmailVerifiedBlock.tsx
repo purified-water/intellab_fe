@@ -21,10 +21,10 @@ export function EmailVerifiedBlock(props: EmailVerifiedBlock) {
       <div className="justify-items-center w-full">
         <p className="text-3xl font-semibold text-appEasy">Email Verified</p>
         <CircleCheck size={100} className="text-appEasy my-2" />
-        <p className="text-justify">
+        <p className="text-center">
           Congratulations! You have successfully verified your email address. You can continue using the application.
         </p>
-        <Button className="mt-20 font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleBackHomePageClick}>
+        <Button className="mt-14 font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleBackHomePageClick}>
           Back to Home Page
         </Button>
       </div>

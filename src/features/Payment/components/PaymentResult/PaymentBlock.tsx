@@ -88,7 +88,10 @@ export function PaymentBlock(props: PaymentBlockProps) {
       };
 
       return (
-        <Button className="font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleBackButtonClick}>
+        <Button
+          className={`font-bold ${courseFromPayment ? "bg-white text-appPrimary border-appPrimary border hover:bg-white hover:opacity-80" : "bg-appPrimary hover:bg-appPrimary/80"}`}
+          onClick={handleBackButtonClick}
+        >
           Back to Home Page
         </Button>
       );
