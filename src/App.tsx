@@ -20,6 +20,7 @@ import { useNotificationSocket } from "@/hooks";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
+import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 
 export const Layout = () => {
   const location = useLocation();
@@ -38,6 +39,7 @@ export const Layout = () => {
 
   return (
     <>
+      <VerifyAccountBanner />
       {!hideNavbar && <Navbar isDarkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />}
       <Outlet />
     </>
