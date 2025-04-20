@@ -1,5 +1,5 @@
 import { TApiResponse, TSort, IPageable, TPostApiParams, TGetApiParams } from "@/types";
-import { TVnpayPayment, TIntellabPayment } from "./payment";
+import { TVnpayPayment, TIntellabPayment, TCourseFromPayment, TDiscount } from "./payment";
 
 type TRefundResponse = TApiResponse<TVnpayPayment>;
 
@@ -8,6 +8,10 @@ type TCreateCoursePaymentResponse = TApiResponse<TIntellabPayment>;
 type TGetVNPayPaymentResponse = TApiResponse<TVnpayPayment>;
 
 type TGetIntellabPaymentResponse = TApiResponse<TIntellabPayment>;
+
+type TGetCourseFromPaymentResponse = TApiResponse<TCourseFromPayment>;
+
+type TGetDiscountResponse = TApiResponse<TDiscount>;
 
 type TGetPaymentMeResponse = TApiResponse<{
   totalPages: number;
@@ -42,6 +46,20 @@ type TCreatePremiumPaymentParams = TPostApiParams<
   TIntellabPayment
 >;
 
+type TGetCourseFromPaymentParams = TGetApiParams<
+  {
+    paymentId: string;
+  },
+  TCourseFromPayment
+>;
+
+type TGetDiscountParams = TGetApiParams<
+  {
+    userId: string;
+  },
+  TDiscount
+>;
+
 export type {
   TRefundResponse,
   TCreateCoursePaymentResponse,
@@ -50,5 +68,9 @@ export type {
   TGetPaymentMeResponse,
   TCreatePremiumPaymentResponse,
   TGetIntellabPaymentParams,
-  TCreatePremiumPaymentParams
+  TCreatePremiumPaymentParams,
+  TGetCourseFromPaymentResponse,
+  TGetCourseFromPaymentParams,
+  TGetDiscountResponse,
+  TGetDiscountParams
 };

@@ -4,7 +4,7 @@ import { fetchPaginatedProblems } from "@/redux/problem/problemSlice";
 import { RootState } from "@/redux/rootReducer";
 import { useAppDispatch } from "@/redux/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Spinner, Pagination } from "@/components/ui";
+import { Pagination } from "@/components/ui";
 import { FilterButton, FilterComponent, ProblemListItem, SearchBar } from "../components";
 import { motion } from "framer-motion";
 import { AppFooter } from "@/components/AppFooter";
@@ -112,9 +112,7 @@ export const ProblemsPage = () => {
           transition={{ duration: 0.5 }}
           className="pb-10"
         >
-          {status === "loading" ? (
-            <Spinner loading={true}></Spinner>
-          ) : (
+          {
             <div>
               {query !== "" ? (
                 <div className="mb-6 text-4xl font-bold text-black sm:text-4xl sm:mb-11">
@@ -129,7 +127,7 @@ export const ProblemsPage = () => {
                 </div>
               )}
               <div className="flex flex-col w-full mt-8">
-                <ProblemListItem problems={problems} />
+                <ProblemListItem problems={problems} status={status} />
                 {totalPages != 0 && (
                   <Pagination
                     currentPage={currentPage}
@@ -150,7 +148,7 @@ export const ProblemsPage = () => {
                 )}
               </div>
             </div>
-          )}
+          }
         </motion.div>
       </div>
 

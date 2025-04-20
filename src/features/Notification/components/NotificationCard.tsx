@@ -1,26 +1,76 @@
-import { Info, MessageCircle, Trophy } from "lucide-react";
 import { NotificationType } from "../types/NotificationType";
-
+import { formatDateInProblem } from "@/utils";
+import { getNotificationIcon } from "./NotificationIcon";
+import { renderMessageWithUser } from "../utils/renderNotificationMessage";
+import { useNavigate } from "react-router-dom";
+import { notificationAPI } from "@/lib/api/notificationAPI";
+import { useDispatch } from "react-redux";
+import { markOneAsRead } from "@/redux/notifications/notificationsSlice";
 interface NotificationCardProps {
+  type: string;
   notification: NotificationType;
 }
 
-export const NotificationCard = ({ notification }: NotificationCardProps) => {
-  const { type, user, content, modifiedDate } = notification;
-  const icon = {
-    comment: <MessageCircle className="size-5 text-appInfo" />,
-    achievement: <Trophy className="size-5 text-appMedium" />,
-    alert: <Info className="text-appPrimary size-5" />
-  }[type];
+export const NotificationCard = ({ type, notification }: NotificationCardProps) => {
+  const icon = getNotificationIcon(notification.redirectType);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const handleNotificationClick = async () => {
+    if (!notification.markAsRead) {
+      try {
+        await notificationAPI.putMarkOneAsRead(notification.id).then(() => {
+          dispatch(markOneAsRead(notification.id));
+        });
+        console.log("Notification marked as read:", notification.id);
+      } catch (error) {
+        console.log("Error marking notification as read:", error);
+      }
+    }
+    if (!notification.redirectType) {
+      return;
+    }
+    navigate(notification.redirectContent);
+
+    if (!notification.redirectType) {
+      navigate(notification.redirectContent);
+    }
+  };
+
+  if (type === "menu") {
+    return (
+      <div
+        key={notification.id}
+        onClick={handleNotificationClick}
+        className={`flex items-center px-6 py-4 space-x-2 transition-colors duration-300 border-b cursor-pointer last:border-none hover:bg-gray6 ${!notification.markAsRead ? "font-semibold" : ""}`}
+      >
+        <div className="mr-3 text-lg">{icon}</div>
+        <div className="flex-1 mr-2 text-sm line-clamp-2">
+          <span className="text-gray2">
+            {notification.title} {renderMessageWithUser(notification.message)}
+          </span>
+        </div>
+        <div className="text-sm text-gray3">{formatDateInProblem(new Date(notification.timestamp).toISOString())}</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex items-center px-4 py-4 border-b last:border-none">
-      <div className="mr-3 text-lg">{icon}</div>
-      <div className="flex-1 mr-2 text-sm line-clamp-2">
-        {user && <span className="font-semibold text-appPrimary">{user} </span>}
-        <span className="text-gray2">{content}</span>
+    <div
+      key={notification.id}
+      onClick={handleNotificationClick}
+      className="flex items-center px-6 py-4 space-x-2 transition-colors duration-300 border-b cursor-pointer last:border-none"
+    >
+      <div className="mr-3 [&_svg]:size-6">{icon}</div>
+      <div className="flex flex-col space-y-1">
+        <span className="font-semibold text-gray2">{notification.title}</span>
+        <div className="flex-1 mr-2 text-sm font-normal line-clamp-2">
+          {renderMessageWithUser(notification.message)}
+        </div>
+        <div className="text-sm font-normal text-gray3">
+          {formatDateInProblem(new Date(notification.timestamp).toISOString())}
+        </div>
       </div>
-      <div className="text-sm text-gray3">a month ago</div>
     </div>
   );
 };

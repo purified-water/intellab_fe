@@ -11,7 +11,7 @@ interface ImageCarouselProps {
   images: CarouselImage[];
 }
 
-export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
+export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   const goToPrevious = () => {
@@ -29,6 +29,7 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
           src={images[currentIndex].src ? images[currentIndex].src : unavailableImage}
           alt={images[currentIndex].alt}
           className="object-contain w-full h-full max-h-[360px]"
+          loading="lazy"
         />
       </div>
       <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-between pointer-events-none">
@@ -54,4 +55,6 @@ export const ImageCarousel: React.FC<ImageCarouselProps> = ({ images }) => {
       </div>
     </div>
   );
-};
+});
+
+ImageCarousel.displayName = "ImageCarousel";

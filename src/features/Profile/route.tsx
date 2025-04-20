@@ -1,4 +1,5 @@
-import { ProfilePage, EditProfilePage, ViewAllSubmissionPage } from "./pages";
+import { ProtectedRoute } from "@/components/Navigation";
+import { ProfilePage, EditProfilePage, ViewAllSubmissionPage, EmailVerifiedPage } from "./pages";
 import { RouteObject } from "react-router-dom";
 
 const ProfileRoute: RouteObject[] = [
@@ -8,11 +9,23 @@ const ProfileRoute: RouteObject[] = [
   },
   {
     path: "/profile/edit",
-    element: <EditProfilePage />
+    element: (
+      <ProtectedRoute>
+        <EditProfilePage />
+      </ProtectedRoute>
+    )
   },
   {
     path: "/profile/submissions",
     element: <ViewAllSubmissionPage />
+  },
+  {
+    path: "/profile/update-access-token",
+    element: (
+      <ProtectedRoute>
+        <EmailVerifiedPage />
+      </ProtectedRoute>
+    )
   }
 ];
 

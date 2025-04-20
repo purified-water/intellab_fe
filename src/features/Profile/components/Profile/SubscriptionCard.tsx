@@ -31,7 +31,7 @@ const planDetails = {
   },
   PREMIUM_PLAN: {
     title: "Premium Plan",
-    color: "from-appFadedAccent to-appFadedSecondary text-appPrimary",
+    color: "from-purple-50 to-appFadedPrimary text-appPrimary",
     icon: <Crown className="w-10 h-10 text-appPrimary" />
   }
 };

@@ -24,6 +24,7 @@ export interface Problem {
   level: string;
   acceptanceRate: number;
   hintCount: number;
+  hasSolution: boolean;
   categories: Category[];
   isDone: boolean;
   isPublished: boolean;

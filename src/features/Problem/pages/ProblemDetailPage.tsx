@@ -31,6 +31,8 @@ import { courseAPI } from "@/lib/api";
 import { LanguageCodes } from "../constants/LanguageCodes";
 import { RootState } from "@/redux/rootReducer";
 import { showToastError } from "@/utils";
+import { CommentContext } from "@/hooks";
+import { AxiosError } from "axios";
 
 export const ProblemDetail = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -61,6 +63,9 @@ export const ProblemDetail = () => {
 
   // Lock problem
   const [isPublished, setIsPublished] = useState(true);
+
+  // For comment redirection
+  const redirectedCommentId = searchParams.get("commentId");
 
   const submissionValidation = () => {
     if (!code) {
@@ -93,7 +98,7 @@ export const ProblemDetail = () => {
         setTestCases(problemDetail.testCases.slice(0, 3));
       }
     } catch (error) {
-      if (error.response.status === 403) {
+      if (error instanceof AxiosError && error.response?.status === 403) {
         setIsPublished(false);
       }
       console.error("Failed to fetch problem detail", error);
@@ -191,7 +196,7 @@ export const ProblemDetail = () => {
       showToastError({
         toast: toast,
         title: "Email verification required",
-        message: "Please verify your email to submit problem"
+        message: "Please go to Setting Page and verify your email to submit problem"
       });
       return;
     }
@@ -284,11 +289,12 @@ export const ProblemDetail = () => {
   };
 
   useEffect(() => {
+    console.log("redirectedCommentId", redirectedCommentId);
     //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
     if (problemId != null && problemId !== "null") {
       fetchProblemDetail();
     }
-  }, [problemId]);
+  }, [problemId, redirectedCommentId]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -299,133 +305,135 @@ export const ProblemDetail = () => {
   }
 
   return (
-    <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
-      <div className="flex-grow overflow-hidden">
-        <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-          <ResizablePanel
-            order={1}
-            defaultSize={isAIAssistantOpen ? 30 : 40}
-            minSize={10}
-            id="description"
-            className="bg-white rounded-t-lg"
-          >
-            <RenderDescTabs
-              problemDetail={problemDetail}
-              courseId={courseId}
-              courseName={courseName}
-              lessonId={lessonId}
-              lessonName={lessonName}
-              isPassed={isSubmissionPassed}
-            />
-          </ResizablePanel>
-
-          <ResizableHandle withHandle className="w-2 bg-gray5" />
-
-          {/* Middle Panel: Playground and test case */}
-          <ResizablePanel
-            order={2}
-            defaultSize={isAIAssistantOpen ? 50 : 60}
-            minSize={30}
-            id="playground"
-            className="overflow-y-auto bg-white rounded-t-lg"
-          >
-            <ResizablePanelGroup direction="vertical" className="h-full">
-              <ResizablePanel order={3} defaultSize={60} minSize={40} className="bg-white">
-                <RenderPGTabs
-                  setLanguagePackage={(langJudge0, code) => {
-                    setLanguage(langJudge0.name);
-                    setCode(code);
-                  }}
-                />
-              </ResizablePanel>
-
-              <ResizableHandle withHandle className="h-[10px] bg-gray5" />
-
-              <ResizablePanel
-                order={4}
-                id="test-cases"
-                defaultSize={40}
-                minSize={20}
-                className="overflow-y-auto bg-white"
-              >
-                <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </ResizablePanel>
-
-          {isAIAssistantOpen && <ResizableHandle withHandle className="w-2 bg-gray5" />}
-
-          {/* Right Panel: AI Assistant */}
-          {isAIAssistantOpen && (
+    <CommentContext.Provider value={{ commentId: redirectedCommentId || "" }}>
+      <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
+        <div className="flex-grow overflow-hidden">
+          <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
             <ResizablePanel
-              order={5}
-              defaultSize={20}
-              minSize={20}
-              id="ai-assistant"
-              className="overflow-y-auto bg-white rounded-t-lg"
+              order={1}
+              defaultSize={isAIAssistantOpen ? 30 : 40}
+              minSize={10}
+              id="description"
+              className="bg-white rounded-t-lg"
             >
-              <RenderAIAssistant
-                isAIAssistantOpen={true}
-                setIsAIAssistantOpen={setIsAIAssistantOpen}
-                problem={problemDetail}
+              <RenderDescTabs
+                problemDetail={problemDetail}
+                courseId={courseId}
+                courseName={courseName}
+                lessonId={lessonId}
+                lessonName={lessonName}
+                isPassed={isSubmissionPassed}
               />
             </ResizablePanel>
-          )}
-        </ResizablePanelGroup>
-      </div>
 
-      {/* Sidebar (Overlay) */}
-      <RenderAllProblems isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+            <ResizableHandle withHandle className="w-2 bg-gray5" />
 
-      {/* Bottom bar */}
-      <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-6 bg-white border-t h-14">
-        <div className="flex space-x-2">
-          <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={toggleSidebar}>
-            <MdList className="inline-block icon-base icon-gray3" />
-            All Problems
-          </Button>
-
-          {isAuthenticated && (
-            <Button
-              className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
-              onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
+            {/* Middle Panel: Playground and test case */}
+            <ResizablePanel
+              order={2}
+              defaultSize={isAIAssistantOpen ? 50 : 60}
+              minSize={30}
+              id="playground"
+              className="overflow-y-auto bg-white rounded-t-lg"
             >
-              <HiOutlineSparkles className="inline-block w-4 h-4 icon-white" />
-              Ask AI
-            </Button>
-          )}
+              <ResizablePanelGroup direction="vertical" className="h-full">
+                <ResizablePanel order={3} defaultSize={60} minSize={40} className="bg-white">
+                  <RenderPGTabs
+                    setLanguagePackage={(langJudge0, code) => {
+                      setLanguage(langJudge0.name);
+                      setCode(code);
+                    }}
+                  />
+                </ResizablePanel>
+
+                <ResizableHandle withHandle className="h-[10px] bg-gray5" />
+
+                <ResizablePanel
+                  order={4}
+                  id="test-cases"
+                  defaultSize={40}
+                  minSize={20}
+                  className="overflow-y-auto bg-white"
+                >
+                  <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
+                </ResizablePanel>
+              </ResizablePanelGroup>
+            </ResizablePanel>
+
+            {isAIAssistantOpen && <ResizableHandle withHandle className="w-2 bg-gray5" />}
+
+            {/* Right Panel: AI Assistant */}
+            {isAIAssistantOpen && (
+              <ResizablePanel
+                order={5}
+                defaultSize={20}
+                minSize={20}
+                id="ai-assistant"
+                className="overflow-y-auto bg-white rounded-t-lg"
+              >
+                <RenderAIAssistant
+                  isAIAssistantOpen={true}
+                  setIsAIAssistantOpen={setIsAIAssistantOpen}
+                  problem={problemDetail}
+                />
+              </ResizablePanel>
+            )}
+          </ResizablePanelGroup>
         </div>
 
-        <div className="flex space-x-2">
-          <Button
-            className={`font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4 ${isRunningCode ? "cursor-not-allowed" : ""}`}
-            onClick={handleRunCode}
-            disabled={isRunningCode}
-          >
-            {isRunningCode ? (
-              <FaSpinner className="inline-block icon-sm animate-spin icon-gray3" />
-            ) : (
-              <FaPlay className="inline-block icon-sm icon-gray3" />
-            )}
-            Run
-          </Button>
+        {/* Sidebar (Overlay) */}
+        <RenderAllProblems isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
-          <Button
-            onClick={handleSubmitCode}
-            className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${
-              isSubmitting ? "cursor-not-allowed" : ""
-            }`}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <FaSpinner className="inline-block icon-sm animate-spin icon-white" />
-            ) : (
-              <FaUpload className="inline-block icon-sm icon-white" />
+        {/* Bottom bar */}
+        <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-6 bg-white border-t h-14">
+          <div className="flex space-x-2">
+            <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={toggleSidebar}>
+              <MdList className="inline-block icon-base icon-gray3" />
+              All Problems
+            </Button>
+
+            {isAuthenticated && (
+              <Button
+                className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
+                onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
+              >
+                <HiOutlineSparkles className="inline-block w-4 h-4 icon-white" />
+                Ask AI
+              </Button>
             )}
-            Submit
-          </Button>
+          </div>
+
+          <div className="flex space-x-2">
+            <Button
+              className={`font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4 ${isRunningCode ? "cursor-not-allowed" : ""}`}
+              onClick={handleRunCode}
+              disabled={isRunningCode}
+            >
+              {isRunningCode ? (
+                <FaSpinner className="inline-block icon-sm animate-spin icon-gray3" />
+              ) : (
+                <FaPlay className="inline-block icon-sm icon-gray3" />
+              )}
+              Run
+            </Button>
+
+            <Button
+              onClick={handleSubmitCode}
+              className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${
+                isSubmitting ? "cursor-not-allowed" : ""
+              }`}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <FaSpinner className="inline-block icon-sm animate-spin icon-white" />
+              ) : (
+                <FaUpload className="inline-block icon-sm icon-white" />
+              )}
+              Submit
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </CommentContext.Provider>
   );
 };

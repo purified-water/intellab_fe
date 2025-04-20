@@ -7,7 +7,11 @@ import {
   TGetPaymentMeResponse,
   TCreatePremiumPaymentResponse,
   TGetIntellabPaymentParams,
-  TCreatePremiumPaymentParams
+  TCreatePremiumPaymentParams,
+  TGetCourseFromPaymentResponse,
+  TGetCourseFromPaymentParams,
+  TGetDiscountResponse,
+  TGetDiscountParams
 } from "@/features/Payment/types";
 import { API_RESPONSE_CODE } from "@/constants";
 import { LANGUAGE, VNPAY_BANK_CODE, VNPAY_CURRENCY_CODE } from "@/features/Payment/constants";
@@ -98,6 +102,57 @@ export const paymentAPI = {
       };
       const response = await apiClient.post("identity/payment/vnpay/checkout/premium-package", bodyData);
       const data: TCreatePremiumPaymentResponse = response.data;
+      const { code, message, result } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  getCourseFromPayment: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetCourseFromPaymentParams) => {
+    const DEFAULT_ERROR = "Error getting course information from payment";
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const paymentId = query?.paymentId;
+      const response = await apiClient.get(`identity/payment/vnpay/${paymentId}/course-and-first-lesson`);
+      const data: TGetCourseFromPaymentResponse = response.data;
+      const { code, message, result } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error) {
+      await onFail(error.message ?? DEFAULT_ERROR);
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  getDiscount: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetDiscountParams) => {
+    const DEFAULT_ERROR = "Error getting discount information";
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const userId = query?.userId;
+      const queryParams = {
+        userId
+      };
+      const response = await apiClient.get(`identity/payment/vnpay/get-discount-percent`, { params: queryParams });
+      const data: TGetDiscountResponse = response.data;
       const { code, message, result } = data;
       if (code == API_RESPONSE_CODE.SUCCESS) {
         await onSuccess(result);

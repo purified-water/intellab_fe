@@ -25,7 +25,7 @@ export const PLANS: TPlan[] = [
     monthPrice: 299000,
     yearPrice: 2388000,
     eachMonthPrice: 199000,
-    description: "A must-have for algorithm enthusiasts!",
+    description: "Improve coding  with premium problems and unlimited AI Assistant",
     requestPackage: PREMIUM_PACKAGES.REQUEST.PROBLEM,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.PROBLEM,
     perks: [
@@ -42,7 +42,7 @@ export const PLANS: TPlan[] = [
     monthPrice: 299000,
     yearPrice: 2388000,
     eachMonthPrice: 199000,
-    description: "Master coding with structured courses!",
+    description: "Master coding with structured courses and extended AI Assistant",
     requestPackage: PREMIUM_PACKAGES.REQUEST.COURSE,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.COURSE,
     perks: [
@@ -59,7 +59,7 @@ export const PLANS: TPlan[] = [
     monthPrice: 499000,
     yearPrice: 4788000,
     eachMonthPrice: 399000,
-    description: "The ultimate package to expand your coding expertise!",
+    description: "The ultimate package with all perks to expand your coding expertise!",
     requestPackage: PREMIUM_PACKAGES.REQUEST.PREMIUM,
     responsePackage: PREMIUM_PACKAGES.RESPONSE.PREMIUM,
     perks: [

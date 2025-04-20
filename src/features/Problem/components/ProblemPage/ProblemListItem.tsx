@@ -6,19 +6,21 @@ import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
+import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 type ProblemListItemProps = {
   problems: Problem[];
+  status: string;
 };
 
-export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
+export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
   const [sortConfig, setSortConfig] = useState<{ key: keyof Problem | null; order: "asc" | "desc" }>({
     key: null,
     order: "asc"
   });
+
   const navigate = useNavigate();
 
-  // Premium UI
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
   const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
   const isAlgorithmUnlocked =
@@ -51,7 +53,7 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
       <table className="min-w-full table-auto">
         <thead className="border-b">
           <tr className="text-xs sm:text-base">
-            {["Status", "Title", "Hints", "Level", "Category"].map((header, index) => (
+            {["Title", "Status", "Solution", "Level", "Category"].map((header, index) => (
               <th
                 key={index}
                 className="px-4 py-2 text-left cursor-pointer text-gray2"
@@ -76,38 +78,64 @@ export const ProblemListItem = ({ problems }: ProblemListItemProps) => {
           </tr>
         </thead>
         <tbody>
-          {sortedData.map((row, index) => (
-            <tr
-              key={index}
-              className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
-              onClick={() => handleProblemListItemClicked(row.problemId)}
-            >
-              <td className="w-12 py-2 pl-8 text-center">
-                {row.isDone === true ? (
-                  <MdCheckCircleOutline className="icon-appEasy" />
-                ) : !row.isPublished && (!isAlgorithmUnlocked || !isCurrentPlanActive) ? (
-                  <MdLock className="icon-appAccent" />
-                ) : (
-                  ""
-                )}
-              </td>
-              <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">
-                {row.problemName}
-                {!row.isPublished && (
-                  <div className="inline px-2 py-1 ml-2 text-xs rounded text-appAccent bg-appFadedAccent">Premium</div>
-                )}
-              </td>
-              <td className="w-20 px-4 py-2 font-semibold justify-items-center">
-                {row.hintCount > 0 ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
-              </td>
-              <td
-                className={`px-4 py-2 w-28 font-semibold ${row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"}`}
-              >
-                {capitalizeFirstLetter(row.level)}
-              </td>
-              <td className="w-2/5 px-4 py-2">{row.categories?.map((category) => category.name).join(", ") ?? ""}</td>
-            </tr>
-          ))}
+          {status === "loading"
+            ? Array.from({ length: 5 }).map((_, i) => (
+                <tr key={i} className={`text-xs sm:text-base ${i % 2 === 0 ? "bg-white" : "bg-gray6"}`}>
+                  <td className="w-2/6 px-4 py-3">
+                    <Skeleton className="w-3/4 h-4" />
+                  </td>
+                  <td className="w-12 py-3 pl-8 text-center">
+                    <Skeleton className="w-4 h-4 mx-auto" />
+                  </td>
+                  <td className="w-20 px-4 py-3">
+                    <Skeleton className="w-6 h-4 mx-auto" />
+                  </td>
+                  <td className="px-4 py-3 w-28">
+                    <Skeleton className="w-3/5 h-4" />
+                  </td>
+                  <td className="w-2/5 px-4 py-3">
+                    <Skeleton className="w-4/5 h-4" />
+                  </td>
+                </tr>
+              ))
+            : sortedData.map((row, index) => (
+                <tr
+                  key={index}
+                  className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+                  onClick={() => handleProblemListItemClicked(row.problemId)}
+                >
+                  <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">
+                    {row.problemName}
+                    {!row.isPublished && (
+                      <div className="inline px-2 py-1 ml-2 text-xs rounded text-appAccent bg-appFadedAccent">
+                        Premium
+                      </div>
+                    )}
+                  </td>
+                  <td className="w-12 py-2 pl-8 text-center">
+                    {row.isDone === true ? (
+                      <MdCheckCircleOutline className="icon-appEasy" />
+                    ) : !row.isPublished && (!isAlgorithmUnlocked || !isCurrentPlanActive) ? (
+                      <MdLock className="icon-appAccent" />
+                    ) : (
+                      ""
+                    )}
+                  </td>
+                  <td className="w-20 px-4 py-2 font-semibold justify-items-center">
+                    {row.hasSolution == true ? <MdCheckCircleOutline className="icon-appEasy" /> : ""}
+                  </td>
+                  <td
+                    className={`px-4 py-2 w-28 font-semibold ${
+                      row.level === "easy" ? "text-appEasy" : row.level === "medium" ? "text-appMedium" : "text-appHard"
+                    }`}
+                  >
+                    {capitalizeFirstLetter(row.level)}
+                  </td>
+                  <td className="w-2/5 px-4 py-2">
+                    {row.categories?.map((category) => category.name).join(", ") ?? ""}
+                  </td>
+                </tr>
+              ))}
         </tbody>
       </table>
     </div>

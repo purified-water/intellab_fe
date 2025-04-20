@@ -102,9 +102,9 @@ type TGetCommentParams = TGetApiParams<
   {
     commentId: string;
     userUid: string | null;
-    page: number | null;
-    size: number | null;
-    sort: string[] | null;
+    page?: number | null;
+    size?: number | null;
+    sort?: string[] | null;
   },
   TComment
 >;

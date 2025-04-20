@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { intellabSideLogo, intellabSidePremiumLogo } from "@/assets";
-import { MdNotifications, MdAccountCircle, MdClose, MdMenu } from "rocketicons/md";
+import { MdAccountCircle, MdClose, MdMenu } from "rocketicons/md";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser } from "@/redux/user/userSlice";
@@ -14,7 +14,10 @@ import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { NotificationMenu } from "@/features/Notification/components";
 import { ProfileMenu } from "./ProfileMenu";
-
+import { PremiumStatus } from "./PremiumStatus";
+import { Button } from "@/components/ui";
+import { Bell } from "lucide-react";
+import { selectHasUnread } from "@/redux/notifications/notificationsSlice";
 interface NavbarProps {
   isDarkMode: boolean;
   toggleDarkMode: () => void;
@@ -34,6 +37,9 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
   const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
   const isPremiumPlan = reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE;
+
+  // Notifications
+  const hasUnreadNotifications = useSelector(selectHasUnread);
 
   const toggleDropdown = () => {
     setIsDropdownOpen((prev) => !prev);
@@ -78,7 +84,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
 
           <Link to="/">
             {isCurrentPlanActive && isPremiumPlan ? (
-              <img src={intellabSidePremiumLogo} alt="Intellab Logo" className="h-auto mr-2 w-44" />
+              <img src={intellabSidePremiumLogo} alt="Intellab Logo" className="w-24 h-auto mr-2" />
             ) : (
               <img src={intellabSideLogo} alt="Intellab Logo" className="w-24 h-auto mr-2" />
             )}
@@ -106,10 +112,17 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
             >
               Problems
             </Link>
+            {/* <Link
+              to="/leaderboard"
+              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/leaderboard")}`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Leaderboard
+            </Link> */}
           </div>
         </div>
 
-        <div id="premium" className="relative flex items-center space-x-4">
+        <div id="premium" className="relative flex items-center space-x-3">
           {(!isCurrentPlanActive || !isPremiumPlan) && (
             <Link to="/pricing">
               <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
@@ -121,12 +134,19 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
           {isAuthenticated ? (
             <>
               <div className="relative notification-menu">
-                <button
-                  className="p-1 transition text-gray3 hover:text-gray1"
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="px-2 py-1 transition text-gray3 hover:text-gray1 [&_svg]:size-5"
                   onClick={() => setIsNotificationOpen((prev) => !prev)}
                 >
-                  <MdNotifications className="icon-xl" />
-                </button>
+                  <div className="relative">
+                    <Bell />
+                    {hasUnreadNotifications && (
+                      <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-appHard" />
+                    )}
+                  </div>{" "}
+                </Button>
                 {isNotificationOpen && (
                   <div className="absolute right-0">
                     <NotificationMenu isOpen={isNotificationOpen} setIsOpen={setIsNotificationOpen} />
@@ -153,6 +173,8 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
                   />
                 </div>
               )}
+
+              <PremiumStatus />
             </>
           ) : (
             <button

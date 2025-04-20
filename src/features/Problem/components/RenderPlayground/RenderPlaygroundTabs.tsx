@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Playground } from "./Playground";
 import { SupportedLanguages } from "@/features/Problem/constants/SupportedLanguages";
 import { BsCode } from "rocketicons/bs";
@@ -17,17 +17,24 @@ import { LanguageCodeType } from "../../types/LanguageCodeType";
 import { BoilerplateType } from "../../types/LanguageCodeType";
 import { problemAPI } from "@/lib/api";
 import { useParams } from "react-router-dom";
+import { AlertDialog, Button } from "@/components/ui";
+import { AlignLeft, RotateCcw } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
 }
 
 export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
-  const [playgroundActive, setPlaygroundActive] = useState("Solutions");
+  const [playgroundActive, setPlaygroundActive] = useState("Code");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
   const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
   const [code, setCode] = useState("");
+  const [boilerplateCode, setBoilerplateCode] = useState("");
   const problemId = useParams<{ problemId: string }>().problemId;
   const [boilerplateList, setBoilerplateList] = useState<BoilerplateType[]>([]);
+
+  // For function buttons
+  const playgroundRef = useRef<{ codeFormat: () => void }>(null);
 
   useEffect(() => {
     getBoilerplateCode();
@@ -46,8 +53,10 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     );
 
     if (matchingBoilerplate) {
+      setBoilerplateCode(matchingBoilerplate.code);
       setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
     } else {
+      setBoilerplateCode("");
       setCode(""); // Set the code to empty if no match is found
     }
   };
@@ -91,7 +100,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
     const getIcon = () => {
       const iconColorClass = playgroundActive === tabName ? "icon-appAccent" : "icon-gray3";
       switch (tabName) {
-        case "Solutions":
+        case "Code":
           return <BsCode className={`inline-block mr-2 ${iconColorClass}`} />;
         default:
           return null;
@@ -113,10 +122,10 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
 
   const renderPlaygroundTabContent = () => {
     switch (playgroundActive) {
-      case "Solutions":
+      case "Code":
         return (
           <div className="flex-grow overflow-hidden">
-            <Playground language={language} code={code} onCodeChange={handleCodeChange} />
+            <Playground ref={playgroundRef} language={language} code={code} onCodeChange={handleCodeChange} />
           </div>
         );
       case "Chatbot":
@@ -129,38 +138,70 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
       {/* Tab Buttons */}
       <div
         id="tab-buttons"
-        className="flex items-center px-4 py-2 overflow-y-hidden border-b max-h-18 gap-x-4 sm:overflow-x-auto scrollbar-hide shrink-0"
+        className="flex items-center justify-between px-4 py-2 overflow-y-hidden border-b max-h-18 gap-x-4 sm:overflow-x-auto scrollbar-hide shrink-0"
       >
-        {renderPlaygroundTabButton("Solutions")}
+        {renderPlaygroundTabButton("Code")}
 
-        {/* Language Selector */}
-        <div id="language-selector" className="ml-auto">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <div className="flex items-center h-8 py-1 pl-2 pr-1 text-sm border rounded-lg hover:cursor-pointer">
-                <p>{language}</p>
-                <MdKeyboardArrowDown className="inline-block" />
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56">
-              <DropdownMenuLabel>Select Language</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioGroup
-                value={language}
-                onValueChange={(value) => {
-                  const selectedLanguage = value as SupportedLanguages;
-                  handleLanguageChange(selectedLanguage); // Handle language change
-                }}
+        <div className="flex space-x-2">
+          <div className="function-buttons [&_svg]:size-[14px] text-gray3">
+            <Tooltip>
+              <AlertDialog
+                title="Reset Code"
+                message="Are you sure you want to reset the code?"
+                onConfirm={() => setCode(boilerplateCode)}
               >
-                {Object.values(SupportedLanguages).map((lang) => (
-                  <DropdownMenuRadioItem key={lang} value={lang}>
-                    {lang}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <TooltipTrigger asChild>
+                  <div className="inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
+                    <RotateCcw />
+                  </div>
+                </TooltipTrigger>
+              </AlertDialog>
+              <TooltipContent>
+                <p>Reset Code</p>
+              </TooltipContent>
+            </Tooltip>
+
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="sm" onClick={() => playgroundRef.current?.codeFormat()}>
+                  <AlignLeft />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="top">
+                <p>Format Code</p>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          <div className="language-selector">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex items-center h-8 py-1 pl-2 pr-1 text-sm border rounded-lg hover:cursor-pointer">
+                  <p>{language}</p>
+                  <MdKeyboardArrowDown className="inline-block" />
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56">
+                <DropdownMenuLabel>Select Language</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuRadioGroup
+                  value={language}
+                  onValueChange={(value) => {
+                    const selectedLanguage = value as SupportedLanguages;
+                    handleLanguageChange(selectedLanguage); // Handle language change
+                  }}
+                >
+                  {Object.values(SupportedLanguages).map((lang) => (
+                    <DropdownMenuRadioItem key={lang} value={lang}>
+                      {lang}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
+        {/* Language Selector */}
       </div>
 
       {/* Playground Content */}

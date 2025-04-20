@@ -1,4 +1,4 @@
-import { LoginPage, SignUpPage } from "./pages";
+import { LoginPage, SignUpPage, ForgetPasswordPage } from "./pages";
 import { RouteObject } from "react-router-dom";
 
 const AuthRoute: RouteObject[] = [
@@ -9,6 +9,10 @@ const AuthRoute: RouteObject[] = [
   {
     path: "/signup",
     element: <SignUpPage />
+  },
+  {
+    path: "/forgot-password",
+    element: <ForgetPasswordPage />
   }
 ];
 

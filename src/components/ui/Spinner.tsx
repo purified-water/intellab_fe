@@ -1,40 +1,57 @@
-import { ClipLoader } from "react-spinners";
+import { cn } from "@/lib/utils";
+import { VariantProps, cva } from "class-variance-authority";
+import { Loader2 } from "lucide-react";
+
+const spinnerVariants = cva("flex-col items-center justify-center", {
+  variants: {
+    show: {
+      true: "flex",
+      false: "hidden",
+    },
+  },
+  defaultVariants: {
+    show: true,
+  },
+});
+
+const loaderVariants = cva("animate-spin text-appPrimary", {
+  variants: {
+    size: {
+      small: "size-6",
+      medium: "size-8",
+      large: "size-12",
+    },
+  },
+  defaultVariants: {
+    size: "medium",
+  },
+});
 
 type SpinnerProps = {
   loading: boolean;
   overlay?: boolean;
-}
+  size?: VariantProps<typeof loaderVariants>["size"];
+  className?: string;
+};
 
-export function Spinner(props: SpinnerProps) {
-  const { loading, overlay = false } = props;
+export function Spinner({ loading, overlay = false, size, className }: SpinnerProps) {
+  if (!loading) return null;
 
-  const renderSpinner = () => {
-    return (
-      <ClipLoader
-        color="#5a3295"
-        loading={loading}
-        size={40}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-      />
-    )
-  };
-
-  let content = (
-    <div className="flex flex-col items-center justify-center">
-      {renderSpinner()}
-    </div>
-  )
+  const spinner = (
+    <span className={spinnerVariants({ show: loading })}>
+      <Loader2 className={cn(loaderVariants({ size }), className)} />
+    </span>
+  );
 
   if (overlay) {
-    content = (
-      <div className="fixed inset-0 flex items-center justify-center bg-opacity-30 bg-gray3 z-[100]">
-        <div className="flex flex-col items-center justify-center rounded-lg size-40">
-          {renderSpinner()}
+    return (
+      <div className="fixed inset-0 flex items-center justify-center z-[100]">
+        <div className="flex flex-col items-center justify-center rounded-full bg-gray6 size-[4rem]">
+          {spinner}
         </div>
       </div>
-    )
+    );
   }
 
-  return loading && content;
+  return <div className="flex flex-col items-center justify-center">{spinner}</div>;
 }

@@ -14,13 +14,17 @@ import ProfileRoute from "./features/Profile/route";
 import QuizRoute from "./features/Quiz/route";
 import ProblemRoute from "./features/Problem/route";
 import StudentOverallRoute from "./features/StudentOverall/route";
+import NotificationRoute from "./features/Notification/route";
+import { TooltipProvider } from "@/components/ui/shadcn/tooltip";
+import { useNotificationSocket } from "@/hooks";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
+import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 
 export const Layout = () => {
   const location = useLocation();
-  const hideNavbar = ["/login", "/signup"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
   const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
@@ -35,6 +39,7 @@ export const Layout = () => {
 
   return (
     <>
+      <VerifyAccountBanner />
       {!hideNavbar && <Navbar isDarkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />}
       <Outlet />
     </>
@@ -56,16 +61,22 @@ const router = createBrowserRouter([
       ...PaymentRoute,
       ...ProfileRoute,
       ...QuizRoute,
-      ...ProblemRoute
+      ...ProblemRoute,
+      ...NotificationRoute
     ]
   }
 ]);
 
 function App() {
+  // Initialize notification socket
+  useNotificationSocket();
+
   return (
     <React.StrictMode>
-      <RouterProvider router={router} />
-      <Toaster />
+      <TooltipProvider>
+        <RouterProvider router={router} />
+        <Toaster />
+      </TooltipProvider>
     </React.StrictMode>
   );
 }
