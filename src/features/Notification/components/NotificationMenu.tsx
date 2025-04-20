@@ -73,7 +73,11 @@ export const NotificationMenu = ({ isOpen, setIsOpen }: NotificationMenuProps) =
           >
             <div className="p-3 font-semibold border-b">Notifications</div>
             <div className="overflow-y-auto max-h-64">
-              {loading && <Spinner loading={loading} />}
+              {loading && (
+                <div className="flex items-center justify-center w-full h-full mt-4">
+                  <Spinner loading={loading} />
+                </div>
+              )}
               {error && <div className="p-4 text-center text-red-500">Error: {error}</div>}
               {notifications.length > 0
                 ? notifications.map((notif) => <NotificationCard key={notif.id} type="menu" notification={notif} />)

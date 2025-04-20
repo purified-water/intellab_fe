@@ -4,10 +4,13 @@ import { useDispatch } from "react-redux";
 import { addNotification } from "@/redux/notifications/notificationsSlice";
 import { NotificationType } from "@/features/Notification/types/NotificationType";
 import { getUserIdFromLocalStorage } from "@/utils";
+import { showToastDefault } from "@/utils";
+import { useToast } from "./use-toast";
 
 // Dispatch notifications to Redux on message receive
 export const useNotificationSocket = () => {
   const dispatch = useDispatch();
+  const toast = useToast();
   const userId = getUserIdFromLocalStorage();
   if (!userId) {
     console.error("User ID not found in local storage");
@@ -27,6 +30,12 @@ export const useNotificationSocket = () => {
         // Optionally check if parsed has expected fields
         if (parsed && parsed.redirectType && parsed.message) {
           dispatch(addNotification(parsed as NotificationType));
+          showToastDefault({
+            toast: toast.toast,
+            title: "New Notification",
+            message: parsed.title,
+            duration: 5000
+          });
         }
       } catch (err) {
         console.warn("Received non-JSON or invalid message:", lastMessage.data);

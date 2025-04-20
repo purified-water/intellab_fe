@@ -13,6 +13,7 @@ import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { ICourse } from "@/types";
 import { courseAPI } from "@/lib/api";
 import * as commentStore from "@/redux/comment/commentSlice";
+import { useCommentContext } from "@/hooks";
 
 const parseReplyContent = (reply: string) => {
   const regex = /^\[@(.*?)\]\s(.*)$/;
@@ -65,12 +66,14 @@ export const CommentReply = (props: CommentReplyProps) => {
   const [editReplyContent, setEditReplyContent] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // For highlighting redirected comment
+  const redirectedCommentId = useCommentContext().commentId;
+
   const upvoteCommentAPI = async (commentId: string) => {
     await courseAPI.upvoteComment({
       query: { commentId },
       onStart: async () => setLoading(true),
-      onSuccess: async (numberOfLikes) => {
-        console.log("--> Number of like after upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+      onSuccess: async (_numberOfLikes) => {
         dispatch(commentStore.upvoteComment(replyComment));
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
@@ -82,8 +85,7 @@ export const CommentReply = (props: CommentReplyProps) => {
     await courseAPI.cancelUpvoteComment({
       query: { commentId },
       onStart: async () => setLoading(true),
-      onSuccess: async (numberOfLikes) => {
-        console.log("--> Number of like after cancel upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+      onSuccess: async (_numberOfLikes) => {
         dispatch(commentStore.cancelUpvoteComment(replyComment));
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
@@ -164,7 +166,7 @@ export const CommentReply = (props: CommentReplyProps) => {
         actualContent = (
           <>
             <span
-              className="font-semibold text-appPrimary cursor-pointer hover:text-opacity-80"
+              className="font-semibold cursor-pointer text-appPrimary hover:text-opacity-80"
               onClick={handleUsernameClick}
             >
               @{parsedReply?.userName}
@@ -348,10 +350,12 @@ export const CommentReply = (props: CommentReplyProps) => {
     };
 
     return (
-      <div>
-        {renderUserInformation()}
-        {renderContent()}
-        {renderActions()}
+      <div id={`comment-${commentId}`}>
+        <div className={`${redirectedCommentId === commentId ? "bg-appInfo/10 p-4 rounded-lg" : ""}`}>
+          {renderUserInformation()}
+          {renderContent()}
+          {renderActions()}
+        </div>
         {renderReplyInput()}
       </div>
     );

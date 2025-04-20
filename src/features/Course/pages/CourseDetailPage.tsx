@@ -15,6 +15,8 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
 import { AppFooter } from "@/components/AppFooter";
+import { useSearchParams } from "react-router-dom";
+import { CommentContext } from "../../../hooks/useCommentContext";
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -23,9 +25,11 @@ const TAB_BUTTONS = {
 };
 
 export const CourseDetailPage = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const toast = useToast();
   const { id } = useParams<{ id: string }>();
+  const redirectedCommentId = searchParams.get("commentId");
   const [activeTab, setActiveTab] = useState("Lessons");
   const [course, setCourse] = useState<ICourse | null>(null);
   const [lessons, setLessons] = useState<ILesson[] | IEnrolledLesson[]>([]);
@@ -147,6 +151,11 @@ export const CourseDetailPage = () => {
   useEffect(() => {
     getCourseDetail();
     getCourseLessons(0);
+
+    if (redirectedCommentId) {
+      setActiveTab(TAB_BUTTONS.COMMENTS);
+    }
+
     if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
@@ -181,7 +190,11 @@ export const CourseDetailPage = () => {
         showToastError({ toast: toast.toast, message: "Error enrolling course" });
       }
     } catch (error) {
-      showToastError({ toast: toast.toast, message: error.message ?? "Error enrolling course" });
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error enrolling course" });
+      } else {
+        showToastError({ toast: toast.toast, message: "Error enrolling course" });
+      }
     } finally {
       setLoading(false);
     }
@@ -305,13 +318,13 @@ export const CourseDetailPage = () => {
   };
 
   return (
-    <>
+    <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
       <div className="pb-8 mx-auto max-w-7xl">
         {renderHeader()}
         {renderBody()}
         {renderSpinner()}
       </div>
       <AppFooter />
-    </>
+    </CommentContext.Provider>
   );
 };

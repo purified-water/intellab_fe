@@ -13,6 +13,7 @@ import { selectUserId } from "@/redux/user/userSlice";
 import { Spinner } from "@/components/ui/Spinner";
 import { Pagination } from "@/components/ui/Pagination";
 import { RootState } from "@/redux/rootReducer";
+import { ParentCommentContext, useCommentContext } from "@/hooks";
 
 interface ISortBy {
   value: string;
@@ -47,6 +48,10 @@ export const ProblemCommentSection = () => {
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
 
+  // Redirect comment id
+  const redirectedCommentId = useCommentContext().commentId;
+  const [redirectedParentCommentId, setRedirectedParentCommentId] = useState<string | null>(null);
+
   const getComments = async (pageNumber: number = 0) => {
     if (!problemId) return;
     setIsLoading(true);
@@ -68,7 +73,39 @@ export const ProblemCommentSection = () => {
   };
 
   useEffect(() => {
-    getComments();
+    if (redirectedCommentId) {
+      // If redirectedCommentId is present, fetch the specific comment and its replies
+      const fetchCommentAndReplies = async () => {
+        try {
+          if (!userId) return;
+          const response = await problemAPI.getCommentParentAndChildren(redirectedCommentId, userId);
+          const data = response.result;
+          if (data.parentCommentId) {
+            setRedirectedParentCommentId(data.parentCommentId);
+            console.log("Parent comment ID:", data.parentCommentId);
+            // If the comment has a parent, fetch the parent comment
+            const parentResponse = await problemAPI.getCommentParentAndChildren(data.parentCommentId, userId);
+            console.log("Parent comment response:", parentResponse);
+            const parentData = parentResponse.result;
+
+            setProblemComments([parentData]);
+          } else {
+            // If the comment does not have a parent, set it directly
+            console.log("Parent comment ID not found");
+            setProblemComments([data]);
+          }
+          setTotalPages(1);
+        } catch (error) {
+          console.error("Error fetching comment:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      fetchCommentAndReplies();
+    } else {
+      getComments();
+    }
   }, [sortBy]);
 
   const handleSubmitComment = async () => {
@@ -111,7 +148,7 @@ export const ProblemCommentSection = () => {
     try {
       if (!userId) return;
 
-      const response = await problemAPI.getCommentParantAndChildren(commentId, userId);
+      const response = await problemAPI.getCommentParentAndChildren(commentId, userId);
       const updatedComment: ProblemCommentType = {
         ...response.result,
         childrenComments: response.result.childrenComments || { content: [] }
@@ -138,95 +175,97 @@ export const ProblemCommentSection = () => {
   }
 
   return (
-    <div id="problem-comment-section" className="h-full px-6 py-6 overflow-y-auto">
-      <div className="">
-        <textarea
-          placeholder="Type your comment..."
-          className="w-full text-sm px-4 py-2 bg-white border rounded-lg resize-none max-h-[300px] overflow-y-scroll border-gray4/60 focus:outline-none"
-          rows={1}
-          value={userComment}
-          onInput={(e) => {
-            e.currentTarget.style.height = "auto";
-            e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
-          }}
-          onChange={(e) => setUserComment(e.currentTarget.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && !e.ctrlKey) {
-              e.preventDefault();
-              handleSubmitComment();
-            }
-          }}
-        />
-        <div className="flex justify-end">
-          <Button
-            onClick={() => handleSubmitComment()}
-            className="px-4 py-2 mt-2 font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
-          >
-            Comment
-          </Button>
-        </div>
-      </div>
-
-      {/* SORT BY BUTTON */}
-      <Popover open={sortByOpen} onOpenChange={setSortByOpen}>
-        <PopoverTrigger asChild>
-          <div
-            role="combobox"
-            aria-expanded={sortByOpen}
-            className="w-[200px] flex text-sm space-x-2 items-center cursor-pointer"
-          >
-            <span className="font-normal">Sorted by:</span>
-            <span className="font-semibold ">{sortBys.find((sortByItem) => sortByItem.value === sortBy)?.label}</span>
-            <ChevronDown className="w-4 opacity-50" />
-          </div>
-        </PopoverTrigger>
-
-        <PopoverContent className="w-[200px] p-0">
-          <Command>
-            <CommandList>
-              <CommandEmpty>No sort item found.</CommandEmpty>
-              <CommandGroup>
-                {sortBys.map((sortByItem) => (
-                  <CommandItem
-                    key={sortByItem.value}
-                    value={sortByItem.value}
-                    onSelect={(currentValue) => {
-                      setSortBy(currentValue === sortBy ? "" : currentValue);
-                      setSortByOpen(false);
-                    }}
-                  >
-                    {sortByItem.label}
-                    <Check className={sortBy === sortByItem.value ? "opacity-100" : "opacity-0"} />
-                  </CommandItem>
-                ))}
-              </CommandGroup>
-            </CommandList>
-          </Command>
-        </PopoverContent>
-      </Popover>
-
-      <div className="mt-4">
-        {problemComments.map((comment) => (
-          <ProblemComment
-            key={comment.commentId}
-            comment={comment}
-            updateCommentList={getComments}
-            refreshCommentReplies={refreshCommentReplies}
+    <ParentCommentContext.Provider value={{ parentCommentId: redirectedParentCommentId }}>
+      <div id="problem-comment-section" className="h-full px-6 py-6 overflow-y-auto">
+        <div className="">
+          <textarea
+            placeholder="Type your comment..."
+            className="w-full text-sm px-4 py-2 bg-white border rounded-lg resize-none max-h-[300px] overflow-y-scroll border-gray4/60 focus:outline-none"
+            rows={1}
+            value={userComment}
+            onInput={(e) => {
+              e.currentTarget.style.height = "auto";
+              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+            }}
+            onChange={(e) => setUserComment(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.ctrlKey) {
+                e.preventDefault();
+                handleSubmitComment();
+              }
+            }}
           />
-        ))}
-      </div>
-
-      {!problemComments.length && (
-        <div>
-          <p className="text-center text-gray3">No comments yet</p>
+          <div className="flex justify-end">
+            <Button
+              onClick={() => handleSubmitComment()}
+              className="px-4 py-2 mt-2 font-semibold text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+            >
+              Comment
+            </Button>
+          </div>
         </div>
-      )}
 
-      <div className="mb-12">
-        {totalPages != 0 && (
-          <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(page) => getComments(page)} />
+        {/* SORT BY BUTTON */}
+        <Popover open={sortByOpen} onOpenChange={setSortByOpen}>
+          <PopoverTrigger asChild>
+            <div
+              role="combobox"
+              aria-expanded={sortByOpen}
+              className="w-[200px] flex text-sm space-x-2 items-center cursor-pointer"
+            >
+              <span className="font-normal">Sorted by:</span>
+              <span className="font-semibold ">{sortBys.find((sortByItem) => sortByItem.value === sortBy)?.label}</span>
+              <ChevronDown className="w-4 opacity-50" />
+            </div>
+          </PopoverTrigger>
+
+          <PopoverContent className="w-[200px] p-0">
+            <Command>
+              <CommandList>
+                <CommandEmpty>No sort item found.</CommandEmpty>
+                <CommandGroup>
+                  {sortBys.map((sortByItem) => (
+                    <CommandItem
+                      key={sortByItem.value}
+                      value={sortByItem.value}
+                      onSelect={(currentValue) => {
+                        setSortBy(currentValue === sortBy ? "" : currentValue);
+                        setSortByOpen(false);
+                      }}
+                    >
+                      {sortByItem.label}
+                      <Check className={sortBy === sortByItem.value ? "opacity-100" : "opacity-0"} />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
+
+        <div className="mt-4">
+          {problemComments.map((comment) => (
+            <ProblemComment
+              key={comment.commentId}
+              comment={comment}
+              updateCommentList={getComments}
+              refreshCommentReplies={refreshCommentReplies}
+            />
+          ))}
+        </div>
+
+        {!problemComments.length && (
+          <div>
+            <p className="text-center text-gray3">No comments yet</p>
+          </div>
         )}
+
+        <div className="mb-12">
+          {totalPages != 0 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(page) => getComments(page)} />
+          )}
+        </div>
       </div>
-    </div>
+    </ParentCommentContext.Provider>
   );
 };

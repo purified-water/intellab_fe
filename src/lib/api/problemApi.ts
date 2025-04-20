@@ -104,6 +104,10 @@ export const problemAPI = {
     return response.data;
   },
   // COMMENTS
+  getCommentById: async (commentId: string) => {
+    const response = await apiClient.get(`problem/problem-comments/${commentId}`);
+    return response.data;
+  },
   getProblemComments: async (
     userId: string | null = null,
     problemId: string,
@@ -169,7 +173,7 @@ export const problemAPI = {
     });
     return response.data;
   },
-  getCommentParantAndChildren: async (commentId: string, userId: string) => {
+  getCommentParentAndChildren: async (commentId: string, userId: string) => {
     const response = await apiClient.get(`problem/problem-comments/${commentId}/root-and-children`, {
       params: {
         userId: userId

@@ -13,6 +13,7 @@ import { problemAPI } from "@/lib/api/problemApi";
 import { useParams } from "react-router-dom";
 import { RootState } from "@/redux/rootReducer";
 import { useNavigate } from "react-router-dom";
+import { useCommentContext, useParentCommentContext } from "@/hooks";
 
 interface ProblemCommentProps {
   comment: ProblemCommentType;
@@ -45,6 +46,10 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
   const [totalPages] = useState(comment.childrenComments?.totalPages ?? 0);
   // Navigation
   const navigate = useNavigate();
+
+  // For highlighting the comment when redirected
+  const redirectedCommentId = useCommentContext().commentId;
+  const redirectedParentCommentId = useParentCommentContext().parentCommentId;
 
   const handleLoadMoreReplies = async (pageNumber: number = 0) => {
     try {
@@ -86,6 +91,12 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
     // This will update the UI when a new reply is added, ensure React re-renders the component
     setReplyList(comment.childrenComments?.content || []);
   }, [comment.childrenComments]);
+
+  useEffect(() => {
+    if (redirectedParentCommentId !== null) {
+      setShowReplies(true);
+    }
+  }, [redirectedCommentId]);
 
   const handleMainCommentReply = async () => {
     if (!comment || !problemId) return;
@@ -167,6 +178,38 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
     }
   };
 
+  const renderCommentReplies = () => {
+    return (
+      showReplies &&
+      commentReplyList &&
+      commentReplyList.length > 0 && (
+        <>
+          <div className="mt-2">
+            {replyList.map((reply, index) => (
+              <ProblemReply
+                key={index}
+                reply={reply}
+                updateCommentList={updateCommentList}
+                refreshCommentReplies={refreshCommentReplies}
+              />
+            ))}
+          </div>
+
+          {comment.childrenComments && totalPages > 1 && currentPage < totalPages && (
+            <div className="flex justify-center mt-2">
+              <div
+                onClick={() => handleLoadMoreReplies(currentPage)}
+                className="px-4 py-2 text-sm cursor-pointer text-appPrimary"
+              >
+                Load More Replies
+              </div>
+            </div>
+          )}
+        </>
+      )
+    );
+  };
+
   const renderUserReply = () => {
     return (
       <div className="mt-4 ml-8">
@@ -219,136 +262,115 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       className="mb-8 comment-component"
+      id={`comment-${comment.commentId}`}
     >
-      {/* User Info */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full bg-gray5">
-            {comment.userAvatar ? (
-              <img src={comment.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
-            ) : null}
+      <div className={`${redirectedCommentId === comment.commentId ? "bg-appInfo/10 rounded-lg p-4" : ""}`}>
+        {/* User Info */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-full bg-gray5">
+              {comment.userAvatar ? (
+                <img src={comment.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+              ) : null}
+            </div>
+            <p onClick={handleUsernameClick} className="text-lg font-semibold cursor-pointer hover:text-appPrimary">
+              {comment.username ? comment.username : "User"}
+            </p>
           </div>
-          <p onClick={handleUsernameClick} className="text-lg font-semibold cursor-pointer hover:text-appPrimary">
-            {comment.username ? comment.username : "User"}
+          <p className="text-sm font-medium text-gray3">
+            {comment.isModified
+              ? `Edited at ${formatDateInProblem(comment.lastModifiedAt, { monthFormat: "short" })}`
+              : formatDateInProblem(comment.createdAt, { monthFormat: "short" })}
           </p>
         </div>
-        <p className="text-sm font-medium text-gray3">
-          {comment.isModified
-            ? `Edited at ${formatDateInProblem(comment.lastModifiedAt, { monthFormat: "short" })}`
-            : formatDateInProblem(comment.createdAt, { monthFormat: "short" })}
-        </p>
-      </div>
 
-      {/* Comment Content / Edit Mode */}
-      {isEditing ? (
-        <div className="mt-2">
-          <textarea
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 focus:outline-none"
-            value={editedContent}
-            onChange={(e) => setEditedContent(e.target.value)}
-            rows={2}
-          />
-          <div className="flex justify-end mt-2 space-x-2">
-            <Button
-              onClick={() => setIsEditing(false)}
-              variant="outline"
-              className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleEditComment}
-              className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
-            >
-              Edit
-            </Button>
-          </div>
-        </div>
-      ) : (
-        <p className="mt-2 text-sm">{editedContent}</p>
-      )}
-
-      {/* Actions (Upvote, Reply, Share) */}
-      <div id="comment-actions" className="flex items-center mt-2 space-x-4">
-        {/* Upvote Button */}
-        <div className="flex items-center space-x-1 cursor-pointer" onClick={handleUpvote}>
-          {upVoted ? (
-            <BiSolidUpvote className="w-4 h-4 icon-appPrimary" />
-          ) : (
-            <BiUpvote className="w-4 h-4 icon-gray3 hover:text-black" />
-          )}
-          <p className="text-xs text-gray2 hover:text-black">{temporaryUpvoteCount}</p>
-        </div>
-
-        {/* Show Replies Button */}
-        <div onClick={() => setShowReplies(!showReplies)} className="flex items-center space-x-1 cursor-pointer">
-          <FaRegComment className="w-4 h-4 icon-gray3 hover:text-black" />
-          {replyList.length > 0 ? (
-            <p className="text-xs text-gray2 hover:text-black">
-              {showReplies ? `Hide ${commentReplyList.length} replies` : `Show ${commentReplyList.length} replies`}
-            </p>
-          ) : null}
-        </div>
-
-        {/* Share Button */}
-        <div
-          onClick={() => {
-            if (!userId) return;
-            setIsReplying(true);
-          }}
-          className="flex items-center space-x-1 cursor-pointer"
-        >
-          <BiShare className="w-5 h-5 icon-gray3 hover:text-black" />
-          <p className="text-xs text-gray2 hover:text-black">Reply</p>
-        </div>
-
-        {isHovering && userId === comment.userUid && (
-          <div className="flex space-x-4 edit-delete-buttons">
-            <div onClick={() => setIsEditing(true)} className="flex items-center space-x-1 cursor-pointer">
-              <Pencil className="w-4 h-4 text-gray3 hover:text-black" />
-              <p className="text-xs text-gray2 hover:text-black">Edit</p>
+        {/* Comment Content / Edit Mode */}
+        {isEditing ? (
+          <div className="mt-2">
+            <textarea
+              className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 focus:outline-none"
+              value={editedContent}
+              onChange={(e) => setEditedContent(e.target.value)}
+              rows={2}
+            />
+            <div className="flex justify-end mt-2 space-x-2">
+              <Button
+                onClick={() => setIsEditing(false)}
+                variant="outline"
+                className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleEditComment}
+                className="px-4 py-2 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/90"
+              >
+                Edit
+              </Button>
             </div>
-
-            <AlertDialog
-              title={"Delete comment"}
-              message={"Are you sure you want to delete this comment?"}
-              onConfirm={() => handleRemoveComment()}
-            >
-              <div className="flex items-center space-x-1 cursor-pointer">
-                <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
-                <p className="text-xs text-gray2 hover:text-black">Delete</p>
-              </div>
-            </AlertDialog>
           </div>
+        ) : (
+          <p className="mt-2 text-sm">{editedContent}</p>
         )}
+
+        {/* Actions (Upvote, Reply, Share) */}
+        <div id="comment-actions" className="flex items-center mt-2 space-x-4">
+          {/* Upvote Button */}
+          <div className="flex items-center space-x-1 cursor-pointer" onClick={handleUpvote}>
+            {upVoted ? (
+              <BiSolidUpvote className="w-4 h-4 icon-appPrimary" />
+            ) : (
+              <BiUpvote className="w-4 h-4 icon-gray3 hover:text-black" />
+            )}
+            <p className="text-xs text-gray2 hover:text-black">{temporaryUpvoteCount}</p>
+          </div>
+
+          {/* Show Replies Button */}
+          <div onClick={() => setShowReplies(!showReplies)} className="flex items-center space-x-1 cursor-pointer">
+            <FaRegComment className="w-4 h-4 icon-gray3 hover:text-black" />
+            {replyList.length > 0 ? (
+              <p className="text-xs text-gray2 hover:text-black">
+                {showReplies ? `Hide ${commentReplyList.length} replies` : `Show ${commentReplyList.length} replies`}
+              </p>
+            ) : null}
+          </div>
+
+          {/* Share Button */}
+          <div
+            onClick={() => {
+              if (!userId) return;
+              setIsReplying(true);
+            }}
+            className="flex items-center space-x-1 cursor-pointer"
+          >
+            <BiShare className="w-5 h-5 icon-gray3 hover:text-black" />
+            <p className="text-xs text-gray2 hover:text-black">Reply</p>
+          </div>
+
+          {isHovering && userId === comment.userUid && (
+            <div className="flex space-x-4 edit-delete-buttons">
+              <div onClick={() => setIsEditing(true)} className="flex items-center space-x-1 cursor-pointer">
+                <Pencil className="w-4 h-4 text-gray3 hover:text-black" />
+                <p className="text-xs text-gray2 hover:text-black">Edit</p>
+              </div>
+
+              <AlertDialog
+                title={"Delete comment"}
+                message={"Are you sure you want to delete this comment?"}
+                onConfirm={() => handleRemoveComment()}
+              >
+                <div className="flex items-center space-x-1 cursor-pointer">
+                  <Trash2 className="w-4 h-4 text-gray3 hover:text-black" />
+                  <p className="text-xs text-gray2 hover:text-black">Delete</p>
+                </div>
+              </AlertDialog>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Replies Section */}
-      {showReplies && commentReplyList && commentReplyList.length > 0 && (
-        <>
-          <div className="mt-2">
-            {replyList.map((reply, index) => (
-              <ProblemReply
-                key={index}
-                reply={reply}
-                updateCommentList={updateCommentList}
-                refreshCommentReplies={refreshCommentReplies}
-              />
-            ))}
-          </div>
-
-          {comment.childrenComments && totalPages > 1 && currentPage < totalPages && (
-            <div className="flex justify-center mt-2">
-              <div
-                onClick={() => handleLoadMoreReplies(currentPage)}
-                className="px-4 py-2 text-sm cursor-pointer text-appPrimary"
-              >
-                Load More Replies
-              </div>
-            </div>
-          )}
-        </>
-      )}
+      {renderCommentReplies()}
 
       {/* User Reply */}
       {isReplying && renderUserReply()}

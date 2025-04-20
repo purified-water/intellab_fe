@@ -10,6 +10,7 @@ import { RootState } from "@/redux/rootReducer";
 import { showToastError, getUserIdFromLocalStorage, isEmptyString } from "@/utils";
 import { ICourse } from "@/types";
 import * as commentStore from "@/redux/comment/commentSlice";
+import { ParentCommentContext, useCommentContext } from "@/hooks";
 
 const SORT_ITEMS: ISortByItem[] = [
   {
@@ -47,6 +48,12 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [spinnerVisible, setSpinnerVisible] = useState(false);
+
+  // Use context to get redirect comment id
+  const redirectCommentId = useCommentContext().commentId;
+  const [parentCommentId, setParentCommentId] = useState<string | null>(null);
+
+  // Create context for highlighting redirected comment
 
   const getCommentsAPI = async (page: number) => {
     await courseAPI.getCourseComments({
@@ -117,14 +124,70 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   };
 
   useEffect(() => {
-    return () => {
-      dispatch(commentStore.setComments([]));
-    };
+    dispatch(commentStore.setComments([]));
   }, []);
 
   useEffect(() => {
-    getCommentsAPI(currentPage);
-  }, [sortingValue, isAuthenticated]);
+    const handleRedirectComment = async () => {
+      if (!redirectCommentId) return;
+      try {
+        await courseAPI.getComment({
+          query: {
+            commentId: redirectCommentId,
+            userUid: userUid
+          },
+          onStart: async () => setSpinnerVisible(true),
+          onSuccess: async (data) => {
+            if (data) {
+              const comment = data;
+              if (comment.parentCommentId) {
+                setParentCommentId(comment.parentCommentId);
+
+                await courseAPI.getComment({
+                  query: {
+                    commentId: comment.parentCommentId,
+                    userUid: userUid
+                  },
+                  onStart: async () => setSpinnerVisible(true),
+                  onSuccess: async (data) => {
+                    if (data) {
+                      dispatch(commentStore.setComments([data]));
+                    }
+                  },
+                  onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+                  onEnd: async () => setSpinnerVisible(false)
+                });
+              } else {
+                setParentCommentId(null);
+                dispatch(commentStore.setComments([comment]));
+              }
+              setCurrentPage(0);
+              setTotalPages(1);
+            }
+          },
+          onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
+          onEnd: async () => setSpinnerVisible(false)
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    if (redirectCommentId) {
+      handleRedirectComment();
+    } else {
+      getCommentsAPI(currentPage);
+    }
+  }, [redirectCommentId, sortingValue, isAuthenticated]);
+
+  useEffect(() => {
+    if (redirectCommentId) {
+      const element = document.getElementById(`comment-${redirectCommentId}`);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  }, [comments]);
 
   const renderCommentInput = () => {
     const handleCreateComment = (content: string) => {
@@ -218,7 +281,7 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
   };
 
   return (
-    <div>
+    <ParentCommentContext.Provider value={{ parentCommentId: parentCommentId }}>
       <div className="px-6 space-y-3 overflow-y-auto">
         {renderCommentInput()}
         {renderSortingButton()}
@@ -226,6 +289,6 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
         {renderPagination()}
       </div>
       {renderSpinner()}
-    </div>
+    </ParentCommentContext.Provider>
   );
 };
