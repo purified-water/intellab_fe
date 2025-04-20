@@ -6,7 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { notificationAPI } from "@/lib/api/notificationAPI";
 import { useDispatch } from "react-redux";
 import { markOneAsRead } from "@/redux/notifications/notificationsSlice";
-import { NotificationRedirectTypes } from "../constants/NotificationRedirectTypes";
 interface NotificationCardProps {
   type: string;
   notification: NotificationType;
@@ -33,9 +32,9 @@ export const NotificationCard = ({ type, notification }: NotificationCardProps) 
     }
     navigate(notification.redirectContent);
 
-    // if (notification.redirectType === NotificationRedirectTypes.COURSE_COMMENT || notification.redirectType === NotificationRedirectTypes.COURSE_REVIEW) {
-    //   navigate(notification.redirectContent);
-    // }
+    if (!notification.redirectType) {
+      navigate(notification.redirectContent);
+    }
   };
 
   if (type === "menu") {

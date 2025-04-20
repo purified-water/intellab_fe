@@ -15,6 +15,7 @@ import * as commentStore from "@/redux/comment/commentSlice";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { ICourse } from "@/types";
+import { useCommentContext, useParentCommentContext } from "../../../../hooks/useCommentContext";
 
 type CourseCommentProps = {
   comment: TComment;
@@ -59,16 +60,25 @@ export const CourseComment = (props: CourseCommentProps) => {
 
   const totalReplies = replies.totalElements;
 
+  // For highlighting redirected comment
+  const redirectedCommentId = useCommentContext().commentId;
+  const redirectedParentCommentId = useParentCommentContext().parentCommentId;
+
   useEffect(() => {
     setEditContent(`${content} `);
   }, [content]);
+
+  useEffect(() => {
+    if (redirectedParentCommentId !== null) {
+      setShowReplies(true);
+    }
+  }, [redirectedCommentId]);
 
   const upvoteCommentAPI = async (commentId: string) => {
     await courseAPI.upvoteComment({
       query: { commentId },
       onStart: async () => setLoading(true),
-      onSuccess: async (numberOfLikes) => {
-        console.log("--> Number of like after upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+      onSuccess: async (_numberOfLikes) => {
         dispatch(commentStore.upvoteComment(comment));
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
@@ -80,8 +90,7 @@ export const CourseComment = (props: CourseCommentProps) => {
     await courseAPI.cancelUpvoteComment({
       query: { commentId },
       onStart: async () => setLoading(true),
-      onSuccess: async (numberOfLikes) => {
-        console.log("--> Number of like after cancel upvote: ", numberOfLikes); // put this line here to prevent eslint error with not using numberOfLikes
+      onSuccess: async (_numberOfLikes) => {
         dispatch(commentStore.cancelUpvoteComment(comment));
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
@@ -377,10 +386,12 @@ export const CourseComment = (props: CourseCommentProps) => {
     };
 
     return (
-      <div>
-        {renderUserInformation()}
-        {renderContent()}
-        {renderActions()}
+      <div id={`comment-${commentId}`}>
+        <div className={`${redirectedCommentId === commentId ? "bg-appInfo/10 p-4 rounded-lg" : ""}`}>
+          {renderUserInformation()}
+          {renderContent()}
+          {renderActions()}
+        </div>
         {replies && renderReplies()}
         {renderReplyInput()}
       </div>

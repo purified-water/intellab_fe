@@ -6,6 +6,7 @@ import { SubmissionInformation } from "./SubmissionInformation";
 import { SubmissionHistory } from "./SubmissionHistory";
 import { ProblemCommentSection } from "./Comments/ProblemCommentSection";
 import { ProblemSolution } from "./ProblemSolution";
+import { useCommentContext } from "@/hooks";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
   courseId: string | null;
@@ -22,9 +23,15 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
   const initialTab = isPassed !== null ? (isPassed ? "Passed" : "Failed") : "Description";
   const [desActive, setDesActive] = useState(initialTab);
 
+  const redirectedCommentId = useCommentContext().commentId;
+
   useEffect(() => {
     if (isPassed !== null) {
       setDesActive(isPassed ? "Passed" : "Failed");
+    } else {
+      if (redirectedCommentId) {
+        setDesActive("Comments");
+      }
     }
   }, [isPassed]);
 

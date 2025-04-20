@@ -12,6 +12,7 @@ import { useToast } from "@/hooks/use-toast";
 import { RootState } from "@/redux/rootReducer";
 import { AvatarIcon } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
+import { useCommentContext } from "@/hooks";
 interface ProblemReplyProps {
   reply: ProblemCommentType;
   updateCommentList: () => void;
@@ -36,6 +37,9 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
   const [editedContent, setEditedContent] = useState(reply.content);
 
   const navigate = useNavigate();
+
+  // Highlight comment
+  const redirectedCommentId = useCommentContext().commentId;
 
   const handleUpvote = async () => {
     if (userId === reply.userUid) return;
@@ -184,9 +188,10 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
   return (
     <div className="flex-col mt-4 ml-8">
       <div
+        id={`comment-${reply.commentId}`}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
-        className="flex items-start space-x-2 reply-component"
+        className={`flex items-start space-x-2 reply-component ${redirectedCommentId === reply.commentId ? "bg-appInfo/10 rounded-lg p-2" : ""}`}
       >
         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
           {reply.userAvatar ? (
