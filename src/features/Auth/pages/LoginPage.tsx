@@ -73,6 +73,13 @@ export const LoginPage = () => {
       onSuccess: async (user) => {
         dispatch(setUser(user));
         await getPremiumStatusAPI(user.userId);
+        dispatch(loginSuccess());
+        setIsLoggingIn(false);
+        if (user.role === "ADMIN") {
+          navigate("/admin");
+        } else {
+          goBack();
+        }
       },
       onFail: async (message) => showToastError({ toast: toast.toast, message })
     });
@@ -110,10 +117,6 @@ export const LoginPage = () => {
 
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
-        dispatch(loginSuccess());
-        setIsLoggingIn(false);
-
-        goBack();
       }
     } catch (error) {
       setIsLoggingIn(false);

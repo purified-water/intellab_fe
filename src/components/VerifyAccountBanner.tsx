@@ -40,5 +40,5 @@ export const VerifyAccountBanner = () => {
         </button>
       </div>
     )
-  )
-}
+  );
+};
