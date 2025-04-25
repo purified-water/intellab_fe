@@ -5,7 +5,7 @@ const DEFAULT_DURATION = 2000;
 type TParameters = {
   toast: typeof toast;
   title?: string;
-  message: string;
+  message: React.ReactNode; // allow JSX elements
   duration?: number;
 };
 
