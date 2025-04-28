@@ -1,29 +1,58 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { AdminSidebar } from "./components/Navigation/AdminSidebar";
+import { AdminSidebar, BreadcrumbNav } from "./components/Navigation";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
+import { SidebarInset } from "@/components/ui/shadcn/sidebar";
 
 export const AdminLayout = () => {
   const userRedux = useSelector((state: RootState) => state.user.user);
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(true);
-  // Redirect non-admin users
-  if (userRedux?.role !== "ADMIN") {
-    navigate("/"); // Redirect to home or another page
-    return null;
+  const [openButton, setOpenButton] = useState(true); // handle showing the sidebar using icon button
+  const [openHover, setOpenHover] = useState(false); // handle showing the sidebar using mouse hover
+
+  useEffect(() => {
+    if (!userRedux || userRedux?.role !== "ADMIN") {
+      navigate("/");
+    }
+  }, [userRedux]);
+
+  const handleSidebarMouseEnter = () => {
+    if (!openButton) {
+      setOpenHover(true);
+    }
   }
 
-  return (
-    <SidebarProvider open={open} onOpenChange={setOpen}>
-      <div className="flex h-screen">
-        <AdminSidebar />
-        <div className="flex-1 p-4">
-          <Outlet />
+  const handleSidebarMouseLeave = () => {
+    if (!openButton) {
+      setOpenHover(false);
+    }
+  }
+
+  let layout = null;
+  if (userRedux && userRedux?.role === "ADMIN") {
+    layout = (
+      <SidebarProvider
+        open={!openButton ? openHover : openButton}
+        onOpenChange={setOpenButton}
+      >
+        <div className="flex h-screen">
+          <AdminSidebar
+            onMouseEnter={handleSidebarMouseEnter}
+            onMouseLeave={handleSidebarMouseLeave}
+          />
+          <SidebarInset className="flex-1">
+            <BreadcrumbNav />
+            <div className="flex-1 p-4">
+              <Outlet />
+            </div>
+          </SidebarInset>
         </div>
-      </div>
-    </SidebarProvider>
-  );
+      </SidebarProvider>
+    );
+  }
+
+  return layout;
 };
