@@ -17,6 +17,8 @@ import StudentOverallRoute from "./features/StudentOverall/route";
 import NotificationRoute from "./features/Notification/route";
 import { TooltipProvider } from "@/components/ui/shadcn/tooltip";
 import { useNotificationSocket } from "@/hooks";
+import AdminRoute from "./features/Admins/route";
+import { AdminLayout } from "./features/Admins/AdminLayout";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
@@ -64,6 +66,11 @@ const router = createBrowserRouter([
       ...ProblemRoute,
       ...NotificationRoute
     ]
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [...AdminRoute]
   }
 ]);
 

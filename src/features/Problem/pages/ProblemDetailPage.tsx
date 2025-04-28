@@ -196,7 +196,15 @@ export const ProblemDetail = () => {
       showToastError({
         toast: toast,
         title: "Email verification required",
-        message: "Please go to Setting Page and verify your email to submit problem"
+        message: (
+          <>
+            Please go to the{" "}
+            <a href="/profile/edit" className="text-appPrimary underline">
+              Setting Page
+            </a>{" "}
+            and verify your email to submit problem.
+          </>
+        )
       });
       return;
     }

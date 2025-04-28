@@ -170,7 +170,15 @@ export const CourseDetailPage = () => {
       showToastError({
         toast: toast.toast,
         title: "Email verification required",
-        message: "Please go to Setting Page and verify your email to enroll in the course"
+        message: (
+          <>
+            Please go to the{" "}
+            <a href="/profile/edit" className="text-appPrimary underline">
+              Setting Page
+            </a>{" "}
+            and verify your email to enroll in the course.
+          </>
+        )
       });
     } else {
       enrollCourseHandler();
@@ -220,7 +228,15 @@ export const CourseDetailPage = () => {
       showToastError({
         toast: toast.toast,
         title: "Email verification required",
-        message: "Please go to Setting Page and verify your email to purchase the course"
+        message: (
+          <>
+            Please go to the{" "}
+            <a href="/profile/edit" className="text-appPrimary underline">
+              Setting Page
+            </a>{" "}
+            and verify your email to purchase the course.
+          </>
+        )
       });
     } else {
       await createCoursePaymentAPI();
