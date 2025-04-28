@@ -4,7 +4,7 @@ import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
-import { ChatBubble } from "./ChatBubble";
+import { ChatBubble } from "../../../components/ui/AIChatBubble";
 import { AIBackground, aiOrbLogo } from "@/assets";
 import {
   PanelLeft,
@@ -258,7 +258,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     return (
       <div
         id="action-buttons"
-        className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration- ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
+        className={`sticky p-2 top-0 z-10 flex items-center justify-between bg-white transition-all duration-300 ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
       >
         <div className="flex items-center">
           {!isMinimized && (
@@ -391,7 +391,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           />
 
           {/* Glassmorphism Overlay - Also moved to top level */}
-          <div className="absolute inset-0 bg-white/65 backdrop-blur-2xl"></div>
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-2xl"></div>
 
           {/* Top Bar */}
           {renderChatTopBar()}

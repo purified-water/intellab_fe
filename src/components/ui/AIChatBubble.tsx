@@ -4,7 +4,7 @@ import remarkGfm from "remark-gfm";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { xonokai } from "react-syntax-highlighter/dist/esm/styles/prism";
 import clsx from "clsx";
-import { ChatbotMessageContentType } from "../types/ChatbotHistoryType";
+import { ChatbotMessageContentType } from "../../features/MainChatBot/types/ChatbotHistoryType";
 
 interface ChatBubbleProps {
   message?: ChatbotMessageContentType;

@@ -10,9 +10,11 @@ export { default as intellabSidePremiumLogo } from "./logos/intellab_side_premiu
 
 // SVGs
 export { default as rateIcon } from "./rate.svg";
-export { default as reactIcon } from "./react.svg";
 
 // Images
 export { default as unavailableImage } from "./unavailable_image.jpg";
 export { default as AIBackground } from "./AIBackground.svg";
 export { default as AIBackground2 } from "./AIBackground2.svg";
+
+export { default as AIExplainer1 } from "./ExplainerTutorial/AIExplainer1.png";
+export { default as AIExplainer2 } from "./ExplainerTutorial/AIExplainer2.png";
