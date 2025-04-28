@@ -394,7 +394,7 @@ export const ProblemDetail = () => {
 
             {isAuthenticated && (
               <Button
-                className="flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80 [&_svg]:size-5"
+                className={`flex items-center justify-center p-4 ml-2 text-white rounded-lg shadow-sm [&_svg]:size-5 ${isAIAssistantOpen ? "bg-gradient-to-tr from-appAIFrom to-appAITo  hover:opacity-80" : "bg-gray2 hover:bg-gray2/80"}`}
                 onClick={() => setIsAIAssistantOpen(!isAIAssistantOpen)}
               >
                 <HiOutlineSparkles className="inline-block w-4 h-4 icon-white" />

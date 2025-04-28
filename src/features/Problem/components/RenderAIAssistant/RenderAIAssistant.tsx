@@ -19,9 +19,9 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineSparkles } from "rocketicons/hi2";
 import { renderWelcomeChat, ProblemChatInput } from "./index";
-import { ChatBubble } from "@/features/MainChatBot/components";
+import { ChatBubble } from "@/components/ui";
 import { ChatHistoryDropDown } from "./ChatHistoryDropDown";
-import { AI_AGENT } from "@/constants";
+import { AI_AGENT, CHATBOT_MODELS } from "@/constants";
 import { ProblemType } from "@/types/ProblemType";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
@@ -37,7 +37,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
-  const [chatModel, setChatModel] = useState("llama3.2");
+  const [chatModel, setChatModel] = useState(CHATBOT_MODELS[0].value);
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
   const dispatch = useDispatch();

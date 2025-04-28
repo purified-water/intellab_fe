@@ -3,7 +3,6 @@ import { ChatbotMessageInputType } from "@/features/MainChatBot/types/ChatbotMes
 import { AI_AGENT } from "@/constants";
 import { ChatbotHistoryItemType, ChatTitleGeneratorPayload } from "@/features/MainChatBot/types";
 import { removeChatTitleQuotes } from "@/utils";
-// const BASE_URL = "http://localhost:8106/ai"; // Wait for AI service to connect with API gateway
 
 export const aiAPI = {
   // *********** //
@@ -146,7 +145,6 @@ export const aiAPI = {
     message: string,
     userId: string,
     threadId: string,
-
     problemId?: string
   ) => {
     const bodyParams: ChatTitleGeneratorPayload = {
@@ -180,7 +178,7 @@ export const aiAPI = {
   },
   // AI MAIN CHATBOT/PROBLEM ASSISTANT STREAMING DATA - SSE
   postChatbotMessageStream: async (
-    agent: "global_chatbot" | "problem_chatbot",
+    agent: "global_chatbot" | "problem_chatbot" | "lesson_chatbot",
     message: string,
     model: string = "llama3.2",
     userId: string,
