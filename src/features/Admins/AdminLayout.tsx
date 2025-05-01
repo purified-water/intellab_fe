@@ -4,6 +4,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { AdminSidebar } from "./components/Navigation/AdminSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
+import { DashboardPage } from "./features/dashboard/pages";
 
 export const AdminLayout = () => {
   const userRedux = useSelector((state: RootState) => state.user.user);
@@ -20,10 +21,11 @@ export const AdminLayout = () => {
     <SidebarProvider open={open} onOpenChange={setOpen}>
       <div className="flex h-screen">
         <AdminSidebar />
-        <div className="flex-1 p-4">
+        <div className="flex-1 min-w-0 p-6 overflow-y-auto">
           <Outlet />
         </div>
       </div>
     </SidebarProvider>
+    // <DashboardPage></DashboardPage>
   );
 };
