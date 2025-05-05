@@ -11,13 +11,13 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
       { label: "Thu", completionRate: 77 },
       { label: "Fri", completionRate: 82 },
       { label: "Sat", completionRate: 85 },
-      { label: "Sun", completionRate: 79 },
+      { label: "Sun", completionRate: 79 }
     ],
     Weekly: [
       { label: "Week 1", completionRate: 72 },
       { label: "Week 2", completionRate: 75 },
       { label: "Week 3", completionRate: 78 },
-      { label: "Week 4", completionRate: 80 },
+      { label: "Week 4", completionRate: 80 }
     ],
     Monthly: [
       { label: "Jan", completionRate: 70 },
@@ -31,13 +31,13 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
       { label: "Sep", completionRate: 85 },
       { label: "Oct", completionRate: 83 },
       { label: "Nov", completionRate: 86 },
-      { label: "Dec", completionRate: 88 },
+      { label: "Dec", completionRate: 88 }
     ],
     Custom: [
       // This would typically be filtered based on the dateRange
       { label: "Period 1", completionRate: 76 },
       { label: "Period 2", completionRate: 79 },
-      { label: "Period 3", completionRate: 84 },
+      { label: "Period 3", completionRate: 84 }
     ]
   };
 
@@ -59,12 +59,7 @@ export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
         <AreaChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" fontSize={10} />
-          <YAxis 
-            domain={[0, 100]} 
-            fontSize={10} 
-            width={25} 
-            tickMargin={4} 
-          />
+          <YAxis domain={[0, 100]} fontSize={10} width={25} tickMargin={4} />
           <Tooltip formatter={(value) => `${value}%`} />
           <defs>
             <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
@@ -72,12 +67,7 @@ export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
               <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <Area 
-            type="monotone" 
-            dataKey="completionRate" 
-            stroke="#22c55e" 
-            fill="url(#completionGradient)" 
-          />
+          <Area type="monotone" dataKey="completionRate" stroke="#22c55e" fill="url(#completionGradient)" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -92,9 +82,7 @@ export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
       <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
-        <YAxis 
-          domain={[0, 100]}
-        />
+        <YAxis domain={[0, 100]} />
         <Tooltip formatter={(value) => `${value}%`} />
         <defs>
           <linearGradient id="completionGradientLarge" x1="0" y1="0" x2="0" y2="1">
@@ -102,11 +90,11 @@ export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
             <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
           </linearGradient>
         </defs>
-        <Area 
-          type="monotone" 
-          dataKey="completionRate" 
-          stroke="#22c55e" 
-          fill="url(#completionGradientLarge)" 
+        <Area
+          type="monotone"
+          dataKey="completionRate"
+          stroke="#22c55e"
+          fill="url(#completionGradientLarge)"
           strokeWidth={2}
         />
       </AreaChart>

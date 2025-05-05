@@ -28,7 +28,7 @@ export const DashboardPage = () => {
       icon: Coins,
       change: "+20.1%",
       changeNote: "from last month",
-      changeType: "increase" as "increase"
+      changeType: "increase" as const
     },
     {
       title: "Subscriptions",
@@ -36,7 +36,7 @@ export const DashboardPage = () => {
       icon: Users,
       change: "+8",
       changeNote: "new users this month",
-      changeType: "increase" as "increase"
+      changeType: "increase" as const
     },
     {
       title: "Active Users",
@@ -44,7 +44,7 @@ export const DashboardPage = () => {
       icon: Activity,
       change: "+201",
       changeNote: "since last hour",
-      changeType: "increase" as "increase"
+      changeType: "increase" as const
     },
     {
       title: "Courses Purchased",
@@ -52,7 +52,7 @@ export const DashboardPage = () => {
       icon: ShoppingCart,
       change: "-19",
       changeNote: "since last month",
-      changeType: "decrease" as "decrease"
+      changeType: "decrease" as const
     }
   ];
 
@@ -93,7 +93,7 @@ export const DashboardPage = () => {
       amount: "100,000,000₫",
       date: "2023-04-23",
       status: "Completed",
-      type: "Course" as "Course"
+      type: "Course" as const
     },
     {
       name: "Jack Lee",
@@ -101,7 +101,7 @@ export const DashboardPage = () => {
       amount: "50,000,000₫",
       date: "2023-04-22",
       status: "Completed",
-      type: "Plan" as "Plan"
+      type: "Plan" as const
     },
     {
       name: "William Brown",
@@ -109,7 +109,7 @@ export const DashboardPage = () => {
       amount: "75,000,000₫",
       date: "2023-04-20",
       status: "Completed",
-      type: "Plan" as "Plan"
+      type: "Plan" as const
     },
     {
       name: "Sophia Garcia",
@@ -117,7 +117,7 @@ export const DashboardPage = () => {
       amount: "30,000,000₫",
       date: "2023-04-19",
       status: "Failed",
-      type: "Course" as "Course"
+      type: "Course" as const
     },
     {
       name: "Emma Wilson",
@@ -125,7 +125,7 @@ export const DashboardPage = () => {
       amount: "120,000,000₫",
       date: "2023-04-17",
       status: "Completed",
-      type: "Course" as "Course"
+      type: "Course" as const
     },
     {
       name: "Noah Lee",
@@ -133,7 +133,7 @@ export const DashboardPage = () => {
       amount: "45,000,000₫",
       date: "2023-04-16",
       status: "Completed",
-      type: "Plan" as "Plan"
+      type: "Plan" as const
     },
     {
       name: "Ava Tran",
@@ -141,7 +141,7 @@ export const DashboardPage = () => {
       amount: "90,000,000₫",
       date: "2023-04-15",
       status: "Failed",
-      type: "Course" as "Course"
+      type: "Course" as const
     },
     {
       name: "Mia Jones",
@@ -149,30 +149,30 @@ export const DashboardPage = () => {
       amount: "80,000,000₫",
       date: "2023-04-13",
       status: "Completed",
-      type: "Course" as "Course"
+      type: "Course" as const
     }
   ];
 
   const allPurchases = [
-    { name: "Olivia Martin", email: "olivia@email.com", amount: "200,000,000₫", plan: "Premium" as "Premium" },
-    { name: "James Williams", email: "james@email.com", amount: "150,000,000₫", plan: "Premium" as "Premium" },
-    { name: "Barbara Nguyen", email: "barbara@email.com", amount: "120,000,000₫", plan: "Free" as "Free" },
-    { name: "Robert Johnson", email: "robert@email.com", amount: "115,000,000₫", plan: "Premium" as "Premium" },
-    { name: "Emma Smith", email: "emma@email.com", amount: "110,000,000₫", plan: "Premium" as "Premium" },
-    { name: "Michael Lee", email: "michael@email.com", amount: "100,000,000₫", plan: "Free" as "Free" },
-    { name: "Sophia Kim", email: "sophia@email.com", amount: "95,000,000₫", plan: "Free" as "Free" },
-    { name: "David Tran", email: "david@email.com", amount: "90,000,000₫", plan: "Premium" as "Premium" },
-    { name: "Emily Wang", email: "emily@email.com", amount: "85,000,000₫", plan: "Free" as "Free" },
-    { name: "William Chen", email: "william@email.com", amount: "80,000,000₫", plan: "Premium" as "Premium" },
-    { name: "Ava Garcia", email: "ava@email.com", amount: "75,000,000₫", plan: "Free" as "Free" },
-    { name: "Noah Pham", email: "noah@email.com", amount: "70,000,000₫", plan: "Premium" as "Premium" }
+    { name: "Olivia Martin", email: "olivia@email.com", amount: "200,000,000₫", plan: "Premium" as const },
+    { name: "James Williams", email: "james@email.com", amount: "150,000,000₫", plan: "Premium" as const },
+    { name: "Barbara Nguyen", email: "barbara@email.com", amount: "120,000,000₫", plan: "Free" as const },
+    { name: "Robert Johnson", email: "robert@email.com", amount: "115,000,000₫", plan: "Premium" as const },
+    { name: "Emma Smith", email: "emma@email.com", amount: "110,000,000₫", plan: "Premium" as const },
+    { name: "Michael Lee", email: "michael@email.com", amount: "100,000,000₫", plan: "Free" as const },
+    { name: "Sophia Kim", email: "sophia@email.com", amount: "95,000,000₫", plan: "Free" as const },
+    { name: "David Tran", email: "david@email.com", amount: "90,000,000₫", plan: "Premium" as const },
+    { name: "Emily Wang", email: "emily@email.com", amount: "85,000,000₫", plan: "Free" as const },
+    { name: "William Chen", email: "william@email.com", amount: "80,000,000₫", plan: "Premium" as const },
+    { name: "Ava Garcia", email: "ava@email.com", amount: "75,000,000₫", plan: "Free" as const },
+    { name: "Noah Pham", email: "noah@email.com", amount: "70,000,000₫", plan: "Premium" as const }
   ];
 
   return (
-    <div className="w-screen h-screen pr-96 py-6 space-y-8">
-      <h1 className="text-4xl text-appPrimary font-bold tracking-tight">Dashboard</h1>
+    <div className="w-screen h-full py-6 space-y-8 pr-96">
+      <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Dashboard</h1>
 
-      <div className="flex gap-2 items-center">
+      <div className="flex items-center gap-2">
         {/* Select time range */}
         <Select value={rangeType} onValueChange={(val) => setRangeType(val as any)}>
           <SelectTrigger className="w-[150px]">
@@ -191,7 +191,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Khối 1: Top KPIs */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {topStats.map((stat, idx) => (
           <TopStatCard
             key={idx}
@@ -206,7 +206,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Khối 2: Biểu đồ nhỏ */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
         {/* <ZoomableChartCard
           title="Submissions Success Rate"
           children={<SubmissionsPieChart rangeType={rangeType} dateRange={dateRange} />}
@@ -247,7 +247,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Khối 3: Revenue Chart + Completion Rate Chart */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {/* Revenue Chart */}
         <ZoomableChartCard
           title="Revenue"
@@ -273,7 +273,7 @@ export const DashboardPage = () => {
       </div>
 
       {/* Footer: Giao dịch - Subscribers - Problems */}
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
         {/* Recent Transactions */}
         <TransactionsList title="Recent Transactions" transactions={allTransactions} limit={3} />
         {/* Top Subscribers */}

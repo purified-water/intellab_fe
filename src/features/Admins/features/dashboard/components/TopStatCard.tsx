@@ -22,17 +22,8 @@ export function TopStatCard({ title, value, icon: Icon, change, changeNote, chan
 
       <div className="text-2xl font-bold text-black">{value}</div>
 
-      <div
-        className={cn(
-          "text-xs flex items-center",
-          isIncrease ? "text-green-600" : "text-red-500"
-        )}
-      >
-        {isIncrease ? (
-          <ArrowUpRight className="w-3 h-3 mr-1" />
-        ) : (
-          <ArrowDownRight className="w-3 h-3 mr-1" />
-        )}
+      <div className={cn("text-xs flex items-center", isIncrease ? "text-green-600" : "text-red-500")}>
+        {isIncrease ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
         {change} {changeNote}
       </div>
     </div>

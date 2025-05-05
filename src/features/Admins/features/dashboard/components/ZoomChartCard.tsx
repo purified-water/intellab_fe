@@ -22,21 +22,23 @@ interface ZoomableChartCardProps {
   setDateRange: (date: DateRange | undefined) => void;
 }
 
-export function ZoomableChartCard({ title,
-    children,
-    largeChart,
-    rangeType,
-    dateRange,
-    setRangeType,
-    setDateRange, }: ZoomableChartCardProps) {
+export function ZoomableChartCard({
+  title,
+  children,
+  largeChart,
+  rangeType,
+  dateRange,
+  setRangeType,
+  setDateRange
+}: ZoomableChartCardProps) {
   const [open, setOpen] = useState(false);
-//   const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly">("Monthly");
-//   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-//     from: new Date(),
-//     to: new Date()
-//   });
+  //   const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly">("Monthly");
+  //   const [dateRange, setDateRange] = useState<DateRange | undefined>({
+  //     from: new Date(),
+  //     to: new Date()
+  //   });
 
-return (
+  return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
         <div className="rounded-lg border p-4 relative shadow">
@@ -70,9 +72,7 @@ return (
             </Select>
 
             {/* Date Picker */}
-              {rangeType === "Custom" && (
-                <DatePickerWithRange date={dateRange} setDate={setDateRange} />
-              )}
+            {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={setDateRange} />}
           </div>
 
           <div className="h-[400px] mt-6">{largeChart}</div>

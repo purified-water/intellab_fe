@@ -10,13 +10,13 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
       { label: "Thu", value: 800000 },
       { label: "Fri", value: 1200000 },
       { label: "Sat", value: 900000 },
-      { label: "Sun", value: 750000 },
+      { label: "Sun", value: 750000 }
     ],
     Weekly: [
       { label: "Week 1", value: 3500000 },
       { label: "Week 2", value: 4200000 },
       { label: "Week 3", value: 3800000 },
-      { label: "Week 4", value: 4500000 },
+      { label: "Week 4", value: 4500000 }
     ],
     Monthly: [
       { label: "Jan", value: 12000000 },
@@ -30,13 +30,13 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
       { label: "Sep", value: 22000000 },
       { label: "Oct", value: 19000000 },
       { label: "Nov", value: 21000000 },
-      { label: "Dec", value: 25000000 },
+      { label: "Dec", value: 25000000 }
     ],
     Custom: [
       // This would typically be filtered based on the dateRange
       { label: "Custom 1", value: 5000000 },
       { label: "Custom 2", value: 7000000 },
-      { label: "Custom 3", value: 9000000 },
+      { label: "Custom 3", value: 9000000 }
     ]
   };
 
@@ -58,11 +58,11 @@ export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" fontSize={10} />
-          <YAxis 
-            fontSize={10} 
-            width={25} 
-            tickMargin={4} 
-            tickFormatter={(value) => `${(value/1000000).toFixed(0)}M`}
+          <YAxis
+            fontSize={10}
+            width={25}
+            tickMargin={4}
+            tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
           />
           <Tooltip formatter={(value) => `${value.toLocaleString()}₫`} />
           <Bar dataKey="value" fill="#5a3295" radius={[4, 4, 0, 0]} />
@@ -80,9 +80,7 @@ export function RevenueLargeBarChart({ rangeType, dateRange }: Props) {
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
-        <YAxis 
-          tickFormatter={(value) => `${(value/1000000).toFixed(0)}M`} 
-        />
+        <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
         <Tooltip formatter={(value) => `${value.toLocaleString()}₫`} />
         <Bar dataKey="value" fill="#4f46e5" radius={[4, 4, 0, 0]} />
       </BarChart>
