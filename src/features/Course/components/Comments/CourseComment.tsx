@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { CommentReply } from "./CommentReply";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
 import { FaRegComment } from "rocketicons/fa6";
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useToast } from "@/hooks/use-toast";
@@ -15,7 +15,7 @@ import * as commentStore from "@/redux/comment/commentSlice";
 import { useNavigate } from "react-router-dom";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { ICourse } from "@/types";
-import { useCommentContext, useParentCommentContext } from "../../../../hooks/useCommentContext";
+import { useCommentContext, useParentCommentContext } from "@/hooks/useCommentContext";
 
 type CourseCommentProps = {
   comment: TComment;

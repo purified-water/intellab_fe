@@ -76,7 +76,7 @@ export const Header = (props: HeaderProps) => {
     return (
       <button
         disabled={disable}
-        className="px-6 py-1 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
+        className="px-6 py-1 text-base font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >
         {buttonText}

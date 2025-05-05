@@ -41,7 +41,7 @@ export const AdminLayout = () => {
   if (userRedux && userRedux?.role === USER_ROLES.ADMIN) {
     layout = (
       <SidebarProvider open={!openButton ? openHover : openButton} onOpenChange={setOpenButton}>
-        <div className="flex">
+        <div className="flex flex-1">
           <AdminSidebar onMouseEnter={handleSidebarMouseEnter} onMouseLeave={handleSidebarMouseLeave} />
           <SidebarInset className="flex-1">
             <BreadcrumbNav />

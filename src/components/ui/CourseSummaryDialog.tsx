@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 import { FaFilePdf } from 'rocketicons/fa';
 import { aiAPI } from '@/lib/api';
 import { X } from 'lucide-react';
-import { Button } from './shadcn/Button';
+import { Button } from "./Button";
 import { useEffect } from 'react';
 
 interface CourseSummaryDialogProps {

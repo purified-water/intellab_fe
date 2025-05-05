@@ -10,6 +10,8 @@ import mainChatbotReducer from "./mainChatbot/mainChatbotSlice";
 import premiumStatusReducer from "./premiumStatus/premiumStatusSlice";
 import notifcationsReducer from "./notifications/notificationsSlice";
 import lessonChatbotReducer from "./lessonChatbot/lessonChatbotSlice";
+import createCourseReducer from "./createCourse/createCourseSlice";
+import createLessonReducer from "./createCourse/createLessonSlice";
 
 const rootReducer = combineReducers({
   auth: authReducer,
@@ -22,7 +24,9 @@ const rootReducer = combineReducers({
   mainChatbot: mainChatbotReducer,
   premiumStatus: premiumStatusReducer,
   notifications: notifcationsReducer,
-  lessonChatbot: lessonChatbotReducer
+  lessonChatbot: lessonChatbotReducer,
+  createCourse: createCourseReducer,
+  createLesson: createLessonReducer
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

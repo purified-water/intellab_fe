@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BiUpvote, BiSolidUpvote, BiShare } from "rocketicons/bi";
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { AvatarIcon, AlertDialog } from "@/components/ui";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
