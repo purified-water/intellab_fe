@@ -101,11 +101,11 @@ export function AdminSidebar(props: AdminSidebarProps) {
       <div className="flex flex-col group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
         <div className="flex items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
           <div className="mr-2 group-data-[collapsible=icon]:mr-0">
-            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="w-12 h-12" />
+            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="w-10 h-10" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
-            <span className="text-2xl font-bold text-appPrimary">Intellab</span>
-            <span className="text-sm font-medium bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text text-transparent">
+            <span className="text-xl font-bold text-appPrimary">Intellab</span>
+            <span className="text-sm font-medium text-transparent bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text">
               Admin Page
             </span>
           </div>
@@ -126,13 +126,13 @@ export function AdminSidebar(props: AdminSidebarProps) {
                     <item.icon
                       className={cn(
                         "mr-2 group-data-[collapsible=icon]:mr-0",
-                        pathname === item.href ? "text-appPrimary" : "text-gray4"
+                        pathname === item.href ? "text-appPrimary" : "text-gray3"
                       )}
                     />
                     <span
                       className={cn(
-                        pathname === item.href ? "text-appPrimary" : "text-gray4",
-                        "group-data-[collapsible=icon]:hidden font-semibold text-lg"
+                        pathname === item.href ? "text-appPrimary" : "text-gray3",
+                        "group-data-[collapsible=icon]:hidden font-semibold text-base"
                       )}
                     >
                       {item.title}
@@ -150,8 +150,8 @@ export function AdminSidebar(props: AdminSidebarProps) {
   const renderDropdownMenuItems = () =>
     dropdownMenuItems.map((item, index) => (
       <DropdownMenuItem key={index} onClick={() => item.onClick(navigate, userRedux!)} className="cursor-pointer">
-        <item.icon className="mr-2 h-8 w-8" />
-        <span className="text-lg">{item.label}</span>
+        <item.icon className="w-8 h-8 mr-2" />
+        <span className="text-base">{item.label}</span>
       </DropdownMenuItem>
     ));
 
@@ -164,7 +164,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
               <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
                 <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
                 <div className="flex flex-col items-start text-sm group-data-[collapsible=icon]:hidden">
-                  <span className="font-semibold text-lg">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
+                  <span className="text-base font-semibold">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
                   <span className="text-xs text-gray3">{userRedux?.email}</span>
                 </div>
               </div>
@@ -175,15 +175,15 @@ export function AdminSidebar(props: AdminSidebarProps) {
             <div className="flex items-center gap-3 p-3 border-b">
               <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
               <div className="flex flex-col">
-                <span className="font-semibold text-lg">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
+                <span className="text-lg font-semibold">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
                 <span className="text-xs text-gray3">{userRedux?.email}</span>
               </div>
             </div>
             <div className="p-1">{renderDropdownMenuItems()}</div>
-            <div className="border-t p-1">
+            <div className="p-1 border-t">
               <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
-                <LogOut className="mr-2 h-8 w-8" />
-                <span className="text-lg">Logout</span>
+                <LogOut className="mr-2 w-7 h-7" />
+                <span className="text-base">Logout</span>
               </DropdownMenuItem>
             </div>
           </DropdownMenuContent>
@@ -193,11 +193,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
   );
 
   return (
-    <Sidebar
-      collapsible="icon"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+    <Sidebar collapsible="icon" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {renderHeader()}
       {renderBody()}
       {renderFooter()}

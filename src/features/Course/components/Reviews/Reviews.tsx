@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/shadcn/card";
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { Star } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";

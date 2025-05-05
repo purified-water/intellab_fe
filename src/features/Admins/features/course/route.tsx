@@ -1,10 +1,31 @@
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 import { CourseListPage } from "./components";
+import { CourseWizardLayout } from "./components/CreateCourse";
+import { CourseFinalStepsPage, CourseGeneralPage, CourseLessonsPage, CoursePreviewPage } from "./pages/CreateCourse";
 
 const CourseRoute: RouteObject[] = [
   {
     path: "courses",
-    element: <CourseListPage />
+    children: [
+      {
+        index: true, // /courses
+        element: <CourseListPage />
+      },
+      {
+        path: "create",
+        element: <CourseWizardLayout />,
+        children: [
+          {
+            index: true,
+            element: <Navigate to="general" replace />
+          },
+          { path: "general", element: <CourseGeneralPage /> },
+          { path: "lessons", element: <CourseLessonsPage /> },
+          { path: "final-steps", element: <CourseFinalStepsPage /> },
+          { path: "preview", element: <CoursePreviewPage /> }
+        ]
+      }
+    ]
   }
 ];
 

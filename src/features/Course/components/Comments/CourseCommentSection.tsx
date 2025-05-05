@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CourseComment } from "./CourseComment";
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { Spinner, SortByButton, ISortByItem, Pagination } from "@/components/ui";
 import { TComment } from "@/features/Course/types";
 import { useToast } from "@/hooks/use-toast";

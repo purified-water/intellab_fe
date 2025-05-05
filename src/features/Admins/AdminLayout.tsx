@@ -23,26 +23,20 @@ export const AdminLayout = () => {
     if (!openButton) {
       setOpenHover(true);
     }
-  }
+  };
 
   const handleSidebarMouseLeave = () => {
     if (!openButton) {
       setOpenHover(false);
     }
-  }
+  };
 
   let layout = null;
   if (userRedux && userRedux?.role === "ADMIN") {
     layout = (
-      <SidebarProvider
-        open={!openButton ? openHover : openButton}
-        onOpenChange={setOpenButton}
-      >
-        <div className="flex h-screen">
-          <AdminSidebar
-            onMouseEnter={handleSidebarMouseEnter}
-            onMouseLeave={handleSidebarMouseLeave}
-          />
+      <SidebarProvider open={!openButton ? openHover : openButton} onOpenChange={setOpenButton}>
+        <div className="flex flex-1">
+          <AdminSidebar onMouseEnter={handleSidebarMouseEnter} onMouseLeave={handleSidebarMouseLeave} />
           <SidebarInset className="flex-1">
             <BreadcrumbNav />
             <div className="flex-1 p-4">

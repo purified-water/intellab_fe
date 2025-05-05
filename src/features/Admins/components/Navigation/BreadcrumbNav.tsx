@@ -46,7 +46,7 @@ export function BreadcrumbNav({ items: propItems }: BreadcrumbNavProps) {
   const breadcrumbItems = propItems || generateBreadcrumbItems();
 
   return (
-    <div className="flex h-14 items-center bg-background px-4">
+    <div className="flex items-center px-4 h-14 bg-background">
       <SidebarTrigger className="mr-2" />
       <div className="flex items-center text-sm text-muted-foreground">
         {breadcrumbItems.map((item, index) => {
@@ -54,13 +54,11 @@ export function BreadcrumbNav({ items: propItems }: BreadcrumbNavProps) {
 
           return (
             <React.Fragment key={item.href}>
-              {index > 0 && <ChevronRight className="mx-2 h-4 w-4" />}
+              {index > 0 && <ChevronRight className="w-4 h-4 mx-2" />}
               {isLast || item.active ? (
-                <span className={item.active ? "text-lg font-medium text-gray2" : "text-gray4 text-lg"}>
-                  {item.label}
-                </span>
+                <span className={item.active ? "font-medium text-gray2" : "text-gray4 "}>{item.label}</span>
               ) : (
-                <Link to={item.href} className="hover:text-gray4 text-lg transition-colors">
+                <Link to={item.href} className="transition-colors hover:text-gray4">
                   {item.label}
                 </Link>
               )}
