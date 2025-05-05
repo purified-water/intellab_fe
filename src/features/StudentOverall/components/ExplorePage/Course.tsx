@@ -36,8 +36,10 @@ export function Course(props: CourseProps) {
     try {
       const response = await courseAPI.getCourseDetail(course!.courseId);
       setCourseDetail(response.result);
-    } catch (e) {
-      console.log("--> Get course detail error", e);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("--> Get course detail error: ", error);
+      }
     } finally {
       setInternalLoading(false);
     }

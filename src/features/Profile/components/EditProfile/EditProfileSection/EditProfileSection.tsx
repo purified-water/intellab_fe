@@ -313,12 +313,13 @@ export function EditProfileSection() {
               retypePassword: ""
             }));
           }
-        } catch (e) {
-          console.log("--> handle change password error: ", e); // put this line here to prevent eslint error with not using "e"
-          setErrors((prev) => ({
-            ...prev,
-            currentPassword: "Incorrect current password"
-          }));
+        } catch (error: unknown) {
+          if (error instanceof Error) {
+            setErrors((prev) => ({
+              ...prev,
+              currentPassword: "Incorrect current password"
+            }));
+          }
         }
       }
     };

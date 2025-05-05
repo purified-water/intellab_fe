@@ -26,7 +26,7 @@ import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 
 export const Layout = () => {
   const location = useLocation();
-  const hideNavbar = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password", "/profile/reset-password"].includes(location.pathname);
   const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   useEffect(() => {

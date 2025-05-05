@@ -2,6 +2,8 @@ import { Navigate, RouteObject } from "react-router-dom";
 import { CourseListPage } from "./components";
 import { CourseWizardLayout } from "./components/CreateCourse";
 import { CourseFinalStepsPage, CourseGeneralPage, CourseLessonsPage, CoursePreviewPage } from "./pages/CreateCourse";
+import { RouteObject } from "react-router-dom";
+import { CourseListPage } from "./pages";
 
 const CourseRoute: RouteObject[] = [
   {

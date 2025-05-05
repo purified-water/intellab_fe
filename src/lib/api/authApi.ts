@@ -1,7 +1,12 @@
 import { apiClient } from "./apiClient";
 import { TGetPremiumStatusParams, TGetPremiumStatusResponse } from "@/features/StudentOverall/types";
-import { TResetPasswordParams, TResentVerificationEmailParams } from "@/features/Auth/types/apiType";
-import { HTTPS_STATUS_CODE } from "@/constants";
+import {
+  TResetPasswordParams,
+  TResentVerificationEmailParams,
+  TUpdatePasswordParams,
+  TUpdatePasswordResponse
+} from "@/features/Auth/types/apiType";
+import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
 
 export const authAPI = {
   login: async (email: string, password: string) => {
@@ -28,8 +33,10 @@ export const authAPI = {
       } else {
         await onFail(DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -56,8 +63,10 @@ export const authAPI = {
       } else {
         await onFail(DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -84,8 +93,37 @@ export const authAPI = {
       } else {
         await onFail(DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  updatePassword: async ({ body, onStart, onSuccess, onFail, onEnd }: TUpdatePasswordParams) => {
+    const DEFAULT_ERROR = "Failed to update password";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const response = await apiClient.post("identity/auth/update-password", body);
+      const data: TUpdatePasswordResponse = response.data;
+
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
