@@ -10,11 +10,12 @@ import { Button } from "@/components/ui";
 // import MarkdownEditor from "../components/MarkdownRender2";
 import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 // import { testData } from "../components/testData";
-import { TOCItem, TableOfContents } from "../components";
+import { AIExplainerMenu, AIExplainerTutorialModal, LessonAiOrb, TOCItem, TableOfContents } from "../components";
 import { AppFooter } from "@/components/AppFooter";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { setUser } from "@/redux/user/userSlice";
+import { useAIExplainer } from "../hooks/useAIExplainer";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -34,6 +35,12 @@ export const LessonDetailPage = () => {
 
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+
+  const [isExplainerToggled, setIsExplainerToggled] = useState(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState(localStorage.getItem("hasViewedExplainerTutorial") !== "true");
+
+  const { menuRef, menuPosition, isAIExplainerOpen, setIsAIExplainerOpen, selectedText, setSelectedText } =
+    useAIExplainer({ isExplainerToggled });
 
   useEffect(() => {
     getCourseDetail();
@@ -107,7 +114,7 @@ export const LessonDetailPage = () => {
       onSuccess: async (user) => {
         dispatch(setUser(user));
       },
-      onFail: async (message) => console.log("--> Error get profile", message)
+      onFail: async (message) => console.log("Error get profile", message)
     });
   };
 
@@ -281,7 +288,8 @@ export const LessonDetailPage = () => {
   const renderContent = () => {
     if (lesson && lesson.content != null) {
       return (
-        <div className="pr-4 space-y-6">
+        <div className="pr-4 space-y-6" id="lesson-detail-content">
+          {/* id for the AI Explainer to only explain the highlighted text inside lesson detail*/}
           <RenderLessonMarkdown lesson={lesson} setTocItems={setTocItems} />
           {renderContinueToQuiz()}
           {isLessonDone && lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}
@@ -296,7 +304,7 @@ export const LessonDetailPage = () => {
 
   return (
     <>
-      <div className="grid grid-cols-1 gap-2 p-6 sm:pl-24 lg:grid-cols-5 md:pl-32 md:pr-8">
+      <div className="grid grid-cols-1 gap-2 p-6 sm:pl-24 lg:grid-cols-5 md:pl-40 md:pr-24">
         {loading ? (
           <div className="col-span-1 lg:col-span-4">{renderSkeleton()}</div>
         ) : (
@@ -313,6 +321,44 @@ export const LessonDetailPage = () => {
           </>
         )}
       </div>
+
+      {menuPosition && (
+        <>
+          {isAIExplainerOpen && <div className="fixed inset-0 bg-transparent"></div>}
+
+          <div
+            style={{
+              position: "absolute",
+              top: menuPosition.y,
+              left: menuPosition.align === "left" ? menuPosition.x : undefined,
+              right: menuPosition.align === "right" ? window.innerWidth - menuPosition.x : undefined
+            }}
+          >
+            <AIExplainerMenu
+              ref={menuRef}
+              isOpen={isAIExplainerOpen}
+              setIsOpen={setIsAIExplainerOpen}
+              input={selectedText}
+              setInput={setSelectedText}
+              lesson={lesson}
+            />
+          </div>
+        </>
+      )}
+
+      {isTutorialOpen && (
+        <AIExplainerTutorialModal
+          onClose={() => {
+            localStorage.setItem("hasViewedExplainerTutorial", "true");
+            setIsTutorialOpen(false);
+          }}
+        />
+      )}
+      <LessonAiOrb
+        isExplainerEnabled={isExplainerToggled}
+        setIsExplainerToggled={setIsExplainerToggled}
+        lesson={lesson}
+      />
       <AppFooter />
     </>
   );

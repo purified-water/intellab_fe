@@ -76,7 +76,7 @@ export const LoginPage = () => {
         dispatch(loginSuccess());
         setIsLoggingIn(false);
         if (user.role === "ADMIN") {
-          navigate("/admin");
+          navigate("/admin/dashboard");
         } else {
           goBack();
         }
