@@ -73,45 +73,47 @@ export default function CourseSummaryDialog(props: CourseSummaryDialogProps) {
         title: 'Saved!',
         description: 'Summary saved as PDF',
       });
-    } catch (error) {
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        toast({
+          title: 'Failed to save as PDF',
+          description: `Failed to save summary as PDF: ${error.message}`,
+          variant: 'destructive',
+        });
+      }
+    };
+
+    const handleCopySummaryContent = () => {
+      navigator.clipboard.writeText(summaryContent);
       toast({
-        title: 'Failed to save as PDF',
-        description: `Failed to save summary as PDF: ${error.message}`,
-        variant: 'destructive',
-      });
+        title: 'Copied!',
+        description: 'Summary content copied to clipboard',
+      })
     }
-  };
 
-  const handleCopySummaryContent = () => {
-    navigator.clipboard.writeText(summaryContent);
-    toast({
-      title: 'Copied!',
-      description: 'Summary content copied to clipboard',
-    })
-  }
+    const renderFooter = () => {
+      return (
+        <div className='flex items-center justify-between px-6 py-4 text-base'>
+          <button className='flex items-center px-8 py-1 space-x-2 font-semibold border rounded-lg text-gray2 border-gray3 hover:bg-gray5' onClick={handleSaveAsPDF}>
+            <FaFilePdf className='icon-gray2 icon-sm' />
+            <p>Save as PDF</p>
+          </button>
+          <Button variant="ghost" size="icon" onClick={handleCopySummaryContent} className='-mr-2 '>
+            <Files className='cursor-pointer text-gray2' />
+          </Button>
 
-  const renderFooter = () => {
+        </div>
+      )
+    }
+
     return (
-      <div className='flex items-center justify-between px-6 py-4 text-base'>
-        <button className='flex items-center px-8 py-1 space-x-2 font-semibold border rounded-lg text-gray2 border-gray3 hover:bg-gray5' onClick={handleSaveAsPDF}>
-          <FaFilePdf className='icon-gray2 icon-sm' />
-          <p>Save as PDF</p>
-        </button>
-        <Button variant="ghost" size="icon" onClick={handleCopySummaryContent} className='-mr-2 '>
-          <Files className='cursor-pointer text-gray2' />
-        </Button>
-
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-gray6">
+        <div className="bg-white rounded-2xl min-w-[900px] w-full mx-[400px]">
+          {renderHeader()}
+          {renderBody()}
+          {renderFooter()}
+        </div>
       </div>
     )
   }
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-75 bg-gray6">
-      <div className="bg-white rounded-2xl min-w-[900px] w-full mx-[400px]">
-        {renderHeader()}
-        {renderBody()}
-        {renderFooter()}
-      </div>
-    </div>
-  )
 }

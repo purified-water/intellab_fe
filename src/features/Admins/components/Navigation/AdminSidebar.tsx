@@ -193,11 +193,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
   );
 
   return (
-    <Sidebar
-      collapsible="icon"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-    >
+    <Sidebar collapsible="icon" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
       {renderHeader()}
       {renderBody()}
       {renderFooter()}

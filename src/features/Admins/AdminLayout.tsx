@@ -6,16 +6,21 @@ import { AdminSidebar, BreadcrumbNav } from "./components/Navigation";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { DashboardPage } from "./features/dashboard/pages";
 import { SidebarInset } from "@/components/ui/shadcn/sidebar";
+import { USER_ROLES } from "@/constants";
 
 export const AdminLayout = () => {
   const userRedux = useSelector((state: RootState) => state.user.user);
   const navigate = useNavigate();
 
-  const [openButton, setOpenButton] = useState(true); // handle showing the sidebar using icon button
+  const [openButton, setOpenButton] = useState(false); // handle showing the sidebar using icon button
   const [openHover, setOpenHover] = useState(false); // handle showing the sidebar using mouse hover
 
   useEffect(() => {
-    if (!userRedux || userRedux?.role !== "ADMIN") {
+    document.title = "Admin | Intellab";
+  }, []);
+
+  useEffect(() => {
+    if (!userRedux || userRedux?.role !== USER_ROLES.ADMIN) {
       navigate("/");
     }
   }, [userRedux]);
@@ -24,26 +29,20 @@ export const AdminLayout = () => {
     if (!openButton) {
       setOpenHover(true);
     }
-  }
+  };
 
   const handleSidebarMouseLeave = () => {
     if (!openButton) {
       setOpenHover(false);
     }
-  }
+  };
 
   let layout = null;
-  if (userRedux && userRedux?.role === "ADMIN") {
+  if (userRedux && userRedux?.role === USER_ROLES.ADMIN) {
     layout = (
-      <SidebarProvider
-        open={!openButton ? openHover : openButton}
-        onOpenChange={setOpenButton}
-      >
-        <div className="flex h-screen">
-          <AdminSidebar
-            onMouseEnter={handleSidebarMouseEnter}
-            onMouseLeave={handleSidebarMouseLeave}
-          />
+      <SidebarProvider open={!openButton ? openHover : openButton} onOpenChange={setOpenButton}>
+        <div className="flex">
+          <AdminSidebar onMouseEnter={handleSidebarMouseEnter} onMouseLeave={handleSidebarMouseLeave} />
           <SidebarInset className="flex-1">
             <BreadcrumbNav />
             <div className="flex-1 p-4">

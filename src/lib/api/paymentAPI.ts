@@ -64,8 +64,10 @@ export const paymentAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -108,8 +110,10 @@ export const paymentAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -132,8 +136,10 @@ export const paymentAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -159,8 +165,10 @@ export const paymentAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();

@@ -125,8 +125,10 @@ export const LessonDetailPage = () => {
         const { result } = response;
 
         setCourse(result);
-      } catch (error) {
-        console.log("Error fetching course detail", error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log("Error fetching course detail", error);
+        }
       }
     }
   };

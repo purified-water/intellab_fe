@@ -1,5 +1,5 @@
 import { RouteObject } from "react-router-dom";
-import { CourseListPage } from "./components";
+import { CourseListPage } from "./pages";
 
 const CourseRoute: RouteObject[] = [
   {

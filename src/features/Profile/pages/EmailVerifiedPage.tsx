@@ -22,12 +22,14 @@ export function EmailVerifiedPage() {
       if (!reduxUser!.isEmailVerified) {
         dispatch(setEmailVerified());
       }
-    } catch (error) {
-      showToastError({
-        toast: toast.toast,
-        title: "Error refreshing token",
-        message: error.message
-      });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({
+          toast: toast.toast,
+          title: "Error refreshing token",
+          message: error.message
+        });
+      }
     } finally {
       setLoading(false);
     }
