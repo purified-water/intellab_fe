@@ -1,1 +1,2 @@
-export * from "./CourseListPage";
+export * from "./CourseList/CourseList";
+export * from "./FilterDialog";

@@ -32,6 +32,14 @@ import {
 } from "@/features/Course/types";
 import { TGetCompletedCourseListMeResponse } from "@/features/Profile/types";
 import { API_RESPONSE_CODE } from "@/constants";
+import {
+  TGetCourseForAdminResponse,
+  TDeleteCourseResponse,
+  TGetCourseForAdminParams,
+  TDeleteCourseParams,
+  TUpdateCourseAvailabilityResponse,
+  TUpdateCourseAvailabilityParams
+} from "@/features/Admins/features/course/types";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -190,8 +198,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -215,8 +225,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -240,8 +252,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -272,8 +286,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -302,8 +318,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -334,8 +352,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -365,8 +385,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -390,8 +412,10 @@ export const courseAPI = {
       } else {
         await onFail(message ?? DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();
@@ -406,5 +430,98 @@ export const courseAPI = {
     const response = await apiClient.get(`/course/courses/courseList/me`, { params: queryParams });
     const data: TGetCompletedCourseListMeResponse = response.data;
     return data;
+  },
+
+  getCourseForAdmin: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetCourseForAdminParams) => {
+    const DEFAULT_ERROR = "Error getting course for admin";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { filter } = query!;
+      const { keyword, rating, levels, categories, prices, isCompletedCreation } = filter;
+      const categoryIds = categories.map((category) => category.categoryId);
+      const response = await apiClient.get(`/course/courses/search`, {
+        params: {
+          keyword: keyword,
+          ratings: rating ? (parseFloat(rating) > 0 ? parseFloat(rating) : null) : null,
+          price: prices.length === 1 && prices.some((price) => price === "Paid"),
+          categories: categoryIds.join(","),
+          levels: levels.length > 0 ? levels.join(",") : null,
+          isCompletedCreation: isCompletedCreation,
+          size: 100
+        }
+      });
+      const data: TGetCourseForAdminResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  deleteCourse: async ({ query, onStart, onSuccess, onFail, onEnd }: TDeleteCourseParams) => {
+    const DEFAULT_ERROR = "Error deleting course";
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { courseId } = query!;
+      const response = await apiClient.delete(`/course/courses/${courseId}`);
+      const data: TDeleteCourseResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
+  },
+
+  updateCourseAvailability: async ({ query, onStart, onSuccess, onFail, onEnd }: TUpdateCourseAvailabilityParams) => {
+    const DEFAULT_ERROR = "Error updating course availability";
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { courseId, isAvailable } = query!;
+      const response = await apiClient.put(
+        `/course/courses/update-available-status/${courseId}?availableStatus=${isAvailable}`
+      );
+      const data: TUpdateCourseAvailabilityResponse = response.data;
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   }
 };
