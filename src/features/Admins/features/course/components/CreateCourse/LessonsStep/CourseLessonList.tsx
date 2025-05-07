@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddLessonModal } from "./AddLessonModal";
@@ -8,26 +8,33 @@ import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-ki
 import { LessonAction } from "../../../types";
 import { CreateLessonSchema } from "../../../schemas";
 import { useDispatch } from "react-redux";
-import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
-
-// const initialLessons: Lesson[] = [
-//   { id: "1", title: "What is the data type." },
-//   { id: "2", title: "Getting Started with Array Data Structure" },
-//   { id: "3", title: "Introduction to Queue Data Structure" },
-//   { id: "4", title: "Applications, Advantages and Disadvantages of Queue" },
-//   { id: "5", title: "Implement Stack using Array" }
-// ];
+import { deleteLesson, setCreateCourse } from "@/redux/createCourse/createCourseSlice";
+import { useCreateLesson } from "../../../hooks";
 
 interface CourseLessonListProps {
   lessons: CreateLessonSchema[];
   onSelect: (action: LessonAction) => void;
+  onCreateLesson: (action: LessonAction) => void;
 }
 
-export function CourseLessonList({ lessons, onSelect }: CourseLessonListProps) {
+export function CourseLessonList({ lessons, onSelect, onCreateLesson }: CourseLessonListProps) {
   const [selectedLesson, setSelectedLesson] = useState<CreateLessonSchema | null>(null);
   const [showList, setShowList] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
+  const createCourseLesson = useCreateLesson();
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (listRef.current && !listRef.current.contains(event.target as Node)) {
+        setSelectedLesson(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [onSelect]);
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
@@ -42,10 +49,18 @@ export function CourseLessonList({ lessons, onSelect }: CourseLessonListProps) {
 
   const handleAction = (action: LessonAction) => {
     if (!action) return;
+    if (action.type === "add-blank" || action.type === "add-clone") {
+      onCreateLesson(action);
+    }
     if (action.type !== "delete" && action.type !== "duplicate") {
       onSelect(action);
     }
-    // Implement duplicate/delete as needed
+    if (action.type === "delete") {
+      if (!action.lessonId) return;
+      createCourseLesson.deleteLesson.mutateAsync(action.lessonId).then(() => {
+        dispatch(deleteLesson(action.lessonId!));
+      });
+    }
   };
 
   const toggleList = () => {
@@ -68,7 +83,7 @@ export function CourseLessonList({ lessons, onSelect }: CourseLessonListProps) {
               items={lessons.map((lesson) => ({ id: lesson.lessonId }))}
               strategy={verticalListSortingStrategy}
             >
-              <div className="space-y-3">
+              <div ref={listRef} className="space-y-3">
                 {lessons.map((lesson) => (
                   <LessonItem
                     onAction={(action) => {

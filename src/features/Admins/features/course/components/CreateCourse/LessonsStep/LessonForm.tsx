@@ -31,26 +31,43 @@ interface LessonFormProps {
 
 export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: LessonFormProps) => {
   const lessonList = useSelector((state: RootState) => state.createCourse.courseLessons);
-  const selectedLesson = lessonList.find((lesson) => lesson.lessonId === lessonId);
+  const lessonInCreation = useSelector((state: RootState) => state.createLesson); // For creating a new lesson
+  const selectedLesson = lessonList.find((lesson: CreateLessonSchema) => lesson.lessonId === lessonId); // For viewing/editing only
   const { goToStep } = useCourseWizardStep();
   const isReadOnly = lessonActionType === "view";
 
   // Use memo to only change when lessonActionType or selectedLesson changes
-  const defaultValues = useMemo(() => {
-    if (lessonActionType === "create") {
+  const defaultValues: CreateLessonSchema = useMemo(() => {
+    if (lessonActionType === "create" && lessonInCreation.lessonId) {
       return {
-        lessonId: "",
+        lessonId: lessonInCreation.lessonId,
         lessonName: "",
         lessonDescription: "",
         lessonContent: "",
         hasQuiz: false,
-        lessonQuiz: DEFAULT_QUIZ,
+        lessonQuiz: undefined,
         hasProblem: false,
-        lessonProblemId: ""
+        lessonProblemId: "",
+        lessonOrder: lessonInCreation.lessonOrder
       };
     }
-    return selectedLesson || {};
-  }, [lessonActionType, selectedLesson]);
+    return {
+      lessonId: "",
+      lessonName: "",
+      lessonDescription: "",
+      lessonContent: "",
+      hasQuiz: false,
+      lessonQuiz: DEFAULT_QUIZ,
+      hasProblem: false,
+      lessonProblemId: "",
+      lessonOrder: 0,
+      ...selectedLesson
+    };
+  }, [lessonActionType, selectedLesson, lessonInCreation.lessonId]);
+
+  useEffect(() => {
+    form.reset(defaultValues);
+  }, [defaultValues]);
 
   // Initialize form with Zod validation
   const form = useForm<CreateLessonSchema>({
@@ -69,36 +86,23 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
 
   const { hasQuiz, hasProblem } = form.watch();
 
-  // Reset quiz data if hasQuiz is false, set to undefined so it doesn't validate
   useEffect(() => {
-    if (!hasQuiz) {
+    if (hasQuiz) {
+      form.setValue("lessonQuiz", DEFAULT_QUIZ);
+    } else {
       form.setValue("lessonQuiz", undefined);
-      console.log("Quiz disabled, resetting quiz data");
     }
   }, [hasQuiz]);
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSave, (errors) => console.log("Validation errors:", errors))}
+        onSubmit={form.handleSubmit(onSave, (errors) => {
+          console.log("form data:", form.getValues());
+          console.log("Validation errors:", errors);
+        })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
       >
-        <FormField
-          control={form.control}
-          name="lessonId"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <RequiredInputLabel label="Lesson ID" />
-              </FormLabel>
-              <FormControl>
-                <Input {...field} disabled={isReadOnly} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="lessonName"

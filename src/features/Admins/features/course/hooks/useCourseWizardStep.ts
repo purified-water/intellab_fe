@@ -13,9 +13,12 @@ export const useCourseWizardStep = () => {
   const currentStepIndex = steps.findIndex((step) => location.pathname.includes(step.path));
   const currentStep = steps[currentStepIndex];
 
-  const goToStep = (index: number, type: AdminCourseViewTypes = "create") => {
-    if (index >= 0 && index < steps.length) {
-      navigate(`/admin/courses/${type}/${steps[index].path}`);
+  const goToStep = (index: number) => {
+    if (index === steps.length) {
+      // Finsish, return to course page
+      navigate("/admin/courses");
+    } else if (index >= 0 && index < steps.length) {
+      navigate(`/admin/courses/create/${steps[index].path}`);
     }
   };
 

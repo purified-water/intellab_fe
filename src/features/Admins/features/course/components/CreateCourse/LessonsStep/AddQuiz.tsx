@@ -9,25 +9,28 @@ interface AddQuizProps {
   readOnly?: boolean;
 }
 
+const EMPTY_QUIZ: CreateQuizSchema = {
+  quizQuestions: [],
+  totalQuestions: 0,
+  displayedQuestions: 0,
+  requiredCorrectQuestions: 0
+};
+
 export const AddQuiz = ({ readOnly }: AddQuizProps) => {
   const {
     watch,
     setValue,
     register,
     formState: { errors }
-  } = useFormContext<{ lessonQuiz: CreateQuizSchema }>();
+  } = useFormContext<{ lessonQuiz?: CreateQuizSchema }>();
 
-  const value = watch("lessonQuiz");
+  const value = watch("lessonQuiz") ?? EMPTY_QUIZ;
 
   useEffect(() => {
-    const calculateTotalQuestions = () => {
-      if (value.quizQuestions.length > 0) {
-        const totalQuestions = value.quizQuestions.length;
-        setValue("lessonQuiz.totalQuestions", totalQuestions);
-      }
-    };
-    calculateTotalQuestions();
-  }, [value.quizQuestions]);
+    if (value.quizQuestions.length > 0) {
+      setValue("lessonQuiz.totalQuestions", value.quizQuestions.length);
+    }
+  }, [value.quizQuestions.length]);
 
   const handleChange = (partial: Partial<CreateQuizSchema>) => {
     setValue("lessonQuiz", { ...value, ...partial }, { shouldValidate: true });

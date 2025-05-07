@@ -19,10 +19,13 @@ import { TooltipProvider } from "@/components/ui/shadcn/tooltip";
 import { useNotificationSocket } from "@/hooks";
 import AdminRoute from "./features/Admins/route";
 import { AdminLayout } from "./features/Admins/AdminLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
 import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
+
+const queryClient = new QueryClient(); // Define outside of the component to avoid re-creating it on every render
 
 export const Layout = () => {
   const location = useLocation();
@@ -80,10 +83,12 @@ function App() {
 
   return (
     <React.StrictMode>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TooltipProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
     </React.StrictMode>
   );
 }

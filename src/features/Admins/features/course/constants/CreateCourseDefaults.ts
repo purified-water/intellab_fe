@@ -18,7 +18,13 @@ const DEFAULT_CREATE_COURSE: ICreateCourse = {
   certificateId: "",
   certificateUrl: "",
   categories: [],
-  summaryContent: "Summary Content"
+  summaryContent: "Summary Content",
+  courseImage: "",
+  isAvailable: false,
+  isCompletedCreation: false,
+  enrollments: 0,
+  currentCreationStep: 0,
+  currentCreationStepDescription: "Current Creation Step Description"
 };
 
 const DEFAULT_CREATE_COURSE_LESSONS = [
@@ -70,10 +76,22 @@ const DEFAULT_CREATE_COURSE_LESSONS = [
 ];
 
 const DEFAULT_QUIZ: CreateQuizSchema = {
-  totalQuestions: 0,
-  displayedQuestions: 0,
-  requiredCorrectQuestions: 0,
-  quizQuestions: []
+  totalQuestions: 1,
+  displayedQuestions: 1,
+  requiredCorrectQuestions: 1,
+  quizQuestions: [
+    {
+      questionId: "question_id",
+      questionTitle: "Question Title",
+      correctAnswer: 1,
+      options: [
+        { order: 1, option: "Option 1" },
+        { order: 2, option: "Option 2" },
+        { order: 3, option: "Option 3" },
+        { order: 4, option: "Option 4" }
+      ]
+    }
+  ]
 };
 
 export { DEFAULT_CREATE_COURSE, DEFAULT_CREATE_COURSE_LESSONS, DEFAULT_QUIZ };

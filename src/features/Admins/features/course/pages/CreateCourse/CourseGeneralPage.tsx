@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCourseSchema } from "../../schemas";
 import { CourseWizardButtons, RequiredInputLabel, CourseCategoriesSelect } from "../../components/CreateCourse";
-import { useCourseWizardStep } from "../../hooks";
+import { useCourseCategories, useCourseWizardStep, useUploadCourseImage } from "../../hooks";
 import {
   FormField,
   FormItem,
@@ -19,12 +19,17 @@ import {
   SelectValue
 } from "@/components/ui/shadcn";
 import { z } from "zod";
-import { ImageUploadForm } from "@/components/ui";
+import { ImageUploadForm, Spinner } from "@/components/ui";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { RootState } from "@/redux/rootReducer";
+import { useCreateCourseGeneral } from "../../hooks";
+import { showToastError } from "@/utils";
+import { useToast } from "@/hooks";
+import { Category, CreateCourseGeneralStepPayload } from "@/types";
 
 const courseGeneralSchema = createCourseSchema.pick({
+  courseId: true,
   courseName: true,
   courseDescription: true,
   courseCategories: true,
@@ -38,29 +43,64 @@ export const CourseGeneralPage = () => {
   const { goToNextStep } = useCourseWizardStep();
   const dispatch = useDispatch();
   const formData = useSelector((state: RootState) => state.createCourse);
+  const toast = useToast();
+
+  const { data: categories, isLoading: loadingCategories } = useCourseCategories();
+  const createCourse = useCreateCourseGeneral();
+  const uploadThumbnail = useUploadCourseImage();
+
   // Initialize form with Zod validation
   const form = useForm<CourseGeneralSchema>({
     resolver: zodResolver(courseGeneralSchema),
     defaultValues: {
+      courseId: formData.courseId || "",
       courseName: formData.courseName || "",
       courseDescription: formData.courseDescription || "",
       courseCategories: formData.courseCategories || [],
-      courseLevel: formData.courseLevel || "beginner",
-      courseThumbnail: formData.courseThumbnail || ""
+      courseLevel: formData.courseLevel || "Beginner",
+      courseThumbnail: formData.courseThumbnail || null
     }
   });
 
-  const onSubmit = (data: CourseGeneralSchema) => {
-    dispatch(setCreateCourse(data));
-    // Call goToNextStep after successful form submission
-    goToNextStep();
-  };
+  const normalizedCategories = categories?.map((category: Category) => ({
+    ...category,
+    categoryId: String(category.categoryId)
+  }));
 
-  console.log("Form data:", form.getValues());
+  const onSubmit = async (data: CourseGeneralSchema) => {
+    dispatch(setCreateCourse(data)); // Set data to redux store
+
+    const formatPayload: CreateCourseGeneralStepPayload = {
+      courseName: data.courseName,
+      description: data.courseDescription,
+      level: data.courseLevel,
+      categoryIds: data.courseCategories.map((category) => category.categoryId)
+    };
+
+    try {
+      const course = await createCourse.mutateAsync(formatPayload);
+      dispatch(setCreateCourse({ courseId: course.courseId }));
+      await uploadThumbnail.mutateAsync({
+        courseId: course.courseId,
+        file: data.courseThumbnail!
+      });
+
+      goToNextStep();
+    } catch (error) {
+      console.error("Error uploading thumbnail:", error);
+      showToastError({ toast: toast.toast, message: "Error uploading general information" });
+    }
+  };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col mx-auto gap-8 max-w-[1000px]">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (errors) => {
+          console.error("Form submission errors:", errors);
+          showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
+        })}
+        className="flex flex-col mx-auto gap-8 max-w-[1000px]"
+      >
         <FormField
           control={form.control}
           name="courseName"
@@ -93,21 +133,29 @@ export const CourseGeneralPage = () => {
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="courseCategories"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>
-                <RequiredInputLabel label="Categories" />
-              </FormLabel>
-              <FormControl>
-                <CourseCategoriesSelect value={field.value} onChange={field.onChange} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {loadingCategories ? (
+          <Spinner className="w-10 h-10 mx-auto" loading={loadingCategories} />
+        ) : (
+          <FormField
+            control={form.control}
+            name="courseCategories"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <RequiredInputLabel label="Categories" />
+                </FormLabel>
+                <FormControl>
+                  <CourseCategoriesSelect
+                    value={field.value}
+                    onChange={field.onChange}
+                    categories={normalizedCategories}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
 
         <FormField
           control={form.control}
@@ -124,9 +172,9 @@ export const CourseGeneralPage = () => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="beginner">Beginner</SelectItem>
-                  <SelectItem value="intermediate">Intermediate</SelectItem>
-                  <SelectItem value="advance">Advanced</SelectItem>
+                  <SelectItem value="Beginner">Beginner</SelectItem>
+                  <SelectItem value="Intermediate">Intermediate</SelectItem>
+                  <SelectItem value="Advanced">Advanced</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

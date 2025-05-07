@@ -9,10 +9,11 @@ interface LessonAiOrbProps {
   isExplainerEnabled: boolean;
   setIsExplainerToggled: (value: boolean) => void;
   lesson: ILesson | null;
+  askFollowUp?: boolean | undefined;
 }
 
-export const LessonAiOrb = ({ isExplainerEnabled, setIsExplainerToggled, lesson }: LessonAiOrbProps) => {
-  const [chatOpen, setChatOpen] = useState(false);
+export const LessonAiOrb = ({ isExplainerEnabled, setIsExplainerToggled, lesson, askFollowUp }: LessonAiOrbProps) => {
+  const [chatOpen, setChatOpen] = useState(askFollowUp || false);
 
   return (
     <>

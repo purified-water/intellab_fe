@@ -1,16 +1,15 @@
 import { PreviewCourseBody } from "./PreviewCourseBody";
 import { PreviewCourseHeader } from "./PreviewCourseHeader";
-import { useState } from "react";
-import { ICreateCourse } from "../../../types";
-import { DEFAULT_CREATE_COURSE } from "../../../constants";
+import { RootState } from "@/redux/rootReducer";
+import { useSelector } from "react-redux";
 
 export const PreviewCourse = () => {
-  const [course] = useState<ICreateCourse>(DEFAULT_CREATE_COURSE);
+  const coursePreviewData = useSelector((state: RootState) => state.createCourse);
 
   return (
     <div>
-      <PreviewCourseHeader course={course} />
-      <PreviewCourseBody course={course} />
+      <PreviewCourseHeader course={coursePreviewData} />
+      <PreviewCourseBody course={coursePreviewData} />
     </div>
   );
 };
