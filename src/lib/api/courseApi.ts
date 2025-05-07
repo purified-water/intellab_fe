@@ -442,7 +442,7 @@ export const courseAPI = {
       const { filter } = query!;
       const { keyword, rating, levels, categories, prices, isCompletedCreation } = filter;
       const categoryIds = categories.map((category) => category.categoryId);
-      const response = await apiClient.get(`/course/courses/search`, {
+      const response = await apiClient.get(`/course/admin/courses/search`, {
         params: {
           keyword: keyword,
           ratings: rating ? (parseFloat(rating) > 0 ? parseFloat(rating) : null) : null,
@@ -478,7 +478,7 @@ export const courseAPI = {
     }
     try {
       const { courseId } = query!;
-      const response = await apiClient.delete(`/course/courses/${courseId}`);
+      const response = await apiClient.delete(`/course/admin/courses/${courseId}`);
       const data: TDeleteCourseResponse = response.data;
       const { code, result, message } = data;
       if (code == API_RESPONSE_CODE.SUCCESS) {
@@ -505,7 +505,7 @@ export const courseAPI = {
     try {
       const { courseId, isAvailable } = query!;
       const response = await apiClient.put(
-        `/course/courses/update-available-status/${courseId}?availableStatus=${isAvailable}`
+        `/course/admin/courses/update-available-status/${courseId}?availableStatus=${isAvailable}`
       );
       const data: TUpdateCourseAvailabilityResponse = response.data;
       const { code, result, message } = data;

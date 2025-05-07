@@ -18,8 +18,10 @@ export function ViewAllSubmissionList() {
     try {
       const response = await problemAPI.getSubmissionListMe(userId);
       setSubmissions(response.reverse());
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting submission list" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error getting submission list" });
+      }
     } finally {
       setLoading(false);
     }

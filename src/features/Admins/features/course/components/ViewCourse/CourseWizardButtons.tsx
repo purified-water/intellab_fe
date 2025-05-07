@@ -10,6 +10,7 @@ type CourseWizardButtonsProps = {
   disabledNext?: boolean;
   ignoreSubmit?: boolean;
   onCallback?: () => void;
+  type?: "create" | "view" | "edit";
 };
 
 export const CourseWizardButtons = ({
@@ -17,7 +18,9 @@ export const CourseWizardButtons = ({
   showPrev = true,
   customNextText,
   disabledNext = false,
-  ignoreSubmit
+  ignoreSubmit,
+  onCallback,
+  type = "create"
 }: CourseWizardButtonsProps) => {
   const location = useLocation();
   const { goToPrevStep, goToNextStep } = useCourseWizardStep();
@@ -30,7 +33,7 @@ export const CourseWizardButtons = ({
       {showPrev && (
         <Button
           variant="outline"
-          onClick={() => goToPrevStep}
+          onClick={() => goToPrevStep(type)}
           disabled={currentStepIndex === 0}
           className="px-4 py-2 text-gray2 disabled:opacity-50"
         >
@@ -43,19 +46,22 @@ export const CourseWizardButtons = ({
           type="button"
           disabled={disabledNext || isSubmitting}
           className="px-4 py-1 text-sm font-semibold text-white rounded-lg h-9 bg-appPrimary hover:bg-appPrimary/80 disabled:opacity-50"
-          onClick={() => {
-            goToNextStep();
-          }}
+          onClick={() => goToNextStep(type)}
         >
-          {customNextText || (isLastStep ? "Save & Finish" : "Save & Continue")}
+          {customNextText || (isLastStep ? "Finish" : "Continue")}
         </button>
       ) : (
         <button
           type="submit"
           disabled={disabledNext || isSubmitting}
           className="px-4 py-1 text-sm font-semibold text-white rounded-lg h-9 bg-appPrimary hover:bg-appPrimary/80 disabled:opacity-50"
+          onClick={() => {
+            if (onCallback) {
+              onCallback();
+            }
+          }}
         >
-          {customNextText || (isLastStep ? "Save & Finish" : "Save & Continue")}
+          {customNextText || (isLastStep ? "Finish" : "Continue")}
         </button>
       )}
     </div>

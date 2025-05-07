@@ -6,6 +6,7 @@ import { CREATE_COURSE_THUMBNAIL_MAX_SIZE } from "@/constants";
 interface ImageUploadProps {
   value: string | null; // base64 string
   onChange: (base64: string | null) => void;
+  disabled?: boolean;
 }
 
 const fileToBase64 = (file: File): Promise<string> =>
@@ -16,7 +17,7 @@ const fileToBase64 = (file: File): Promise<string> =>
     reader.readAsDataURL(file);
   });
 
-export const ImageUploadForm = ({ value, onChange }: ImageUploadProps) => {
+export const ImageUploadForm = ({ value, onChange, disabled = false }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,14 +51,14 @@ export const ImageUploadForm = ({ value, onChange }: ImageUploadProps) => {
             alt="Preview"
             className="object-cover w-full h-auto rounded-md"
           />
-          <Button
+          {!disabled && <Button
             variant="ghost"
             size="icon"
             onClick={removeFile}
             className="absolute rounded-full top-1 right-1 bg-white/80 hover:bg-white"
           >
             <X className="w-4 h-4" />
-          </Button>
+          </Button>}
         </div>
       ) : (
         <div

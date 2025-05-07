@@ -246,13 +246,13 @@ export function FilterDialog(props: FilterDialogProps) {
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.5 }}
       style={{ overflow: "hidden" }}
-      className="flex items-center py-2"
+      className="py-2 px-9 inline-block"
     >
       <div
         style={{
           boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)"
         }}
-        className="w-[1100px] p-6 mx-auto text-black rounded-lg shadow-lg shadow-spread-2"
+        className="w-[1000px] p-6 text-black rounded-lg shadow-lg shadow-spread-2"
       >
         <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
         <div className="space-y-4">

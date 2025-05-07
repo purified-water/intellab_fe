@@ -37,8 +37,10 @@ export const ProfileSection = (props: ProfileSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error getting user profile" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting user profile" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error getting user profile" });
+      }
     } finally {
       setLoading(false);
     }
