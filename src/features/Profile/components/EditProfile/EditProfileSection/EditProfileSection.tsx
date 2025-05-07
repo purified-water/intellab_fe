@@ -117,8 +117,10 @@ export function EditProfileSection() {
         );
         showToastSuccess({ toast: toast.toast, message: "Profile updated successfully" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Failed to update profile" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Failed to update profile" });
+      }
     }
   };
 
@@ -133,8 +135,10 @@ export function EditProfileSection() {
       } else {
         showToastError({ toast: toast.toast, message: "Failed to upload avatar" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error uploading avatar" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error uploading avatar" });
+      }
     }
   };
 

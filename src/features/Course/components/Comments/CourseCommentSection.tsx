@@ -168,8 +168,10 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
           onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
           onEnd: async () => setSpinnerVisible(false)
         });
-      } catch (error) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error);
+        }
       }
     };
 

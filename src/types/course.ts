@@ -8,7 +8,7 @@ export interface ICourse {
   description: string;
   latestLessonId: string;
   lessonCount: number;
-  level: string;
+  level: "Beginner" | "Intermediate" | "Advance";
   price: number;
   progressPercent: number;
   reviewCount: number | null;
@@ -23,7 +23,7 @@ export interface ICourse {
   currentCreationStepDescription: string;
   isCompletedCreation: boolean;
   courseImage: string;
-  enrollments: number | null;
+  numberOfEnrolledStudents: number | null;
 }
 
 export interface ICompletedCourse {

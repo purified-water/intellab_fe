@@ -29,8 +29,10 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error getting completed course list" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting completed course list" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error getting completed course list" });
+      }
     } finally {
       setLoading(false);
     }

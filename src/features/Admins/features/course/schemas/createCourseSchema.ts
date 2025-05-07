@@ -16,14 +16,14 @@ export const createCourseSchema = z.object({
   courseCategories: z
     .array(
       z.object({
-        id: z.string(),
+        categoryId: z.number(),
         name: z.string()
       })
     )
     .refine((categories) => categories.length > 0, {
       message: "At least one category is required"
     }),
-  courseLevel: z.enum(["beginner", "intermediate", "advance"]),
+  courseLevel: z.enum(["Beginner", "Intermediate", "Advance"]),
   courseThumbnail: z
     .string()
     .nullable()

@@ -71,8 +71,10 @@ export const ProgressCircle = () => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting problem statistics" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting problem statistics" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error getting problem statistics" });
+      }
     } finally {
       setLoading(false);
     }
