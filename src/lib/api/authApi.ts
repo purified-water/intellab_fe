@@ -111,7 +111,7 @@ export const authAPI = {
       await onStart();
     }
     try {
-      const response = await apiClient.post("identity/auth/update-password", body);
+      const response = await apiClient.post("identity/auth/update-new-password", body);
       const data: TUpdatePasswordResponse = response.data;
 
       const { code, result, message } = data;

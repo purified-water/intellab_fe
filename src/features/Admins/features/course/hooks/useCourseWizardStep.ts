@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 // import { useDispatch } from "react-redux";
 import { steps } from "../constants";
 // import { setCourseStepData } from "../store/courseSlice";
+import { AdminCourseViewTypes } from "../constants";
 
 // Separate the wizard navigation and data management logic from UI
 export const useCourseWizardStep = () => {
@@ -21,12 +22,12 @@ export const useCourseWizardStep = () => {
     }
   };
 
-  const goToNextStep = () => {
-    goToStep(currentStepIndex + 1);
+  const goToNextStep = (type?: AdminCourseViewTypes) => {
+    goToStep(currentStepIndex + 1, type);
   };
 
-  const goToPrevStep = () => {
-    goToStep(currentStepIndex - 1);
+  const goToPrevStep = (type?: AdminCourseViewTypes) => {
+    goToStep(currentStepIndex - 1, type);
   };
 
   const saveStepData = () => {

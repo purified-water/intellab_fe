@@ -7,7 +7,8 @@ const initialState: CourseState = {
   courses: [],
   exploreCourses: [],
   originalExploreCourses: [],
-  hasFilter: false
+  hasFilter: false,
+  editingCourse: null
 };
 
 export const fetchExploreCourses = createAsyncThunk(
@@ -148,6 +149,10 @@ const courseSlice = createSlice({
       } else {
         state.hasFilter = true;
       }
+    },
+
+    setEditingCourse: (state, action: PayloadAction<ICourse | null>) => {
+      state.editingCourse = action.payload;
     }
   }
 });
@@ -159,6 +164,7 @@ export const {
   removeCourse,
   getExploreCourse,
   filterCourses,
-  resetFilters
+  resetFilters,
+  setEditingCourse
 } = courseSlice.actions;
 export default courseSlice.reducer;

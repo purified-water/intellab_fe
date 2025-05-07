@@ -43,11 +43,11 @@ export function CourseList(props: CourseListProps) {
     getCourseForAdminAPI();
   }, [filter]);
 
-  const handleToggleCourseAvailability = (courseId: string, isAvailable: boolean) => {
+  const handleToggleCourseAvailability = (courseId: string, newAvailableStatus: boolean) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) => {
         if (course.courseId === courseId) {
-          return { ...course, isAvailable: !isAvailable };
+          return { ...course, isAvailable: newAvailableStatus };
         }
         return course;
       })
@@ -63,32 +63,32 @@ export function CourseList(props: CourseListProps) {
     return (
       <thead>
         <tr className="border-b border-gray5">
-          <th className="text-left py-3 px-2 font-medium text-base border-t">
+          <th className="text-left py-3 px-2 font-medium text-base border-t w-[120px]">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.ID}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t">
+          <th className="text-left py-3 px-2 font-medium text-base border-t w-[300px]">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.COURSE_NAME}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t">
+          <th className="text-left py-3 px-2 font-medium text-base border-t w-[120px]">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.LEVEL}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t">
+          <th className="text-left py-3 px-2 font-medium text-base border-t w-[150px]">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.PRICE}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t">
+            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.AVAILABLE}
                 <ListFilter className="h-4 w-4" />
@@ -96,7 +96,7 @@ export function CourseList(props: CourseListProps) {
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t">
+            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.ENROLLMENTS}
                 <ListFilter className="h-4 w-4" />
@@ -104,14 +104,14 @@ export function CourseList(props: CourseListProps) {
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t">
+            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.RATING}
                 <ListFilter className="h-4 w-4" />
               </div>
             </th>
           )}
-          <th className="text-left py-3 px-2 font-medium text-base border-t" />
+          <th className="text-left py-3 px-2 font-medium text-base border-t w-[70px]" />
         </tr>
       </thead>
     );
@@ -176,7 +176,7 @@ export function CourseList(props: CourseListProps) {
 
   return (
     <div className="p-0">
-      <table className="w-full">
+      <table className="">
         {renderHeader()}
         {renderBody()}
       </table>

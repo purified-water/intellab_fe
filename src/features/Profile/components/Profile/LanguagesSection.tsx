@@ -25,8 +25,10 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
       } else {
         showToastError({ toast: toast.toast, message: "Error getting rank languages" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error getting rank languages" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error getting rank languages" });
+      }
     } finally {
       setLoading(false);
     }

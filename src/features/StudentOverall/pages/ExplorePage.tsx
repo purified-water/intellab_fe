@@ -69,8 +69,10 @@ export const ExplorePage = () => {
       console.log("Search response:", response);
 
       dispatch(getExploreCourse(response.result.content));
-    } catch (error) {
-      console.error("Failed to search courses:", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to search courses:", error);
+      }
     } finally {
       setLoading(false);
     }

@@ -42,8 +42,10 @@ export const SectionDetailPage: React.FC = () => {
       }
       setLoading(false);
       setSearchedCourses(response.result.content);
-    } catch (error) {
-      console.error("Failed to search courses:", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error("Failed to search courses:", error);
+      }
       setSearchedCourses([]);
     }
   }).current;

@@ -9,10 +9,13 @@ import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { useState } from "react";
 import { DeleteCourseConfirmDialog } from "./DeleteCourseConfirmDialog";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setEditingCourse } from "@/redux/course/courseSlice";
 
 const DROP_DOWN_MENU_ITEMS = {
-  VIEW_DETAILS: "View details",
-  MODIFY: "Modify",
+  VIEW: "View",
+  EDIT: "Edit",
   DELETE: "Delete"
 };
 
@@ -26,6 +29,8 @@ interface CourseListItemProps {
 export function CourseListItem(props: CourseListItemProps) {
   const { course, loading, onToggleCourseAvailability, onDeleteCourse } = props;
   const toast = useToast();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [openDeleteConfirmDialog, setOpenDeleteConfirmDialog] = useState(false);
 
@@ -52,6 +57,11 @@ export function CourseListItem(props: CourseListItemProps) {
     });
   };
 
+  const handleViewDetails = () => {
+    dispatch(setEditingCourse(course));
+    navigate(`/admin/courses/view/general`);
+  };
+
   const handleDeleteCourse = () => {
     setOpenDeleteConfirmDialog(true);
   };
@@ -59,10 +69,10 @@ export function CourseListItem(props: CourseListItemProps) {
   const renderDropdownMenu = () => {
     const handleDropdownMenuItemClick = async (action: string) => {
       switch (action) {
-        case DROP_DOWN_MENU_ITEMS.VIEW_DETAILS:
-          console.log("View details clicked for item:");
+        case DROP_DOWN_MENU_ITEMS.VIEW:
+          handleViewDetails();
           break;
-        case DROP_DOWN_MENU_ITEMS.MODIFY:
+        case DROP_DOWN_MENU_ITEMS.EDIT:
           console.log("Modify clicked for item:");
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
@@ -81,17 +91,15 @@ export function CourseListItem(props: CourseListItemProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
-          {[DROP_DOWN_MENU_ITEMS.VIEW_DETAILS, DROP_DOWN_MENU_ITEMS.MODIFY, DROP_DOWN_MENU_ITEMS.DELETE].map(
-            (action) => (
-              <DropdownMenuItem
-                key={action}
-                onClick={() => handleDropdownMenuItemClick(action)}
-                className="text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6"
-              >
-                {action}
-              </DropdownMenuItem>
-            )
-          )}
+          {[DROP_DOWN_MENU_ITEMS.VIEW, DROP_DOWN_MENU_ITEMS.EDIT, DROP_DOWN_MENU_ITEMS.DELETE].map((action) => (
+            <DropdownMenuItem
+              key={action}
+              onClick={() => handleDropdownMenuItemClick(action)}
+              className="text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6"
+            >
+              {action}
+            </DropdownMenuItem>
+          ))}
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -99,7 +107,7 @@ export function CourseListItem(props: CourseListItemProps) {
 
   const renderLoading = () => {
     return (
-      <tr className="border-b border-gray5 font-medium text-base">
+      <tr className="border-b border-gray5 text-base">
         <td className="py-1 px-2 max-w-[100px] truncate">
           <Skeleton className="h-4 w-full" />
         </td>
@@ -147,11 +155,13 @@ export function CourseListItem(props: CourseListItemProps) {
   const renderContent = () => {
     return (
       <>
-        <tr key={course.courseId} className="border-b border-gray5 font-medium text-base">
+        <tr key={course.courseId} className="border-b border-gray5 text-base">
           <td className="py-1 px-2 max-w-[100px] truncate">{course.courseId}</td>
           <td className="py-1 px-2">{course.courseName}</td>
           <td className="py-1 px-2">{course.level}</td>
-          <td className="py-1 px-2">{`${course.price} ${course.unitPrice}`}</td>
+          <td className="py-1 px-2">
+            {course.price == 0 ? "Free" : `${course.price.toLocaleString()} ${course.unitPrice}`}
+          </td>
           {course.isCompletedCreation && (
             <td className="py-1 px-2">
               <div className="flex justify-center">
@@ -163,7 +173,9 @@ export function CourseListItem(props: CourseListItemProps) {
               </div>
             </td>
           )}
-          {course.isCompletedCreation && <td className="py-1 px-2 text-center">{course.enrollments ?? 0}</td>}
+          {course.isCompletedCreation && (
+            <td className="py-1 px-2 text-center">{course.numberOfEnrolledStudents ?? 0}</td>
+          )}
           {course.isCompletedCreation && (
             <td className="py-1 px-2 justify-items-center">
               <div className="flex items-center gap-1">
@@ -175,9 +187,9 @@ export function CourseListItem(props: CourseListItemProps) {
               <span className="font-light text-base text-gray3">({course.reviewCount ?? 0} reviews)</span>
             </td>
           )}
-          <td className="py-1 px-2">{renderDropdownMenu()}</td>
+          <td className="py-1 px-5">{renderDropdownMenu()}</td>
+          <td>{renderDeleteCourseConfirmDialog()}</td>
         </tr>
-        {renderDeleteCourseConfirmDialog()}
       </>
     );
   };

@@ -35,15 +35,14 @@ export function CourseListPage() {
     };
 
     return (
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
-        <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} />
-        <div className="pl-3 border-l border-gray4">
+        <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} width={800} />
+        <div className="border-l border-gray4 pl-4 ml-2">
           <Button
             onClick={() => navigate("/admin/courses/create")}
-            className="px-4 py-5 text-lg font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
-          >
-            <Plus className="w-4 h-4" />
+            className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4">
+            <Plus className="h-4 w-4" />
             New Course
           </Button>
         </div>
@@ -87,9 +86,9 @@ export function CourseListPage() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-2">
       <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
-      <div className="ml-8 space-y-3">
+      <div className="ml-32 space-y-3">
         {renderHeader()}
         {renderFilterDialog()}
         {renderCourseList()}

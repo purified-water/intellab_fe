@@ -4,10 +4,11 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useEffect, useState } from "react";
 
 interface SearchProps {
+  width?: number;
   value: string;
   onSearch: (query: string) => void;
 }
-export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
+export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width = 1000 }) => {
   const [query, setQuery] = useState(value);
 
   useEffect(() => {
@@ -21,8 +22,8 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
   };
 
   return (
-    <div className="flex items-center justify-start w-full p-2 bg-white">
-      <div className="relative w-[1000px]">
+    <div className="flex items-center justify-start p-2 bg-white">
+      <div className="relative" style={{ width: width }}>
         <FontAwesomeIcon icon={faSearch} className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2" />
         <input
           value={query}
@@ -39,5 +40,6 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
 
 SearchBar.propTypes = {
   value: PropTypes.string.isRequired,
-  onSearch: PropTypes.func.isRequired
+  onSearch: PropTypes.func.isRequired,
+  width: PropTypes.number
 };

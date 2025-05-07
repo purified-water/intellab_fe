@@ -13,7 +13,7 @@ export const createCourseSchema = z.object({
   courseCategories: z
     .array(
       z.object({
-        categoryId: z.string(),
+        categoryId: z.number(),
         name: z.string()
       })
     )
