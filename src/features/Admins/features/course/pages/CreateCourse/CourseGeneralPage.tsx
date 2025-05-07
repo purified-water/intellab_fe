@@ -26,7 +26,7 @@ import { RootState } from "@/redux/rootReducer";
 import { useCreateCourseGeneral } from "../../hooks";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
-import { Category, CreateCourseGeneralStepPayload } from "@/types";
+import { CreateCourseGeneralStepPayload } from "@/types";
 
 const courseGeneralSchema = createCourseSchema.pick({
   courseId: true,
@@ -62,11 +62,6 @@ export const CourseGeneralPage = () => {
     }
   });
 
-  const normalizedCategories = categories?.map((category: Category) => ({
-    ...category,
-    categoryId: String(category.categoryId)
-  }));
-
   const onSubmit = async (data: CourseGeneralSchema) => {
     dispatch(setCreateCourse(data)); // Set data to redux store
 
@@ -74,7 +69,7 @@ export const CourseGeneralPage = () => {
       courseName: data.courseName,
       description: data.courseDescription,
       level: data.courseLevel,
-      categoryIds: data.courseCategories.map((category) => category.categoryId)
+      categoryIds: data.courseCategories.map((category) => category.categoryId.toString())
     };
 
     try {
@@ -97,6 +92,7 @@ export const CourseGeneralPage = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error("Form submission errors:", errors);
+          console.log("Form data:", form.getValues());
           showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
         })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
@@ -145,11 +141,7 @@ export const CourseGeneralPage = () => {
                   <RequiredInputLabel label="Categories" />
                 </FormLabel>
                 <FormControl>
-                  <CourseCategoriesSelect
-                    value={field.value}
-                    onChange={field.onChange}
-                    categories={normalizedCategories}
-                  />
+                  <CourseCategoriesSelect value={field.value} onChange={field.onChange} categories={categories} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

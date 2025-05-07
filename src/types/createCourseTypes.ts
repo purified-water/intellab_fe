@@ -1,6 +1,6 @@
 // Subtypes for creating a course
 export interface Category {
-  categoryId: string;
+  categoryId: number;
   name: string;
 }
 interface OptionRequest {
@@ -96,6 +96,7 @@ export interface CreateCourseResponseType {
 // HELPERS TYPES FOR CREATING A LESSON
 export interface CreateLessonProblemResponse {
   problemId: string;
+  problemName: string;
   description: string;
   level: string;
   categories: Category[];

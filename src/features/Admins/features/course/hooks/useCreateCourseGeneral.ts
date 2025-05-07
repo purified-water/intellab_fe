@@ -2,9 +2,10 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { adminCourseAPI } from "@/features/Admins/api";
 import { useToast } from "@/hooks";
 import { showToastError, showToastSuccess } from "@/utils";
+import { Category } from "@/types/createCourseTypes";
 
 export const useCourseCategories = () =>
-  useQuery({
+  useQuery<Category[]>({
     queryKey: ["createCourseCategories"],
     queryFn: adminCourseAPI.getCreateCourseCategories
   });

@@ -13,7 +13,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   const renderButtons = () => {
     return (
       <div className="flex gap-8 mt-6">
-        <button className="px-6 py-1 font-bold text-black bg-white rounded-lg hover:bg-gray-300 ">
+        <button type="button" className="px-6 py-1 font-bold text-black bg-white rounded-lg hover:bg-gray-300 ">
           View Certificate
         </button>
 

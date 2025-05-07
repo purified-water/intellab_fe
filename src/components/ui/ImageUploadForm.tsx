@@ -6,18 +6,9 @@ import { CREATE_COURSE_THUMBNAIL_MAX_SIZE } from "@/constants";
 interface ImageUploadProps {
   value: File | null;
   onChange: (file: File | null) => void;
-  disabled?: boolean;
 }
 
-const fileToBase64 = (file: File): Promise<string> =>
-  new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-});  
-  
-export const ImageUploadForm = ({ value, onChange, disabled}: ImageUploadProps) => {
+export const ImageUploadForm = ({ value, onChange }: ImageUploadProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [preview, setPreview] = useState<string | null>(null);
 
@@ -55,19 +46,10 @@ export const ImageUploadForm = ({ value, onChange, disabled}: ImageUploadProps) 
     <div className="flex flex-col gap-2">
       {preview ? (
         <div className="relative w-full max-w-md">
-          <img
-            src={value}
-            alt="Preview"
-            className="object-cover w-full h-auto rounded-md"
-          />
-          {!disabled && <Button
-            variant="ghost"
-            size="icon"
-            onClick={removeFile}
-            className="absolute rounded-full top-1 right-1 bg-white/80 hover:bg-white"
-          >
+          <img src={preview} alt="Preview" className="object-cover w-full h-auto rounded-md" />
+          <Button type="button" variant="ghost" size="icon" onClick={removeFile} className="absolute rounded-full top-1 right-1 bg-white/80 hover:bg-white">
             <X className="w-4 h-4" />
-          </Button>}
+          </Button>
         </div>
       ) : (
         <div
@@ -89,4 +71,3 @@ export const ImageUploadForm = ({ value, onChange, disabled}: ImageUploadProps) 
     </div>
   );
 };
-

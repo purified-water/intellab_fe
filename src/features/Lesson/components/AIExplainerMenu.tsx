@@ -43,7 +43,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
 
     // For streaming response
     const [abortController, setAbortController] = useState<AbortController | null>(null);
-    const [chatModel] = useState(CHATBOT_MODELS[0].value);
+    const [chatModel] = useState(CHATBOT_MODELS[2].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 
     const handleClose = () => {

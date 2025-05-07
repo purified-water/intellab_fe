@@ -64,7 +64,7 @@ export const AddProblem = ({ value, onChange, readOnly }: AddProblemProps) => {
                   onClick={() => setSelectedProblemId(problem.problemId)}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-medium">{problem.problemId}</span>
+                    <span className="font-medium">{problem.problemName}</span>
                     <span className="px-2 py-1 text-xs text-green-800 bg-green-200 rounded-full">
                       {capitalizeFirstLetter(problem.level)}
                     </span>

@@ -1,12 +1,7 @@
 import { useState } from "react";
 import { X, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/shadcn";
-
-type Category = {
-  categoryId: string;
-  name: string;
-};
-
+import { Category } from "@/types/createCourseTypes";
 interface CourseCategoriesSelectProps {
   value: Category[];
   onChange: (value: Category[]) => void;
@@ -26,7 +21,7 @@ export const CourseCategoriesSelect = ({ value, onChange, categories }: CourseCa
     }
   };
 
-  const handleRemoveCategory = (categoryId: string) => {
+  const handleRemoveCategory = (categoryId: number) => {
     onChange(value.filter((c) => c.categoryId !== categoryId));
   };
 

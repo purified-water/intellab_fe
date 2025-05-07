@@ -11,6 +11,7 @@ import { resetCreateLesson, setCreateLesson } from "@/redux/createCourse/createL
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { DEFAULT_QUIZ } from "../../constants";
+import { Spinner } from "@/components/ui";
 
 export const CourseLessonsPage = () => {
   const [lessonAction, setLessonAction] = useState<LessonAction>({
@@ -115,13 +116,12 @@ export const CourseLessonsPage = () => {
   return (
     <div className="flex w-full">
       {isLoading ? (
-        <div className="flex items-center justify-center w-full h-56">
-          <h2 className="text-base">Loading...</h2>
+        <div className="flex items-center justify-center w-24">
+          <Spinner loading={isLoading} />
         </div>
       ) : (
         <CourseLessonList lessons={courseLessons} onSelect={setLessonAction} onCreateLesson={handleAddInitalLesson} />
       )}
-      {/* Render different components based on selected in the Course Lesson List */}
 
       <div className="flex-1 p-4">
         {renderPageContent()}

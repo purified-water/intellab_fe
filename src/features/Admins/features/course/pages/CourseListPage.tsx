@@ -41,7 +41,8 @@ export function CourseListPage() {
         <div className="border-l border-gray4 pl-4 ml-2">
           <Button
             onClick={() => navigate("/admin/courses/create")}
-            className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4">
+            className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4"
+          >
             <Plus className="h-4 w-4" />
             New Course
           </Button>
