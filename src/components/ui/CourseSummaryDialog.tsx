@@ -1,5 +1,5 @@
 import { Files } from 'lucide-react'
-import { MarkdownRender } from '@/features/Problem/components/MarkdownRender';
+import { MarkdownRender } from '@/features/Problem/components/ProblemMarkdownRender';
 import { useToast } from '@/hooks/use-toast';
 import { FaFilePdf } from 'rocketicons/fa';
 import { aiAPI } from '@/lib/api';

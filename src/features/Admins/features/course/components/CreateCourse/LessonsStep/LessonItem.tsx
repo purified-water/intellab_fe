@@ -26,7 +26,7 @@ export function LessonItem({ lesson, onAction, selectedLessonId }: LessonItemPro
         // Handle duplicate action
         break;
       case "delete":
-        // Handle delete action
+        onAction({ type: "delete", lessonId });
         break;
       default:
         console.error("Unknown action type:", type);

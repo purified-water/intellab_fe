@@ -26,10 +26,11 @@ interface AIExplainerMenuProps {
   input: string | null;
   setInput: (value: string) => void;
   lesson: ILesson | null;
+  setOpenChatbox: (value: boolean) => void;
 }
 // Use forwardRef to expose the ref to the parent component, deprecated in React 19 but still used in React 18
 export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
-  ({ isOpen, setIsOpen, input, setInput, lesson }, ref) => {
+  ({ isOpen, setIsOpen, input, setInput, lesson, setOpenChatbox }, ref) => {
     const [isLoadingResponse, setIsLoadingResponse] = useState(false);
     const [explainerResponse, setExplainerResponse] = useState("");
     const userId = getUserIdFromLocalStorage();
@@ -261,6 +262,10 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
                   className="cursor-pointer w-fit hover:bg-transparent text-gray2 hover:text-gray2/80"
                   variant="ghost"
                   disabled={isLoadingResponse || isProcessingRef.current}
+                  onClick={() => {
+                    handleClose();
+                    setOpenChatbox(true);
+                  }}
                 >
                   <MessageSquare className="mr-1" />
                   <span>Ask a follow-up</span>

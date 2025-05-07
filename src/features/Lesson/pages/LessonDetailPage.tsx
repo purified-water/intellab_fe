@@ -39,6 +39,9 @@ export const LessonDetailPage = () => {
   const [isExplainerToggled, setIsExplainerToggled] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(localStorage.getItem("hasViewedExplainerTutorial") !== "true");
 
+  // Catch open chatbox request when click on ask follow up
+  const [isOpenChatbox, setIsOpenChatbox] = useState(false);
+
   const { menuRef, menuPosition, isAIExplainerOpen, setIsAIExplainerOpen, selectedText, setSelectedText } =
     useAIExplainer({ isExplainerToggled });
 
@@ -343,6 +346,7 @@ export const LessonDetailPage = () => {
               input={selectedText}
               setInput={setSelectedText}
               lesson={lesson}
+              setOpenChatbox={setIsOpenChatbox}
             />
           </div>
         </>
@@ -360,6 +364,7 @@ export const LessonDetailPage = () => {
         isExplainerEnabled={isExplainerToggled}
         setIsExplainerToggled={setIsExplainerToggled}
         lesson={lesson}
+        askFollowUp={isOpenChatbox}
       />
       <AppFooter />
     </>

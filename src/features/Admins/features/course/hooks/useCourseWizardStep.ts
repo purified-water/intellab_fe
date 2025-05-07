@@ -13,7 +13,10 @@ export const useCourseWizardStep = () => {
   const currentStep = steps[currentStepIndex];
 
   const goToStep = (index: number) => {
-    if (index >= 0 && index < steps.length) {
+    if (index === steps.length) {
+      // Finsish, return to course page
+      navigate("/admin/courses");
+    } else if (index >= 0 && index < steps.length) {
       navigate(`/admin/courses/create/${steps[index].path}`);
     }
   };

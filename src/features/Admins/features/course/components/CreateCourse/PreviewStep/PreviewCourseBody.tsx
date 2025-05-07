@@ -1,10 +1,9 @@
-import { LessonList } from "@/features/Course/components";
 import { useState } from "react";
-import { DEFAULT_CREATE_COURSE_LESSONS } from "../../../constants";
-import { ICreateCourse } from "../../../types";
+import { LessonList } from "./Lessons/LessonList";
+import { CreateCourseSchema } from "../../../schemas";
 
 interface PreviewCourseBodyProps {
-  course: ICreateCourse;
+  course: CreateCourseSchema;
 }
 
 export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
@@ -33,7 +32,7 @@ export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
       case TAB_BUTTONS.LESSONS:
         content = (
           <div>
-            <LessonList lessons={DEFAULT_CREATE_COURSE_LESSONS} isEnrolled={true} course={course} />
+            <LessonList lessons={course.courseLessons} />
           </div>
         );
         break;

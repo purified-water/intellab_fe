@@ -1,10 +1,10 @@
 import { AnimatedButton } from "@/components/ui";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
 import { useState } from "react";
-import { ICreateCourse } from "../../../types";
+import { CreateCourseSchema } from "../../../schemas";
 
 interface PreviewCourseHeaderProps {
-  course: ICreateCourse;
+  course: CreateCourseSchema;
 }
 
 export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
@@ -25,12 +25,12 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   return (
     <div className="flex flex-col gap-3 p-4 text-white rounded-lg bg-gradient-to-r from-appPrimary to-appSecondary px-7 min-w-[500px]">
       <h1 className="text-4xl font-bold">{course.courseName}</h1>
-      <p className="mt-2 text-justify">{course.description}</p>
+      <p className="mt-2 text-justify">{course.courseDescription}</p>
       {renderButtons()}
       <CourseSummaryDialog
         courseName={course.courseName}
         isOpen={showSummaryDialog}
-        summaryContent={course.summaryContent}
+        summaryContent={course.courseSummary}
         onClose={() => {
           setShowSummaryDialog(false);
         }}

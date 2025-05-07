@@ -16,12 +16,13 @@ import {
   Form,
   FormDescription
 } from "@/components/ui/shadcn";
-import { useCourseWizardStep } from "../../hooks";
+import { useCourseWizardStep, useCreateFinalStep } from "../../hooks";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { RootState } from "@/redux/rootReducer";
+import { CreateCourseFinalStepPayload } from "@/types";
 
 const courseFinalStepsSchema = createCourseSchema.pick({
   coursePrice: true,
@@ -35,6 +36,8 @@ export const CourseFinalStepsPage = () => {
   const { goToNextStep } = useCourseWizardStep();
   const dispatch = useDispatch();
   const formData = useSelector((state: RootState) => state.createCourse);
+  const courseId = useSelector((state: RootState) => state.createCourse.courseId);
+  const createCourseFinalStep = useCreateFinalStep(courseId, 0);
 
   // Initialize form with Zod validation
   const form = useForm<CourseFinalStepsSchema>({
@@ -42,22 +45,31 @@ export const CourseFinalStepsPage = () => {
     defaultValues: {
       coursePrice: formData.coursePrice || 0,
       courseSummary: formData.courseSummary || "",
-      courseCertificate: {
-        template: formData.courseCertificate?.template || ""
-      }
+      courseCertificate: formData.courseCertificate || 1
     }
   });
 
   const onSubmit = (data: CourseFinalStepsSchema) => {
-    console.log("Form data:", data);
+    const formatPayload: CreateCourseFinalStepPayload = {
+      price: data.coursePrice || 0,
+      unitPrice: "VND",
+      templateCode: data.courseCertificate
+    };
+
     dispatch(setCreateCourse(data));
-    // Call goToNextStep after successful form submission
+    createCourseFinalStep.submitFinalStep.mutateAsync(formatPayload);
+
     goToNextStep();
   };
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col mx-auto gap-8 max-w-[1000px]">
+      <form
+        onSubmit={form.handleSubmit(onSubmit, (error) => {
+          console.log("Error: ", error);
+        })}
+        className="flex flex-col mx-auto gap-8 max-w-[1000px]"
+      >
         <FormField
           control={form.control}
           name="coursePrice"
@@ -89,14 +101,14 @@ export const CourseFinalStepsPage = () => {
         {/* Chooose certificate template here */}
         <FormField
           control={form.control}
-          name="courseCertificate.template"
+          name="courseCertificate"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
                 <RequiredInputLabel label="Certificate Template" />
               </FormLabel>
               <FormControl>
-                <AddCertificateTemplate value={field.value} onChange={field.onChange} />
+                <AddCertificateTemplate value={field.value} onChange={(val) => field.onChange(Number(val))} />
               </FormControl>
               <FormMessage />
             </FormItem>

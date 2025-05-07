@@ -13,11 +13,13 @@ import { z } from "zod";
 import { createCourseSchema } from "../../schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-// import { useCourseWizardStep } from "../../hooks";
+import { useCourseWizardStep, useUpdatePreviewStep } from "../../hooks";
 import { CourseWizardButtons, PreviewCourse, RequiredInputLabel } from "../../components/CreateCourse";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
+import { CreateCoursePreviewStepPayload } from "@/types";
+import { resetCourseState } from "@/redux/course/courseSlice";
 
 const coursePreviewSchema = createCourseSchema.pick({
   courseMakeAvailable: true
@@ -26,9 +28,10 @@ const coursePreviewSchema = createCourseSchema.pick({
 type CoursePreviewSchema = z.infer<typeof coursePreviewSchema>;
 
 export const CoursePreviewPage = () => {
-  // const { goToNextStep } = useCourseWizardStep();
-  const formData = useSelector((state: RootState) => state.createCourse); // For testing purposes
+  const { goToNextStep } = useCourseWizardStep();
+  const formData = useSelector((state: RootState) => state.createCourse);
   const dispatch = useDispatch();
+  const createCoursePreview = useUpdatePreviewStep(formData.courseId);
 
   const form = useForm<CoursePreviewSchema>({
     resolver: zodResolver(coursePreviewSchema),
@@ -38,10 +41,13 @@ export const CoursePreviewPage = () => {
   });
 
   const onSubmit = (data: CoursePreviewSchema) => {
-    // Call goToNextStep after successful form submission
-    // goToNextStep();
-    console.log("Complete form data:", { ...formData, ...data });
     dispatch(setCreateCourse(data));
+    const formatPayload: CreateCoursePreviewStepPayload = {
+      availableStatus: data.courseMakeAvailable
+    };
+    createCoursePreview.mutateAsync(formatPayload);
+    dispatch(resetCourseState());
+    goToNextStep();
   };
 
   return (

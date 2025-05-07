@@ -17,3 +17,5 @@ export * from "./FinalSteps/AddCertificateTemplate";
 export * from "./PreviewStep/PreviewCourse";
 export * from "./PreviewStep/PreviewCourseHeader";
 export * from "./PreviewStep/PreviewCourseBody";
+export * from "./PreviewStep/Lessons/LessonList";
+export * from "./PreviewStep/Lessons/LessonListItem";

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { MarkdownRender } from "../MarkdownRender";
+import { MarkdownRender } from "../ProblemMarkdownRender";
 import BreadCrump, { IBreadCrumpItem } from "@/components/ui/BreadCrump";
 import { ProblemType } from "@/types/ProblemType";
 import { LevelCard } from "./LevelCard";

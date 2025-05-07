@@ -5,6 +5,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { CourseList, FilterDialog } from "../components";
 import { TCourseFilter } from "@/types";
+import { useNavigate } from "react-router-dom";
 
 const TABS = {
   CREATED: "created",
@@ -23,6 +24,7 @@ export function CourseListPage() {
     priceRange: { min: 0, max: 1000000 },
     isCompletedCreation: true
   });
+  const navigate = useNavigate();
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
@@ -36,9 +38,12 @@ export function CourseListPage() {
       <div className="flex items-center justify-between">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
         <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} />
-        <div className="border-l border-gray4 pl-3">
-          <Button className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4">
-            <Plus className="h-4 w-4" />
+        <div className="pl-3 border-l border-gray4">
+          <Button
+            onClick={() => navigate("/admin/courses/create")}
+            className="px-4 py-5 text-lg font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
+          >
+            <Plus className="w-4 h-4" />
             New Course
           </Button>
         </div>
