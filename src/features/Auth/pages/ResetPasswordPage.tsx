@@ -38,16 +38,15 @@ export const ResetPasswordPage = () => {
     let isValid = true;
     const errors = { password: "", confirmPassword: "" };
 
-    if (!inputs.password) {
-      errors.password = "Password is required";
+    if (inputs.password.length < 6) {
+      errors.password = "Password must be at least 6 characters";
       isValid = false;
     }
-    if (!inputs.confirmPassword) {
-      errors.confirmPassword = "Confirm password is required";
+    if (inputs.confirmPassword.length < 6) {
+      errors.confirmPassword = "Confirm password must be at least 6 characters";
       isValid = false;
-    }
-    if (inputs.password !== inputs.confirmPassword) {
-      errors.confirmPassword = "Passwords do not match";
+    } else if (inputs.password !== inputs.confirmPassword) {
+      errors.confirmPassword = "Password and Confirm Password do not match ";
       isValid = false;
     }
 
@@ -117,7 +116,7 @@ export const ResetPasswordPage = () => {
       <div className="mt-6 space-y-6 text-center">
         {reduxUser && (
           <p className="font-semibold text-appPrimary">
-            You are already logged in as <strong>{reduxUser.email}</strong>.
+            You have already logged in as <strong>{reduxUser.email}</strong>.
           </p>
         )}
         <p className="text-gray2">Your password has been changed.</p>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui";
-import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { AddLessonModal } from "./AddLessonModal";
 import { LessonItem } from "./LessonItem";
 import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";

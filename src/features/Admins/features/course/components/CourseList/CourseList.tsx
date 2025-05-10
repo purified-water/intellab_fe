@@ -5,16 +5,17 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks";
 import { courseAPI } from "@/lib/api";
 import { showToastError } from "@/utils";
-import { DeleteSuccessfulDialog } from "./DeleteSuccessfulDialog";
+import { AlertDialog, Pagination } from "@/components/ui";
 
 const TABLE_HEADERS = {
-  ID: "ID",
   COURSE_NAME: "Course Name",
   LEVEL: "Level",
   PRICE: "Price",
   AVAILABLE: "Available",
   ENROLLMENTS: "Enrollments",
-  RATING: "Rating"
+  RATING: "Rating",
+  CREATED_AT: "Created At",
+  CURRENT_STEP: "Current Step"
 };
 
 interface CourseListProps {
@@ -25,22 +26,65 @@ export function CourseList(props: CourseListProps) {
   const { filter } = props;
   const [courses, setCourses] = useState<ICourse[]>([]);
   const [loading, setLoading] = useState(false);
-  const [openDeleteSuccessfulDialog, setOpenDeleteSuccessfulDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+  const [deletingCourse, setDeletingCourse] = useState<ICourse | null>(null);
+  const [totalPages, setTotalPages] = useState<number | null>(null);
+  const [currentPage, setCurrentPage] = useState(0);
 
   const toast = useToast();
 
-  const getCourseForAdminAPI = async () => {
+  const filterCoursesByPrice = (courses: ICourse[]) => {
+    if (!filter.priceRange) {
+      return courses;
+    } else {
+      return courses.filter((course) => {
+        const isValid =
+          course.price && course.price >= filter.priceRange!.min && course.price <= filter.priceRange!.max;
+        return isValid;
+      });
+    }
+  };
+
+  const getCourseForAdminAPI = async (page: number) => {
     await courseAPI.getCourseForAdmin({
-      query: { filter: filter },
+      query: { filter: filter, page },
       onStart: async () => setLoading(true),
-      onSuccess: async (response) => setCourses(response.content),
+      onSuccess: async (response) => {
+        setCurrentPage(response.number);
+        if (!totalPages) {
+          setTotalPages(response.totalPages);
+        } else {
+          if (response.totalPages == 0) {
+            setTotalPages(null);
+          } else if (response.totalPages != totalPages) {
+            setTotalPages(response.totalPages);
+          }
+        }
+        const filteredCourses = filterCoursesByPrice(response.content);
+        setCourses(filteredCourses);
+      },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
       onEnd: async () => setLoading(false)
     });
   };
 
+  const deleteCourseAPI = async (course: ICourse) => {
+    await courseAPI.deleteCourse({
+      query: { courseId: course.courseId },
+      onSuccess: async (result) => {
+        if (result) {
+          setCourses((prevCourses) => prevCourses.filter((item) => item.courseId !== course.courseId));
+          setOpenDeleteDialog(false);
+        } else {
+          showToastError({ toast: toast.toast, message: "Failed to delete course" });
+        }
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+    });
+  };
+
   useEffect(() => {
-    getCourseForAdminAPI();
+    getCourseForAdminAPI(currentPage);
   }, [filter]);
 
   const handleToggleCourseAvailability = (courseId: string, newAvailableStatus: boolean) => {
@@ -54,41 +98,40 @@ export function CourseList(props: CourseListProps) {
     );
   };
 
-  const handleDeleteCourse = (deleteCourse: ICourse) => {
-    setCourses((prevCourses) => prevCourses.filter((course) => course.courseId !== deleteCourse.courseId));
-    setOpenDeleteSuccessfulDialog(true);
+  const handleDeleteCourse = (course: ICourse) => {
+    setDeletingCourse(course);
+
+    // Prevent focus management conflict between the alert-dialog and dropdown-menu of shadcn
+    // If don't use setTimeout, the app will lose all focus after opening the alert-dialog
+    setTimeout(() => {
+      setOpenDeleteDialog(true);
+    }, 0);
   };
 
   const renderHeader = () => {
     return (
       <thead>
         <tr className="border-b border-gray5">
-          <th className="text-left py-3 px-2 font-medium text-base border-t w-[120px]">
-            <div className="flex items-center gap-2">
-              {TABLE_HEADERS.ID}
-              <ListFilter className="h-4 w-4" />
-            </div>
-          </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t w-[300px]">
+          <th className="text-left font-medium text-base border-t py-4">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.COURSE_NAME}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t w-[120px]">
+          <th className="text-left font-medium text-base border-t">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.LEVEL}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
-          <th className="text-left py-3 px-2 font-medium text-base border-t w-[150px]">
+          <th className="text-left font-medium text-base border-t">
             <div className="flex items-center gap-2">
               {TABLE_HEADERS.PRICE}
               <ListFilter className="h-4 w-4" />
             </div>
           </th>
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
+            <th className="text-left font-medium text-base border-t">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.AVAILABLE}
                 <ListFilter className="h-4 w-4" />
@@ -96,7 +139,7 @@ export function CourseList(props: CourseListProps) {
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
+            <th className="text-left  font-medium text-base border-t">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.ENROLLMENTS}
                 <ListFilter className="h-4 w-4" />
@@ -104,14 +147,30 @@ export function CourseList(props: CourseListProps) {
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="text-left py-3 px-2 font-medium text-base border-t w-[100px]">
+            <th className="text-left font-medium text-base border-t">
               <div className="flex items-center justify-center gap-2">
                 {TABLE_HEADERS.RATING}
                 <ListFilter className="h-4 w-4" />
               </div>
             </th>
           )}
-          <th className="text-left py-3 px-2 font-medium text-base border-t w-[70px]" />
+          {!filter.isCompletedCreation && (
+            <th className="text-left font-medium text-base border-t">
+              <div className="flex items-center justify-center gap-2">
+                {TABLE_HEADERS.CREATED_AT}
+                <ListFilter className="h-4 w-4" />
+              </div>
+            </th>
+          )}
+          {!filter.isCompletedCreation && (
+            <th className="text-left font-medium text-base border-t">
+              <div className="flex items-center justify-center gap-2">
+                {TABLE_HEADERS.CURRENT_STEP}
+                <ListFilter className="h-4 w-4" />
+              </div>
+            </th>
+          )}
+          <th className="text-left font-medium text-base border-t" />
         </tr>
       </thead>
     );
@@ -119,7 +178,7 @@ export function CourseList(props: CourseListProps) {
 
   const renderEmpty = () => {
     return (
-      <tr className="font-semibold text-2xl">
+      <tr className="text-base font-normal text-gray3">
         <td colSpan={8} className="py-5 text-center">
           No courses found
         </td>
@@ -165,22 +224,41 @@ export function CourseList(props: CourseListProps) {
     return <tbody>{content}</tbody>;
   };
 
-  const renderDeleteSuccessfulDialog = () => {
+  const renderDeleteDialog = () => {
     return (
-      <DeleteSuccessfulDialog
-        isOpen={openDeleteSuccessfulDialog}
-        onClose={() => setOpenDeleteSuccessfulDialog(false)}
+      <AlertDialog
+        open={openDeleteDialog}
+        title="You are about to delete the course"
+        message="This action is irreversible. Once the course is deleted, it cannot be recovery."
+        onConfirm={() => deleteCourseAPI(deletingCourse!)}
+        onCancel={() => setOpenDeleteDialog(false)}
       />
     );
   };
 
+  const renderPagination = () => {
+    let content = null;
+    if (totalPages && totalPages != 0) {
+      content = (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(page) => getCourseForAdminAPI(page)}
+        />
+      );
+    }
+
+    return content;
+  };
+
   return (
     <div className="p-0">
-      <table className="">
+      <table className="w-full">
         {renderHeader()}
         {renderBody()}
       </table>
-      {renderDeleteSuccessfulDialog()}
+      {renderPagination()}
+      {renderDeleteDialog()}
     </div>
   );
 }

@@ -36,6 +36,7 @@ export default {
         bronze: "#EB8657",
         appOutputBG: "#2a2a2a",
         appLightThemeText: "#FFFFFF",
+        appHyperlink: "#0d66f5",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

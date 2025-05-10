@@ -18,7 +18,7 @@ export function FilterDialog(props: FilterDialogProps) {
   const [selectedRating, setSelectedRating] = useState<string | null>("0");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
   const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<PriceRange>({ min: 1, max: 1000000 });
+  const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
   const [categories, setCategories] = useState<TCategory[]>([]);
   const toast = useToast();
 
@@ -61,6 +61,12 @@ export function FilterDialog(props: FilterDialogProps) {
     setSelectedCategories((prev) => (prev.includes(topic) ? prev.filter((g) => g !== topic) : [...prev, topic]));
   };
 
+  useEffect(() => {
+    if (!selectedPrices.includes("Paid")) {
+      setPriceRange(null);
+    }
+  }, [selectedPrices]);
+
   const handleFilter = () => {
     const newFilters: TCourseFilter = {
       categories: selectedCategories,
@@ -77,6 +83,18 @@ export function FilterDialog(props: FilterDialogProps) {
   const handleResetClick = () => {
     setSelectedCategories([]);
     setSelectedRating("0");
+    setSelectedLevels([]);
+    setSelectedPrices([]);
+    setPriceRange(null);
+    onFilter({
+      categories: [],
+      rating: "0",
+      levels: [],
+      prices: [],
+      priceRange: null,
+      keyword: currentFilter?.keyword || "",
+      isCompletedCreation: currentFilter?.isCompletedCreation || true
+    });
   };
 
   const renderRatings = () => (
@@ -190,14 +208,22 @@ export function FilterDialog(props: FilterDialogProps) {
             type="number"
             className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
             placeholder="0"
-            onChange={(e) => setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) }))}
+            onChange={(e) =>
+              setPriceRange((prev) =>
+                prev ? { ...prev, min: Number(e.target.value) } : { min: Number(e.target.value), max: 0 }
+              )
+            }
           />
           <span>To:</span>
           <input
             type="number"
             className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
             placeholder="200,000"
-            onChange={(e) => setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) }))}
+            onChange={(e) =>
+              setPriceRange((prev) =>
+                prev ? { ...prev, max: Number(e.target.value) } : { min: 0, max: Number(e.target.value) }
+              )
+            }
           />
         </div>
       )}

@@ -22,7 +22,7 @@ import { ImageUploadForm } from "@/components/ui";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 
-const courseGeneralSchema = createCourseSchema.pick({
+const _courseGeneralSchema = createCourseSchema.pick({
   courseName: true,
   courseDescription: true,
   courseCategories: true,
@@ -30,7 +30,7 @@ const courseGeneralSchema = createCourseSchema.pick({
   courseThumbnail: true
 });
 
-type ViewCourseGeneralSchema = z.infer<typeof courseGeneralSchema>;
+type ViewCourseGeneralSchema = z.infer<typeof _courseGeneralSchema>;
 
 export const ViewCourseGeneralPage = () => {
   const { goToNextStep } = useCourseWizardStep();
@@ -40,9 +40,9 @@ export const ViewCourseGeneralPage = () => {
     defaultValues: {
       courseName: viewingCourse!.courseName,
       courseDescription: viewingCourse!.description,
-      courseCategories: viewingCourse!.categories,
-      courseLevel: viewingCourse!.level,
-      courseThumbnail: viewingCourse!.courseImage
+      courseCategories: viewingCourse!.categories
+      //courseLevel: viewingCourse!.level,
+      //courseThumbnail: viewingCourse!.courseImage
     }
   });
 
@@ -134,7 +134,7 @@ export const ViewCourseGeneralPage = () => {
               <FormItem>
                 <FormLabel>Course Thumbnail</FormLabel>
                 <FormControl>
-                  <ImageUploadForm value={field.value ?? null} onChange={field.onChange} disabled />
+                  <ImageUploadForm value={field.value ?? null} onChange={field.onChange} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
