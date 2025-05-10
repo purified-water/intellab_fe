@@ -61,7 +61,7 @@ export function CourseListPage() {
     };
 
     return (
-      <div className="">
+      <div className="min-w-[1100px]">
         <Tabs defaultValue={TABS.CREATED} value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-[400px] bg-transparent h-auto p-0 rounded-none">
             {[TABS.CREATED, TABS.DRAFT].map((tab) => (
@@ -89,7 +89,7 @@ export function CourseListPage() {
   return (
     <div className="space-y-6 px-2">
       <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
-      <div className="ml-32 space-y-3 inline-block">
+      <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
         {renderFilterDialog()}
         {renderCourseList()}
