@@ -204,7 +204,7 @@ export const aiAPI = {
 
       // Ensure the Authorization header is explicitly included
       if (!headers["Authorization"]) {
-        const token = localStorage.getItem("accessToken"); // Replace with your token retrieval logic
+        const token = localStorage.getItem("accessToken");
         if (token) {
           headers["Authorization"] = `Bearer ${token}`;
         }
@@ -229,28 +229,33 @@ export const aiAPI = {
         let buffer = "";
 
         while (true) {
-          const { value, done } = await reader.read();
-          if (done) break;
+          try {
+            const { value, done } = await reader.read();
+            if (done) break;
 
-          buffer += decoder.decode(value, { stream: true });
+            buffer += decoder.decode(value, { stream: true });
 
-          const events = buffer.split("\n\n");
-          buffer = events.pop() ?? "";
+            const events = buffer.split("\n\n");
+            buffer = events.pop() ?? "";
 
-          for (const event of events) {
-            if (event.startsWith("data:")) {
-              try {
-                const jsonStr = event.replace(/^data:\s*/, "");
-                if (jsonStr === "[DONE]") {
-                  reader.cancel();
-                  return;
+            for (const event of events) {
+              if (event.startsWith("data:")) {
+                try {
+                  const jsonStr = event.replace(/^data:\s*/, "");
+                  if (jsonStr === "[DONE]") {
+                    reader.cancel();
+                    return;
+                  }
+                  yield JSON.parse(jsonStr);
+                } catch (error) {
+                  console.log("Failed to parse AI response chunk:", error);
+                  console.error("Failed to parse AI response chunk with event:", event);
                 }
-                yield JSON.parse(jsonStr);
-              } catch (error) {
-                console.log("Failed to parse AI response chunk:", error);
-                console.error("Failed to parse AI response chunk with event:", event);
               }
             }
+          } catch (error) {
+            console.error("Stream reading aborted or failed:", error);
+            return;
           }
         }
 
@@ -267,7 +272,6 @@ export const aiAPI = {
       return streamProcessor();
     } catch (error) {
       console.log("Failed to establish connection for streaming:", error);
-      controller.abort();
       return;
     }
   },

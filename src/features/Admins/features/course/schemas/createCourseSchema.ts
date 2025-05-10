@@ -2,14 +2,19 @@ import { z } from "zod";
 import { CREATE_COURSE_THUMBNAIL_MAX_SIZE } from "@/constants";
 import { createLessonSchema } from "./createLessonSchema";
 
+const maxWords = (text: string, limit: number) => text.trim().split(/\s+/).length <= limit;
+
 export const createCourseSchema = z.object({
   courseId: z.string(),
-  courseName: z.string().min(1, { message: "Course name is required" }).max(50, {
-    message: "Course name must be less than 50 characters"
-  }),
-  courseDescription: z.string().min(1, { message: "Course description is required" }).max(100, {
+  courseName: z.string().min(1, { message: "Course name is required" }).max(100, {
     message: "Course name must be less than 100 characters"
   }),
+  courseDescription: z
+    .string()
+    .min(1, { message: "Course description is required" })
+    .refine((text) => maxWords(text, 300), {
+      message: "Course description must be less than 300 words"
+    }),
   courseCategories: z
     .array(
       z.object({
@@ -23,7 +28,7 @@ export const createCourseSchema = z.object({
   courseLevel: z.enum(["Beginner", "Intermediate", "Advanced"]),
   courseThumbnail: z
     .instanceof(File)
-    .refine((file) => file.size <= CREATE_COURSE_THUMBNAIL_MAX_SIZE, {
+    .refine((file) => file && file.size <= CREATE_COURSE_THUMBNAIL_MAX_SIZE, {
       message: `Image size must be less than ${CREATE_COURSE_THUMBNAIL_MAX_SIZE / (1024 * 1024)}MB`
     })
     .nullable()
@@ -33,9 +38,12 @@ export const createCourseSchema = z.object({
   }),
 
   coursePrice: z.number().optional(),
-  courseSummary: z.string().min(1, { message: "Course summary is required" }).max(200, {
-    message: "Course summary must be less than 200 characters"
-  }),
+  courseSummary: z
+    .string()
+    .min(1, { message: "Course summary is required" })
+    .refine((text) => maxWords(text, 800), {
+      message: "Course summary must be less than 800 words"
+    }),
   courseCertificate: z.number().min(1, { message: "Certificate template is required" }),
   courseMakeAvailable: z.boolean()
 });

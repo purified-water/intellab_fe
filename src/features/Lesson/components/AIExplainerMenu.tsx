@@ -27,36 +27,63 @@ interface AIExplainerMenuProps {
   setInput: (value: string) => void;
   lesson: ILesson | null;
   setOpenChatbox: (value: boolean) => void;
+  resetExplainer?: () => void; // Optional function to reset explainer state
 }
-// Use forwardRef to expose the ref to the parent component, deprecated in React 19 but still used in React 18
+
 export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
-  ({ isOpen, setIsOpen, input, setInput, lesson, setOpenChatbox }, ref) => {
+  ({ isOpen, setIsOpen, input, setInput, lesson, setOpenChatbox, resetExplainer }, ref) => {
     const [isLoadingResponse, setIsLoadingResponse] = useState(false);
     const [explainerResponse, setExplainerResponse] = useState("");
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const userId = getUserIdFromLocalStorage();
     const toast = useToast();
     const dispatch = useDispatch();
 
-    // Track the previous input to prevent duplicate processing
-    const prevInputRef = useRef<string | null>(null);
+    // Track the streaming operation state
+    const abortControllerRef = useRef<AbortController | null>(null);
     const isProcessingRef = useRef<boolean>(false);
 
     // For streaming response
-    const [abortController, setAbortController] = useState<AbortController | null>(null);
-    const [chatModel] = useState(CHATBOT_MODELS[2].value);
+    const [chatModel] = useState(CHATBOT_MODELS[0].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 
+    // Handle component unmount and abort any in-progress requests
+    useEffect(() => {
+      return () => {
+        if (abortControllerRef.current) {
+          abortControllerRef.current.abort();
+          abortControllerRef.current = null;
+        }
+      };
+    }, []);
+
+    // Safe close handler that resets all states and cleans up resources
     const handleClose = () => {
-      if (abortController) {
-        abortController.abort();
-        setAbortController(null);
+      // Abort any in-progress requests
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+        abortControllerRef.current = null;
       }
+
+      // Clear selection
       window.getSelection()?.removeAllRanges();
+
+      // Reset internal state
       isProcessingRef.current = false;
+      setErrorMessage(null);
+      setInput("");
+
+      // Close the menu
       setIsOpen(false);
       setExplainerResponse("");
+
+      // Call the external reset function if provided
+      if (resetExplainer) {
+        resetExplainer();
+      }
     };
 
+    // Handle clicks outside the menu
     useEffect(() => {
       const handleClickOutside = (event: MouseEvent) => {
         if (
@@ -64,7 +91,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
           (ref as React.RefObject<HTMLDivElement>).current &&
           !(ref as React.RefObject<HTMLDivElement>).current!.contains(event.target as Node)
         ) {
-          setIsOpen(false);
+          handleClose();
         }
       };
 
@@ -72,24 +99,17 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
       return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [isOpen, ref]);
 
-    // Modified useEffect to prevent duplicate processing
+    // Process input when menu opens
     useEffect(() => {
-      // Only process if we have input, it's not already being processed, and it's different from previous input
-      if (!input || isProcessingRef.current === true || input === prevInputRef.current) return;
-      // Set processing flag and store current input
-      isProcessingRef.current = true;
-      prevInputRef.current = input;
+      const timeout = setTimeout(() => {
+        if (input && isOpen && !isProcessingRef.current) {
+          isProcessingRef.current = true;
+          handleSendMessageStream("explain");
+        }
+      }, 100); // slight delay to prevent premature aborts
 
-      // Process the input
-      handleSendMessageStream();
+      return () => clearTimeout(timeout);
     }, [input, isOpen]);
-
-    // Clear previous input when menu closes
-    useEffect(() => {
-      if (!isOpen) {
-        prevInputRef.current = null;
-      }
-    }, [isOpen]);
 
     if (!isOpen) return null;
 
@@ -99,33 +119,41 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
       userInput: string,
       inputType: string = "explain"
     ) => {
-      if (inputType === "simplify") {
-        return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: Explain the text in simple terms: "${userInput}"`;
-      }
-      return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: Explain the text concisely: "${userInput}"`;
+      const prompt =
+        inputType === "simplify"
+          ? `Explain this text in simple terms that a beginner would understand: "${userInput}"`
+          : `Explain this text concisely: "${userInput}"`;
+
+      return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${prompt}`;
     };
 
     const handleSendMessageStream = async (inputType: string = "explain") => {
+      // Ensure we have text to process
       if (!input || !input.trim()) {
-        showToastError({ toast: toast.toast, message: "Please enter a message" });
+        setErrorMessage("No text selected to explain");
+        isProcessingRef.current = false;
         return;
       }
+
+      // Verify user is logged in
       if (!userId) {
         showToastError({ toast: toast.toast, message: "Please login to continue" });
+        handleClose();
         return;
       }
 
+      // Reset any previous error
+      setErrorMessage(null);
+
+      // Update last activity timestamp
       updateLastVisit();
 
-      const trimmedInput = "Explain the text: " + input.trim();
-      // Initialize abort controller
-      const controller = new AbortController();
-      setAbortController(controller);
-
-      // Used to set the user message in the chat
+      // Create message content
+      const trimmedInput = input.trim();
+      const messagePrefix = inputType === "simplify" ? "Simply explain the text: " : "Explain the text: ";
       const userMessage: ChatbotMessageContentType = {
         type: "user",
-        content: trimmedInput,
+        content: messagePrefix + trimmedInput,
         timestamp: new Date().toISOString(),
         metadata: { model: chatModel }
       };
@@ -137,17 +165,26 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
         metadata: { model: chatModel }
       };
 
+      // Update redux state
       dispatch(addMessage(userMessage));
-      dispatch(addMessage(aiMessagePlaceholder)); // Add AI placeholder message
+      dispatch(addMessage(aiMessagePlaceholder));
 
-      // Don't clear input here - setInput("");
+      // Set loading state
       setIsLoadingResponse(true);
 
-      try {
-        if (!lesson) return;
-        const formattedInput = formatAIMessageInputContent(lesson?.content, lesson?.lessonId, input, inputType);
+      // Create new abort controller for this request
+      const controller = new AbortController();
+      abortControllerRef.current?.abort(); // cancel any ongoing
+      abortControllerRef.current = controller;
 
-        // Has to format input with the following: "Problem: <problem> Question: <question>"
+      try {
+        if (!lesson) {
+          throw new Error("Lesson data is missing");
+        }
+
+        const formattedInput = formatAIMessageInputContent(lesson?.content, lesson?.lessonId, trimmedInput, inputType);
+
+        // Request stream from API
         const responseStream = await aiAPI.postChatbotMessageStream(
           AI_AGENT.LESSON_CHATBOT,
           formattedInput,
@@ -157,14 +194,19 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
           chatDetail?.thread_id
         );
 
+        // Update last activity timestamp
         updateLastVisit();
 
-        let accumulatedContent = ""; // Store streamed tokens
+        if (!responseStream) {
+          throw new Error("Failed to get response stream");
+        }
+
+        let accumulatedContent = "";
         let firstChunkReceived = false;
 
-        if (!responseStream) return;
-
+        // Process the stream
         for await (const chunk of responseStream) {
+          // Mark as no longer loading once first chunk is received
           if (!firstChunkReceived) {
             firstChunkReceived = true;
             setIsLoadingResponse(false);
@@ -172,7 +214,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
 
           if (chunk.type === "token") {
             accumulatedContent += chunk.content;
-            dispatch(updateLastMessageContent(accumulatedContent)); // Update AI message progressively
+            dispatch(updateLastMessageContent(accumulatedContent));
             setExplainerResponse(accumulatedContent);
           } else if (chunk.type === "message") {
             const responseData = chunk.content as ChatbotMessageResponseType;
@@ -185,7 +227,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
               }
             } as ChatbotMessageContentType;
 
-            dispatch(updateLastMessage(finalMessage)); // Replace streamed content with final response
+            dispatch(updateLastMessage(finalMessage));
             setExplainerResponse(responseData.content);
 
             if (chatDetail?.thread_id === null) {
@@ -193,28 +235,40 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
             }
           }
         }
+        isProcessingRef.current = false;
       } catch (error) {
-        setIsLoadingResponse(false);
-        console.error("Error in sending message", error);
+        // Only show error if not aborted
+        if (error instanceof Error && error.name !== "AbortError") {
+          setIsLoadingResponse(false);
+          const errorMsg = "Failed to process your request. Please try again.";
+          setErrorMessage(errorMsg);
+          setExplainerResponse(errorMsg);
+          dispatch(
+            updateLastMessage({
+              type: "ai",
+              content: errorMsg,
+              timestamp: new Date().toISOString(),
+              metadata: { model: chatModel }
+            })
+          );
+          console.error("Error in sending message", error);
+        }
       } finally {
         setIsLoadingResponse(false);
-        // After processing is complete, we should clear the input
-        // This ensures the next selection will be treated as new
-        setInput("");
+        // Reset processing flag regardless of outcome
         isProcessingRef.current = false;
       }
     };
 
     return (
       <>
-        {/* Explainer Menu */}
         <motion.div
           ref={ref}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: isOpen ? 1 : 0, y: isOpen ? 0 : 20 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           style={{ zIndex: 20 }}
-          className="rounded-xl border-[0.5px] z-20 border-appAIFrom bg-white mt-1 shadow-lg max-h-[320px] w-[400px] max-w-[400px] text-black overflow-hidden" // Important
+          className="rounded-xl border-[0.5px] z-20 border-appAIFrom bg-white mt-1 shadow-lg max-h-[320px] w-[400px] max-w-[400px] text-black overflow-hidden"
         >
           <div className={`${isLoadingResponse ? "p-3" : "p-5 pb-0"}`}>
             <Button
@@ -226,7 +280,6 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
             </Button>
 
             <div className="relative mr-5">
-              {/* Scrollable content */}
               <div
                 className={`pr-1 overflow-y-auto transition-all duration-300 ${isLoadingResponse ? "h-8" : "h-[180px]"}`}
               >
@@ -235,12 +288,14 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
                     <Spinner loading={isLoadingResponse} className="text-black size-5" />
                     <span className="text-sm text-gray-600">Explaining...</span>
                   </div>
+                ) : errorMessage ? (
+                  <div className="text-red-500">{errorMessage}</div>
                 ) : (
-                  <Markdown className="prose">{explainerResponse || "No response yet."}</Markdown>
+                  <Markdown className="prose">{explainerResponse || "Select text to explain"}</Markdown>
                 )}
               </div>
 
-              {/* Scrim gradients (outside scrollable div) */}
+              {/* Scrim gradients */}
               <div className="absolute top-0 left-0 right-0 h-3 pointer-events-none bg-gradient-to-b from-white/70 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 h-3 pointer-events-none bg-gradient-to-t from-white/70 to-transparent" />
             </div>
@@ -248,12 +303,18 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
 
           {!isLoadingResponse && (
             <div className="flex flex-col px-4 py-3 space-y-2 text-sm">
-              <p className=" text-gray3">Explained with Intellab AI</p>
+              <p className="text-gray3">Explained with Intellab AI</p>
               <div className="flex justify-between w-full rounded-b-xl bg-white/90">
                 <Button
-                  onClick={() => handleSendMessageStream("simplify")}
+                  onClick={() => {
+                    // Only process if not already processing
+                    if (!isProcessingRef.current) {
+                      isProcessingRef.current = true;
+                      handleSendMessageStream("simplify");
+                    }
+                  }}
                   className="mr-2 rounded-full cursor-pointer hover:bg-appAccent/80 bg-appAccent w-fit"
-                  disabled={isLoadingResponse || isProcessingRef.current}
+                  disabled={isLoadingResponse && isProcessingRef.current}
                 >
                   <span>Simplify</span>
                 </Button>
@@ -261,7 +322,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
                 <Button
                   className="cursor-pointer w-fit hover:bg-transparent text-gray2 hover:text-gray2/80"
                   variant="ghost"
-                  disabled={isLoadingResponse || isProcessingRef.current}
+                  disabled={isLoadingResponse && isProcessingRef.current}
                   onClick={() => {
                     handleClose();
                     setOpenChatbox(true);

@@ -23,6 +23,18 @@ const createCourseSlice = createSlice({
     setCreateCourse: (state, action: PayloadAction<Partial<CreateCourseSchema>>) => {
       return { ...state, ...action.payload };
     },
+    updateLessonQuiz: (
+      state,
+      action: PayloadAction<{
+        lessonId: string;
+        lessonQuiz: CreateCourseSchema["courseLessons"][number]["lessonQuiz"];
+      }>
+    ) => {
+      const index = state.courseLessons.findIndex((l) => l.lessonId === action.payload.lessonId);
+      if (index !== -1) {
+        state.courseLessons[index].lessonQuiz = action.payload.lessonQuiz;
+      }
+    },
     deleteLesson: (state, action: PayloadAction<string>) => {
       // Filter out the lesson with the given lessonId
       state.courseLessons = state.courseLessons.filter((lesson) => lesson.lessonId !== action.payload);
@@ -31,5 +43,5 @@ const createCourseSlice = createSlice({
   }
 });
 
-export const { setCreateCourse, deleteLesson, resetCreateCourse } = createCourseSlice.actions;
+export const { setCreateCourse, deleteLesson, updateLessonQuiz, resetCreateCourse } = createCourseSlice.actions;
 export default createCourseSlice.reducer;

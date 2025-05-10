@@ -14,9 +14,6 @@ export const useNotificationSocket = () => {
   const toast = useToast();
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  if (!userId || !isAuthenticated) {
-    return;
-  }
 
   const { lastMessage } = useWebSocket(`ws://localhost:8101/identity/ws/notification?userId=${userId}`, {
     shouldReconnect: () => true, // Automatically try to reconnect
@@ -25,6 +22,8 @@ export const useNotificationSocket = () => {
   });
 
   useEffect(() => {
+    if (!userId || !isAuthenticated || lastMessage === null) return;
+
     if (lastMessage !== null) {
       try {
         const parsed = JSON.parse(lastMessage.data);

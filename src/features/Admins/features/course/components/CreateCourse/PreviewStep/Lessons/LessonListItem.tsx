@@ -22,14 +22,14 @@ export default function LessonListItem({ lesson }: LessonListItemProps) {
     // navigate(
     //   `/lessons/${lesson.lessonId}?courseId=${course.courseId}&courseName=${course.courseName}&learningId=${lesson.learningId}`
     // );
-    console.log("Lesson clicked");
+    console.log("Lesson clicked", lesson);
   };
 
   const renderIcons = () => {
     return (
       <div className="flex flex-row flex-1 gap-12 text-gray3">
         <BookOpenText className="w-8 h-8 cursor-pointer" onClick={handleExerciseClick} />
-        <Code className="w-8 h-8 cursor-pointer" onClick={handleProblemClick} />
+        {lesson.lessonProblemId && <Code className="w-8 h-8 cursor-pointer" onClick={handleProblemClick} />}
       </div>
     );
   };

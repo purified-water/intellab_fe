@@ -1,34 +1,92 @@
+import { intellabDefaultLogo } from "@/assets";
+import { Facebook, Linkedin } from "lucide-react";
+
 export const AppFooter = () => {
   return (
-    <div className="flex flex-col w-full p-8 mt-20 space-y-6 text-white self:end md:h-64 bg-appPrimary md:space-y-0 md:flex-row md:space-x-12">
-      <div id="app-name" className="flex flex-col">
-        <p className="text-2xl font-bold md:text-3xl">Intellab</p>
-        <p className="text-md md:text-base">Let your learning journey begin!</p>
+    <footer className="w-full px-6 py-12 mt-40 text-white bg-appPrimary">
+      <div className="flex flex-col items-center justify-between mx-12 px-auto md:flex-row max-w-7xl">
+        {/* Logo and App Info */}
+        <div className="flex items-center gap-6 md:gap-12">
+          <img src={intellabDefaultLogo} alt="Intellab Logo" className="object-contain w-12 h-12 md:w-16 md:h-16" />
+          <div>
+            <p className="text-2xl font-bold">Intellab</p>
+            <p className="text-sm md:text-base opacity-80">Let your learning journey begin!</p>
+          </div>
+        </div>
+
+        {/* Links */}
+        <div className="flex flex-col gap-x-16 md:flex-row">
+          <div>
+            <p className="mb-2 text-lg font-semibold">Services</p>
+            <ul className="space-y-2 text-sm opacity-90">
+              <li>
+                <a href="/explore" className="hover:underline hover:text-appAccent">
+                  Courses
+                </a>
+              </li>
+              <li>
+                <a href="/problems" className="hover:underline hover:text-appAccent">
+                  Algorithms
+                </a>
+              </li>
+              <li>
+                <a href="/leaderboard" className="hover:underline hover:text-appAccent">
+                  Leaderboard
+                </a>
+              </li>
+              <li>
+                <a href="/pricing" className="hover:underline hover:text-appAccent">
+                  Premium
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <p className="mb-2 text-lg font-semibold">About Us</p>
+            <ul className="space-y-2 text-sm opacity-90">
+              <li>
+                <a href="#" className="hover:underline hover:text-appAccent">
+                  Team
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline hover:text-appAccent">
+                  Contact
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:underline hover:text-appAccent">
+                  Report a Problem
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Social Media Icons */}
+        <div className="flex mt-6 space-x-6 md:mt-0">
+          <a
+            href="https://www.facebook.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lg hover:text-appAccent"
+          >
+            <Facebook />
+          </a>
+          <a
+            href="https://www.linkedin.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-lg hover:text-appAccent"
+          >
+            <Linkedin />
+          </a>
+        </div>
       </div>
 
-      <div id="app-services" className="flex flex-col">
-        <p className="mt-4 mb-2 text-lg font-bold md:mt-0">Services</p>
-        <a href="/explore" className="text-sm md:text-base">
-          Courses
-        </a>
-        <a href="/problems" className="mt-2 text-sm md:text-base">
-          Algorithms
-        </a>
-      </div>
-
-      <div id="app-about" className="flex flex-col w-32">
-        <p className="mt-4 mb-2 text-lg font-bold md:mt-0">About us</p>
-        <a href="#" className="text-sm md:text-base">
-          Team
-        </a>
-        <a href="#" className="mt-2 text-sm md:text-base">
-          Contact
-        </a>
-      </div>
-
-      <div id="copyright" className="flex self-end justify-end w-full mt-4 text-center md:mt-0 md:text-right">
-        <p className="text-sm md:text-base">Copyright © Intellab 2024</p>
-      </div>
-    </div>
+      {/* Copyright */}
+      <div className="mt-8 text-xs text-center md:text-sm opacity-70">© Intellab 2024. All rights reserved.</div>
+    </footer>
   );
 };

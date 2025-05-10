@@ -10,7 +10,7 @@ export function AnimatedButton(props: AnimatedButtonProps) {
   const { label, onClick, className } = props;
 
   return (
-    <button className={`relative px-24 py-4 overflow-hidden rounded-lg ${className}`} onClick={onClick}>
+    <button type="button" className={`relative px-24 py-4 overflow-hidden rounded-lg ${className}`} onClick={onClick}>
       <div className="absolute inset-px z-10 flex items-center justify-center gap-x-1 rounded-md bg-white text-black font-semibold m-0.5">
       <HiOutlineSparkles className="w-6 h-6 icon-black" />
       {label}

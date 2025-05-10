@@ -5,8 +5,15 @@ import {
   CreateCourseFinalStepPayload,
   CreateCoursePreviewStepPayload,
   UpdateCourseLessonPayload,
-  CreateCourseLessonQuizPayload
+  CreateCourseLessonQuizPayload,
+  CreateLessonQuizResponse,
+  QuestionResponse,
+  CreateLessonProblemResponse
 } from "@/types";
+import { CreateQuizSchema } from "../features/course/schemas/createQuizSchema";
+import { CreateLessonSchema } from "../features/course/schemas";
+import { ILessonResponse } from "../features/course/types";
+import { DEFAULT_QUIZ } from "../features/course/constants";
 
 export const adminCourseAPI = {
   // Step 1
@@ -74,9 +81,21 @@ export const adminCourseAPI = {
     return response.data.result;
   },
 
-  getCreateCourseLessonList: async (courseId: string) => {
+  getCreateCourseLessonList: async (courseId: string): Promise<CreateLessonSchema[]> => {
     const response = await apiClient.get(`course/admin/courses/${courseId}/lessonsList`);
-    return response.data.result;
+    const data = response.data.result as ILessonResponse[];
+
+    return data.map((lesson: ILessonResponse) => ({
+      lessonId: lesson.lessonId,
+      lessonName: lesson.lessonName,
+      lessonDescription: lesson.description,
+      lessonContent: lesson.content,
+      hasQuiz: lesson.quizId ? true : false,
+      lessonQuiz: DEFAULT_QUIZ,
+      hasProblem: lesson.problemId ? true : false,
+      lessonProblemId: lesson.problemId ?? null,
+      lessonOrder: lesson.lessonOrder ?? 0
+    }));
   },
 
   getCreateCourseCertificateTemplates: async (templateIndex: number) => {
@@ -86,12 +105,28 @@ export const adminCourseAPI = {
 
   // HELPERS FOR CREATING A LESSON
   // Get the list of quiz of a lesson
-  getCreateLessonQuizList: async (lessonId: string) => {
+  getCreateLessonQuizList: async (lessonId: string): Promise<CreateQuizSchema> => {
     const response = await apiClient.get(`course/admin/lessons/quiz/${lessonId}`);
-    return response.data.result;
+    const data = response.data.result as CreateLessonQuizResponse;
+
+    // Map the response to the CreateQuizSchema for UI
+    return {
+      totalQuestions: data.questionList.length,
+      displayedQuestions: data.questionsPerExercise,
+      requiredCorrectQuestions: data.passingQuestions,
+      quizQuestions: data.questionList.map((question: QuestionResponse) => ({
+        questionId: question.questionId,
+        questionTitle: question.questionContent,
+        correctAnswer: parseInt(question.correctAnswer),
+        options: question.options.map((option) => ({
+          order: option.order,
+          option: option.content
+        }))
+      }))
+    };
   },
   // Get the problem list when creating a lesson
-  getCreateLessonProblemList: async () => {
+  getCreateLessonProblemList: async (): Promise<CreateLessonProblemResponse[]> => {
     const response = await apiClient.get(`problem/problems/createLesson/problemList`);
     return response.data.result;
   },

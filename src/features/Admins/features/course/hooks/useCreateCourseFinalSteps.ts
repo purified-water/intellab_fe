@@ -5,14 +5,17 @@ import { CreateCourseFinalStepPayload } from "@/types";
 import { useToast } from "@/hooks";
 import { showToastError, showToastSuccess } from "@/utils";
 import { AxiosError } from "axios";
+import { useCourseWizardStep } from "./useCourseWizardStep";
 
 export const useCreateFinalStep = (courseId: string, templateIndex: number) => {
   const toast = useToast();
+  const { goToNextStep } = useCourseWizardStep();
 
   const submitFinalStep = useMutation({
     mutationFn: (payload: CreateCourseFinalStepPayload) => adminCourseAPI.postCreateCourseFinalStep(courseId, payload),
     onSuccess: () => {
-      showToastSuccess({ toast: toast.toast, message: "Course created successfully" });
+      showToastSuccess({ toast: toast.toast, message: "Update final steps successfully" });
+      goToNextStep();
     },
     onError: (error) => {
       if (error instanceof AxiosError) {
