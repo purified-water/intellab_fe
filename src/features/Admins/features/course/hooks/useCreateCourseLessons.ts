@@ -6,8 +6,6 @@ import { useDispatch } from "react-redux";
 import { DEFAULT_QUIZ } from "../constants";
 import { setCreateLesson } from "@/redux/createCourse/createLessonSlice";
 import { CreateLessonProblemResponse } from "@/types";
-import { CreateLessonSchema } from "../schemas";
-import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 
 export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   const toast = useToast();

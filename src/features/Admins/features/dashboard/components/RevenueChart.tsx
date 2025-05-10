@@ -1,6 +1,7 @@
+import { DateRange } from "react-day-picker";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 
-function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", dateRange: any) {
+function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", _dateRange: DateRange | undefined) {
   // Mock data for demonstration purposes
   const mockData = {
     Daily: [
@@ -46,7 +47,7 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
 
 interface Props {
   rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
-  dateRange: any;
+  dateRange: DateRange | undefined;
 }
 
 export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {

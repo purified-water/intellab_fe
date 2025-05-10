@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { CourseLessonList, CourseWizardButtons, LessonForm } from "../../components/ViewCourse";
 import { LessonAction } from "../../types";
 import { CreateLessonSchema } from "../../schemas";

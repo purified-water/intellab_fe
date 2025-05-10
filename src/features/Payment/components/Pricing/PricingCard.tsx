@@ -100,35 +100,35 @@ export const PricingCard = ({ plan }: { plan: Plan }) => {
     }
 
     return (
-      <div className="self-stretch px-12 py-2.5 bg-appPrimary rounded-[10px] inline-flex justify-center items-center gap-2.5 mt-4">
-        {isAuthenticated ? (
-          <AlertDialog
-            title={"Are you sure?"}
-            message={
-              "You are switching to a new plan. This action cannot be undone. Your current plan and perks will be overridden."
-            }
-            onConfirm={handleClick}
-          >
-            <button>
+      <button className="self-stretch px-12 py-2.5 bg-appPrimary rounded-[10px] inline-flex justify-center items-center gap-2.5 mt-4">
+        <div>
+          {isAuthenticated ? (
+            <AlertDialog
+              title={"Are you sure?"}
+              message={
+                "You are switching to a new plan. This action cannot be undone. Your current plan and perks will be overridden."
+              }
+              onConfirm={handleClick}
+            >
+              <div className="w-40 h-5 text-center justify-center text-white text-sm font-semibold">Subscribe</div>
+            </AlertDialog>
+          ) : (
+            <button onClick={handleClick}>
               <div className="w-40 h-5 text-center justify-center text-white text-sm font-semibold">Subscribe</div>
             </button>
-          </AlertDialog>
-        ) : (
-          <button onClick={handleClick}>
-            <div className="w-40 h-5 text-center justify-center text-white text-sm font-semibold">Subscribe</div>
-          </button>
-        )}
-      </div>
+          )}
+        </div>
+      </button>
     );
   };
 
-  const renderCurrentPlan = () => {
-    return (
-      <div className="inline-flex w-52 px-5 py-1 mt-2 ml-5 bg-appPrimary rounded-t-xl">
-        <p className="font-semibold text-white mx-auto">Your Current Plan</p>
-      </div>
-    );
-  };
+  // const renderCurrentPlan = () => {
+  //   return (
+  //     <div className="inline-flex w-52 px-5 py-1 mt-2 ml-5 bg-appPrimary rounded-t-xl">
+  //       <p className="font-semibold text-white mx-auto">Your Current Plan</p>
+  //     </div>
+  //   );
+  // };
 
   return (
     <>

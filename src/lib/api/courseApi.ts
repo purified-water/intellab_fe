@@ -45,7 +45,7 @@ const DEFAULT_PAGE_SIZE = 10;
 
 export const courseAPI = {
   getCourses: async () => {
-    const response = await apiClient.get(`course/courses`);
+    const response = await apiClient.get(`course/courses?isAvailable=true&isCompletedCreation=true`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },
@@ -88,7 +88,9 @@ export const courseAPI = {
   },
 
   search: async (keyword: string, page: number) => {
-    const response = await apiClient.get(`course/courses/search?keyword=${keyword}&page=${page}`);
+    const response = await apiClient.get(
+      `course/courses/search?keyword=${keyword}&page=${page}&isAvailable=true&isCompletedCreation=true`
+    );
     const data: IGetCoursesResponse = response.data;
     return data;
   },
