@@ -1,9 +1,9 @@
-import { Unlock, BotMessageSquare, FileText, MessageCircleCode, Bot, TextCursorInput } from "lucide-react";
+import { Unlock, FileText, MessageCircleCode, Bot, TextCursorInput, Sparkle } from "lucide-react";
 
 const ICONS = {
   "Access to All Problems": Unlock,
   "Access to All Courses": Unlock,
-  "Intellab AI Assistant": BotMessageSquare,
+  "Intellab AI Assistant": Sparkle,
   "AI-Powered Course Summarization": FileText,
   "Unlimited Interaction with the AI Assistant for Problem Solving": MessageCircleCode,
   "Access to Cutting-Edge AI Models": Bot,
@@ -34,8 +34,8 @@ export const PerksList = ({ perks }: PerksListProps) => {
           <div key={index} className="self-stretch inline-flex justify-start items-start gap-2.5">
             <Icon className="w-5 h-5 text-appPrimary" />
             <div className="flex-1 inline-flex flex-col justify-start items-start gap-[5px]">
-              <div className="self-stretch justify-start text-black text-base font-semibold">{perk.title}</div>
-              <div className="self-stretch justify-start text-black text-base font-light">{perk.description}</div>
+              <div className="self-stretch justify-start text-base font-semibold text-black">{perk.title}</div>
+              <div className="self-stretch justify-start text-base font-light text-black">{perk.description}</div>
             </div>
           </div>
         );

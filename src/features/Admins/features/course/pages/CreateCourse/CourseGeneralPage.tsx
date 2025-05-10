@@ -40,7 +40,6 @@ const courseGeneralSchema = createCourseSchema.pick({
 type CourseGeneralSchema = z.infer<typeof courseGeneralSchema>;
 
 export const CourseGeneralPage = () => {
-  const { goToNextStep } = useCourseWizardStep();
   const dispatch = useDispatch();
   const formData = useSelector((state: RootState) => state.createCourse);
   const toast = useToast();
@@ -48,6 +47,7 @@ export const CourseGeneralPage = () => {
   const { data: categories, isLoading: loadingCategories } = useCourseCategories();
   const createCourse = useCreateCourseGeneral();
   const uploadThumbnail = useUploadCourseImage();
+  const { goToNextStep } = useCourseWizardStep();
 
   // Initialize form with Zod validation
   const form = useForm<CourseGeneralSchema>({
@@ -75,14 +75,15 @@ export const CourseGeneralPage = () => {
     try {
       const course = await createCourse.mutateAsync(formatPayload);
       dispatch(setCreateCourse({ courseId: course.courseId }));
-      await uploadThumbnail.mutateAsync({
-        courseId: course.courseId,
-        file: data.courseThumbnail!
-      });
-
+      if (data.courseThumbnail) {
+        uploadThumbnail.mutateAsync({
+          courseId: course.courseId,
+          file: data.courseThumbnail!
+        });
+      }
       goToNextStep();
     } catch (error) {
-      console.error("Error uploading thumbnail:", error);
+      console.error("Error in creating course:", error);
       showToastError({ toast: toast.toast, message: "Error uploading general information" });
     }
   };

@@ -27,6 +27,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
       <h1 className="text-4xl font-bold">{course.courseName}</h1>
       <p className="mt-2 text-justify">{course.courseDescription}</p>
       {renderButtons()}
+
       <CourseSummaryDialog
         courseName={course.courseName}
         isOpen={showSummaryDialog}

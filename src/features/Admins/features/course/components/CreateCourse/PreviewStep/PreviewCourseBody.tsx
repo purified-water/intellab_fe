@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { LessonList } from "./Lessons/LessonList";
 import { CreateCourseSchema } from "../../../schemas";
-
 interface PreviewCourseBodyProps {
   course: CreateCourseSchema;
 }
@@ -17,6 +16,7 @@ export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
   const renderTabButton = (tab: string, key: number) => {
     return (
       <button
+        type="button"
         key={key}
         onClick={() => setActiveTab(tab)}
         className={activeTab === tab ? "text-appAccent underline" : "text-gray3 hover:text-appAccent/80"}

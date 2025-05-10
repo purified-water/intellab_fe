@@ -10,7 +10,15 @@ export const useCourseCategories = () =>
     queryFn: adminCourseAPI.getCreateCourseCategories
   });
 
-export const useCreateCourseGeneral = () => useMutation({ mutationFn: adminCourseAPI.postCreateCourseGeneralStep });
+export const useCreateCourseGeneral = () => {
+  const toast = useToast();
+  return useMutation({
+    mutationFn: adminCourseAPI.postCreateCourseGeneralStep,
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Update general step successfully" });
+    }
+  });
+};
 
 export const useUploadCourseImage = () => {
   const toast = useToast();

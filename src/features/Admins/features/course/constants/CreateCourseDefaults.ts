@@ -22,7 +22,7 @@ const DEFAULT_CREATE_COURSE: ICreateCourse = {
   courseImage: "",
   isAvailable: false,
   isCompletedCreation: false,
-  enrollments: 0,
+  numberOfEnrolledStudents: 0,
   currentCreationStep: 0,
   currentCreationStepDescription: "Current Creation Step Description"
 };
@@ -81,7 +81,7 @@ const DEFAULT_QUIZ: CreateQuizSchema = {
   requiredCorrectQuestions: 1,
   quizQuestions: [
     {
-      questionId: "question_id",
+      questionId: "",
       questionTitle: "Question Title",
       correctAnswer: 1,
       options: [

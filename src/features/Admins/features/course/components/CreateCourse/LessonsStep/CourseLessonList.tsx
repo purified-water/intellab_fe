@@ -15,9 +15,10 @@ interface CourseLessonListProps {
   lessons: CreateLessonSchema[];
   onSelect: (action: LessonAction) => void;
   onCreateLesson: (action: LessonAction) => void;
+  setHasLessonsReordered?: (value: boolean) => void;
 }
 
-export function CourseLessonList({ lessons, onSelect, onCreateLesson }: CourseLessonListProps) {
+export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLessonsReordered }: CourseLessonListProps) {
   const [selectedLesson, setSelectedLesson] = useState<CreateLessonSchema | null>(null);
   const [showList, setShowList] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
@@ -45,6 +46,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson }: CourseLe
     const newOrder = arrayMove(lessons, oldIndex, newIndex);
 
     dispatch(setCreateCourse({ courseLessons: newOrder }));
+    setHasLessonsReordered && setHasLessonsReordered(true);
   };
 
   const handleAction = (action: LessonAction) => {

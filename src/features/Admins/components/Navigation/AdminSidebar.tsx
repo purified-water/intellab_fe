@@ -9,7 +9,6 @@ import {
   User,
   Settings,
   Bell,
-  Sun,
   LogOut,
   FileCode
 } from "lucide-react";
@@ -68,13 +67,6 @@ const dropdownMenuItems: DropdownMenuItem[] = [
     label: "Notifications",
     icon: Bell,
     onClick: (navigate) => navigate("/notification")
-  },
-  {
-    label: "Light Theme",
-    icon: Sun,
-    onClick: () => {
-      // TODO: implement theme switching
-    }
   }
 ];
 
@@ -99,9 +91,9 @@ export function AdminSidebar(props: AdminSidebarProps) {
   const renderHeader = () => (
     <SidebarHeader className="py-4">
       <div className="flex flex-col group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
-        <div className="flex items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
-          <div className="mr-2 group-data-[collapsible=icon]:mr-0">
-            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="w-10 h-10" />
+        <div className="transition-all duration-300 ease-in-out flex items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
+          <div className=" mr-2 group-data-[collapsible=icon]:mr-0">
+            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="size-10" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
             <span className="text-xl font-bold text-appPrimary">Intellab</span>
@@ -122,7 +114,10 @@ export function AdminSidebar(props: AdminSidebarProps) {
             {navItems.map((item) => (
               <SidebarMenuItem key={item.title}>
                 <SidebarMenuButton asChild isActive={pathname === item.href} tooltip={item.title}>
-                  <Link to={item.href} className="flex items-center group-data-[collapsible=icon]:justify-center">
+                  <Link
+                    to={item.href}
+                    className="transition-all duration-300 ease-in-out flex items-center group-data-[collapsible=icon]:justify-center"
+                  >
                     <item.icon
                       className={cn(
                         "mr-2 group-data-[collapsible=icon]:mr-0",
@@ -149,7 +144,11 @@ export function AdminSidebar(props: AdminSidebarProps) {
 
   const renderDropdownMenuItems = () =>
     dropdownMenuItems.map((item, index) => (
-      <DropdownMenuItem key={index} onClick={() => item.onClick(navigate, userRedux!)} className="cursor-pointer">
+      <DropdownMenuItem
+        key={index}
+        onClick={() => item.onClick(navigate, userRedux!)}
+        className="cursor-pointer text-gray2"
+      >
         <item.icon className="w-8 h-8 mr-2" />
         <span className="text-base">{item.label}</span>
       </DropdownMenuItem>
@@ -160,7 +159,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
       <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="flex w-full items-center justify-between rounded-md py-1 px-2 hover:bg-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1">
+            <button className="transition-all duration-300 ease-in-out flex w-full items-center justify-between rounded-md py-1 px-2 hover:bg-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1">
               <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
                 <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
                 <div className="flex flex-col items-start text-sm group-data-[collapsible=icon]:hidden">
@@ -181,7 +180,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
             </div>
             <div className="p-1">{renderDropdownMenuItems()}</div>
             <div className="p-1 border-t">
-              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer">
+              <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-gray2">
                 <LogOut className="mr-2 w-7 h-7" />
                 <span className="text-base">Logout</span>
               </DropdownMenuItem>
@@ -193,7 +192,12 @@ export function AdminSidebar(props: AdminSidebarProps) {
   );
 
   return (
-    <Sidebar collapsible="icon" onMouseEnter={onMouseEnter} onMouseLeave={onMouseLeave}>
+    <Sidebar
+      collapsible="icon"
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+      className="transition-all duration-300 ease-in-out"
+    >
       {renderHeader()}
       {renderBody()}
       {renderFooter()}
