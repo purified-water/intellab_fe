@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/shadcn";
 import { useForm } from "react-hook-form";
 import { CreateLessonSchema, createLessonSchema } from "../../../schemas";
-import { useCourseWizardStep } from "../../../hooks";
+import { useCourseWizardStep, useCreateLesson } from "../../../hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RequiredInputLabel } from "../RequiredInputLabel";
 import { AddLessonMarkdown } from "./AddLessonMarkdown";
@@ -20,8 +20,9 @@ import { AddProblem } from "./AddProblem";
 import { DEFAULT_QUIZ } from "../../../constants";
 import { useEffect, useMemo } from "react";
 import { Button } from "@/components/ui";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { updateLessonQuiz } from "@/redux/createCourse/createCourseSlice";
 
 interface LessonFormProps {
   onSave: (data: CreateLessonSchema) => void;
@@ -30,13 +31,29 @@ interface LessonFormProps {
 }
 
 export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: LessonFormProps) => {
-  const lessonList = useSelector((state: RootState) => state.createCourse.courseLessons);
+  const courseData = useSelector((state: RootState) => state.createCourse);
   const lessonInCreation = useSelector((state: RootState) => state.createLesson); // For creating a new lesson
-  const selectedLesson = lessonList.find((lesson: CreateLessonSchema) => lesson.lessonId === lessonId); // For viewing/editing only
+  const selectedLesson = courseData.courseLessons.find((lesson: CreateLessonSchema) => lesson.lessonId === lessonId); // For viewing/editing only
   const { goToStep } = useCourseWizardStep();
   const isReadOnly = lessonActionType === "view";
+  const createCourseLesson = useCreateLesson(courseData.courseId, selectedLesson?.lessonId);
+  const { data: lessonQuizFromServer } = createCourseLesson.getQuiz;
+  const dispatch = useDispatch();
+  // console.log("lessonQuiz from BE", lessonQuizFromServer);
 
-  // Use memo to only change when lessonActionType or selectedLesson changes
+  useEffect(() => {
+    if (lessonQuizFromServer) {
+      console.log("lessonQuiz after reformat", lessonQuizFromServer);
+      dispatch(
+        updateLessonQuiz({
+          lessonId: selectedLesson?.lessonId || "",
+          lessonQuiz: lessonQuizFromServer
+        })
+      );
+    }
+  }, [lessonQuizFromServer, lessonId]);
+
+  // defaultValues for the form based on the action type
   const defaultValues: CreateLessonSchema = useMemo(() => {
     if (lessonActionType === "create" && lessonInCreation.lessonId) {
       return {
@@ -45,12 +62,23 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
         lessonDescription: "",
         lessonContent: "",
         hasQuiz: false,
-        lessonQuiz: undefined,
+        lessonQuiz: DEFAULT_QUIZ, // Always provide a default structure
         hasProblem: false,
         lessonProblemId: "",
         lessonOrder: lessonInCreation.lessonOrder
       };
     }
+
+    // For editing or viewing an existing lesson
+    if (selectedLesson) {
+      return {
+        ...selectedLesson,
+        // Ensure lessonQuiz has a default structure if it's undefined
+        lessonQuiz: lessonQuizFromServer || selectedLesson.lessonQuiz || DEFAULT_QUIZ
+      };
+    }
+
+    // Default empty form
     return {
       lessonId: "",
       lessonName: "",
@@ -60,14 +88,9 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
       lessonQuiz: DEFAULT_QUIZ,
       hasProblem: false,
       lessonProblemId: "",
-      lessonOrder: 0,
-      ...selectedLesson
+      lessonOrder: 0
     };
   }, [lessonActionType, selectedLesson, lessonInCreation.lessonId]);
-
-  useEffect(() => {
-    form.reset(defaultValues);
-  }, [defaultValues]);
 
   // Initialize form with Zod validation
   const form = useForm<CreateLessonSchema>({
@@ -75,8 +98,15 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
     defaultValues: defaultValues
   });
 
+  useEffect(() => {
+    if (selectedLesson || (lessonActionType === "create" && lessonInCreation.lessonId)) {
+      form.reset(defaultValues);
+    }
+  }, [defaultValues, selectedLesson, lessonActionType, lessonInCreation.lessonId]);
+
   const handleCancel = () => {
     if (lessonActionType === "view") {
+      form.reset();
       goToStep(1);
       return;
     }
@@ -86,18 +116,22 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
 
   const { hasQuiz, hasProblem } = form.watch();
 
-  useEffect(() => {
-    if (hasQuiz) {
-      form.setValue("lessonQuiz", DEFAULT_QUIZ);
-    } else {
-      form.setValue("lessonQuiz", undefined);
-    }
-  }, [hasQuiz]);
+  // Modified onSubmit handler to process form data before submission
+  const handleSubmit = (data: CreateLessonSchema) => {
+    // If hasQuiz is false, set lessonQuiz to undefined for API calls
+    // but keep the form state with DEFAULT_QUIZ for the component
+    const submissionData = {
+      ...data,
+      lessonQuiz: data.hasQuiz ? data.lessonQuiz : undefined
+    };
+
+    onSave(submissionData);
+  };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSave, (errors) => {
+        onSubmit={form.handleSubmit(handleSubmit, (errors) => {
           console.log("form data:", form.getValues());
           console.log("Validation errors:", errors);
         })}
@@ -172,6 +206,7 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
           )}
         />
 
+        {/* Conditionally render the quiz component, but always keep the field in the form */}
         {hasQuiz && (
           <FormField
             control={form.control}

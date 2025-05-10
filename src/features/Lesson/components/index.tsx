@@ -5,3 +5,4 @@ export * from "./LessonAIOrb";
 export * from "./LessonChatModal";
 export * from "./AIExplainerMenu";
 export * from "./AIExplainerTutorialModal";
+export * from "./LessonNavigation";

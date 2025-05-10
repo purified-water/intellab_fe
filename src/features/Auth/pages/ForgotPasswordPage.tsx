@@ -127,7 +127,7 @@ export const ForgetPasswordPage = () => {
       <div className="mt-6 space-y-4 text-center">
         {reduxUser && (
           <p className="font-semibold text-appPrimary">
-            You are already logged in as <strong>{reduxUser.email}</strong>.
+            You have already logged in as <strong>{reduxUser.email}</strong>.
           </p>
         )}
         <p className="text-gray2">A password reset link has been sent to your email. Please check your inbox.</p>

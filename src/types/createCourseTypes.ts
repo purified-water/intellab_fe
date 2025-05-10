@@ -3,16 +3,27 @@ export interface Category {
   categoryId: number;
   name: string;
 }
+// For creating a quiz payload
 interface OptionRequest {
   order: number;
   content: string;
 }
-interface Question {
-  questionId: string;
+export interface QuestionRequest {
+  questionId: string | null;
   questionContent: string;
   correctAnswer: string;
   questionType: string;
   optionRequests: OptionRequest[];
+}
+
+// Return after call getQuiz
+export interface QuestionResponse {
+  questionId: string;
+  questionContent: string;
+  status: string;
+  correctAnswer: string;
+  questionType: string;
+  options: OptionRequest[]; // Same type as OptionRequest
 }
 
 // Main types for creating a course
@@ -44,10 +55,9 @@ export interface UpdateCourseLessonPayload {
 // For adding a quiz to a lesson
 export interface CreateCourseLessonQuizPayload {
   lessonId: string;
-  quizId: string | null;
   questionsPerExercise: number;
   passingQuestions: number;
-  questions: Question[];
+  questions: QuestionRequest[];
 }
 
 // The lesson format after calling post with step
@@ -100,4 +110,11 @@ export interface CreateLessonProblemResponse {
   description: string;
   level: string;
   categories: Category[];
+}
+
+export interface CreateLessonQuizResponse {
+  exerciseId: string;
+  questionsPerExercise: number;
+  passingQuestions: number;
+  questionList: QuestionResponse[];
 }

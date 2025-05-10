@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/shadcn/Button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { CourseList, FilterDialog } from "../components";
 import { TCourseFilter } from "@/types";
 import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui";
 
 const TABS = {
   CREATED: "created",
@@ -17,11 +17,11 @@ export function CourseListPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [filter, setFilter] = useState<TCourseFilter>({
     keyword: "",
-    categories: [],
+    categories: null,
     rating: null,
-    levels: [],
-    prices: [],
-    priceRange: { min: 0, max: 1000000 },
+    levels: null,
+    prices: null,
+    priceRange: null,
     isCompletedCreation: true
   });
   const navigate = useNavigate();
@@ -61,7 +61,7 @@ export function CourseListPage() {
     };
 
     return (
-      <div className="">
+      <div className="min-w-[1100px]">
         <Tabs defaultValue={TABS.CREATED} value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsList className="grid w-full grid-cols-2 max-w-[400px] bg-transparent h-auto p-0 rounded-none">
             {[TABS.CREATED, TABS.DRAFT].map((tab) => (
@@ -89,7 +89,7 @@ export function CourseListPage() {
   return (
     <div className="space-y-6 px-2">
       <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
-      <div className="ml-32 space-y-3">
+      <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
         {renderFilterDialog()}
         {renderCourseList()}

@@ -6,30 +6,32 @@ import { useDispatch, useSelector } from "react-redux";
 import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { RootState } from "@/redux/rootReducer";
 import { useCreateLesson } from "../../hooks";
-import { CreateCourseLessonStepResponse, UpdateCourseLessonPayload } from "@/types";
+import { CreateCourseLessonQuizPayload, CreateCourseLessonStepResponse, UpdateCourseLessonPayload } from "@/types";
 import { resetCreateLesson, setCreateLesson } from "@/redux/createCourse/createLessonSlice";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { DEFAULT_QUIZ } from "../../constants";
 import { Spinner } from "@/components/ui";
+// StepGuard
+import { StepGuard } from "../../components/StepGuard";
+import { isGeneralStepValid } from "../../utils/courseStepGuard";
 
 export const CourseLessonsPage = () => {
   const [lessonAction, setLessonAction] = useState<LessonAction>({
     type: "default"
   });
-  // const lessons = useSelector((state: RootState) => state.createCourse.courseLessons);
   const dispatch = useDispatch();
   const toast = useToast();
   const courseId = useSelector((state: RootState) => state.createCourse.courseId);
   const courseLessons = useSelector((state: RootState) => state.createCourse.courseLessons);
-  if (!courseId) return null;
+  const [hasLessonsReordered, setHasLessonsReordered] = useState(false);
 
   const createCourseLesson = useCreateLesson(courseId);
   const { data: lessonsFromServer = [], isLoading } = createCourseLesson.getLessonList;
 
   // Only dispatch once when server data is fetched and redux is empty
   useEffect(() => {
-    if (lessonsFromServer.length > 0 && courseLessons.length === 0) {
+    if (lessonsFromServer.length > 0) {
       dispatch(setCreateCourse({ courseLessons: lessonsFromServer }));
     }
   }, [lessonsFromServer, courseLessons.length, dispatch]);
@@ -71,10 +73,31 @@ export const CourseLessonsPage = () => {
         problemId: data.hasProblem ? (data.lessonProblemId ?? null) : null,
         lessonOrder: data.lessonOrder ?? 0
       };
-      // console.log("Update lesson payload:", updateLessonPayload);
+
+      const updateQuizPayload: CreateCourseLessonQuizPayload = {
+        lessonId: data.lessonId,
+        questionsPerExercise: data.lessonQuiz?.displayedQuestions ?? 0,
+        passingQuestions: data.lessonQuiz?.requiredCorrectQuestions ?? 0,
+        questions: (data.lessonQuiz?.quizQuestions ?? []).map((question) => {
+          return {
+            questionId: null,
+            questionContent: question.questionTitle,
+            correctAnswer: question.correctAnswer.toString(), // Accept string (from number)
+            questionType: "S",
+            optionRequests: question.options.map((option) => ({
+              order: option.order,
+              content: option.option
+            }))
+          };
+        })
+      };
 
       try {
-        await createCourseLesson.updateLesson.mutateAsync(updateLessonPayload);
+        await Promise.all([
+          createCourseLesson.updateLesson.mutateAsync(updateLessonPayload),
+          createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload)
+        ]);
+
         // Remove the lesson in the redux store
         dispatch(resetCreateLesson());
         // Update the lesson in the course lessons list
@@ -114,21 +137,33 @@ export const CourseLessonsPage = () => {
   };
 
   return (
-    <div className="flex w-full">
-      {isLoading ? (
-        <div className="flex items-center justify-center w-24">
-          <Spinner loading={isLoading} />
-        </div>
-      ) : (
-        <CourseLessonList lessons={courseLessons} onSelect={setLessonAction} onCreateLesson={handleAddInitalLesson} />
-      )}
-
-      <div className="flex-1 p-4">
-        {renderPageContent()}
-        {lessonAction.type !== "add-blank" && lessonAction.type !== "add-clone" && (
-          <CourseWizardButtons disabledNext={courseLessons.length <= 0} ignoreSubmit={true} />
+    <StepGuard checkValid={isGeneralStepValid} redirectTo="/admin/courses/create/general">
+      <div className="flex w-full">
+        {isLoading ? (
+          <div className="flex items-center justify-center w-24">
+            <Spinner loading={isLoading} />
+          </div>
+        ) : (
+          <CourseLessonList
+            lessons={courseLessons}
+            onSelect={setLessonAction}
+            onCreateLesson={handleAddInitalLesson}
+            setHasLessonsReordered={setHasLessonsReordered}
+          />
         )}
+
+        <div className="flex-1 p-4">
+          {renderPageContent()}
+          {lessonAction.type !== "add-blank" && lessonAction.type !== "add-clone" && (
+            <CourseWizardButtons
+              disabledNext={courseLessons.length <= 0}
+              ignoreSubmit={true}
+              hasLessonsReordered={hasLessonsReordered}
+              setHasLessonsReordered={setHasLessonsReordered}
+            />
+          )}
+        </div>
       </div>
-    </div>
+    </StepGuard>
   );
 };

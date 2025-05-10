@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { MessageSquare, TextCursorInput } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
@@ -13,7 +13,11 @@ interface LessonAiOrbProps {
 }
 
 export const LessonAiOrb = ({ isExplainerEnabled, setIsExplainerToggled, lesson, askFollowUp }: LessonAiOrbProps) => {
-  const [chatOpen, setChatOpen] = useState(askFollowUp || false);
+  const [chatOpen, setChatOpen] = useState(false);
+
+  useEffect(() => {
+    if (askFollowUp) setChatOpen(true);
+  }, [askFollowUp]);
 
   return (
     <>

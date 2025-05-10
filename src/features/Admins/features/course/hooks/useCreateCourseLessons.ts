@@ -5,7 +5,6 @@ import { showToastError, showToastSuccess } from "@/utils";
 import { useDispatch } from "react-redux";
 import { DEFAULT_QUIZ } from "../constants";
 import { setCreateLesson } from "@/redux/createCourse/createLessonSlice";
-import { CreateLessonProblemResponse } from "@/types";
 
 export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   const toast = useToast();
@@ -27,7 +26,6 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
           lessonProblemId: ""
         })
       );
-
       showToastSuccess({ toast: toast.toast, message: "Lesson created successfully" });
     },
     onError: () => {
@@ -53,11 +51,20 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   });
 
   const updateQuiz = useMutation({
-    mutationFn: adminCourseAPI.putCreateCourseLessonQuiz
+    mutationFn: adminCourseAPI.putCreateCourseLessonQuiz,
+    onError: () => {
+      showToastError({ toast: toast.toast, message: "Error updating quiz" });
+    }
   });
 
   const reorderLessons = useMutation({
-    mutationFn: adminCourseAPI.putCreateCourseLessonReorder
+    mutationFn: adminCourseAPI.putCreateCourseLessonReorder,
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Lessons reordered successfully" });
+    },
+    onError: () => {
+      showToastError({ toast: toast.toast, message: "Error reordering lessons" });
+    }
   });
 
   const getLessonList = useQuery({
@@ -72,12 +79,13 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   const getQuiz = useQuery({
     queryKey: ["createLesson", lessonId, "quizList"],
     queryFn: () => {
-      if (!lessonId) return Promise.resolve([]);
-      adminCourseAPI.getCreateLessonQuizList(lessonId);
-    }
+      if (!lessonId) return Promise.resolve(DEFAULT_QUIZ); // Initial value
+      return adminCourseAPI.getCreateLessonQuizList(lessonId);
+    },
+    enabled: !!lessonId
   });
 
-  const getProblems = useQuery<CreateLessonProblemResponse[]>({
+  const getProblems = useQuery({
     queryKey: ["createLesson", "problemList"],
     queryFn: adminCourseAPI.getCreateLessonProblemList
   });
