@@ -439,18 +439,19 @@ export const courseAPI = {
       await onStart();
     }
     try {
-      const { filter } = query!;
+      const { filter, page } = query!;
       const { keyword, rating, levels, categories, prices, isCompletedCreation } = filter;
-      const categoryIds = categories.map((category) => category.categoryId);
+      const categoryIds = categories ? categories.map((category) => category.categoryId) : null;
       const response = await apiClient.get(`/course/admin/courses/search`, {
         params: {
           keyword: keyword,
           ratings: rating ? (parseFloat(rating) > 0 ? parseFloat(rating) : null) : null,
-          price: prices.length === 1 && prices.some((price) => price === "Paid"),
-          categories: categoryIds.join(","),
-          levels: levels.length > 0 ? levels.join(",") : null,
+          price: prices && prices.length > 0 ? prices.some((price) => price === "Paid") : null,
+          categories: categoryIds && categoryIds.length > 0 ? categoryIds.join(",") : null,
+          levels: levels && levels.length > 0 ? levels.join(",") : null,
           isCompletedCreation: isCompletedCreation,
-          size: 100
+          size: DEFAULT_PAGE_SIZE,
+          page: page
         }
       });
       const data: TGetCourseForAdminResponse = response.data;

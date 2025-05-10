@@ -199,7 +199,7 @@ export const ProblemDetail = () => {
         message: (
           <>
             Please go to the{" "}
-            <a href="/profile/edit" className="text-appPrimary underline">
+            <a href="/profile/edit" className="text-appHyperlink underline">
               Setting Page
             </a>{" "}
             and verify your email to submit problem.

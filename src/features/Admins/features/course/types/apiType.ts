@@ -17,6 +17,7 @@ type TGetCourseForAdminResponse = TApiResponse<{
 type TGetCourseForAdminParams = TGetApiParams<
   {
     filter: TCourseFilter;
+    page: number;
   },
   {
     totalPages: number;

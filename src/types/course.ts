@@ -9,7 +9,7 @@ export interface ICourse {
   latestLessonId: string;
   lessonCount: number;
   level: "Beginner" | "Intermediate" | "Advance";
-  price: number;
+  price: number | null;
   progressPercent: number;
   reviewCount: number | null;
   unitPrice: string;
@@ -24,6 +24,7 @@ export interface ICourse {
   isCompletedCreation: boolean;
   courseImage: string;
   numberOfEnrolledStudents: number | null;
+  createdAt: string;
 }
 
 export interface ICompletedCourse {
@@ -34,10 +35,10 @@ export interface ICompletedCourse {
 
 export type TCourseFilter = {
   keyword: string;
-  categories: TCategory[];
+  categories: TCategory[] | null;
   rating: string | null;
-  levels: string[];
-  prices: string[];
-  priceRange: PriceRange;
-  isCompletedCreation: boolean;
+  levels: string[] | null;
+  prices: string[] | null;
+  priceRange: PriceRange | null;
+  isCompletedCreation: boolean | null;
 };
