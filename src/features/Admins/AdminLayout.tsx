@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { AdminSidebar, BreadcrumbNav } from "./components/Navigation";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
-import { DashboardPage } from "./features/dashboard/pages";
 import { SidebarInset } from "@/components/ui/shadcn/sidebar";
 import { USER_ROLES } from "@/constants";
 

@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/shadcn/dialog";
 import { Button } from "@/components/ui/Button";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/shadcn/select";
-import { CalendarIcon, Maximize2 } from "lucide-react";
+import { Maximize2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
-import { format } from "date-fns";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
 
 // interface ZoomableChartCardProps {

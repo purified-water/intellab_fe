@@ -1,7 +1,7 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { DateRange } from "react-day-picker";
 
-function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", dateRange: any) {
+function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", _dateRange: DateRange | undefined) {
   // Mock data for demonstration purposes
   const mockData = {
     Daily: [

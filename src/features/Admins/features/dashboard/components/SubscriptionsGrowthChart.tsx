@@ -1,20 +1,19 @@
 import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/shadcn/card";
-import { motion } from "framer-motion";
 import { getDataBasedOnFilter } from "./getDataBasedOnFilter";
+import { DateRange } from "react-day-picker";
 
-const data = [
-  { month: "Jan", subscriptions: 100 },
-  { month: "Feb", subscriptions: 130 },
-  { month: "Mar", subscriptions: 150 },
-  { month: "Apr", subscriptions: 170 },
-  { month: "May", subscriptions: 180 },
-  { month: "Jun", subscriptions: 200 }
-];
+// const data = [
+//   { month: "Jan", subscriptions: 100 },
+//   { month: "Feb", subscriptions: 130 },
+//   { month: "Mar", subscriptions: 150 },
+//   { month: "Apr", subscriptions: 170 },
+//   { month: "May", subscriptions: 180 },
+//   { month: "Jun", subscriptions: 200 }
+// ];
 
 interface Props {
   rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
-  dateRange: any;
+  dateRange: DateRange | undefined;
 }
 
 export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {

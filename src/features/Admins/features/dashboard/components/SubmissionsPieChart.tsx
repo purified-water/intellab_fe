@@ -1,8 +1,7 @@
+import { DateRange } from "react-day-picker";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/shadcn/card";
-import { motion } from "framer-motion";
 
-function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", dateRange: any) {
+function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", _dateRange: DateRange | undefined) {
   // Mock data for demonstration purposes
   const mockData = {
     Daily: [
@@ -27,11 +26,9 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
   return mockData[rangeType] || mockData["Daily"];
 }
 
-const COLORS = ["#22c55e", "#ef4444"]; // Green for success, Red for fail
-
 interface Props {
   rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
-  dateRange: any;
+  dateRange: DateRange | undefined;
 }
 
 export function SubmissionsPieChart({ rangeType, dateRange }: Props) {
@@ -45,7 +42,7 @@ export function SubmissionsPieChart({ rangeType, dateRange }: Props) {
       <ResponsiveContainer width="100%" height={200}>
         <PieChart>
           <Pie data={filteredData} dataKey="value" innerRadius={60} outerRadius={80} startAngle={90} endAngle={450}>
-            {filteredData.map((entry, index) => (
+            {filteredData.map((_entry, index) => (
               <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
           </Pie>
