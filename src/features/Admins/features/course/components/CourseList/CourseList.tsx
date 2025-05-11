@@ -4,7 +4,7 @@ import { CourseListItem } from "./CourseListItem";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks";
 import { courseAPI } from "@/lib/api";
-import { showToastError } from "@/utils";
+import { showToastError, showToastSuccess } from "@/utils";
 import { AlertDialog, Pagination } from "@/components/ui";
 
 const TABLE_HEADERS = {
@@ -75,6 +75,7 @@ export function CourseList(props: CourseListProps) {
         if (result) {
           setCourses((prevCourses) => prevCourses.filter((item) => item.courseId !== course.courseId));
           setOpenDeleteDialog(false);
+          showToastSuccess({ toast: toast.toast, message: result });
         } else {
           showToastError({ toast: toast.toast, message: "Failed to delete course" });
         }
