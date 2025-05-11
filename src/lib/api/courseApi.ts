@@ -482,7 +482,7 @@ export const courseAPI = {
       const response = await apiClient.delete(`/course/admin/courses/${courseId}`);
       const data: TDeleteCourseResponse = response.data;
       const { code, result, message } = data;
-      if (code == API_RESPONSE_CODE.SUCCESS) {
+      if (code == API_RESPONSE_CODE.NO_CONTENT) {
         await onSuccess(result);
       } else {
         await onFail(message ?? DEFAULT_ERROR);

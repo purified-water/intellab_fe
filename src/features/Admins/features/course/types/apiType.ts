@@ -34,13 +34,13 @@ type TGetCourseForAdminParams = TGetApiParams<
   }
 >;
 
-type TDeleteCourseResponse = TApiResponse<boolean>;
+type TDeleteCourseResponse = TApiResponse<string>;
 
 type TDeleteCourseParams = TGetApiParams<
   {
     courseId: string;
   },
-  boolean
+  string
 >;
 
 type TUpdateCourseAvailabilityResponse = TApiResponse<ICourse>;
