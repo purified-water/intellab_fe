@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/shadcn/dialog";
 import { Input } from "@/components/ui/shadcn/input";
-import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/shadcn/select";
+import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/shadcn/table";
 import {
   Pagination,

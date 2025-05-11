@@ -2,7 +2,6 @@ import { FormLabel, Textarea } from "@/components/ui/shadcn";
 import { RequiredInputLabel } from "../RequiredInputLabel";
 import { useState } from "react";
 import { RenderMarkdown } from "@/components/Markdown";
-import { AnimatedButton } from "@/components/ui";
 
 interface AddSummaryMarkdownProps {
   value: string;

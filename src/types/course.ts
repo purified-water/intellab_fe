@@ -8,7 +8,7 @@ export interface ICourse {
   description: string;
   latestLessonId: string;
   lessonCount: number;
-  level: "Beginner" | "Intermediate" | "Advance";
+  level: "Beginner" | "Intermediate" | "Advanced";
   price: number | null;
   progressPercent: number;
   reviewCount: number | null;

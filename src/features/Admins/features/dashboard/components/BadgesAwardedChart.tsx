@@ -1,17 +1,18 @@
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { getDataBasedOnFilter } from "./getDataBasedOnFilter";
+import { DateRange } from "react-day-picker";
 
-const badgesData = [
-  { month: "Jan", badges: 40 },
-  { month: "Feb", badges: 55 },
-  { month: "Mar", badges: 60 },
-  { month: "Apr", badges: 80 },
-  { month: "May", badges: 70 }
-];
+// const badgesData = [
+//   { month: "Jan", badges: 40 },
+//   { month: "Feb", badges: 55 },
+//   { month: "Mar", badges: 60 },
+//   { month: "Apr", badges: 80 },
+//   { month: "May", badges: 70 }
+// ];
 
 interface Props {
   rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
-  dateRange: any;
+  dateRange: DateRange | undefined;
 }
 
 export function BadgesAwardedMiniChart({ rangeType, dateRange }: Props) {

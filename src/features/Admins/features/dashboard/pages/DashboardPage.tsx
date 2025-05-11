@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/shadcn/select";
-import { SubmissionsPieChart } from "../components/SubmissionsPieChart";
-import { Coins, Users, Activity, ShoppingCart, FileCode, CalendarIcon } from "lucide-react";
+import { Coins, Users, Activity, ShoppingCart } from "lucide-react";
 import { TopStatCard } from "../components/TopStatCard";
 import { SubscriptionGrowthLargeChart, SubscriptionGrowthMiniChart } from "../components/SubscriptionsGrowthChart";
 import { ZoomableChartCard } from "../components/ZoomChartCard";
 import { ActiveUsersTodayLargeChart, ActiveUsersTodayMiniChart } from "../components/ActiveUsersChart";
-import { BadgesAwardedLargeChart, BadgesAwardedMiniChart } from "../components/BadgesAwardedChart";
 import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange"; // Import DatePicker component
 import { RevenueLargeBarChart, RevenueMiniBarChart } from "../components/RevenueChart";
@@ -56,35 +54,35 @@ export const DashboardPage = () => {
     }
   ];
 
-  const revenueMonthlyData = [
-    { label: "Jan", value: 500 },
-    { label: "Feb", value: 700 },
-    { label: "Mar", value: 600 },
-    { label: "Apr", value: 800 },
-    { label: "May", value: 1200 },
-    { label: "Jun", value: 900 },
-    { label: "Jul", value: 750 },
-    { label: "Aug", value: 880 },
-    { label: "Sep", value: 730 },
-    { label: "Oct", value: 910 },
-    { label: "Nov", value: 1100 },
-    { label: "Dec", value: 1000 }
-  ];
+  // const revenueMonthlyData = [
+  //   { label: "Jan", value: 500 },
+  //   { label: "Feb", value: 700 },
+  //   { label: "Mar", value: 600 },
+  //   { label: "Apr", value: 800 },
+  //   { label: "May", value: 1200 },
+  //   { label: "Jun", value: 900 },
+  //   { label: "Jul", value: 750 },
+  //   { label: "Aug", value: 880 },
+  //   { label: "Sep", value: 730 },
+  //   { label: "Oct", value: 910 },
+  //   { label: "Nov", value: 1100 },
+  //   { label: "Dec", value: 1000 }
+  // ];
 
-  const completionRateData = [
-    { month: "Jan", completionRate: 70 },
-    { month: "Feb", completionRate: 72 },
-    { month: "Mar", completionRate: 68 },
-    { month: "Apr", completionRate: 75 },
-    { month: "May", completionRate: 80 },
-    { month: "Jun", completionRate: 78 },
-    { month: "Jul", completionRate: 82 },
-    { month: "Aug", completionRate: 79 },
-    { month: "Sep", completionRate: 85 },
-    { month: "Oct", completionRate: 83 },
-    { month: "Nov", completionRate: 86 },
-    { month: "Dec", completionRate: 88 }
-  ];
+  // const completionRateData = [
+  //   { month: "Jan", completionRate: 70 },
+  //   { month: "Feb", completionRate: 72 },
+  //   { month: "Mar", completionRate: 68 },
+  //   { month: "Apr", completionRate: 75 },
+  //   { month: "May", completionRate: 80 },
+  //   { month: "Jun", completionRate: 78 },
+  //   { month: "Jul", completionRate: 82 },
+  //   { month: "Aug", completionRate: 79 },
+  //   { month: "Sep", completionRate: 85 },
+  //   { month: "Oct", completionRate: 83 },
+  //   { month: "Nov", completionRate: 86 },
+  //   { month: "Dec", completionRate: 88 }
+  // ];
 
   const allTransactions = [
     {
@@ -169,12 +167,12 @@ export const DashboardPage = () => {
   ];
 
   return (
-    <div className="w-screen h-full py-6 space-y-8 pr-96">
+    <div className="dashboard-container max-w-[1400px] mx-auto p-6 space-y-8">
       <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Dashboard</h1>
 
       <div className="flex items-center gap-2">
         {/* Select time range */}
-        <Select value={rangeType} onValueChange={(val) => setRangeType(val as any)}>
+        <Select value={rangeType} onValueChange={(val: "Daily" | "Weekly" | "Monthly" | "Custom") => setRangeType(val)}>
           <SelectTrigger className="w-[150px]">
             <SelectValue placeholder="Monthly" />
           </SelectTrigger>
@@ -207,43 +205,27 @@ export const DashboardPage = () => {
 
       {/* Khối 2: Biểu đồ nhỏ */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-        {/* <ZoomableChartCard
-          title="Submissions Success Rate"
-          children={<SubmissionsPieChart rangeType={rangeType} dateRange={dateRange} />}
-          largeChart={<SubmissionsPieChart rangeType={rangeType} dateRange={dateRange} />}
-          rangeType={rangeType}
-          dateRange={dateRange}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-        /> */}
         <ZoomableChartCard
           title="Subscription Growth"
-          children={<SubscriptionGrowthMiniChart rangeType={rangeType} dateRange={dateRange} />}
           largeChart={<SubscriptionGrowthLargeChart rangeType={rangeType} dateRange={dateRange} />}
           rangeType={rangeType}
           dateRange={dateRange}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
-        />
+        >
+          <SubscriptionGrowthMiniChart rangeType={rangeType} dateRange={dateRange} />
+        </ZoomableChartCard>
+
         <ZoomableChartCard
           title="Active Users Rate"
-          children={<ActiveUsersTodayMiniChart rangeType={rangeType} dateRange={dateRange} />}
           largeChart={<ActiveUsersTodayLargeChart rangeType={rangeType} dateRange={dateRange} />}
           rangeType={rangeType}
           dateRange={dateRange}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
-        />
-
-        {/* <ZoomableChartCard
-          title="Badges Awarded"
-          children={<BadgesAwardedMiniChart rangeType={rangeType} dateRange={dateRange} />}
-          largeChart={<BadgesAwardedLargeChart rangeType={rangeType} dateRange={dateRange} />}
-          rangeType={rangeType}
-          dateRange={dateRange}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-        /> */}
+        >
+          <ActiveUsersTodayMiniChart rangeType={rangeType} dateRange={dateRange} />
+        </ZoomableChartCard>
       </div>
 
       {/* Khối 3: Revenue Chart + Completion Rate Chart */}
