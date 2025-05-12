@@ -15,7 +15,7 @@ export const useNotificationSocket = () => {
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-  const { lastMessage } = useWebSocket(`ws://localhost:8101/identity/ws/notification?userId=${userId}`, {
+  const { lastMessage } = useWebSocket(`${import.meta.env.VITE_SOCKET_URL}/identity/ws/notification?userId=${userId}`, {
     shouldReconnect: () => true, // Automatically try to reconnect
     reconnectAttempts: 10, // Retry 10 times if disconnected
     reconnectInterval: 3000 // Retry every 3 seconds
