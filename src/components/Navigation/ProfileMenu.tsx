@@ -10,7 +10,7 @@ interface ProfileMenuProps {
   isDropdownOpen: boolean;
   toggleDropdown: () => void;
   handleLogout: () => void;
-  toggleDarkMode: () => void;
+  toggleDarkMode?: () => void;
   isDarkMode: boolean;
 }
 

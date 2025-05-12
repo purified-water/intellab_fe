@@ -36,11 +36,9 @@ export const ViewCourseFinalStepsPage = () => {
 
   const form = useForm<ViewCourseFinalStepsSchema>({
     defaultValues: {
-      coursePrice: viewingCourse!.price,
+      coursePrice: viewingCourse!.price || 0,
       courseSummary: "Summary placeholder",
-      courseCertificate: {
-        template: "Certificate template placeholder"
-      }
+      courseCertificate: Number(viewingCourse!.certificateId) || 1
     }
   });
 
@@ -83,7 +81,7 @@ export const ViewCourseFinalStepsPage = () => {
           {/* Choose certificate template here */}
           <FormField
             control={form.control}
-            name="courseCertificate.template"
+            name="courseCertificate"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>

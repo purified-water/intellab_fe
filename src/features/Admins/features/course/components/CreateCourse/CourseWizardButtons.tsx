@@ -46,7 +46,9 @@ export const CourseWizardButtons = ({
       if (lessonsFromServer.length > 0) {
         dispatch(setCreateCourse({ courseLessons: lessonsFromServer }));
       }
-      setHasLessonsReordered && setHasLessonsReordered(false);
+      if (setHasLessonsReordered) {
+        setHasLessonsReordered(false);
+      }
     }
     setTimeout(() => goToNextStep(), 150); // Use setTimeout to ensure the state is updated before navigating
   };

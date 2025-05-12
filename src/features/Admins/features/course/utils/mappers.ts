@@ -24,6 +24,7 @@ export const mapCreateCourseToICreateCourse = (state: CreateCourseSchema): ICrea
   currentCreationStepDescription: "",
   isCompletedCreation: false,
   courseImage: state.courseThumbnail as unknown as string,
-  enrollments: null,
-  summaryContent: state.courseSummary
+  numberOfEnrolledStudents: null,
+  summaryContent: state.courseSummary,
+  createdAt: new Date().toISOString()
 });

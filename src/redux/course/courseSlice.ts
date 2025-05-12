@@ -113,28 +113,21 @@ const courseSlice = createSlice({
       const { selectedLevels, selectedPrices, priceRange } = action.payload;
 
       state.exploreCourses = state.exploreCourses.filter((course: ICourse) => {
-        // const matchCategories =
-        //   selectedCategories.length === 0 ||
-        //   selectedCategories.some((category) => {
-        //     console.log("check", category, course.courseName, course.courseName.includes(category));
-        //     return course.courseName.includes(category);
-        //   });
-        // const matchCertification = !showCertificationPrep || course.isCertificationPrep;
-        // const matchRating = !selectedRating || course.averageRating >= parseFloat(selectedRating);
+        if (!course) return null;
         const matchLevels = selectedLevels.length === 0 || selectedLevels.includes(course.level);
         const matchPrices =
           selectedPrices.length === 0 ||
           selectedPrices.some((price) => {
             if (price === "Paid") {
               if (priceRange) {
-                return course.price > priceRange.min && course.price <= priceRange.max;
+                return course.price !== null && course.price > priceRange.min && course.price <= priceRange.max;
               }
-              return course.price > 0;
+              return course.price !== null && course.price > 0;
             }
             if (price === "Free") {
               return course.price == 0;
             }
-            return course.price >= 0;
+            return course.price !== null && course.price >= 0;
           });
         // return matchCategories && matchRating && matchLevels && matchPrices;
         return matchLevels && matchPrices;

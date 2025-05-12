@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { X, CircleAlert } from "lucide-react";
 import { useEffect } from "react";
 
@@ -24,7 +24,7 @@ export function DeleteCourseConfirmDialog(props: DeleteCourseConfirmDialogProps)
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray2 bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray2">
       <div className="bg-white pt-3 pb-8 px-6 rounded-lg shadow-lg w-[550px]">
         <div className="flex justify-end">
           <Button className="-mr-2" variant="ghost" size="icon" onClick={onClose}>
@@ -32,9 +32,9 @@ export function DeleteCourseConfirmDialog(props: DeleteCourseConfirmDialogProps)
           </Button>
         </div>
         <div className="text-center">
-          <CircleAlert className="h-12 w-12 text-appHard mx-auto mb-8" />
-          <h2 className="text-2xl font-semibold mb-2 text-gray2">You are about to delete the course</h2>
-          <p className="text-light text-lg text-gray2 mb-12 mx-12">
+          <CircleAlert className="w-12 h-12 mx-auto mb-8 text-appHard" />
+          <h2 className="mb-2 text-2xl font-semibold text-gray2">You are about to delete the course</h2>
+          <p className="mx-12 mb-12 text-lg text-light text-gray2">
             This action is irreversible. Once the course is deleted, it cannot be recovered.
           </p>
           <div className="flex justify-center space-x-4">

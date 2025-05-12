@@ -46,7 +46,9 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
     const newOrder = arrayMove(lessons, oldIndex, newIndex);
 
     dispatch(setCreateCourse({ courseLessons: newOrder }));
-    setHasLessonsReordered && setHasLessonsReordered(true);
+    if (setHasLessonsReordered) {
+      setHasLessonsReordered(true);
+    }
   };
 
   const handleAction = (action: LessonAction) => {

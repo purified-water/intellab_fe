@@ -28,10 +28,10 @@ export const createCourseSchema = z.object({
   courseLevel: z.enum(["Beginner", "Intermediate", "Advanced"]),
   courseThumbnail: z
     .instanceof(File)
+    .nullable()
     .refine((file) => file && file.size <= CREATE_COURSE_THUMBNAIL_MAX_SIZE, {
       message: `Image size must be less than ${CREATE_COURSE_THUMBNAIL_MAX_SIZE / (1024 * 1024)}MB`
     })
-    .nullable()
     .optional(),
   courseLessons: z.array(createLessonSchema).refine((lessons) => lessons.length > 0, {
     message: "At least one lesson is required"

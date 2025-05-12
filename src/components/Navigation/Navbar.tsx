@@ -20,7 +20,7 @@ import { Bell } from "lucide-react";
 import { selectHasUnread } from "@/redux/notifications/notificationsSlice";
 interface NavbarProps {
   isDarkMode: boolean;
-  toggleDarkMode: () => void;
+  toggleDarkMode?: () => void;
 }
 
 const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {

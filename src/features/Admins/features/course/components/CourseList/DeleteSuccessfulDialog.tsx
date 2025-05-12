@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { X, CircleCheck } from "lucide-react";
 import { useEffect } from "react";
 
@@ -23,7 +23,7 @@ export function DeleteSuccessfulDialog(props: DeleteSuccessfulDialogProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray2 bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray2">
       <div className="bg-white pt-3 pb-8 px-6 rounded-lg shadow-lg w-[500px]">
         <div className="flex justify-end">
           <Button className="-mr-2" variant="ghost" size="icon" onClick={onClose}>
@@ -31,9 +31,9 @@ export function DeleteSuccessfulDialog(props: DeleteSuccessfulDialogProps) {
           </Button>
         </div>
         <div className="text-center">
-          <CircleCheck className="h-12 w-12 text-appEasy mx-auto mb-8" />
-          <h2 className="text-2xl font-semibold mb-2 text-gray2">Delete successfully</h2>
-          <p className="text-light text-lg text-gray2 mb-12 mx-12">The course has been removed</p>
+          <CircleCheck className="w-12 h-12 mx-auto mb-8 text-appEasy" />
+          <h2 className="mb-2 text-2xl font-semibold text-gray2">Delete successfully</h2>
+          <p className="mx-12 mb-12 text-lg text-light text-gray2">The course has been removed</p>
           <div className="flex justify-center space-x-4">
             <button
               className="bg-appPrimary text-white font-semibold text-lg px-4 py-2 rounded-lg hover:bg-opacity-80 w-[150px]"

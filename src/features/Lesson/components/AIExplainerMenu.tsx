@@ -44,7 +44,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
     const isProcessingRef = useRef<boolean>(false);
 
     // For streaming response
-    const [chatModel] = useState(CHATBOT_MODELS[0].value);
+    const [chatModel] = useState(CHATBOT_MODELS[3].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 
     // Handle component unmount and abort any in-progress requests

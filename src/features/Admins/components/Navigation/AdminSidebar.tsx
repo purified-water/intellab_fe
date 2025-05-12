@@ -34,11 +34,6 @@ import INTELLAB_LOGO from "@/assets/logos/intellab_default.svg";
 import { userLocalStorageCleanUp } from "@/utils";
 import { clearUser } from "@/redux/user/userSlice";
 
-interface AdminSidebarProps {
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-}
-
 const navItems = [
   { title: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { title: "Users", icon: Users, href: "/admin/users" },
@@ -70,9 +65,7 @@ const dropdownMenuItems: DropdownMenuItem[] = [
   }
 ];
 
-export function AdminSidebar(props: AdminSidebarProps) {
-  const { onMouseEnter, onMouseLeave } = props;
-
+export function AdminSidebar() {
   const location = useLocation();
   const pathname = location.pathname;
   const [open, setOpen] = useState(false);
@@ -192,12 +185,7 @@ export function AdminSidebar(props: AdminSidebarProps) {
   );
 
   return (
-    <Sidebar
-      collapsible="icon"
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      className="transition-all duration-300 ease-in-out"
-    >
+    <Sidebar collapsible="icon" className="transition-all duration-300 ease-in-out">
       {renderHeader()}
       {renderBody()}
       {renderFooter()}

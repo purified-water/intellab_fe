@@ -12,7 +12,6 @@ export const AdminLayout = () => {
   const navigate = useNavigate();
 
   const [openButton, setOpenButton] = useState(false); // handle showing the sidebar using icon button
-  const [openHover, setOpenHover] = useState(false); // handle showing the sidebar using mouse hover
 
   useEffect(() => {
     document.title = "Admin | Intellab";
@@ -24,24 +23,12 @@ export const AdminLayout = () => {
     }
   }, [userRedux]);
 
-  const handleSidebarMouseEnter = () => {
-    if (!openButton) {
-      setOpenHover(true);
-    }
-  };
-
-  const handleSidebarMouseLeave = () => {
-    if (!openButton) {
-      setOpenHover(false);
-    }
-  };
-
   let layout = null;
   if (userRedux && userRedux?.role === USER_ROLES.ADMIN) {
     layout = (
-      <SidebarProvider open={!openButton ? openHover : openButton} onOpenChange={setOpenButton}>
+      <SidebarProvider open={openButton} onOpenChange={setOpenButton}>
         <div className="flex flex-1">
-          <AdminSidebar onMouseEnter={handleSidebarMouseEnter} onMouseLeave={handleSidebarMouseLeave} />
+          <AdminSidebar />
           <SidebarInset className="flex-1">
             <BreadcrumbNav />
             <div className="flex-1 p-4">

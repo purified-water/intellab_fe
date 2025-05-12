@@ -1,4 +1,5 @@
-export const shortenDate = (dateString: string): string => {
+export const shortenDate = (dateString: string | null): string => {
+  if (!dateString) return "";
   const date = new Date(dateString);
   return date.toLocaleDateString("en-US", {
     month: "short",

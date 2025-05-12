@@ -24,7 +24,8 @@ const DEFAULT_CREATE_COURSE: ICreateCourse = {
   isCompletedCreation: false,
   numberOfEnrolledStudents: 0,
   currentCreationStep: 0,
-  currentCreationStepDescription: "Current Creation Step Description"
+  currentCreationStepDescription: "Current Creation Step Description",
+  createdAt: new Date().toISOString()
 };
 
 const DEFAULT_CREATE_COURSE_LESSONS = [
