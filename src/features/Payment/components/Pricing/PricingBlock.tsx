@@ -101,7 +101,15 @@ export function PricingBlock(props: PrickingBlockProps) {
         showToastError({
           toast: toast.toast,
           title: "Email verification required",
-          message: "Please go to Setting Page and verify your email to purchase plan"
+          message: (
+            <>
+              Please go to the{" "}
+              <a href="/profile/edit" className="text-appHyperlink underline">
+                Setting Page
+              </a>{" "}
+              and verify your email to purchase plan.
+            </>
+          )
         });
       } else {
         await createPremiumPaymentAPI();

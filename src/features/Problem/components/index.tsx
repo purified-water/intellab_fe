@@ -1,4 +1,4 @@
-export * from "./MarkdownRender";
+export * from "./ProblemMarkdownRender";
 export * from "./RenderAIAssistant/RenderAIAssistant";
 export * from "./RenderAllProblems/AllProblemsListItem";
 export * from "./RenderAllProblems/RenderAllProblemsList";

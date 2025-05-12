@@ -8,7 +8,18 @@ import { useDispatch } from "react-redux";
 const persistConfig = {
   key: "root",
   storage,
-  whitelist: ["auth", "course", "problem", "user", "submission", "comment", "mainChatbot", "premiumStatus"] // Add the slices you want to persist
+  whitelist: [
+    "auth",
+    "course",
+    "problem",
+    "user",
+    "submission",
+    "comment",
+    "mainChatbot",
+    "premiumStatus",
+    "createCourse",
+    "createLesson"
+  ]
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);

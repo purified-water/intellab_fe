@@ -38,8 +38,10 @@ export const HomePage = () => {
       setLoading((prev) => ({ ...prev, featuredCourses: true }));
       const allCourses = await getCourses();
       setFeaturedCourses(allCourses);
-    } catch (error) {
-      console.log("Error getting featured courses", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("Error getting featured courses", error);
+      }
     } finally {
       setLoading((prev) => ({ ...prev, featuredCourses: false }));
     }
@@ -51,8 +53,10 @@ export const HomePage = () => {
       const allCourses = await getCourses();
       const freeCourses = allCourses.filter((course: ICourse) => course.price === 0);
       setFreeCourses(freeCourses);
-    } catch (error) {
-      console.log("Error getting free courses", error);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.log("Error getting free courses", error);
+      }
     } finally {
       setLoading((prev) => ({ ...prev, freeCourses: false }));
     }
@@ -65,8 +69,10 @@ export const HomePage = () => {
         const response = await courseAPI.getUserEnrolledCourses();
         const userEnrolledCourses = response.result.content;
         setUserEnrollCourses(userEnrolledCourses);
-      } catch (e) {
-        showToastError({ toast: toast.toast, message: e.message ?? "Error getting enrolled courses" });
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          showToastError({ toast: toast.toast, message: error.message ?? "Error getting enrolled courses" });
+        }
       } finally {
         setLoading((prev) => ({ ...prev, yourCourses: false }));
       }

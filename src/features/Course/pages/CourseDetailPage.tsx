@@ -81,8 +81,10 @@ export const CourseDetailPage = () => {
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error creating payment" });
       }
-    } catch (e) {
-      showToastError({ toast: toast.toast, message: e.message ?? "Error creating payment" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message ?? "Error creating payment" });
+      }
     }
   };
 
@@ -97,9 +99,11 @@ export const CourseDetailPage = () => {
         setLoading(false);
         setCurrentPage(response.result.number);
         setTotalPages(response.result.totalPages);
-      } catch (error) {
-        showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
-        setLoading(false);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
+          setLoading(false);
+        }
       }
     } else {
       try {
@@ -110,9 +114,11 @@ export const CourseDetailPage = () => {
         setCurrentPage(response.result.number);
         setTotalPages(response.result.totalPages);
         setLoading(false);
-      } catch (error) {
-        showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
-        setLoading(false);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          showToastError({ toast: toast.toast, message: error.message ?? "Error fetching lessons" });
+          setLoading(false);
+        }
       }
     }
   };
@@ -170,7 +176,15 @@ export const CourseDetailPage = () => {
       showToastError({
         toast: toast.toast,
         title: "Email verification required",
-        message: "Please go to Setting Page and verify your email to enroll in the course"
+        message: (
+          <>
+            Please go to the{" "}
+            <a href="/profile/edit" className="text-appHyperlink underline">
+              Setting Page
+            </a>{" "}
+            and verify your email to enroll in the course.
+          </>
+        )
       });
     } else {
       enrollCourseHandler();
@@ -189,7 +203,7 @@ export const CourseDetailPage = () => {
         setIsEnrolled(false);
         showToastError({ toast: toast.toast, message: "Error enrolling course" });
       }
-    } catch (error) {
+    } catch (error: unknown) {
       if (error instanceof Error) {
         showToastError({ toast: toast.toast, message: error.message ?? "Error enrolling course" });
       } else {
@@ -220,7 +234,15 @@ export const CourseDetailPage = () => {
       showToastError({
         toast: toast.toast,
         title: "Email verification required",
-        message: "Please go to Setting Page and verify your email to purchase the course"
+        message: (
+          <>
+            Please go to the{" "}
+            <a href="/profile/edit" className="text-appHyperlink underline">
+              Setting Page
+            </a>{" "}
+            and verify your email to purchase the course.
+          </>
+        )
       });
     } else {
       await createCoursePaymentAPI();

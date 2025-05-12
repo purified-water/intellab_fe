@@ -36,8 +36,14 @@ export const ReceiptPage = () => {
 
       setLoading(false);
     } catch (error) {
-      console.log(error);
-      showToastError({ toast: toast.toast, title: "Failed to fetch receipt detail", message: error.message });
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, title: "Failed to fetch receipt detail", message: error.message });
+      }
+      showToastError({
+        toast: toast.toast,
+        title: "Failed to fetch receipt detail",
+        message: "An unknown error occurred"
+      });
     } finally {
       setLoading(false);
     }

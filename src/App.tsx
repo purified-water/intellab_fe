@@ -17,14 +17,19 @@ import StudentOverallRoute from "./features/StudentOverall/route";
 import NotificationRoute from "./features/Notification/route";
 import { TooltipProvider } from "@/components/ui/shadcn/tooltip";
 import { useNotificationSocket } from "@/hooks";
+import AdminRoute from "./features/Admins/route";
+import { AdminLayout } from "./features/Admins/AdminLayout";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
 import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 
+const queryClient = new QueryClient(); // Define outside of the component to avoid re-creating it on every render
+
 export const Layout = () => {
   const location = useLocation();
-  const hideNavbar = ["/login", "/signup", "/forgot-password"].includes(location.pathname);
+  const hideNavbar = ["/login", "/signup", "/forgot-password", "/profile/reset-password"].includes(location.pathname);
   const [darkMode, setDarkMode] = useState(localStorage.getItem("theme") === "dark");
 
   useEffect(() => {
@@ -64,6 +69,11 @@ const router = createBrowserRouter([
       ...ProblemRoute,
       ...NotificationRoute
     ]
+  },
+  {
+    path: "/admin",
+    element: <AdminLayout />,
+    children: [...AdminRoute]
   }
 ]);
 
@@ -73,10 +83,12 @@ function App() {
 
   return (
     <React.StrictMode>
-      <TooltipProvider>
-        <RouterProvider router={router} />
-        <Toaster />
-      </TooltipProvider>
+      <QueryClientProvider client={queryClient}>
+        <TooltipProvider>
+          <RouterProvider router={router} />
+          <Toaster />
+        </TooltipProvider>
+      </QueryClientProvider>
     </React.StrictMode>
   );
 }

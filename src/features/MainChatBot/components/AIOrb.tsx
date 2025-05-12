@@ -45,7 +45,7 @@ export const AIOrb = () => {
         onClick={() => setIsChatOpen(true)}
       >
         {videoError ? (
-          <img src={aiOrbLogo} alt="AI Orb Logo" className="object-cover w-full h-full scale-150" />
+          <img src={aiOrbLogo} alt="AI Orb Logo" className="object-cover w-full h-full scale-150" loading="eager" />
         ) : (
           <video ref={videoRef} loop muted className="object-cover w-full h-full scale-150" onError={handleVideoError}>
             <source src={lightAiOrbAnimation} type="video/mp4" />

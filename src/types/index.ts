@@ -10,3 +10,4 @@ export * from "./price";
 export * from "./category";
 export * from "./navigation";
 export * from "./premiumStatus";
+export * from "./createCourseTypes";

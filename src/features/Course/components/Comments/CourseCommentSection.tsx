@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CourseComment } from "./CourseComment";
-import { Button } from "@/components/ui/shadcn/Button";
+import { Button } from "@/components/ui";
 import { Spinner, SortByButton, ISortByItem, Pagination } from "@/components/ui";
 import { TComment } from "@/features/Course/types";
 import { useToast } from "@/hooks/use-toast";
@@ -168,8 +168,10 @@ export const CourseCommentSection = (props: CourseCommentSectionProps) => {
           onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
           onEnd: async () => setSpinnerVisible(false)
         });
-      } catch (error) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.log(error);
+        }
       }
     };
 

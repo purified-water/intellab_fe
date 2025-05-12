@@ -1,21 +1,19 @@
 import useWebSocket from "react-use-websocket";
 import { useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addNotification } from "@/redux/notifications/notificationsSlice";
 import { NotificationType } from "@/features/Notification/types/NotificationType";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { showToastDefault } from "@/utils";
 import { useToast } from "./use-toast";
+import { RootState } from "@/redux/rootReducer";
 
 // Dispatch notifications to Redux on message receive
 export const useNotificationSocket = () => {
   const dispatch = useDispatch();
   const toast = useToast();
   const userId = getUserIdFromLocalStorage();
-  if (!userId) {
-    console.error("User ID not found in local storage");
-    return;
-  }
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const { lastMessage } = useWebSocket(`ws://localhost:8101/identity/ws/notification?userId=${userId}`, {
     shouldReconnect: () => true, // Automatically try to reconnect
@@ -24,6 +22,8 @@ export const useNotificationSocket = () => {
   });
 
   useEffect(() => {
+    if (!userId || !isAuthenticated || lastMessage === null) return;
+
     if (lastMessage !== null) {
       try {
         const parsed = JSON.parse(lastMessage.data);

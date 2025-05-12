@@ -169,3 +169,23 @@ button:hover {
   padding: 0.1rem 0.2rem;
   border-radius: 0.2rem;
 }
+
+/* Dashboard fixed positioning */
+.dashboard-container {
+  width: 100%;
+  position: relative;
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Make all charts stable */
+.dashboard-container .grid {
+  transition: none !important;
+  transform: none !important;
+}
+
+/* Ensure charts and content don't shift horizontally */
+.dashboard-container * {
+  transition: none !important;
+  transform: none !important;
+}

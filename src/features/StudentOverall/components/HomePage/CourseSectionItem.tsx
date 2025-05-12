@@ -76,7 +76,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   };
 
   const renderCourseDetail = () => {
-    let displayPrice = `${detailCourse?.price.toLocaleString()} VND`;
+    let displayPrice = `${detailCourse?.price !== null && detailCourse?.price.toLocaleString()} VND`;
     if (detailCourse?.price === 0 || includedInPremiumPlan) {
       displayPrice = "Free";
     }
@@ -112,7 +112,7 @@ export function CourseSectionCard(props: CourseSectionCardProps) {
   };
 
   const renderDetail = () => {
-    let displayPrice = `${course?.price.toLocaleString()} VND`;
+    let displayPrice = `${course.price !== null && course?.price.toLocaleString()} VND`;
     if (course?.price === 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
       displayPrice = "Free";
     }

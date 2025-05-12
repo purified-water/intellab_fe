@@ -23,3 +23,8 @@ export const PREMIUM_STATUS = {
   INACTIVE: "Inactive",
   EXPIRED: "Expired"
 };
+
+export const PRICING_DURATION = {
+  MONTHLY: "monthly",
+  YEARLY: "yearly"
+};

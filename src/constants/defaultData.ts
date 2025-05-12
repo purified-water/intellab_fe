@@ -16,7 +16,14 @@ const DEFAULT_COURSE: ICourse = {
   userUid: null,
   certificateId: "",
   certificateUrl: "",
-  categories: []
+  categories: [],
+  isAvailable: false,
+  currentCreationStep: 0,
+  currentCreationStepDescription: "",
+  isCompletedCreation: false,
+  courseImage: "",
+  numberOfEnrolledStudents: null,
+  createdAt: ""
 };
 
 const DEFAULT_LESSON: ILesson = {

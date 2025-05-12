@@ -19,7 +19,7 @@ export default [
     },
   },
   {
-    ignores: ['vite.config.ts', 'tailwind.config.js', 'postcss.config.js', 'eslint.config.js', 'src/components/ui/**/*', 'src/hooks/**/*'],
+    ignores: ['vite.config.ts', 'tailwind.config.js', 'postcss.config.js', 'eslint.config.js', 'src/components/ui/**/*', 'src/hooks/**/*', 'dist/**/*', 'build/**/*', 'node_modules/**/*', 'public/**/*', 'coverage/**/*', 'out/**/*', 'lib/**/*', 'scripts/**/*', 'test/**/*', 'tests/**/*', 'tests-e2e/**/*'],
   },
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,

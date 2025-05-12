@@ -1,4 +1,4 @@
-import { TPostApiParams } from "@/types";
+import { TApiResponse, TPostApiParams } from "@/types";
 
 type TResetPasswordResponse = boolean;
 
@@ -20,9 +20,22 @@ type TResentVerificationEmailParams = TPostApiParams<
   TResentVerificationEmailResponse
 >;
 
+type TUpdatePasswordResponse = TApiResponse<boolean>;
+
+type TUpdatePasswordParams = TPostApiParams<
+  undefined,
+  {
+    token: string;
+    newPassword: string;
+  },
+  boolean
+>;
+
 export type {
   TResetPasswordResponse,
   TResetPasswordParams,
   TResentVerificationEmailResponse,
-  TResentVerificationEmailParams
+  TResentVerificationEmailParams,
+  TUpdatePasswordResponse,
+  TUpdatePasswordParams
 };

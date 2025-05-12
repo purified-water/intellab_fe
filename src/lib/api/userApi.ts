@@ -100,8 +100,10 @@ export const userAPI = {
       } else {
         await onFail(DEFAULT_ERROR);
       }
-    } catch (error) {
-      await onFail(error.message ?? DEFAULT_ERROR);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
     } finally {
       if (onEnd) {
         await onEnd();

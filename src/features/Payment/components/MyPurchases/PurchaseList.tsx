@@ -29,7 +29,14 @@ export const PurchaseList = ({ paymentFor }: PurchaseListProps) => {
       setCurrentPage(response.result.number);
       setPurchases(response.result.content);
     } catch (error) {
-      showToastError({ toast: toast.toast, title: "Failed to fetch payment history", message: error.message });
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, title: "Failed to fetch payment history", message: error.message });
+      }
+      showToastError({
+        toast: toast.toast,
+        title: "Failed to fetch payment history",
+        message: "An unknown error occurred"
+      });
     } finally {
       setLoading(false);
     }

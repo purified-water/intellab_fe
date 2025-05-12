@@ -14,7 +14,8 @@ import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils"
 import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
-import { LOGIN_TYPES } from "@/constants";
+import { LOGIN_TYPES, USER_ROLES } from "@/constants";
+import { AxiosError } from "axios";
 
 type inputValidationParams = {
   emailRequired: boolean;
@@ -73,6 +74,13 @@ export const LoginPage = () => {
       onSuccess: async (user) => {
         dispatch(setUser(user));
         await getPremiumStatusAPI(user.userId);
+        dispatch(loginSuccess());
+        setIsLoggingIn(false);
+        if (user.role === USER_ROLES.ADMIN) {
+          navigate("/admin/dashboard");
+        } else {
+          goBack();
+        }
       },
       onFail: async (message) => showToastError({ toast: toast.toast, message })
     });
@@ -110,21 +118,19 @@ export const LoginPage = () => {
 
         localStorage.setItem("userId", userId);
         await getProfileMeAPI();
-        dispatch(loginSuccess());
+      }
+    } catch (error: unknown) {
+      if (error instanceof AxiosError) {
         setIsLoggingIn(false);
-
-        goBack();
+        if (error.response) {
+          const errorMessage = error.response.data.message || "Invalid email or password";
+          setInputErrors({ ...inputErrors, email: errorMessage });
+        } else {
+          // For other errors (network issues, etc.)
+          setInputErrors({ ...inputErrors, email: "Something went wrong!" });
+        }
+        console.error("Login error", error);
       }
-    } catch (error) {
-      setIsLoggingIn(false);
-      if (error.response) {
-        const errorMessage = error.response.data.message || "Invalid email or password";
-        setInputErrors({ ...inputErrors, email: errorMessage });
-      } else {
-        // For other errors (network issues, etc.)
-        setInputErrors({ ...inputErrors, email: "Something went wrong!" });
-      }
-      console.error("Login error", error);
     }
   };
 

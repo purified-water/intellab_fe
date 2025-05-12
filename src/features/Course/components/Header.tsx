@@ -40,9 +40,9 @@ export const Header = (props: HeaderProps) => {
     return (
       <div className="mt-2 text-xs">
         <span className="px-2 py-1 text-white bg-black rounded-full">
-          ⭐ {course.averageRating != 0 ? course.averageRating.toFixed(1) : NA_VALUE}
+          ⭐ {course.averageRating && course.averageRating != 0 ? course.averageRating.toFixed(1) : NA_VALUE}
         </span>
-        <span> • {amountTransformer(course.reviewCount)} reviews</span>
+        <span> • {course.reviewCount ? amountTransformer(course.reviewCount) : 0} reviews</span>
       </div>
     );
   };
@@ -76,7 +76,7 @@ export const Header = (props: HeaderProps) => {
     return (
       <button
         disabled={disable}
-        className="px-6 py-1 text-lg font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
+        className="px-6 py-1 text-base font-bold text-black bg-white rounded-lg hover:bg-gray-300 "
         onClick={onClick}
       >
         {buttonText}
@@ -92,8 +92,10 @@ export const Header = (props: HeaderProps) => {
       const { content } = response;
       setSummaryContent(content);
       setShowSummaryDialog(true);
-    } catch (error) {
-      showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
+      }
     }
     setLoading(false);
   };

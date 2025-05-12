@@ -46,7 +46,7 @@ export function ViewAllSubmissionItem(props: ViewSubmissionItemProps) {
   const renderContent = () => {
     return (
       <tr className={`${isOdd && "bg-gray5"} cursor-pointer`} onClick={handleSubmissionClick}>
-        <td className="px-4 py-3">{shortenDate(submission?.submitDate)}</td>
+        <td className="px-4 py-3">{shortenDate(submission?.submitDate ?? null)}</td>
         <td className="px-4 py-3 font-bold hover:text-appPrimary">{submission?.problem.problemName}</td>
         <td className={`py-3 px-4 font-bold ${submission?.isSolved ? "text-appEasy" : "text-appHard"}`}>
           {submission?.isSolved ? "Accepted" : "Wrong Answer"}

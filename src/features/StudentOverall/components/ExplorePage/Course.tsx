@@ -8,6 +8,8 @@ import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
+import { useToast } from "@/hooks/use-toast";
+import { showToastError } from "@/utils";
 
 interface CourseProps {
   course: ICourse | null;
@@ -22,6 +24,7 @@ export function Course(props: CourseProps) {
 
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const toast = useToast();
 
   const isFinished = detailCourse?.progressPercent === 100;
 
@@ -36,8 +39,10 @@ export function Course(props: CourseProps) {
     try {
       const response = await courseAPI.getCourseDetail(course!.courseId);
       setCourseDetail(response.result);
-    } catch (e) {
-      console.log("--> Get course detail error", e);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message });
+      }
     } finally {
       setInternalLoading(false);
     }
@@ -149,7 +154,7 @@ export function Course(props: CourseProps) {
           {buttonText(detailCourse!)}
         </button>
         <span className="text-lg font-bold text-appPrimary">
-          {priceText(detailCourse?.price ?? DEFAULT_COURSE.price, detailCourse?.unitPrice ?? DEFAULT_COURSE.unitPrice)}
+          {detailCourse?.price ? priceText(detailCourse!.price, detailCourse.unitPrice) : NA_VALUE}
         </span>
       </div>
     </div>

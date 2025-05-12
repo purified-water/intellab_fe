@@ -22,7 +22,7 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
   return (
     <div className="flex flex-col items-center">
       {query !== "" && (
-        <div className="self-start mb-6 text-xl font-bold text-black sm:text-2xl sm:mb-8">
+        <div className="self-start mb-6 text-lg text-black sm:text-xl sm:mb-8">
           {query && courses.length === 0 ? "Course not found!" : "Search results"}
         </div>
       )}
