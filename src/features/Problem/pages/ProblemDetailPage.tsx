@@ -16,47 +16,31 @@ import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
 import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-import { getUserIdFromLocalStorage } from "@/utils";
-import {
-  SubmissionTypeNoProblem,
-  RunCodeResponseType,
-  RunCodeTestCase,
-  TestCaseAfterSubmit,
-  TestCaseType
-} from "../types";
-import { saveCode } from "@/redux/problem/problemSlice";
-import { useDispatch, useSelector } from "react-redux";
-import { saveSubmission } from "@/redux/problem/submissionSlice";
-import { courseAPI } from "@/lib/api";
-import { LanguageCodes } from "../constants/LanguageCodes";
+import { TestCaseType } from "../types";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { showToastError } from "@/utils";
 import { CommentContext } from "@/hooks";
 import { AxiosError } from "axios";
+import { useCodeSubmission } from "../hooks/useCodeSubmission";
+import { useCodeRunner } from "../hooks/useCodeRunner";
+import { showToastError } from "@/utils";
 
 export const ProblemDetail = () => {
+  // #region State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
   const [testCases, setTestCases] = useState<TestCaseType[]>([]);
   const { problemId } = useParams<{ problemId: string }>();
   const [code, setCode] = useState("");
   const [language, setLanguage] = useState("");
-  const [isSubmissionPassed, setIsSubmissionPassed] = useState<boolean | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [runCodeResult, setRunCodeResult] = useState<RunCodeResponseType | null>(null);
-  const [isRunningCode, setIsRunningCode] = useState(false);
   const [isAIAssistantOpen, setIsAIAssistantOpen] = useState(false);
 
-  // const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const courseId = searchParams.get("courseId");
   const courseName = searchParams.get("courseName");
   const lessonId = searchParams.get("lessonId");
   const lessonName = searchParams.get("lessonName");
   const learningId = searchParams.get("learningId");
-  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const userRedux = useSelector((state: RootState) => state.user.user);
-  const userId = getUserIdFromLocalStorage();
   const { toast } = useToast();
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
@@ -66,28 +50,24 @@ export const ProblemDetail = () => {
 
   // For comment redirection
   const redirectedCommentId = searchParams.get("commentId");
+  // #endregion
 
-  const submissionValidation = () => {
-    if (!code) {
-      toast({
-        variant: "destructive",
-        description: "Please write some code to submit!"
-      });
-      return false;
-    }
+  // Custom hooks
+  const { isRunningCode, runCodeResult, handleRunCode } = useCodeRunner({
+    code,
+    language,
+    problemId
+  });
 
-    if (!userId) {
-      toast({
-        variant: "destructive",
-        description: "Please log in to submit your code!"
-      });
-      return false;
-    }
-    return true;
-  };
+  const { isSubmitting, isSubmissionPassed, handleSubmitCode } = useCodeSubmission({
+    code,
+    language,
+    problemId,
+    learningId,
+    courseId
+  });
 
-  const dispatch = useDispatch();
-
+  // #region Fetch problem detail
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
@@ -101,200 +81,10 @@ export const ProblemDetail = () => {
       if (error instanceof AxiosError && error.response?.status === 403) {
         setIsPublished(false);
       }
-      console.error("Failed to fetch problem detail", error);
+      showToastError({ toast: toast, message: "Failed to fetch problem detail" });
     }
   };
-
-  const handleRunCode = async () => {
-    if (!submissionValidation()) return;
-    setIsRunningCode(true);
-
-    const languageId = LanguageCodes.find((lang) => lang.name === language)?.id;
-
-    try {
-      if (problemId && languageId) {
-        const response = await problemAPI.postRunCode(code, languageId, problemId);
-        const result = response.result;
-
-        if (result) {
-          pollRunCode(result.runCodeId);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to run code", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to run code"
-      });
-
-      setIsRunningCode(false);
-    }
-  };
-
-  const pollRunCode = async (runCodeId: string) => {
-    let elapsedTime = 0;
-    const maxTimeout = 12000; // 12s
-
-    const interval = setInterval(async () => {
-      elapsedTime += 4000;
-
-      try {
-        const response = await problemAPI.getRunCodeUpdate(runCodeId);
-
-        if (response) {
-          const updateResponse = response.result;
-
-          // Check if all test case results have `result_status` not equal to "null" or "In Queue"
-          const allResultsAvailable = updateResponse.testcases.every(
-            (testCase: RunCodeTestCase) =>
-              testCase.status && testCase.status !== "In Queue" && testCase.status !== "Progressing"
-          );
-
-          if (allResultsAvailable || elapsedTime >= maxTimeout) {
-            clearInterval(interval); // Stop polling
-
-            if (elapsedTime >= maxTimeout && !allResultsAvailable) {
-              toast({
-                variant: "destructive",
-                description: "Run code timeout. Please try again later."
-              });
-              setIsRunningCode(false);
-            } else {
-              toast({
-                description: "Run code completed!"
-              });
-
-              // Handle final results
-              setRunCodeResult(updateResponse);
-              setIsRunningCode(false);
-            }
-          }
-        } else {
-          console.error(`Error in polling: ${response.status} ${response.statusText}`);
-          clearInterval(interval);
-        }
-      } catch (error) {
-        console.error("Failed to fetch submission update:", error);
-        clearInterval(interval);
-      }
-    }, 4000);
-  };
-
-  // If the user is logged in and the problem is belong to a lesson (has learning ID), update the learning progress
-  const updatePracticeDone = async () => {
-    if (learningId && userId && courseId) {
-      try {
-        await courseAPI.updatePracticeDone(learningId, courseId);
-      } catch (error) {
-        console.error("Failed to update learning progress", error);
-      }
-    }
-  };
-
-  const handleSubmitCode = async () => {
-    if (!userRedux?.isEmailVerified) {
-      showToastError({
-        toast: toast,
-        title: "Email verification required",
-        message: (
-          <>
-            Please go to the{" "}
-            <a href="/profile/edit" className="text-appHyperlink underline">
-              Setting Page
-            </a>{" "}
-            and verify your email to submit problem.
-          </>
-        )
-      });
-      return;
-    }
-
-    if (!submissionValidation()) return;
-    setIsSubmitting(true);
-
-    try {
-      if (problemId && userId) {
-        dispatch(saveCode({ problemId, code, language }));
-
-        const response = await problemAPI.createSubmission(1, code, language, problemId!, userId);
-
-        if (response?.submissionId) {
-          pollSubmissionStatus(response.submissionId);
-        }
-      }
-    } catch (error) {
-      console.log("Failed to run code", error);
-      toast({
-        variant: "destructive",
-        description: "Failed to run code"
-      });
-
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSubmissionResult = (submission: SubmissionTypeNoProblem) => {
-    const testCasesOutput = submission.testCasesOutput as TestCaseAfterSubmit[];
-    // Save the submission result to the state
-    if (!problemId) return;
-    dispatch(saveSubmission({ problemId, updateResponse: submission }));
-    // Check if all test cases are passed
-    const isPassed = testCasesOutput.every((testCase: TestCaseAfterSubmit) => testCase.result_status === "Accepted");
-
-    setIsSubmissionPassed(isPassed);
-    setIsSubmitting(false);
-  };
-
-  const pollSubmissionStatus = async (submissionId: string) => {
-    let elapsedTime = 0;
-    const maxTimeout = 60000; // 60 seconds
-    const interval = setInterval(async () => {
-      elapsedTime += 5000; // Increment elapsed time by 5 seconds
-
-      try {
-        const response = await problemAPI.getUpdateSubmission(submissionId);
-        // console.log("Submission update response", response);
-        if (response) {
-          const updateResponse = response;
-
-          // Check if all test case results have `result_status` not equal to "null" or "In Queue"
-          const allResultsAvailable = updateResponse.testCasesOutput.every(
-            (testCase: TestCaseAfterSubmit) =>
-              testCase.result_status &&
-              testCase.result_status !== "In Queue" &&
-              testCase.result_status !== "Progressing"
-          );
-
-          if (allResultsAvailable || elapsedTime >= maxTimeout) {
-            clearInterval(interval); // Stop polling
-
-            if (elapsedTime >= maxTimeout && !allResultsAvailable) {
-              toast({
-                variant: "destructive",
-                description: "Submission timeout. Please try again later."
-              });
-              setIsSubmitting(false);
-            } else {
-              toast({
-                description: "Submission completed! Check the results."
-              });
-
-              // Handle final results
-              handleSubmissionResult(updateResponse);
-              // Update learning progress if the problem is in a lesson
-              updatePracticeDone();
-            }
-          }
-        } else {
-          console.error(`Error in polling: ${response.status} ${response.statusText}`);
-          clearInterval(interval);
-        }
-      } catch (error) {
-        console.error("Failed to fetch submission update:", error);
-        clearInterval(interval);
-      }
-    }, 5000); // Poll every 5 seconds
-  };
+  // #endregion
 
   useEffect(() => {
     console.log("redirectedCommentId", redirectedCommentId);
@@ -311,7 +101,7 @@ export const ProblemDetail = () => {
   if (isPublished === false) {
     return <LockProblemOverlay />;
   }
-
+  // #region Render
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId || "" }}>
       <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
@@ -445,3 +235,4 @@ export const ProblemDetail = () => {
     </CommentContext.Provider>
   );
 };
+// #endregion

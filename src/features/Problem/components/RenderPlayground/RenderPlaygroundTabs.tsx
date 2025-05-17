@@ -22,9 +22,11 @@ import { AlignLeft, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
+  mode?: "user" | "admin";
+  boilerplateCodeFromAdmin?: string;
 }
 
-export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
+export const RenderPGTabs = ({ setLanguagePackage, mode = "user", boilerplateCodeFromAdmin }: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Code");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
   const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
@@ -37,7 +39,12 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
   const playgroundRef = useRef<{ codeFormat: () => void }>(null);
 
   useEffect(() => {
-    getBoilerplateCode();
+    if (mode === "user") {
+      getBoilerplateCode();
+    } else if (mode === "admin") {
+      setBoilerplateCode(boilerplateCodeFromAdmin || "");
+      setCode(boilerplateCodeFromAdmin || "");
+    }
   }, [problemId]);
 
   const getBoilerplateCode = async () => {
@@ -205,7 +212,7 @@ export const RenderPGTabs = ({ setLanguagePackage }: RenderPGTabsProps) => {
       </div>
 
       {/* Playground Content */}
-      <div id="playground-content" className="overflow-y-scroll">
+      <div id="playground-content" className="overflow-y-scroll scrollbar-hide">
         {renderPlaygroundTabContent()}
       </div>
     </div>

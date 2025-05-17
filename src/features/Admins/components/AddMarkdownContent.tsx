@@ -2,12 +2,12 @@ import { Textarea } from "@/components/ui/shadcn";
 import { useState } from "react";
 import { RenderMarkdown } from "@/components/Markdown";
 
-interface AddLessonMarkdownProps {
+interface AddMarkdownContentProps {
   value: string;
   onChange: (value: string) => void;
   readOnly?: boolean;
 }
-export const AddLessonMarkdown = ({ value, onChange, readOnly }: AddLessonMarkdownProps) => {
+export const AddMarkdownContent = ({ value, onChange, readOnly }: AddMarkdownContentProps) => {
   const [isEditing, setIsEditing] = useState(true);
 
   const renderButtonRow = () => {

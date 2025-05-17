@@ -1,7 +1,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCourseSchema } from "../../schemas";
-import { CourseWizardButtons, RequiredInputLabel, CourseCategoriesSelect } from "../../components/CreateCourse";
+import { CourseWizardButtons, CourseCategoriesSelect } from "../../components/CreateCourse";
 import { useCourseCategories, useCourseWizardStep, useUploadCourseImage } from "../../hooks";
 import {
   FormField,
@@ -27,6 +27,7 @@ import { useCreateCourseGeneral } from "../../hooks";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { CreateCourseGeneralStepPayload } from "@/types";
+import { RequiredInputLabel } from "@/features/Admins/components";
 
 const courseGeneralSchema = createCourseSchema.pick({
   courseId: true,
@@ -130,25 +131,25 @@ export const CourseGeneralPage = () => {
           )}
         />
 
-        {loadingCategories ? (
-          <Spinner className="w-10 h-10 mx-auto" loading={loadingCategories} />
-        ) : (
-          <FormField
-            control={form.control}
-            name="courseCategories"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>
-                  <RequiredInputLabel label="Categories" />
-                </FormLabel>
-                <FormControl>
+        <FormField
+          control={form.control}
+          name="courseCategories"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>
+                <RequiredInputLabel label="Categories" />
+              </FormLabel>
+              <FormControl>
+                {loadingCategories ? (
+                  <Spinner className="w-10 h-10 mx-auto" loading={loadingCategories} />
+                ) : (
                   <CourseCategoriesSelect value={field.value} onChange={field.onChange} categories={categories} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        )}
+                )}
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
 
         <FormField
           control={form.control}

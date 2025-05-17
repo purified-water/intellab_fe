@@ -14,7 +14,7 @@ import { createCourseSchema } from "../../schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCreateLesson, useUpdatePreviewStep } from "../../hooks";
-import { CourseWizardButtons, PreviewCourse, RequiredInputLabel } from "../../components/CreateCourse";
+import { CourseWizardButtons, PreviewCourse } from "../../components/CreateCourse";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
@@ -23,6 +23,7 @@ import { CreateCoursePreviewStepPayload } from "@/types";
 import { StepGuard } from "../../components/StepGuard";
 import { isFinalStepValid } from "../../utils/courseStepGuard";
 import { useEffect } from "react";
+import { RequiredInputLabel } from "@/features/Admins/components";
 
 const coursePreviewSchema = createCourseSchema.pick({
   courseMakeAvailable: true

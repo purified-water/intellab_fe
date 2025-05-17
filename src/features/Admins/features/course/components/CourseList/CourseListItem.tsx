@@ -105,26 +105,18 @@ export function CourseListItem(props: CourseListItemProps) {
         <td className="px-2 py-1">
           <Skeleton className="w-1/2 h-4" />
         </td>
-        <td className="px-2 py-1">
-          <Skeleton className="w-1/3 h-4" />
+        <td className="px-2 py-1 text-center">
+          <div className="flex justify-center">
+            <Skeleton className="w-10 h-4" />
+          </div>
         </td>
         <td className="px-2 py-1">
           <div className="flex justify-center">
-            <Skeleton className="w-10 h-6" />
+            <Skeleton className="w-10 h-4" />
           </div>
         </td>
         <td className="px-2 py-1 text-center">
           <Skeleton className="w-1/4 h-4 mx-auto" />
-        </td>
-        <td className="px-2 py-1 justify-items-center">
-          <div className="flex items-center gap-1">
-            <Skeleton className="w-8 h-4" />
-            <Skeleton className="w-4 h-4" />
-          </div>
-          <Skeleton className="w-1/2 h-3 mt-1" />
-        </td>
-        <td className="px-2 py-1">
-          <Skeleton className="w-8 h-8" />
         </td>
       </tr>
     );

@@ -1,6 +1,6 @@
 import { RootState } from "@/redux/rootReducer";
 
-// !! is used to convert the value to a boolean, the function has to return a boolean
+// "!!" is used to convert the value to a boolean, the function has to return a boolean
 // rather than null/undefined
 export const isGeneralStepValid = (state: RootState): boolean => {
   return !!(
