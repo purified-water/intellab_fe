@@ -14,7 +14,7 @@ import { CreateLessonSchema, createLessonSchema } from "../../../schemas";
 import { useCourseWizardStep } from "../../../hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RequiredInputLabel } from "../RequiredInputLabel";
-import { AddLessonMarkdown } from "./AddLessonMarkdown";
+import { AddMarkdownContent } from "@/features/Admins/components";
 import { AddQuiz } from "./AddQuiz";
 import { AddProblem } from "./AddProblem";
 import { DEFAULT_QUIZ } from "../../../constants";
@@ -140,7 +140,7 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
                 <RequiredInputLabel label="Lesson Content" />
               </FormLabel>
               <FormControl>
-                <AddLessonMarkdown value={field.value} onChange={field.onChange} readOnly={isReadOnly} />
+                <AddMarkdownContent value={field.value} onChange={field.onChange} readOnly={isReadOnly} />
               </FormControl>
               <FormMessage />
             </FormItem>

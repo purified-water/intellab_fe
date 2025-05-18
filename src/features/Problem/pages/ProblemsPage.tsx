@@ -43,12 +43,6 @@ export const ProblemsPage = () => {
   }, [location.search]);
   // Debounced search function
   const debouncedSearch = useRef(async (query: string) => {
-    // if (query === "") {
-    //   setSearchedCourses([]);
-    //   dispatch(getExploreCourse());
-    //   setLoading(false);
-    //   return;
-    // }
     try {
       dispatch(
         fetchPaginatedProblems({ keyword: query, size: 20, page: 0, selectedCategories: [], status: null, level: null })
@@ -74,10 +68,6 @@ export const ProblemsPage = () => {
     },
     [debouncedSearch]
   );
-
-  // if (status === "loading") {
-  //   return <div>Loading problems...</div>;
-  // }
 
   if (status === "failed") {
     return <div>Error</div>;

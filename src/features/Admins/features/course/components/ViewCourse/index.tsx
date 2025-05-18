@@ -7,7 +7,6 @@ export * from "./GeneralStep/CourseCategoriesSelect";
 // Step 2
 export * from "./LessonsStep/CourseLessonList";
 export * from "./LessonsStep/LessonForm";
-export * from "./LessonsStep/AddLessonMarkdown";
 export * from "./LessonsStep/AddQuiz";
 export * from "./LessonsStep/AddProblem";
 // Step 3

@@ -2,12 +2,11 @@
 export * from "./CourseWizardLayout";
 export * from "./WizardStepperHeader";
 export * from "./CourseWizardButtons";
-export * from "./RequiredInputLabel";
 export * from "./GeneralStep/CourseCategoriesSelect";
 // Step 2
 export * from "./LessonsStep/CourseLessonList";
 export * from "./LessonsStep/LessonForm";
-export * from "./LessonsStep/AddLessonMarkdown";
+export * from "../../../../components/AddMarkdownContent";
 export * from "./LessonsStep/AddQuiz";
 export * from "./LessonsStep/AddProblem";
 // Step 3

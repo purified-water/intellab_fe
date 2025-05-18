@@ -2,19 +2,14 @@ import { z } from "zod";
 import { CREATE_COURSE_THUMBNAIL_MAX_SIZE } from "@/constants";
 import { createLessonSchema } from "./createLessonSchema";
 
-const maxWords = (text: string, limit: number) => text.trim().split(/\s+/).length <= limit;
-
 export const createCourseSchema = z.object({
   courseId: z.string(),
   courseName: z.string().min(1, { message: "Course name is required" }).max(100, {
     message: "Course name must be less than 100 characters"
   }),
-  courseDescription: z
-    .string()
-    .min(1, { message: "Course description is required" })
-    .refine((text) => maxWords(text, 300), {
-      message: "Course description must be less than 300 words"
-    }),
+  courseDescription: z.string().min(1, { message: "Course description is required" }).max(800, {
+    message: "Course description must be less than 800 characters"
+  }),
   courseCategories: z
     .array(
       z.object({
@@ -38,12 +33,9 @@ export const createCourseSchema = z.object({
   }),
 
   coursePrice: z.number().optional(),
-  courseSummary: z
-    .string()
-    .min(1, { message: "Course summary is required" })
-    .refine((text) => maxWords(text, 800), {
-      message: "Course summary must be less than 800 words"
-    }),
+  courseSummary: z.string().min(1, { message: "Course summary is required" }).max(3000, {
+    message: "Course summary must be less than 1500 characters"
+  }),
   courseCertificate: z.number().min(1, { message: "Certificate template is required" }),
   courseMakeAvailable: z.boolean()
 });

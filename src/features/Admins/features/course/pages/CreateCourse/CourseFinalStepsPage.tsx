@@ -1,11 +1,6 @@
 import { z } from "zod";
 import { createCourseSchema } from "../../schemas";
-import {
-  AddCertificateTemplate,
-  AddSummaryMarkdown,
-  CourseWizardButtons,
-  RequiredInputLabel
-} from "../../components/CreateCourse";
+import { AddCertificateTemplate, AddSummaryMarkdown, CourseWizardButtons } from "../../components/CreateCourse";
 import {
   FormField,
   FormItem,
@@ -26,6 +21,7 @@ import { CreateCourseFinalStepPayload } from "@/types";
 // StepGuard
 import { StepGuard } from "../../components/StepGuard";
 import { isLessonsStepValid } from "../../utils/courseStepGuard";
+import { RequiredInputLabel } from "@/features/Admins/components";
 
 const courseFinalStepsSchema = createCourseSchema.pick({
   coursePrice: true,
