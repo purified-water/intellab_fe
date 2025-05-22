@@ -1,0 +1,59 @@
+import { LevelCard } from "@/components/LevelCard";
+import { Card, CardContent, CardFooter } from "@/components/ui/shadcn";
+import { NA_VALUE, PREMIUM_PACKAGES } from "@/constants";
+import { RootState } from "@/redux/rootReducer";
+import { ICourse } from "@/types";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+interface GuestCourseCardProps {
+  course: ICourse;
+}
+
+export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
+  const navigate = useNavigate();
+  const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
+  const includedInPremiumPlan =
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
+    reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
+
+  let displayPrice = `${course?.price !== null && course?.price.toLocaleString()} VND`;
+  if (course?.price === 0 || includedInPremiumPlan) {
+    displayPrice = "Free";
+  }
+
+  return (
+    <Card
+      className="flex min-w-[300px] w-[370px] max-w-[370px] flex-col overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out hover:shadow-lg"
+      onClick={() => navigate(`/course/${course.courseId}`)}
+    >
+      <div className="relative h-44">
+        <img
+          src={course.courseImage || "/placeholder.svg"}
+          alt={course.courseName}
+          className="object-cover w-full h-full"
+          loading="lazy"
+        />
+        <div className="absolute top-2 right-2">
+          <div className="flex items-center justify-end px-2 pt-2 mb-5 text-sm text-white">
+            <div className="flex items-center px-2 justify-center bg-black/60 rounded-lg max-w-[120px] h-[25px] ml-2">
+              <img className="w-3 h-3 mr-[6px]" src="../../src/assets/rate.svg" alt="Rating" />
+              <div className="text-white">
+                {course.averageRating != 0 && course.averageRating ? course.averageRating : NA_VALUE}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <CardContent className="flex-grow px-4 pt-2 pb-0">
+        <h3 className="text-lg font-bold">{course.courseName}</h3>
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+        <LevelCard level={course.level} categories={course.categories} />
+      </CardContent>
+      <CardFooter className="p-4 pt-0">
+        <div className="text-lg font-bold">{displayPrice}</div>
+      </CardFooter>
+    </Card>
+  );
+};

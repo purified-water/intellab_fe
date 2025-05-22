@@ -1,5 +1,9 @@
 import { apiClient } from "./apiClient";
-import { TGetLeaderboardResponse, TGetLeaderboardParams } from "@/features/Leaderboard/types/apiType";
+import {
+  TGetLeaderboardResponse,
+  TGetLeaderboardParams,
+  TGetLeaderboardParamsTanstack
+} from "@/features/Leaderboard/types/apiType";
 import { HTTPS_STATUS_CODE } from "@/constants";
 
 const DEFAULT_PAGE = 0;
@@ -35,5 +39,16 @@ export const leaderboardAPI = {
         await onEnd();
       }
     }
+  },
+
+  getLeaderboardTanstack: async (query: TGetLeaderboardParamsTanstack) => {
+    const response = await apiClient.get("identity/leaderboard", {
+      params: {
+        filter: query.filter ?? "all",
+        page: query.page ?? DEFAULT_PAGE,
+        size: query.size ?? DEFAULT_PAGE_SIZE
+      }
+    });
+    return response.data;
   }
 };

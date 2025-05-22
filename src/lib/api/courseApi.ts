@@ -52,8 +52,8 @@ export const courseAPI = {
 
   getUnEnrollCourses: async (userUid: string) => {
     const response = await apiClient.get(`course/courses/exceptEnrolled?userUid=${userUid}`);
-    const data: IGetCoursesResponse = response.data;
-    return data;
+    // const data: IGetCoursesResponse = response.data;
+    return response.data;
   },
 
   getCategories: async () => {

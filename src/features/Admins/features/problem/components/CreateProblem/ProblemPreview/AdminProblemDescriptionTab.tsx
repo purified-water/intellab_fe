@@ -1,7 +1,8 @@
 import { ProblemType } from "@/types/ProblemType";
 
 import { CircleCheck } from "lucide-react";
-import { LevelCard, MarkdownRender } from "@/features/Problem/components";
+import { MarkdownRender } from "@/features/Problem/components";
+import { LevelCard } from "@/components/LevelCard";
 interface AdminProblemDescriptionProps {
   problemDetail: ProblemType | null;
 }

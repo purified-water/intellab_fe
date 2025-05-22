@@ -3,21 +3,23 @@ import { Facebook, Linkedin } from "lucide-react";
 
 export const AppFooter = () => {
   return (
-    <footer className="w-full px-6 py-12 mt-40 text-white bg-appPrimary">
-      <div className="flex flex-col items-center justify-between mx-12 px-auto md:flex-row max-w-7xl">
-        {/* Logo and App Info */}
-        <div className="flex items-center gap-6 md:gap-12">
-          <img src={intellabDefaultLogo} alt="Intellab Logo" className="object-contain w-12 h-12 md:w-16 md:h-16" />
-          <div>
-            <p className="text-2xl font-bold">Intellab</p>
-            <p className="text-sm md:text-base opacity-80">Let your learning journey begin!</p>
+    <footer className="w-full px-6 py-12 mt-32 text-white bg-appPrimary">
+      <div className="grid gap-12 mx-auto max-w-7xl md:grid-cols-3">
+        {/* Logo & Intro */}
+        <div className="flex flex-col items-start gap-4">
+          <div className="flex items-center gap-4">
+            <img src={intellabDefaultLogo} alt="Intellab Logo" className="w-12 h-12 md:w-16 md:h-16" />
+            <div>
+              <p className="text-2xl font-bold">Intellab</p>
+              <p className="text-sm md:text-base opacity-80">Master Coding Skills at Your Own Pace</p>
+            </div>
           </div>
         </div>
 
-        {/* Links */}
-        <div className="flex flex-col gap-x-16 md:flex-row">
+        {/* Services & About */}
+        <div className="flex justify-between gap-8">
           <div>
-            <p className="mb-2 text-lg font-semibold">Services</p>
+            <p className="mb-3 text-lg font-semibold">Services</p>
             <ul className="space-y-2 text-sm opacity-90">
               <li>
                 <a href="/explore" className="hover:underline hover:text-appAccent">
@@ -41,9 +43,8 @@ export const AppFooter = () => {
               </li>
             </ul>
           </div>
-
           <div>
-            <p className="mb-2 text-lg font-semibold">About Us</p>
+            <p className="mb-3 text-lg font-semibold">About Us</p>
             <ul className="space-y-2 text-sm opacity-90">
               <li>
                 <a href="#" className="hover:underline hover:text-appAccent">
@@ -64,29 +65,34 @@ export const AppFooter = () => {
           </div>
         </div>
 
-        {/* Social Media Icons */}
-        <div className="flex mt-6 space-x-6 md:mt-0">
-          <a
-            href="https://www.facebook.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-lg hover:text-appAccent"
-          >
-            <Facebook />
-          </a>
-          <a
-            href="https://www.linkedin.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-lg hover:text-appAccent"
-          >
-            <Linkedin />
-          </a>
+        {/* Social Media */}
+        <div className="flex flex-col items-start gap-4">
+          <p className="text-lg font-semibold">Follow Us</p>
+          <div className="flex space-x-5">
+            <a
+              href="https://www.facebook.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-appAccent"
+            >
+              <Facebook className="w-5 h-5" />
+            </a>
+            <a
+              href="https://www.linkedin.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-appAccent"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+          </div>
         </div>
       </div>
 
-      {/* Copyright */}
-      <div className="mt-8 text-xs text-center md:text-sm opacity-70">© Intellab 2024. All rights reserved.</div>
+      {/* Divider & Copyright */}
+      <div className="pt-6 mt-4 text-xs text-center border-t border-white/20 md:text-sm opacity-70">
+        © Intellab 2024. All rights reserved.
+      </div>
     </footer>
   );
 };

@@ -1,35 +1,17 @@
-import { useState, useEffect } from "react";
 import { Separator } from "@/components/ui/Separator";
-import { leaderboardAPI } from "@/lib/api";
 import { TLeaderboardRank } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
-import { useToast } from "@/hooks/use-toast";
-import { showToastError } from "@/utils/toastUtils";
 import { useNavigate } from "react-router-dom";
+import { Card, CardTitle } from "@/components/ui/shadcn";
+import { EmptyMessage } from "@/components/ui";
 
-export const Leaderboard = () => {
-  const [ranks, setRanks] = useState<TLeaderboardRank[]>();
-  const [loading, setLoading] = useState(true);
-  const toast = useToast();
+interface LeaderboardProps {
+  leaderboardData: TLeaderboardRank[];
+  isLoading?: boolean;
+}
+
+export const Leaderboard = ({ leaderboardData, isLoading }: LeaderboardProps) => {
   const navigate = useNavigate();
-
-  const getLeaderboardAPI = async () => {
-    await leaderboardAPI.getLeaderboard({
-      query: {
-        filter: "all",
-        page: 0,
-        size: 3
-      },
-      onStart: async () => setLoading(true),
-      onSuccess: async (response) => setRanks(response.content),
-      onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
-      onEnd: async () => setLoading(false)
-    });
-  };
-
-  useEffect(() => {
-    getLeaderboardAPI();
-  }, []);
 
   const LeaderboardItem = ({ rank, item }: { rank: number; item: TLeaderboardRank }) => {
     const handleItemClick = () => {
@@ -46,11 +28,11 @@ export const Leaderboard = () => {
   };
 
   const renderRanks = () => {
-    return ranks?.map((rank, index) => <LeaderboardItem key={index} rank={index + 1} item={rank} />);
+    return leaderboardData?.map((rank, index) => <LeaderboardItem key={index} rank={index + 1} item={rank} />);
   };
 
   const renderSkeletonLoading = () => {
-    return Array.from({ length: 3 }).map((_, index) => (
+    return Array.from({ length: 5 }).map((_, index) => (
       <div key={index} className="gap-2 mt-2">
         <Skeleton className="h-6" />
       </div>
@@ -58,15 +40,16 @@ export const Leaderboard = () => {
   };
 
   return (
-    <div className="p-4 border rounded-lg border-gray5">
-      <div className="text-xl font-bold text-appPrimary">Leaderboard</div>
+    <Card className="p-4 max-h-[300px] overflow-auto border rounded-lg border-gray5">
+      <CardTitle className="text-xl font-bold">Leaderboard</CardTitle>
       <Separator className="my-2" />
-      <div>{loading ? renderSkeletonLoading() : renderRanks()}</div>
+      <div>{isLoading ? renderSkeletonLoading() : renderRanks()}</div>
+      {leaderboardData.length === 0 && !isLoading && <EmptyMessage message="No leaderboard data available" />}
       <div className="flex justify-center mt-3">
         <a href="/leaderboard" className="self-center font-bold text-appPrimary">
           View more...
         </a>
       </div>
-    </div>
+    </Card>
   );
 };
