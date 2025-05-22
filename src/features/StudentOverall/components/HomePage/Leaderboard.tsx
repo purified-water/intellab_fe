@@ -21,7 +21,7 @@ export const Leaderboard = () => {
         size: 3
       },
       onStart: async () => setLoading(true),
-      onSuccess: async (response) => setRanks(response.content),
+      onSuccess: async (response) => setRanks(response.content.slice(0, 3)),
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
       onEnd: async () => setLoading(false)
     });

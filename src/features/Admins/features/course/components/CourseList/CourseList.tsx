@@ -88,6 +88,14 @@ export function CourseList(props: CourseListProps) {
     getCourseForAdminAPI(currentPage);
   }, [filter]);
 
+  // Handling when switching to other tab with invalid page number
+  useEffect(() => {
+    if (totalPages && currentPage >= totalPages) {
+      setCurrentPage(0);
+      getCourseForAdminAPI(0);
+    }
+  }, [currentPage, totalPages]);
+
   const handleToggleCourseAvailability = (courseId: string, newAvailableStatus: boolean) => {
     setCourses((prevCourses) =>
       prevCourses.map((course) => {

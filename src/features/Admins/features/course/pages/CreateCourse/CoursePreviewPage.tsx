@@ -13,17 +13,18 @@ import { z } from "zod";
 import { createCourseSchema } from "../../schemas";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useCreateLesson, useUpdatePreviewStep } from "../../hooks";
+import { useCreateLesson, useEditingCourse, useUpdatePreviewStep } from "../../hooks";
 import { CourseWizardButtons, PreviewCourse } from "../../components/CreateCourse";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
+import { setCreateCourse, setCurrentCreationStep } from "@/redux/createCourse/createCourseSlice";
 import { CreateCoursePreviewStepPayload } from "@/types";
 // StepGuard
 import { StepGuard } from "../../components/StepGuard";
 import { isFinalStepValid } from "../../utils/courseStepGuard";
 import { useEffect } from "react";
 import { RequiredInputLabel } from "@/features/Admins/components";
+import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 
 const coursePreviewSchema = createCourseSchema.pick({
   courseMakeAvailable: true
@@ -37,6 +38,16 @@ export const CoursePreviewPage = () => {
   const createCoursePreview = useUpdatePreviewStep(courseData.courseId);
   const createCourseLesson = useCreateLesson(courseData.courseId);
   const { data: lessonsFromServer = [] } = createCourseLesson.getLessonList;
+
+  const { isEditingCourse } = useEditingCourse();
+
+  const createCourse = useSelector((state: RootState) => state.createCourse);
+
+  useEffect(() => {
+    if (createCourse.currentCreationStep < CREATE_COURSE_STEP_NUMBERS.PREVIEW) {
+      dispatch(setCurrentCreationStep(CREATE_COURSE_STEP_NUMBERS.PREVIEW));
+    }
+  }, []);
 
   // In case the lessons order is changed but redux hasnt, we need to update the courseLessons in redux
   useEffect(() => {
@@ -60,8 +71,13 @@ export const CoursePreviewPage = () => {
     createCoursePreview.mutateAsync(formatPayload);
   };
 
+  let redirectUrl = "/admin/courses/create/final-steps";
+  if (isEditingCourse) {
+    redirectUrl += "?editCourse=true";
+  }
+
   return (
-    <StepGuard checkValid={isFinalStepValid} redirectTo="/admin/courses/create/final-steps">
+    <StepGuard checkValid={isFinalStepValid} redirectTo={redirectUrl}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col mx-auto gap-8 max-w-[1000px]">
           <FormField

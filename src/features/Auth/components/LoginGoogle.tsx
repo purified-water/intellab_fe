@@ -34,7 +34,7 @@ const GoogleLogin = (props: TLoginGoogleProps) => {
     await userAPI.getProfileMe({
       onSuccess: async (user) => {
         dispatch(setUser(user));
-        await getPremiumStatusAPI(user.userId);
+        await getPremiumStatusAPI(user.userId!);
       },
       onFail: async (message) => showToastError({ toast: toast.toast, message })
     });

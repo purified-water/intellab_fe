@@ -2,7 +2,14 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCourseSchema } from "../../schemas";
 import { CourseWizardButtons, CourseCategoriesSelect } from "../../components/CreateCourse";
-import { useCourseCategories, useCourseWizardStep, useUploadCourseImage } from "../../hooks";
+import {
+  useChangeCourseImageLink,
+  useCourseCategories,
+  useCourseWizardStep,
+  useEditCourseGeneral,
+  useEditingCourse,
+  useUploadCourseImage
+} from "../../hooks";
 import {
   FormField,
   FormItem,
@@ -28,6 +35,7 @@ import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { CreateCourseGeneralStepPayload } from "@/types";
 import { RequiredInputLabel } from "@/features/Admins/components";
+import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 
 const courseGeneralSchema = createCourseSchema.pick({
   courseId: true,
@@ -47,8 +55,11 @@ export const CourseGeneralPage = () => {
 
   const { data: categories, isLoading: loadingCategories } = useCourseCategories();
   const createCourse = useCreateCourseGeneral();
+  const editCoursse = useEditCourseGeneral();
   const uploadThumbnail = useUploadCourseImage();
+  const changeCourseImageLink = useChangeCourseImageLink();
   const { goToNextStep } = useCourseWizardStep();
+  const { isEditingCourse } = useEditingCourse();
 
   // Initialize form with Zod validation
   const form = useForm<CourseGeneralSchema>({
@@ -73,19 +84,40 @@ export const CourseGeneralPage = () => {
       categoryIds: data.courseCategories.map((category) => category.categoryId.toString())
     };
 
-    try {
-      const course = await createCourse.mutateAsync(formatPayload);
-      dispatch(setCreateCourse({ courseId: course.courseId }));
-      if (data.courseThumbnail) {
-        uploadThumbnail.mutateAsync({
-          courseId: course.courseId,
-          file: data.courseThumbnail!
-        });
+    if (
+      (isEditingCourse && formData.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.GENERAL) ||
+      formData.currentCreationStep > CREATE_COURSE_STEP_NUMBERS.GENERAL
+    ) {
+      try {
+        const course = await editCoursse.mutateAsync({ courseId: formData.courseId!, payload: formatPayload });
+        dispatch(setCreateCourse({ courseId: course.courseId }));
+        if (data.courseThumbnail != formData.courseThumbnail) {
+          const imageLink = await uploadThumbnail.mutateAsync({
+            courseId: course.courseId,
+            file: data.courseThumbnail!
+          });
+          changeCourseImageLink.mutateAsync({ courseId: data.courseId, imageLink: imageLink });
+        }
+        goToNextStep();
+      } catch (error) {
+        console.error("Error in updating course:", error);
+        showToastError({ toast: toast.toast, message: "Error editing general information" });
       }
-      goToNextStep();
-    } catch (error) {
-      console.error("Error in creating course:", error);
-      showToastError({ toast: toast.toast, message: "Error uploading general information" });
+    } else {
+      try {
+        const course = await createCourse.mutateAsync(formatPayload);
+        dispatch(setCreateCourse({ courseId: course.courseId }));
+        if (data.courseThumbnail) {
+          uploadThumbnail.mutateAsync({
+            courseId: course.courseId,
+            file: data.courseThumbnail!
+          });
+        }
+        goToNextStep();
+      } catch (error) {
+        console.error("Error in creating course:", error);
+        showToastError({ toast: toast.toast, message: "Error uploading general information" });
+      }
     }
   };
 
