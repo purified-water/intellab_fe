@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { steps } from "../constants";
-import { AdminCourseViewTypes } from "../constants";
+import { useEditingCourse } from ".";
 
 // Separate the wizard navigation and data management logic from UI
 export const useCourseWizardStep = () => {
@@ -9,26 +9,31 @@ export const useCourseWizardStep = () => {
 
   const currentStepIndex = steps.findIndex((step) => location.pathname.includes(step.path));
   const currentStep = steps[currentStepIndex];
+  const { isEditingCourse } = useEditingCourse();
 
   const escapeForm = () => {
     navigate("/admin/courses/", { replace: true });
   };
 
-  const goToStep = (index: number, type: AdminCourseViewTypes = "create") => {
+  const goToStep = (index: number) => {
     if (index >= 0 && index < steps.length) {
-      navigate(`/admin/courses/${type}/${steps[index].path}`);
+      let navigatingUrl = `/admin/courses/create/${steps[index].path}`;
+      if (isEditingCourse) {
+        navigatingUrl += `?editCourse=true`;
+      }
+      navigate(navigatingUrl);
     } else if (index >= steps.length) {
       navigate("/admin/courses", { replace: true });
       return; // Prevent going to undefined step
     }
   };
 
-  const goToNextStep = (type?: AdminCourseViewTypes) => {
-    goToStep(currentStepIndex + 1, type);
+  const goToNextStep = () => {
+    goToStep(currentStepIndex + 1);
   };
 
-  const goToPrevStep = (type?: AdminCourseViewTypes) => {
-    goToStep(currentStepIndex - 1, type);
+  const goToPrevStep = () => {
+    goToStep(currentStepIndex - 1);
   };
 
   return {

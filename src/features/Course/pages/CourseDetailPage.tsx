@@ -95,6 +95,7 @@ export const CourseDetailPage = () => {
       try {
         const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
+        console.log("lessons", lessons);
         setLessons(lessons);
         setLoading(false);
         setCurrentPage(response.result.number);
@@ -341,12 +342,14 @@ export const CourseDetailPage = () => {
 
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
-      <div className="pb-8 mx-auto max-w-7xl">
-        {renderHeader()}
-        {renderBody()}
-        {renderSpinner()}
+      <div className="flex flex-col min-h-screen">
+        <div className="w-full">{renderHeader()}</div>
+        <div className="pb-8 mx-auto max-w-7xl flex-grow">
+          {renderBody()}
+          {renderSpinner()}
+        </div>
+        <AppFooter />
       </div>
-      <AppFooter />
     </CommentContext.Provider>
   );
 };

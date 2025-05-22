@@ -73,7 +73,7 @@ export const LoginPage = () => {
     await userAPI.getProfileMe({
       onSuccess: async (user) => {
         dispatch(setUser(user));
-        await getPremiumStatusAPI(user.userId);
+        await getPremiumStatusAPI(user.userId!);
         dispatch(loginSuccess());
         setIsLoggingIn(false);
         if (user.role === USER_ROLES.ADMIN) {

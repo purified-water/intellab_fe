@@ -1,7 +1,8 @@
-import { CreateCourseSchema } from "@/features/Admins/features/course/schemas";
+import { CreateCourseSchemaWithCurrentStep } from "@/features/Admins/features/course/schemas";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CREATE_COURSE_STEP_NUMBERS } from "@/features/Admins/features/course/constants";
 
-const initialState: CreateCourseSchema = {
+export const initialState: CreateCourseSchemaWithCurrentStep = {
   courseId: "",
   courseName: "",
   courseDescription: "",
@@ -12,7 +13,8 @@ const initialState: CreateCourseSchema = {
   coursePrice: 0,
   courseSummary: "",
   courseCertificate: 1,
-  courseMakeAvailable: false
+  courseMakeAvailable: false,
+  currentCreationStep: CREATE_COURSE_STEP_NUMBERS.GENERAL
 };
 
 const createCourseSlice = createSlice({
@@ -20,14 +22,14 @@ const createCourseSlice = createSlice({
   initialState,
   reducers: {
     // Use partial type to allow partial updates for each steps
-    setCreateCourse: (state, action: PayloadAction<Partial<CreateCourseSchema>>) => {
+    setCreateCourse: (state, action: PayloadAction<Partial<CreateCourseSchemaWithCurrentStep>>) => {
       return { ...state, ...action.payload };
     },
     updateLessonQuiz: (
       state,
       action: PayloadAction<{
         lessonId: string;
-        lessonQuiz: CreateCourseSchema["courseLessons"][number]["lessonQuiz"];
+        lessonQuiz: CreateCourseSchemaWithCurrentStep["courseLessons"][number]["lessonQuiz"];
       }>
     ) => {
       const index = state.courseLessons.findIndex((l) => l.lessonId === action.payload.lessonId);
@@ -39,9 +41,14 @@ const createCourseSlice = createSlice({
       // Filter out the lesson with the given lessonId
       state.courseLessons = state.courseLessons.filter((lesson) => lesson.lessonId !== action.payload);
     },
-    resetCreateCourse: () => initialState
+    resetCreateCourse: () => initialState,
+
+    setCurrentCreationStep: (state, action: PayloadAction<number>) => {
+      state.currentCreationStep = action.payload;
+    }
   }
 });
 
-export const { setCreateCourse, deleteLesson, updateLessonQuiz, resetCreateCourse } = createCourseSlice.actions;
+export const { setCreateCourse, deleteLesson, updateLessonQuiz, resetCreateCourse, setCurrentCreationStep } =
+  createCourseSlice.actions;
 export default createCourseSlice.reducer;

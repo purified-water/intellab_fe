@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 import { MarkdownRender } from "../ProblemMarkdownRender";
 import BreadCrump, { IBreadCrumpItem } from "@/components/ui/BreadCrump";
 import { ProblemType } from "@/types/ProblemType";
-import { LevelCard } from "./LevelCard";
 import { CircleCheck } from "lucide-react";
+import { LevelCard } from "@/components/LevelCard";
 interface ProblemDescriptionProps {
   problemDetail: ProblemType | null;
   courseId: string | null;

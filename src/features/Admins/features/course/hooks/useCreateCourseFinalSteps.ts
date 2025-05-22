@@ -25,10 +25,26 @@ export const useCreateFinalStep = (courseId: string, templateIndex: number) => {
       }
     }
   });
+
+  const EditFinalStep = useMutation({
+    mutationFn: (payload: CreateCourseFinalStepPayload) => adminCourseAPI.putCreateCourseFinalStep(courseId, payload),
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Update final steps successfully" });
+      goToNextStep();
+    },
+    onError: (error) => {
+      if (error instanceof AxiosError) {
+        showToastError({ toast: toast.toast, message: error.message });
+      } else {
+        showToastError({ toast: toast.toast, message: "An unexpected error occurred" });
+      }
+    }
+  });
+
   const getCertificateTemplates = useQuery({
     queryKey: ["course", templateIndex, "certificates"],
     queryFn: () => adminCourseAPI.getCreateCourseCertificateTemplates(templateIndex)
   });
 
-  return { submitFinalStep, getCertificateTemplates };
+  return { submitFinalStep, EditFinalStep, getCertificateTemplates };
 };

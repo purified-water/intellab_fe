@@ -16,7 +16,20 @@ const DEFAULT_COURSE: ICourse = {
   userUid: null,
   certificateId: "",
   certificateUrl: "",
-  categories: [],
+  categories: [
+    {
+      categoryId: 1,
+      name: "Category Name"
+    },
+    {
+      categoryId: 2,
+      name: "Category Name ansdjnajsdha sdasdas"
+    },
+    {
+      categoryId: 3,
+      name: "Category Name"
+    }
+  ],
   isAvailable: false,
   currentCreationStep: 0,
   currentCreationStepDescription: "",

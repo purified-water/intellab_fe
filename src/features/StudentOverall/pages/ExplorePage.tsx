@@ -12,6 +12,8 @@ import { AppFooter } from "@/components/AppFooter";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 import { Course, FilterButton, FilterComponent, SearchResultComponent, SearchBar } from "../components";
 import { getUserIdFromLocalStorage } from "@/utils";
+import { Button } from "@/components/ui";
+import { ArrowRight } from "lucide-react";
 
 // const SEARCH_WAIT_TIME = 3000;
 
@@ -179,7 +181,9 @@ export const ExplorePage = () => {
                       <div className="text-2xl font-bold text-black sm:text-4xl">Fundamental For Beginner</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
                       <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
-                        <button className="text-lg underline text-black-50">View all &gt;</button>
+                        <Button variant="ghost" size="sm" className="gap-1">
+                          View all <ArrowRight className="w-4 h-4" />
+                        </Button>{" "}
                       </Link>
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}

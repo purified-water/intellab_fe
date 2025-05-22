@@ -23,4 +23,10 @@ type TGetLeaderboardParams = TGetApiParams<
   TGetLeaderboardResponse
 >;
 
-export type { TGetLeaderboardResponse, TGetLeaderboardParams };
+type TGetLeaderboardParamsTanstack = {
+  filter: string;
+  page: number;
+  size: number;
+};
+
+export type { TGetLeaderboardResponse, TGetLeaderboardParams, TGetLeaderboardParamsTanstack };

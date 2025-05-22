@@ -272,7 +272,7 @@ export function FilterDialog(props: FilterDialogProps) {
       exit={{ height: 0, opacity: 0 }}
       transition={{ duration: 0.5 }}
       style={{ overflow: "hidden" }}
-      className="py-2 px-9 inline-block"
+      className="inline-block py-2 px-9"
     >
       <div
         style={{

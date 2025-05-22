@@ -18,7 +18,9 @@ const persistConfig = {
     "mainChatbot",
     "premiumStatus",
     "createCourse",
-    "createLesson"
+    "createLesson",
+    "createProblem",
+    "createTestcase"
   ]
 };
 

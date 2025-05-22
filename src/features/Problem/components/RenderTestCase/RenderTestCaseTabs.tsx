@@ -37,6 +37,7 @@ export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) =>
 
     return (
       <button
+        type="button"
         onClick={() => setTestCaseActive(tabName)}
         className={`flex items-center ${
           testCaseActive === tabName ? "text-appAccent font-semibold" : "text-gray3 font-semibold"
@@ -80,6 +81,3 @@ export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) =>
     </div>
   );
 };
-
-// TODO sửa lỗi không lướt được cái codemirror với khi màn hình codemirror nhỏ mà xuống dòng thì nó đẩy
-// cái tab button lên luôn không thấy nữa

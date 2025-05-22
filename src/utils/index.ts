@@ -7,3 +7,4 @@ export * from "./markdownHelpers";
 export * from "./stringUtils";
 export * from "./toastUtils";
 export * from "./navigationUtils";
+export * from "./fileUtil";

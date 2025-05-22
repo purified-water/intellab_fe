@@ -10,7 +10,6 @@ import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
-
 interface CourseProps {
   course: ICourse | null;
   skeletonLoading?: boolean;
@@ -119,7 +118,9 @@ export function Course(props: CourseProps) {
             <div className="flex items-center px-2 justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
               <img className="w-3 h-3 mr-[6px]" src="../../src/assets/rate.svg" alt="Rating" />
               <div className="text-sm text-white">
-                {detailCourse?.averageRating != 0 ? detailCourse?.averageRating : NA_VALUE}
+                {detailCourse?.averageRating != 0 && detailCourse?.averageRating
+                  ? detailCourse?.averageRating
+                  : NA_VALUE}
               </div>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { FormLabel, Textarea } from "@/components/ui/shadcn";
-import { RequiredInputLabel } from "../RequiredInputLabel";
+import { RequiredInputLabel } from "@/features/Admins/components";
 import { useState } from "react";
 import { RenderMarkdown } from "@/components/Markdown";
 import { AnimatedButton } from "@/components/ui";
