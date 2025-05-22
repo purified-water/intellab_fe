@@ -33,6 +33,20 @@ export const adminCourseAPI = {
       }
     });
 
+    return response.data.result;
+  },
+
+  putCreateCourseGeneralStep: async (courseId: string, payload: CreateCourseGeneralStepPayload) => {
+    const response = await apiClient.put(`course/admin/courses/general-step/${courseId}`, payload);
+    return response.data.result;
+  },
+
+  changeCourseImageLink: async (courseId: string, imageLink: string) => {
+    const response = await apiClient.post(`course/admin/courses/${courseId}/image/link`, imageLink, {
+      headers: {
+        "Content-Type": "text/plain"
+      }
+    });
     return response.data;
   },
 
@@ -63,6 +77,11 @@ export const adminCourseAPI = {
   // Step 3
   postCreateCourseFinalStep: async (courseId: string, payload: CreateCourseFinalStepPayload) => {
     const response = await apiClient.post(`course/admin/courses/final-step/${courseId}`, payload);
+    return response.data;
+  },
+
+  putCreateCourseFinalStep: async (courseId: string, payload: CreateCourseFinalStepPayload) => {
+    const response = await apiClient.put(`course/admin/courses/final-step/${courseId}`, payload);
     return response.data;
   },
 

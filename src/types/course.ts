@@ -25,6 +25,8 @@ export interface ICourse {
   courseImage: string;
   numberOfEnrolledStudents: number | null;
   createdAt: string;
+  templateCode?: number;
+  aiSummaryContent?: string | null;
 }
 
 export interface ICompletedCourse {

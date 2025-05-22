@@ -108,7 +108,7 @@ export const ProblemTestcaseForm = ({
         />
 
         <div className="flex justify-end">
-          <Button type="button" className="mr-2" variant="outline" onClick={() => { }}>
+          <Button type="button" className="mr-2" variant="outline" onClick={() => {}}>
             Cancel
           </Button>
           <Button type="submit" className="bg-appPrimary hover:bg-appPrimary/80">

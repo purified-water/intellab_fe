@@ -6,6 +6,8 @@ import { CourseList, FilterDialog } from "../components";
 import { TCourseFilter } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
+import { useDispatch } from "react-redux";
+import { resetCreateCourse } from "@/redux/createCourse/createCourseSlice";
 
 const TABS = {
   CREATED: "created",
@@ -25,6 +27,7 @@ export function CourseListPage() {
     isCompletedCreation: true
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
@@ -34,13 +37,18 @@ export function CourseListPage() {
       }));
     };
 
+    const handleCreateCourse = () => {
+      dispatch(resetCreateCourse());
+      navigate("/admin/courses/create/general");
+    };
+
     return (
       <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
         <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} width={800} />
         <div className="border-l border-gray4 pl-4 ml-2">
           <Button
-            onClick={() => navigate("/admin/courses/create")}
+            onClick={handleCreateCourse}
             className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4"
           >
             <Plus className="h-4 w-4" />

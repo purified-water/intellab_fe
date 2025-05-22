@@ -9,7 +9,10 @@ import {
   TGetProfileMeResponse,
   TGetProfileMeParams
 } from "@/features/Profile/types/apiType";
-import { HTTPS_STATUS_CODE } from "@/constants";
+import { TGetUsersForAdminResponse, TGetUsersForAdminParams } from "@/features/Admins/features/user/types/apiType";
+import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
+
+const DEFAULT_PAGE_SIZE = 10;
 
 export const userAPI = {
   updateProfile: async (
@@ -108,6 +111,41 @@ export const userAPI = {
       if (onEnd) {
         await onEnd();
       }
+    }
+  },
+
+  getUsersForAdmin: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetUsersForAdminParams) => {
+    const DEFAULT_ERROR = "Error getting users for admin";
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { keyword, page } = query!;
+      const response = await apiClient.get("/identity/admin/profile/list-users", {
+        params: {
+          keyword: keyword,
+          page: page,
+          size: DEFAULT_PAGE_SIZE
+        }
+      });
+      const data: TGetUsersForAdminResponse = response.data;
+
+      const { code, result, message } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    }
+    if (onEnd) {
+      setTimeout(() => {
+        onEnd();
+      }, 1000);
     }
   }
 };

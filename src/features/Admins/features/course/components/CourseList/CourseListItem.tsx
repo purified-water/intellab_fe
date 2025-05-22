@@ -7,8 +7,10 @@ import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { setEditingCourse } from "@/redux/course/courseSlice";
+import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { NA_VALUE } from "@/constants";
+import { imageURLToFile } from "@/utils";
+import { CREATE_COURSE_STEP_NUMBERS, steps } from "../../constants";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
@@ -39,8 +41,38 @@ export function CourseListItem(props: CourseListItemProps) {
   };
 
   const handleViewDetails = () => {
-    dispatch(setEditingCourse(course));
-    navigate(`/admin/courses/view/general`);
+    console.log("--> View Details clicked for item:", course);
+  };
+
+  const handleEdit = async () => {
+    let thumbnailFile = null;
+    if (course.courseImage) {
+      try {
+        thumbnailFile = await imageURLToFile(course.courseImage, course.courseName);
+      } catch (error) {
+        console.error("--> Error converting image URL to file:", error);
+      }
+    }
+    dispatch(
+      setCreateCourse({
+        courseId: course.courseId,
+        courseName: course.courseName,
+        courseDescription: course.description,
+        courseCategories: course.categories,
+        courseLevel: course.level,
+        courseThumbnail: thumbnailFile,
+        courseCertificate: course.templateCode ?? 1,
+        coursePrice: course.price ?? 0,
+        courseSummary: course.aiSummaryContent ?? "placeholder",
+        courseMakeAvailable: course.isAvailable,
+        currentCreationStep: course.currentCreationStep
+      })
+    );
+    if (course.currentCreationStep === CREATE_COURSE_STEP_NUMBERS.PREVIEW) {
+      navigate("/admin/courses/create/general?editCourse=true");
+    } else {
+      navigate(`/admin/courses/create/${steps[course.currentCreationStep - 1].path}?editCourse=true`);
+    }
   };
 
   const handleDeleteCourse = () => {
@@ -54,10 +86,8 @@ export function CourseListItem(props: CourseListItemProps) {
           handleViewDetails();
           break;
         case DROP_DOWN_MENU_ITEMS.MODIFY:
-          console.log("Modify clicked for item:");
-          break;
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
-          console.log("Continue Edit clicked for item:");
+          handleEdit();
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
           handleDeleteCourse();
