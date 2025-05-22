@@ -26,10 +26,43 @@ export default function LessonListItem({ lesson }: LessonListItemProps) {
   };
 
   const renderIcons = () => {
+    const unfinishedTheoryIcon = (
+      <div className="w-11 h-11 rounded-[10px] bg-gray5 inline-flex items-center justify-center border-[0.5px] border-gray4">
+        <BookOpenText className="w-5 h-5 cursor-pointer text-gray3" onClick={handleExerciseClick} />
+      </div>
+    );
+
+    // const finishedTheoryIcon = (onClick: React.MouseEventHandler) => {
+    //   return (
+    //     <div
+    //       className="w-11 h-11 rounded-[10px] bg-green-100 inline-flex items-center justify-center border-[0.5px] border-appEasy"
+    //       onClick={onClick}
+    //     >
+    //       <BookOpenText className="w-5 h-5 cursor-pointer text-appEasy" onClick={handleExerciseClick} />
+    //     </div>
+    //   );
+    // };
+
+    const unfinishedProblemIcon = (
+      <div className="w-11 h-11 rounded-[10px] bg-gray5 inline-flex items-center justify-center border-[0.5px] border-gray4">
+        <Code className="w-5 h-5 cursor-pointer text-gray3" onClick={handleProblemClick} />
+      </div>
+    );
+
+    // const finishedProblemIcon = (onClick: React.MouseEventHandler) => {
+    //   return (
+    //     <div
+    //       className="w-11 h-11 rounded-[10px] bg-green-100 inline-flex items-center justify-center border-[0.5px] border-appEasy"
+    //       onClick={onClick}
+    //     >
+    //       <Code className="w-5 h-5 cursor-pointer text-appEasy" onClick={handleProblemClick} />
+    //     </div>
+    //   );
+    // };
     return (
-      <div className="flex flex-row flex-1 gap-12 text-gray3">
-        <BookOpenText className="w-8 h-8 cursor-pointer" onClick={handleExerciseClick} />
-        {lesson.lessonProblemId && <Code className="w-8 h-8 cursor-pointer" onClick={handleProblemClick} />}
+      <div className="flex flex-row flex-1 items-start justify-start gap-5 text-gray3">
+        {unfinishedTheoryIcon}
+        {unfinishedProblemIcon}
       </div>
     );
   };

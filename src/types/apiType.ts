@@ -19,4 +19,4 @@ type TPostApiParams<Querry, Body, Data> = TGetApiParams<Querry, Data> & {
   body?: Body;
 };
 
-export type { TApiResponse, TGetApiParams, TPostApiParams };
+export type { TApiParams, TApiResponse, TGetApiParams, TPostApiParams };

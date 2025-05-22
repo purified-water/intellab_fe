@@ -7,11 +7,12 @@ interface TopStatCardProps {
   icon: React.ElementType;
   change: string;
   changeNote: string;
-  changeType: "increase" | "decrease";
+  changeType: "increase" | "decrease" | "neutral";
 }
 
 export function TopStatCard({ title, value, icon: Icon, change, changeNote, changeType }: TopStatCardProps) {
   const isIncrease = changeType === "increase";
+  const isNeutral = changeType === "neutral";
 
   return (
     <div className="rounded-lg border p-4 flex flex-col gap-2 shadow">
@@ -22,8 +23,17 @@ export function TopStatCard({ title, value, icon: Icon, change, changeNote, chan
 
       <div className="text-2xl font-bold text-black">{value}</div>
 
-      <div className={cn("text-xs flex items-center", isIncrease ? "text-green-600" : "text-red-500")}>
-        {isIncrease ? <ArrowUpRight className="w-3 h-3 mr-1" /> : <ArrowDownRight className="w-3 h-3 mr-1" />}
+      <div
+        className={cn(
+          "text-xs flex items-center",
+          isIncrease ? "text-green-600" : isNeutral ? "text-gray-500" : "text-red-500"
+        )}
+      >
+        {isIncrease ? (
+          <ArrowUpRight className="w-3 h-3 mr-1" />
+        ) : isNeutral ? null : (
+          <ArrowDownRight className="w-3 h-3 mr-1" />
+        )}
         {change} {changeNote}
       </div>
     </div>
