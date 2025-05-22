@@ -44,3 +44,6 @@ export type CreateCourseSchema = z.infer<typeof createCourseSchema>;
 export type CreateCourseSchemaWithId = CreateCourseSchema & {
   courseId: string;
 };
+export type CreateCourseSchemaWithCurrentStep = CreateCourseSchema & {
+  currentCreationStep: number;
+};

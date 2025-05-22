@@ -3,9 +3,9 @@ import { CourseLessonList, CourseWizardButtons, LessonForm } from "../../compone
 import { LessonAction } from "../../types";
 import { CreateLessonSchema } from "../../schemas";
 import { useDispatch, useSelector } from "react-redux";
-import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
+import { setCreateCourse, setCurrentCreationStep } from "@/redux/createCourse/createCourseSlice";
 import { RootState } from "@/redux/rootReducer";
-import { useCreateLesson } from "../../hooks";
+import { useCreateLesson, useEditingCourse } from "../../hooks";
 import { CreateCourseLessonQuizPayload, CreateCourseLessonStepResponse, UpdateCourseLessonPayload } from "@/types";
 import { resetCreateLesson, setCreateLesson } from "@/redux/createCourse/createLessonSlice";
 import { showToastError } from "@/utils";
@@ -15,6 +15,7 @@ import { Spinner } from "@/components/ui";
 // StepGuard
 import { StepGuard } from "../../components/StepGuard";
 import { isGeneralStepValid } from "../../utils/courseStepGuard";
+import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 
 export const CourseLessonsPage = () => {
   const [lessonAction, setLessonAction] = useState<LessonAction>({
@@ -29,6 +30,15 @@ export const CourseLessonsPage = () => {
   const createCourseLesson = useCreateLesson(courseId);
   const { data: lessonsFromServer = [], isLoading } = createCourseLesson.getLessonList;
 
+  const createCourse = useSelector((state: RootState) => state.createCourse);
+  const { isEditingCourse } = useEditingCourse();
+
+  useEffect(() => {
+    if (createCourse.currentCreationStep < CREATE_COURSE_STEP_NUMBERS.LESSONS) {
+      dispatch(setCurrentCreationStep(CREATE_COURSE_STEP_NUMBERS.LESSONS));
+    }
+  }, []);
+
   // Only dispatch once when server data is fetched and redux is empty
   useEffect(() => {
     if (lessonsFromServer.length > 0) {
@@ -37,7 +47,7 @@ export const CourseLessonsPage = () => {
   }, [lessonsFromServer, courseLessons.length, dispatch]);
 
   // Initially create a lesson to get id then call put to update it
-  const handleAddInitalLesson = async () => {
+  const handleAddInitialLesson = async () => {
     try {
       const createdLesson: CreateCourseLessonStepResponse = await createCourseLesson.createLesson.mutateAsync({
         courseId,
@@ -136,8 +146,13 @@ export const CourseLessonsPage = () => {
     }
   };
 
+  let redirectUrl = "/admin/courses/create/general";
+  if (isEditingCourse) {
+    redirectUrl += "?editCourse=true";
+  }
+
   return (
-    <StepGuard checkValid={isGeneralStepValid} redirectTo="/admin/courses/create/general">
+    <StepGuard checkValid={isGeneralStepValid} redirectTo={redirectUrl}>
       <div className="flex w-full">
         {isLoading ? (
           <div className="flex items-center justify-center w-24">
@@ -147,7 +162,7 @@ export const CourseLessonsPage = () => {
           <CourseLessonList
             lessons={courseLessons}
             onSelect={setLessonAction}
-            onCreateLesson={handleAddInitalLesson}
+            onCreateLesson={handleAddInitialLesson}
             setHasLessonsReordered={setHasLessonsReordered}
           />
         )}

@@ -9,5 +9,4 @@ export interface CourseState {
   exploreCourses: ICourse[];
   originalExploreCourses: ICourse[];
   hasFilter: boolean;
-  editingCourse: ICourse | null;
 }
