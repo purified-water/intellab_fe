@@ -1,4 +1,3 @@
-export * from "./LevelCard";
 export * from "./ProblemDescription";
 export * from "./RenderDescTabs";
 export * from "./SubmissionHistory";
