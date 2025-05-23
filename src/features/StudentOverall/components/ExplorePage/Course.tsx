@@ -10,6 +10,7 @@ import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
+import { rateIcon } from "@/assets";
 interface CourseProps {
   course: ICourse | null;
   skeletonLoading?: boolean;
@@ -116,7 +117,7 @@ export function Course(props: CourseProps) {
             </div>
             <div className="ml-1 text-sm font-normal text-white">•</div>
             <div className="flex items-center px-2 justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
-              <img className="w-3 h-3 mr-[6px]" src="../../src/assets/rate.svg" alt="Rating" />
+              <img className="w-3 h-3 mr-[6px]" src={rateIcon} alt="Rating" />
               <div className="text-sm text-white">
                 {detailCourse?.averageRating != 0 && detailCourse?.averageRating
                   ? detailCourse?.averageRating
@@ -163,18 +164,18 @@ export function Course(props: CourseProps) {
 
   const renderSkeleton = () => (
     <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
-      <div className="flex flex-col h-40 p-2 w-80 bg-gray5 rounded-tl-xl rounded-tr-xl">
-        <Skeleton className="self-end w-40 h-10 mb-9 bg-gray5" />
-        <Skeleton className="h-10 mb-5 w-50 bg-gray5" />
+      <div className="flex flex-col h-40 p-2 w-80 rounded-tl-xl bg-gray6 rounded-tr-xl">
+        <Skeleton className="self-end w-40 h-10 mb-9" />
+        <Skeleton className="h-10 mb-5 w-50 " />
       </div>
       <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
-        <Skeleton className="h-4 mb-2 bg-gray5" />
+        <Skeleton className="h-4 mb-2" />
       </div>
       <div className="flex-grow px-4 mb-3">
-        <Skeleton className="h-4 mb-2 bg-gray5" />
+        <Skeleton className="h-4 mb-2 " />
       </div>
       <div className="flex items-baseline justify-between p-4 mt-auto bg-">
-        <Skeleton className="w-24 h-8 mt-5 bg-gray5" />
+        <Skeleton className="w-24 h-8 mt-5" />
       </div>
     </div>
   );

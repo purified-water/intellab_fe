@@ -184,12 +184,12 @@ export const LoginPage = () => {
               <button
                 type="button"
                 onClick={togglePasswordVisibility}
-                className="absolute inset-y-0 items-center justify-center text-gray3 right-2 top-1 focus:outline-none"
+                className="absolute inset-y-0 items-center justify-center text-gray3 right-3 top-1 focus:outline-none"
               >
                 {showPassword ? (
-                  <MdOutlineVisibilityOff className="icon-lg" />
+                  <MdOutlineVisibilityOff className="icon-base" />
                 ) : (
-                  <MdOutlineVisibility className="icon-lg" />
+                  <MdOutlineVisibility className="icon-base" />
                 )}
               </button>
             </div>

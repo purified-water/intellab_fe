@@ -209,7 +209,7 @@ export const Header = (props: HeaderProps) => {
     return (
       <button
         disabled={disable}
-        className="px-6 py-2 text-base font-bold text-white bg-appPrimary rounded-lg hover:bg-appSecondary shadow transition"
+        className="px-6 py-2 text-base font-bold text-white bg-appPrimary rounded-lg hover:bg-appPrimary/80 shadow transition"
         onClick={onClick}
       >
         {buttonText}
@@ -286,7 +286,7 @@ export const Header = (props: HeaderProps) => {
                 {course.description}
               </span>
 
-              {course.description && course.description.length > 0 && (
+              {course.description && course.description.length > 70 && (
                 <button
                   className="text-appPrimary text-sm underline hover:text-appSecondary"
                   onClick={() => setShowFullDescription(!showFullDescription)}

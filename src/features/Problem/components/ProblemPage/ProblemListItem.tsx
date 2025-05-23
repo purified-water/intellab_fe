@@ -80,7 +80,7 @@ export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
         <tbody>
           {status === "loading"
             ? Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className={`text-xs sm:text-base ${i % 2 === 0 ? "bg-white" : "bg-gray6"}`}>
+                <tr key={i} className={`text-xs sm:text-base ${i % 2 === 0 ? "bg-white" : "bg-gray6/50"}`}>
                   <td className="w-2/6 px-4 py-3">
                     <Skeleton className="w-3/4 h-4" />
                   </td>
@@ -101,7 +101,7 @@ export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
             : sortedData.map((row, index) => (
                 <tr
                   key={index}
-                  className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6"}`}
+                  className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6/50"}`}
                   onClick={() => handleProblemListItemClicked(row.problemId)}
                 >
                   <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">

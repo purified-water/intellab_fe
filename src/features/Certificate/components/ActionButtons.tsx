@@ -1,8 +1,8 @@
 import { ICertificate } from "../types";
 import { Button } from "@/components/ui/Button";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDownload, faShareFromSquare } from "@fortawesome/free-solid-svg-icons";
+
 import jsPDF from "jspdf";
+import { Download, Share } from "lucide-react";
 
 type ActionButtonsProps = {
   loading: boolean;
@@ -45,19 +45,16 @@ export function ActionButtons(props: ActionButtonsProps) {
   if (!loading) {
     content = (
       <div className="flex space-x-3">
-        <Button
-          className="px-5 py-6 rounded-lg bg-appPrimary font-bold text-base hover:bg-appPrimary/80"
-          onClick={handleShareClick}
-        >
-          <FontAwesomeIcon icon={faShareFromSquare} />
-          Share Certificate
+        <Button className="rounded-lg bg-appPrimary hover:bg-appPrimary/80" onClick={handleShareClick}>
+          <Share />
+          Share
         </Button>
         <Button
-          className="px-5 py-6 rounded-lg border border-appPrimary text-base bg-white font-bold text-appPrimary hover:bg-white/75 hover:text-opacity-75 hover:border-opacity-75"
+          className="bg-white border rounded-lg border-appPrimary text-appPrimary hover:bg-white/75 hover:text-opacity-75 hover:border-opacity-75"
           onClick={handleDownloadClick}
         >
-          <FontAwesomeIcon icon={faDownload} />
-          Download Certificate
+          <Download />
+          Download
         </Button>
       </div>
     );

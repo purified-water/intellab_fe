@@ -37,6 +37,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
   const isCurrentPlanActive = reduxPremiumStatus?.status === PREMIUM_STATUS.ACTIVE;
   const isPremiumPlan = reduxPremiumStatus?.planType !== PREMIUM_PACKAGES.RESPONSE.FREE;
+  const isAdmin = user?.role === "ADMIN";
 
   // Notifications
   const hasUnreadNotifications = useSelector(selectHasUnread);
@@ -58,13 +59,14 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     navigateWithPreviousPagePassed(navigate, state, "/login");
   };
 
-  const isActive = (path: string) => (location.pathname === path ? "text-appAccent font-bold" : "text-gray3");
+  const isActive = (path: string) =>
+    location.pathname === path ? "text-appAccent font-semibold" : "text-muted-foreground";
 
   const renderUserPhoto = () => {
     let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain w-8 h-8 border rounded-full border-gray4" />;
+      content = <img src={userPhoto} alt="User" className="object-contain border rounded-full size-8 border-gray4" />;
     }
     return content;
   };
@@ -82,16 +84,16 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
             </button>
           </div>
 
-          <Link to="/">
+          <Link to={isAdmin ? "/admin" : "/"}>
             {isCurrentPlanActive && isPremiumPlan ? (
-              <img src={intellabSidePremiumLogo} alt="Intellab Logo" className="w-24 h-auto mr-2" />
+              <img src={intellabSidePremiumLogo} alt="Intellab Logo" className="w-[86px] h-auto mr-2" />
             ) : (
-              <img src={intellabSideLogo} alt="Intellab Logo" className="w-24 h-auto mr-2" />
+              <img src={intellabSideLogo} alt="Intellab Logo" className="w-[86px] h-auto mr-2" />
             )}
           </Link>
 
           <div
-            className={`fixed inset-0 z-40 flex flex-col items-center justify-center bg-white space-y-6 text-gray5 lg:static lg:flex lg:flex-row lg:space-y-0 lg:space-x-6 lg:bg-transparent lg:w-auto ${
+            className={`text-base fixed inset-0 font-semibold z-40 flex flex-col items-center justify-center bg-white space-y-6 text-gray5 lg:static lg:flex lg:flex-row lg:space-y-0 lg:space-x-5 lg:bg-transparent lg:w-auto ${
               isMenuOpen ? "flex" : "hidden"
             }`}
           >
@@ -100,32 +102,32 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
             </button>
             <Link
               to="/explore"
-              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/explore")}`}
+              className={`transition-colors duration-300 hover:text-appAccent ${isActive("/explore")}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Explore
             </Link>
             <Link
               to="/problems"
-              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/problems")}`}
+              className={`transition-colors duration-300 hover:text-appAccent ${isActive("/problems")}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Problems
             </Link>
-            {/* <Link
+            <Link
               to="/leaderboard"
-              className={`text-lg font-semibold transition-colors hover:text-appAccent ${isActive("/leaderboard")}`}
+              className={`transition-colors duration-300 hover:text-appAccent ${isActive("/leaderboard")}`}
               onClick={() => setIsMenuOpen(false)}
             >
               Leaderboard
-            </Link> */}
+            </Link>
           </div>
         </div>
 
         <div id="premium" className="relative flex items-center space-x-3">
           {(!isCurrentPlanActive || !isPremiumPlan) && (
             <Link to="/pricing">
-              <button className="px-3 py-1 text-base font-semibold transition bg-appFadedAccent text-appAccent rounded-xl hover:bg-opacity-80">
+              <button className="px-3 py-1 font-medium transition rounded-lg bg-appFadedAccent/50 text-appAccent hover:bg-appFadedAccent/80">
                 Premium
               </button>
             </Link>
@@ -145,7 +147,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
                     {hasUnreadNotifications && (
                       <span className="absolute top-0 right-0 w-2 h-2 rounded-full bg-appHard" />
                     )}
-                  </div>{" "}
+                  </div>
                 </Button>
                 {isNotificationOpen && (
                   <div className="absolute right-0">
@@ -179,7 +181,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
           ) : (
             <button
               onClick={handleLogin}
-              className="px-3 py-1 text-base font-semibold transition border text-appPrimary border-appPrimary rounded-xl hover:opacity-90"
+              className="px-3 py-1 text-base font-medium transition border rounded-lg text-appPrimary border-appPrimary hover:bg-appPrimary hover:text-white"
             >
               Sign In
             </button>

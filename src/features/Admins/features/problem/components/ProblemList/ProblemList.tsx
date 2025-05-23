@@ -3,7 +3,7 @@ import { ListFilter } from "lucide-react";
 import { useToast } from "@/hooks";
 import { AlertDialog, Pagination } from "@/components/ui";
 import { ProblemListItem } from "./ProblemListItem";
-import { TCourseFilter } from "@/types";
+import { ProblemFilterType } from "@/types/ProblemType";
 
 export type Problem = {
   id: string;
@@ -58,7 +58,7 @@ const dummyProblemListDraft: Problem[] = [
     id: "p3",
     problemName: "Merge K Sorted Lists",
     level: "hard",
-    categories: ["linked list", "heap"],
+    categories: [],
     publish: "private",
     submission: 8000,
     acceptanceRate: 0.29,
@@ -79,7 +79,7 @@ const dummyProblemListDraft: Problem[] = [
 ];
 
 interface ProblemListProps {
-  filter: TCourseFilter;
+  filter: ProblemFilterType;
   tab: string;
 }
 

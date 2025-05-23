@@ -1,16 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/shadcn/select";
 import { Coins, Users, Activity, ShoppingCart } from "lucide-react";
 import { TopStatCard } from "../components/TopStatCard";
 import { SubscriptionGrowthLargeChart, SubscriptionGrowthMiniChart } from "../components/SubscriptionsGrowthChart";
 import { ZoomableChartCard } from "../components/ZoomChartCard";
-import { ActiveUsersTodayLargeChart, ActiveUsersTodayMiniChart } from "../components/ActiveUsersChart";
+import { UserGrowthLargeChart, UserGrowthMiniChart } from "../components/UserGrowthChart";
 import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange"; // Import DatePicker component
 import { RevenueLargeBarChart, RevenueMiniBarChart } from "../components/RevenueChart";
 import { CompletionRateLargeChart, CompletionRateMiniChart } from "../components/CompletionChart";
 import { TransactionsList } from "../components/TransactionList";
 import { TopPurchasesList } from "../components/TopPurchasesList";
+import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
+import { OverviewStatItem } from "@/features/Admins/types/apiType";
 
 export const DashboardPage = () => {
   const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly" | "Custom">("Monthly");
@@ -19,38 +21,69 @@ export const DashboardPage = () => {
     to: new Date()
   });
 
+  const [overviewStats, setOverviewStats] = useState<OverviewStatItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchDashboardOverview = () => {
+      adminDashboardAPI.getOverviewStats({
+        onStart: async () => {
+          setIsLoading(true);
+          setError(null);
+        },
+        onSuccess: async (data) => {
+          setOverviewStats(data.result);
+        },
+        onFail: async (errorMessage) => {
+          setError(errorMessage);
+        },
+        onEnd: async () => {
+          setIsLoading(false);
+        }
+      });
+    };
+
+    fetchDashboardOverview();
+  }, []);
+
+  // Map API data to topStats with their corresponding icons
   const topStats = [
     {
-      title: "Total Revenue",
-      value: "145,231,290₫",
+      title: overviewStats.find((stat) => stat.title === "Total Revenue")?.title || "Total Revenue",
+      value: overviewStats.find((stat) => stat.title === "Total Revenue")?.value
+        ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+            overviewStats.find((stat) => stat.title === "Total Revenue")?.value || 0
+          )
+        : "0₫",
       icon: Coins,
-      change: "+20.1%",
-      changeNote: "from last month",
-      changeType: "increase" as const
+      change: overviewStats.find((stat) => stat.title === "Total Revenue")?.change || "0%",
+      changeNote: overviewStats.find((stat) => stat.title === "Total Revenue")?.changeNote || "from last month",
+      changeType: overviewStats.find((stat) => stat.title === "Total Revenue")?.changeType || "neutral"
     },
     {
-      title: "Subscriptions",
-      value: "1,000",
+      title: overviewStats.find((stat) => stat.title === "Subscriptions")?.title || "Subscriptions",
+      value: overviewStats.find((stat) => stat.title === "Subscriptions")?.value?.toString() || "0",
       icon: Users,
-      change: "+8",
-      changeNote: "new users this month",
-      changeType: "increase" as const
+      change: overviewStats.find((stat) => stat.title === "Subscriptions")?.change || "0",
+      changeNote: overviewStats.find((stat) => stat.title === "Subscriptions")?.changeNote || "new users this month",
+      changeType: overviewStats.find((stat) => stat.title === "Subscriptions")?.changeType || "neutral"
     },
     {
-      title: "Active Users",
-      value: "456",
+      title: overviewStats.find((stat) => stat.title === "Active Users")?.title || "Active Users",
+      value: overviewStats.find((stat) => stat.title === "Active Users")?.value?.toString() || "0",
       icon: Activity,
-      change: "+201",
-      changeNote: "since last hour",
-      changeType: "increase" as const
+      change: overviewStats.find((stat) => stat.title === "Active Users")?.change || "0",
+      changeNote: overviewStats.find((stat) => stat.title === "Active Users")?.changeNote || "since last hour",
+      changeType: overviewStats.find((stat) => stat.title === "Active Users")?.changeType || "neutral"
     },
     {
-      title: "Courses Purchased",
-      value: "456",
+      title: overviewStats.find((stat) => stat.title === "Courses Purchased")?.title || "Courses Purchased",
+      value: overviewStats.find((stat) => stat.title === "Courses Purchased")?.value?.toString() || "0",
       icon: ShoppingCart,
-      change: "-19",
-      changeNote: "since last month",
-      changeType: "decrease" as const
+      change: overviewStats.find((stat) => stat.title === "Courses Purchased")?.change || "0",
+      changeNote: overviewStats.find((stat) => stat.title === "Courses Purchased")?.changeNote || "since last month",
+      changeType: overviewStats.find((stat) => stat.title === "Courses Purchased")?.changeType || "neutral"
     }
   ];
 
@@ -190,17 +223,59 @@ export const DashboardPage = () => {
 
       {/* Khối 1: Top KPIs */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {topStats.map((stat, idx) => (
-          <TopStatCard
-            key={idx}
-            title={stat.title}
-            value={stat.value}
-            icon={stat.icon}
-            change={stat.change}
-            changeNote={stat.changeNote}
-            changeType={stat.changeType}
-          />
-        ))}
+        {isLoading ? (
+          // Loading state for KPIs
+          <>
+            {[1, 2, 3, 4].map((item) => (
+              <div key={item} className="rounded-lg border p-4 flex flex-col gap-2 shadow animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+                <div className="h-8 bg-gray-200 rounded w-1/3"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            ))}
+          </>
+        ) : error ? (
+          // Error state
+          <div className="col-span-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-500">Failed to load dashboard data: {error}</p>
+            <button
+              className="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+              onClick={() => {
+                // Retry fetch on button click
+                adminDashboardAPI.getOverviewStats({
+                  onStart: async () => {
+                    setIsLoading(true);
+                    setError(null);
+                  },
+                  onSuccess: async (data) => {
+                    setOverviewStats(data.result);
+                  },
+                  onFail: async (errorMessage) => {
+                    setError(errorMessage);
+                  },
+                  onEnd: async () => {
+                    setIsLoading(false);
+                  }
+                });
+              }}
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          // Normal data display
+          topStats.map((stat, idx) => (
+            <TopStatCard
+              key={idx}
+              title={stat.title}
+              value={stat.value}
+              icon={stat.icon}
+              change={stat.change}
+              changeNote={stat.changeNote}
+              changeType={stat.changeType}
+            />
+          ))
+        )}
       </div>
 
       {/* Khối 2: Biểu đồ nhỏ */}
@@ -217,14 +292,14 @@ export const DashboardPage = () => {
         </ZoomableChartCard>
 
         <ZoomableChartCard
-          title="Active Users Rate"
-          largeChart={<ActiveUsersTodayLargeChart rangeType={rangeType} dateRange={dateRange} />}
+          title="User Growth"
+          largeChart={<UserGrowthLargeChart rangeType={rangeType} dateRange={dateRange} />}
           rangeType={rangeType}
           dateRange={dateRange}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
         >
-          <ActiveUsersTodayMiniChart rangeType={rangeType} dateRange={dateRange} />
+          <UserGrowthMiniChart rangeType={rangeType} dateRange={dateRange} />
         </ZoomableChartCard>
       </div>
 

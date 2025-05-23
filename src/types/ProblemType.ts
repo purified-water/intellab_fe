@@ -25,3 +25,10 @@ export type ProblemType = {
   solution: ProblemSolutionType;
   viewedSolution: boolean;
 };
+
+export type ProblemFilterType = {
+  keyword?: string;
+  level?: "easy" | "medium" | "hard" | null;
+  status?: "done" | "not done" | null;
+  categories?: ProblemCategoryType[] | null;
+};

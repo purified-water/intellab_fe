@@ -1,8 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
-import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Tooltip, CartesianGrid } from "recharts";
+import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { DateRange } from "react-day-picker";
+import { useState, useEffect, useCallback } from "react";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
-import { SubscriptionGrowthItem } from "@/features/Admins/types/apiType";
 
 interface Props {
   rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
@@ -11,15 +10,41 @@ interface Props {
 
 interface ChartData {
   label: string;
-  subscriptions: number;
+  users: number;
 }
 
-export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
+// Function to get fallback data if the API fails
+const getFallbackData = (rangeType: string): ChartData[] => {
+  const fallbackData: ChartData[] = [];
+
+  if (rangeType === "Daily") {
+    // Simple daily fallback data
+    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    days.forEach((day, index) => {
+      fallbackData.push({ label: day, users: 10 + index * 5 });
+    });
+  } else if (rangeType === "Weekly") {
+    // Simple weekly fallback data
+    for (let i = 1; i <= 4; i++) {
+      fallbackData.push({ label: `Week ${i}`, users: 30 + i * 10 });
+    }
+  } else {
+    // Simple monthly fallback data
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    months.forEach((month, index) => {
+      fallbackData.push({ label: month, users: 50 + index * 10 });
+    });
+  }
+
+  return fallbackData;
+};
+
+export function UserGrowthMiniChart({ rangeType, dateRange }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSubscriptionGrowth = useCallback(() => {
+  const fetchUserGrowth = useCallback(() => {
     // Convert rangeType to the expected API parameter
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
@@ -39,7 +64,7 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
 
     query.period = period;
 
-    adminDashboardAPI.getSubscriptionGrowth({
+    adminDashboardAPI.getUserGrowth({
       query,
       onStart: async () => {
         setIsLoading(true);
@@ -47,15 +72,15 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
       },
       onSuccess: async (responseData) => {
         // Transform API data to chart format
-        const formattedData = responseData.result.map((item: SubscriptionGrowthItem) => ({
+        const formattedData = responseData.result.map((item) => ({
           label: item.label,
-          subscriptions: item.value
+          users: item.value
         }));
         setData(formattedData);
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);
-        // Fall back to sample data if API fails
+        // Fall back to sample data
         setData(getFallbackData(rangeType));
       },
       onEnd: async () => {
@@ -65,8 +90,8 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
   }, [rangeType, dateRange]);
 
   useEffect(() => {
-    fetchSubscriptionGrowth();
-  }, [fetchSubscriptionGrowth]);
+    fetchUserGrowth();
+  }, [fetchUserGrowth]);
 
   // Render loading skeleton while data is loading
   if (isLoading) {
@@ -81,11 +106,8 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
   if (error && data.length === 0) {
     return (
       <div className="w-full pt-5 h-[250px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load subscription data</div>
-        <button
-          className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
-          onClick={fetchSubscriptionGrowth}
-        >
+        <div className="text-red-500 mb-2">Failed to load user growth data</div>
+        <button className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200" onClick={fetchUserGrowth}>
           Retry
         </button>
       </div>
@@ -95,36 +117,24 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
   return (
     <div className="w-full pt-5">
       <ResponsiveContainer width="100%" height={250}>
-        <LineChart data={data}>
+        <AreaChart data={data}>
+          <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#dbeafe" strokeWidth={2} />
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" fontSize={10} />
           <YAxis fontSize={10} width={25} tickMargin={4} />
-          <Tooltip
-            formatter={(value) => [`${value} subscribers`, "Subscriptions"]}
-            labelFormatter={(label) => `${label}`}
-          />
-          <Line
-            type="monotone"
-            dataKey="subscriptions"
-            stroke="#22c55e"
-            strokeWidth={2}
-            activeDot={{ r: 4 }}
-            dot={{ r: 2 }}
-            name="Subscriptions"
-          />
-        </LineChart>
+          <Tooltip formatter={(value) => [`${value} users`, "User Growth"]} />
+        </AreaChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
+export function UserGrowthLargeChart({ rangeType, dateRange }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchSubscriptionGrowth = useCallback(() => {
-    console.log("Fetching subscription growth data", rangeType, dateRange);
+  const fetchUserGrowth = useCallback(() => {
     // Convert rangeType to the expected API parameter
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
@@ -144,7 +154,7 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
 
     query.period = period;
 
-    adminDashboardAPI.getSubscriptionGrowth({
+    adminDashboardAPI.getUserGrowth({
       query,
       onStart: async () => {
         setIsLoading(true);
@@ -152,15 +162,15 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
       },
       onSuccess: async (responseData) => {
         // Transform API data to chart format
-        const formattedData = responseData.result.map((item: SubscriptionGrowthItem) => ({
+        const formattedData = responseData.result.map((item) => ({
           label: item.label,
-          subscriptions: item.value
+          users: item.value
         }));
         setData(formattedData);
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);
-        // Fall back to sample data if API fails
+        // Fall back to sample data
         setData(getFallbackData(rangeType));
       },
       onEnd: async () => {
@@ -170,8 +180,8 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
   }, [rangeType, dateRange]);
 
   useEffect(() => {
-    fetchSubscriptionGrowth();
-  }, [fetchSubscriptionGrowth]);
+    fetchUserGrowth();
+  }, [fetchUserGrowth]);
 
   // Render loading skeleton while data is loading
   if (isLoading) {
@@ -186,11 +196,8 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
   if (error && data.length === 0) {
     return (
       <div className="w-full h-[400px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load subscription data</div>
-        <button
-          className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
-          onClick={fetchSubscriptionGrowth}
-        >
+        <div className="text-red-500 mb-2">Failed to load user growth data</div>
+        <button className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200" onClick={fetchUserGrowth}>
           Retry
         </button>
       </div>
@@ -199,63 +206,13 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
 
   return (
     <ResponsiveContainer width="100%" height={400}>
-      <LineChart data={data}>
+      <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" fontSize={10} />
         <YAxis />
-        <Tooltip
-          formatter={(value) => [`${value} subscribers`, "Subscriptions"]}
-          labelFormatter={(label) => `${label}`}
-        />
-        <Line type="monotone" dataKey="subscriptions" stroke="#22c55e" strokeWidth={3} name="Subscriptions" />
-      </LineChart>
+        <Tooltip formatter={(value) => [`${value} users`, "User Growth"]} />
+        <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#dbeafe" strokeWidth={3} />
+      </AreaChart>
     </ResponsiveContainer>
   );
-}
-
-// Fallback data in case API fails
-function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): ChartData[] {
-  const fallbackData = {
-    Monthly: [
-      { label: "Jan", subscriptions: 100 },
-      { label: "Feb", subscriptions: 130 },
-      { label: "Mar", subscriptions: 150 },
-      { label: "Apr", subscriptions: 170 },
-      { label: "May", subscriptions: 180 },
-      { label: "Jun", subscriptions: 200 }
-    ],
-    Weekly: [
-      { label: "Week 1", subscriptions: 30 },
-      { label: "Week 2", subscriptions: 40 },
-      { label: "Week 3", subscriptions: 50 },
-      { label: "Week 4", subscriptions: 60 }
-    ],
-    Daily: [
-      { label: "Mon", subscriptions: 10 },
-      { label: "Tue", subscriptions: 15 },
-      { label: "Wed", subscriptions: 12 },
-      { label: "Thu", subscriptions: 18 },
-      { label: "Fri", subscriptions: 20 }
-    ],
-    Custom: [
-      { label: "Apr 1", subscriptions: 10 },
-      { label: "Apr 8", subscriptions: 15 },
-      { label: "Apr 15", subscriptions: 18 },
-      { label: "Apr 22", subscriptions: 22 },
-      { label: "Apr 29", subscriptions: 25 },
-      { label: "May 6", subscriptions: 28 }
-    ]
-  };
-
-  if (rangeType === "Monthly") {
-    return fallbackData.Monthly;
-  } else if (rangeType === "Weekly") {
-    return fallbackData.Weekly;
-  } else if (rangeType === "Daily") {
-    return fallbackData.Daily;
-  } else if (rangeType === "Custom") {
-    return fallbackData.Custom;
-  }
-
-  return fallbackData.Monthly; // Default fallback
 }

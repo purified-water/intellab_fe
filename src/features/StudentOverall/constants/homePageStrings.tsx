@@ -32,32 +32,32 @@ export const HOME_PAGE = {
 
 export const featureSectionItems = [
   {
-    icon: <Code className="size-5 text-primary" />,
+    icon: <Code className="size-5" />,
     title: "Interactive Coding",
     description: "Practice coding directly in your browser with real-time results and feedback."
   },
   {
-    icon: <BookOpen className="size-5 text-primary" />,
+    icon: <BookOpen className="size-5" />,
     title: "Structured Lessons",
     description: "Study structured lessons and quizzes to broaden your knowledge."
   },
   {
-    icon: <Trophy className="size-5 text-primary" />,
+    icon: <Trophy className="size-5" />,
     title: "Achievement System",
     description: "Earn badges and certificates as you progress through your learning journey."
   },
   {
-    icon: <MessageCircleCode className="size-5 text-primary" />,
+    icon: <MessageCircleCode className="size-5" />,
     title: "Problem AI Assistant",
     description: "Improve your coding skills with the help of Built-in AI Chatbot."
   },
   {
-    icon: <Sparkle className="size-5 text-primary" />,
+    icon: <Sparkle className="size-5" />,
     title: "Customized Learning Path",
     description: "Personalize your learning path to best match your needs with Intellab AI."
   },
   {
-    icon: <TextCursorInput className="size-5 text-primary" />,
+    icon: <TextCursorInput className="size-5" />,
     title: "Lesson AI Assistant",
     description: "Real-time AI assistance while you learn, making complex concepts easier to grasp."
   }

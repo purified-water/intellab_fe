@@ -64,8 +64,8 @@ export const ProfileMenu = ({
 
             <hr className="border-gray5" />
 
-            <ul className="py-3 space-y-2">
-              <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+            <ul className="py-3 space-y-2 text-gray3">
+              <li className="px-4 py-2 mx-2 rounded-lg hover:bg-gray6/50">
                 <Link to={`/profile/${user?.userId}`}>
                   <div className="flex items-center space-x-2">
                     <MdOutlinePerson className="icon-base icon-gray3" />
@@ -74,7 +74,7 @@ export const ProfileMenu = ({
                 </Link>
               </li>
 
-              <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+              <li className="px-4 py-2 mx-2 rounded-lg hover:bg-gray6/50">
                 <Link to="/my-purchases">
                   <div className="flex items-center space-x-2">
                     <ReceiptText className="icon-gray3 size-5" />
@@ -83,7 +83,7 @@ export const ProfileMenu = ({
                 </Link>
               </li>
 
-              <li className="px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+              <li className="px-4 py-2 mx-2 rounded-lg hover:bg-gray6/50">
                 <Link to="/profile/edit">
                   <div className="flex items-center space-x-2">
                     <MdOutlineSettings className="icon-base icon-gray3" />
@@ -91,7 +91,7 @@ export const ProfileMenu = ({
                   </div>
                 </Link>
               </li>
-              <li className="hidden px-4 py-2 mx-2 rounded-lg text-gray3 hover:bg-gray6/50">
+              <li className="hidden px-4 py-2 mx-2 rounded-lg hover:bg-gray6/50">
                 <div onClick={toggleDarkMode} className="flex items-center space-x-2 cursor-pointer">
                   {isDarkMode ? (
                     <>

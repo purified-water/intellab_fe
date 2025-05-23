@@ -85,8 +85,8 @@ export function AdminSidebar() {
     <SidebarHeader className="py-4">
       <div className="flex flex-col group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:items-center">
         <div className="transition-all duration-300 ease-in-out flex items-center group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:w-full">
-          <div className=" mr-2 group-data-[collapsible=icon]:mr-0">
-            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="size-10" />
+          <div className="transition-[margin] duration-300 mr-2 group-data-[collapsible=icon]:mr-0">
+            <img src={INTELLAB_LOGO} alt="Intellab Logo" className="flex-shrink-0 size-10" />
           </div>
           <div className="flex flex-col group-data-[collapsible=icon]:hidden">
             <span className="text-xl font-bold text-appPrimary">Intellab</span>

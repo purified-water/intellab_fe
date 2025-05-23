@@ -32,7 +32,7 @@ export function CourseInformationSection(props: CourseInformationSectionProps) {
     );
   } else {
     content = (
-      <div className="items-center py-4 space-y-3 text-white px-7 rounded-xl bg-gradient-to-tr from-appPrimary to-appSecondary">
+      <div className="items-center py-4 space-y-3 text-white rounded-lg px-7 bg-gradient-to-tr from-appPrimary to-appSecondary">
         <p className="text-2xl font-bold">{certificate?.course.name}</p>
         <div className="flex items-center space-x-2">
           <div className="flex items-center px-2 py-1 rounded-lg bg-gray1 text-appMedium">

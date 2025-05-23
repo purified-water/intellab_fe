@@ -126,9 +126,9 @@ export default function LessonListItem(props: LessonListItemProps) {
   return (
     <li
       key={lesson.lessonId}
-      className={`px-8 py-4 flex-wrap overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""} hover:bg-gray6/80`}
+      className={`px-8 py-4 flex-wrap overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""} hover:bg-gray6/80 min-h-[80px]`}
     >
-      <div className="flex flex-row items-center justify-center overflow-hidden max-w-screen-2xl">
+      <div className="flex flex-row items-center justify-center overflow-hidden max-w-screen-2xl h-full">
         <h2 className="text-3xl font-bold">{lesson.lessonOrder}</h2>
         <div className="ml-8 text-left flex-col min-w-[200px] w-full cursor-pointer " onClick={handleLessonClick}>
           <h4 className="flex items-center overflow-hidden text-xl font-bold text-ellipsis whitespace-nowrap">

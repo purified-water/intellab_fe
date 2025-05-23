@@ -13,8 +13,8 @@ export function LearnedSection(props: LearnedSectionProps) {
   let content = null;
   if (loading) {
     content = (
-      <div className="border border-gray4 py-4 px-8 rounded-lg space-y-4">
-        <Skeleton className="h-8 w-1/3" />
+      <div className="px-8 py-4 space-y-4 border rounded-lg border-gray4">
+        <Skeleton className="w-1/3 h-8" />
         <section className="flex flex-wrap space-x-4">
           {[...Array(3)].map((_, index) => (
             <Category key={index} loading={true} category={""} />
@@ -24,13 +24,14 @@ export function LearnedSection(props: LearnedSectionProps) {
     );
   } else {
     const categories = certificate?.course.categories;
+    console.log("Certificate categories", certificate?.course.categories);
     if (categories && categories.length > 0) {
       content = (
-        <div className="border border-gray4 py-4 px-8 rounded-lg space-y-3">
-          <p className="font-bold text-2xl">What you will learn</p>
+        <div className="px-6 py-4 space-y-2 border rounded-lg border-gray4">
+          <p className="text-xl font-semibold">What you will learn</p>
           <div className="flex flex-wrap">
             {categories.map((category, index) => (
-              <Category key={index} category={category.category_name} loading={loading} />
+              <Category key={index} category={category.name} loading={loading} />
             ))}
           </div>
         </div>
