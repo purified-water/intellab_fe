@@ -4,6 +4,7 @@ import { PriceRange, TCategory, TCourseFilter } from "@/types";
 import { motion } from "framer-motion";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
+import { Button } from "@/components/ui";
 
 interface FilterDialogProps {
   isVisible: boolean;
@@ -99,7 +100,7 @@ export function FilterDialog(props: FilterDialogProps) {
 
   const renderRatings = () => (
     <div>
-      <h3 className="mb-2 text-lg font-bold">Ratings</h3>
+      <h3 className="mb-2 text-lg font-semibold">Ratings</h3>
       <div className="space-y-2">
         {ratings.map((rating) => (
           <label key={rating.value} className="flex items-center gap-2 cursor-pointer">
@@ -134,7 +135,7 @@ export function FilterDialog(props: FilterDialogProps) {
 
   const renderLevels = () => (
     <div>
-      <h3 className="mb-2 text-lg font-bold">Levels</h3>
+      <h3 className="mb-2 text-lg font-semibold">Levels</h3>
       <div className="space-y-2">
         {levels.map((level) => (
           <label key={level} className="flex items-center gap-2 cursor-pointer">
@@ -146,7 +147,7 @@ export function FilterDialog(props: FilterDialogProps) {
               className="hidden peer"
             />
             <div
-              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500 peer-checked:border-purple-500`}
+              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500`}
             >
               {selectedLevels.includes(level) && (
                 <svg
@@ -232,12 +233,12 @@ export function FilterDialog(props: FilterDialogProps) {
 
   const renderCategories = () => (
     <div>
-      <h3 className="mb-2 text-lg font-bold">Categories</h3>
+      <h3 className="mb-2 text-lg font-semibold">Categories</h3>
       <div className="flex flex-wrap gap-2 mt-2">
         {categories.map((category) => (
           <button
             key={category.categoryId}
-            className={`px-3 py-1 rounded-md border border-appPrimary ${
+            className={`px-3 py-1 rounded-md border border-gray5 transition-colors duration-200 ${
               selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"
             }`}
             onClick={() => handleCategoryClick(category)}
@@ -252,15 +253,16 @@ export function FilterDialog(props: FilterDialogProps) {
   const renderButtons = () => {
     return (
       <div className="flex gap-4 mt-6 font-semibold">
-        <button className="px-6 py-2 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
+        <Button className="px-6 py-2 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
           Filter
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           className="px-6 py-2 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={handleResetClick}
         >
           Reset
-        </button>
+        </Button>
       </div>
     );
   };
@@ -276,11 +278,11 @@ export function FilterDialog(props: FilterDialogProps) {
     >
       <div
         style={{
-          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)"
+          boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)"
         }}
         className="w-[1000px] p-6 text-black rounded-lg shadow-lg shadow-spread-2"
       >
-        <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
+        <h2 className="text-2xl font-semibold text-appPrimary">Filter</h2>
         <div className="space-y-4">
           <div className="flex items-baseline justify-start gap-24">
             {renderRatings()}

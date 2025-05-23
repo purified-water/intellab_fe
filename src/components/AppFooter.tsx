@@ -1,5 +1,4 @@
-import { intellabDefaultLogo } from "@/assets";
-import { Facebook, Linkedin } from "lucide-react";
+import { facebookLogo, intellabDefaultLogo, linkedinLogo } from "@/assets";
 
 export const AppFooter = () => {
   return (
@@ -75,7 +74,7 @@ export const AppFooter = () => {
               rel="noopener noreferrer"
               className="hover:text-appAccent"
             >
-              <Facebook className="w-5 h-5" />
+              <img src={facebookLogo} alt="Facebook" className="size-5" loading="lazy" />
             </a>
             <a
               href="https://www.linkedin.com"
@@ -83,7 +82,7 @@ export const AppFooter = () => {
               rel="noopener noreferrer"
               className="hover:text-appAccent"
             >
-              <Linkedin className="w-5 h-5" />
+              <img src={linkedinLogo} alt="Linkedin" className="size-5" loading="lazy" />
             </a>
           </div>
         </div>

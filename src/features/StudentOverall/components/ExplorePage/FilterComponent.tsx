@@ -3,6 +3,7 @@ import { fetchExploreCourses, filterCourses, resetFilters } from "@/redux/course
 import { useAppDispatch } from "@/redux/hooks";
 import { courseAPI } from "@/lib/api/courseApi";
 import { PriceRange, TCategory } from "@/types";
+import { Button } from "@/components/ui";
 
 interface SearchKeyword {
   keyword: string;
@@ -15,16 +16,6 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   const [priceRange, setPriceRange] = useState<PriceRange>({ min: 1, max: 1000000 });
   const dispatch = useAppDispatch();
   const [categories, setCategories] = useState<TCategory[]>([]);
-  // const categories = [
-  //   "Recursive",
-  //   "Queue",
-  //   "Data Structure",
-  //   "Problem Solving",
-  //   "Matrix",
-  //   "Algorithm",
-  //   "Array",
-  //   "Dynamic Programming"
-  // ];
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -75,16 +66,16 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   return (
     <div
       style={{
-        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" // Adjust the values for position and blur
+        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" // Adjust the values for position and blur
       }}
       className="w-[1100px] p-6 mx-auto text-black rounded-lg shadow-lg shadow-spread-2"
     >
-      <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
+      <h2 className="text-2xl font-semibold text-appPrimary">Filter</h2>
       <div className="space-y-4">
         <div className="flex items-baseline justify-start gap-24">
           {/* Ratings Section */}
           <div>
-            <h3 className="mb-2 text-lg font-bold">Ratings</h3>
+            <h3 className="mb-2 text-lg font-semibold">Ratings</h3>
             <div className="space-y-2">
               {ratings.map((rating) => (
                 <label key={rating.value} className="flex items-center gap-2 cursor-pointer">
@@ -118,7 +109,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           </div>
           {/* Levels Section */}
           <div>
-            <h3 className="mb-2 text-lg font-bold">Levels</h3>
+            <h3 className="mb-2 text-lg font-semibold">Levels</h3>
             <div className="space-y-2">
               {levels.map((level) => (
                 <label key={level} className="flex items-center gap-2 cursor-pointer">
@@ -130,7 +121,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
                     className="hidden peer"
                   />
                   <div
-                    className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500 peer-checked:border-purple-500`}
+                    className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary peer-checked:border-purple-500`}
                   >
                     {selectedLevels.includes(level) && (
                       <svg
@@ -166,7 +157,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
                     className="hidden peer"
                   />
                   <div
-                    className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500 peer-checked:border-purple-500`}
+                    className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary peer-checked:border-purple-500`}
                   >
                     {selectedPrices.includes(price) && (
                       <svg
@@ -208,12 +199,12 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
 
         {/* Category Selection */}
         <div>
-          <h3 className="mb-2 text-lg font-bold">Categories</h3>
+          <h3 className="mb-2 text-lg font-semibold">Categories</h3>
           <div className="flex flex-wrap gap-2 mt-2">
             {categories.map((category) => (
               <button
                 key={category.categoryId}
-                className={`px-3 py-1 rounded-md border border-appPrimary ${selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"}`}
+                className={`px-3 py-1 rounded-md border border-gray5 transition-colors duration-150 ${selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"}`}
                 onClick={() => handleCategoryClick(category)}
               >
                 {category.name}
@@ -225,10 +216,11 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
 
       {/* Filter Button */}
       <div className="flex gap-4 mt-6">
-        <button className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
+        <Button className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
           Filter
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
             dispatch(resetFilters());
@@ -237,7 +229,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           }}
         >
           Reset
-        </button>
+        </Button>
       </div>
     </div>
   );

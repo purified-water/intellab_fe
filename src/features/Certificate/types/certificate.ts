@@ -13,8 +13,8 @@ interface ICertificate {
 }
 
 interface ICourseCategory {
-  category_id: string;
-  category_name: string;
+  categoryId: string;
+  name: string;
 }
 
 export type { ICertificate, ICourseCategory };

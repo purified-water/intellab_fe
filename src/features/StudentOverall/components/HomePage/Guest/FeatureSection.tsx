@@ -20,7 +20,7 @@ export function FeatureSection() {
           {featureSectionItems.map((feature, index) => (
             <Card key={index} className="border-none shadow-sm">
               <CardHeader>
-                <div className="flex items-center justify-center w-10 h-10 mb-2 rounded-full bg-appPrimary/10">
+                <div className="flex items-center justify-center w-10 h-10 mb-2 rounded-full text-appPrimary bg-appPrimary/10">
                   {feature.icon}
                 </div>
                 <CardTitle>{feature.title}</CardTitle>

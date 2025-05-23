@@ -7,6 +7,8 @@ export { default as intellabBottomLogo } from "./logos/intellab_bottom.svg";
 export { default as intellabSideLogo } from "./logos/intellab_side.svg";
 export { default as intellabDefaultLogo } from "./logos/intellab_default.svg";
 export { default as intellabSidePremiumLogo } from "./logos/intellab_side_premium.svg";
+export { default as facebookLogo } from "./logos/facebook.svg";
+export { default as linkedinLogo } from "./logos/linkedin.svg";
 
 // SVGs
 export { default as rateIcon } from "./rate.svg";
@@ -14,7 +16,6 @@ export { default as rateIcon } from "./rate.svg";
 // Images
 export { default as unavailableImage } from "./unavailable_image.jpg";
 export { default as AIBackground } from "./AIBackground.svg";
-export { default as AIBackground2 } from "./AIBackground2.svg";
 
 export { default as AIExplainer1 } from "./ExplainerTutorial/AIExplainer1.png";
 export { default as AIExplainer2 } from "./ExplainerTutorial/AIExplainer2.png";

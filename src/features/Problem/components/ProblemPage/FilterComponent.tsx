@@ -3,6 +3,7 @@ import { TCategory } from "@/types";
 import { useAppDispatch } from "@/redux/hooks";
 import { fetchPaginatedProblems, filterProblems } from "@/redux/problem/problemSlice";
 import React, { useEffect, useState } from "react";
+import { Button } from "@/components/ui";
 
 export const FilterComponent: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<TCategory[]>([]);
@@ -13,16 +14,6 @@ export const FilterComponent: React.FC = () => {
   const dispatch = useAppDispatch();
   const levels = ["All", "Easy", "Medium", "Hard"];
   const status = ["All", "Done", "Not Done"];
-  // const categories = [
-  //   "Recursive",
-  //   "Queue",
-  //   "Data Structure",
-  //   "Problem Solving",
-  //   "Matrix",
-  //   "Algorithm",
-  //   "Array",
-  //   "Dynamic Programming"
-  // ];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus(status);
@@ -84,16 +75,16 @@ export const FilterComponent: React.FC = () => {
   return (
     <div
       style={{
-        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.2)" // Adjust the values for position and blur
+        boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)" // Adjust the values for position and blur
       }}
       className="w-[1100px] p-6 mx-auto text-black rounded-lg"
     >
-      <h2 className="text-2xl font-bold text-appPrimary">Filter</h2>
+      <h2 className="text-2xl font-semibold text-appPrimary">Filter</h2>
       <div className="mt-6 space-y-4">
         <div className="flex flex-col items-baseline justify-start gap-7">
           <div className="flex gap-32">
             <div className="flex flex-col">
-              <h3 className="mb-2 text-lg font-bold">Levels</h3>
+              <h3 className="mb-2 text-lg font-semibold">Levels</h3>
               <div className="space-y-2">
                 {levels.map((level) => (
                   <label key={`level-${level}`} className="flex items-center gap-2 cursor-pointer">
@@ -120,7 +111,7 @@ export const FilterComponent: React.FC = () => {
               </div>
             </div>
             <div className="flex flex-col">
-              <h3 className="mb-2 text-lg font-bold">Status</h3>
+              <h3 className="mb-2 text-lg font-semibold">Status</h3>
               <div className="space-y-2">
                 {status.map((isDone) => (
                   <label key={`status-${isDone}`} className="flex items-center gap-2 cursor-pointer">
@@ -149,12 +140,12 @@ export const FilterComponent: React.FC = () => {
           </div>
           {/* Category Selection */}
           <div>
-            <h3 className="mb-2 text-lg font-bold">Categories</h3>
+            <h3 className="mb-2 text-lg font-semibold">Categories</h3>
             <div className="flex flex-wrap gap-2 mt-2">
               {categories.map((category) => (
                 <button
                   key={category.categoryId}
-                  className={`px-3 py-1 rounded-md border border-appPrimary ${selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"}`}
+                  className={`px-3 py-1 rounded-md border border-gray5 transition-colors duration-150 ${selectedCategories.includes(category) ? "bg-appPrimary text-white" : "bg-white"}`}
                   onClick={() => handleCategoryClick(category)}
                 >
                   {category.name}
@@ -167,13 +158,14 @@ export const FilterComponent: React.FC = () => {
 
       {/* Filter Button */}
       <div className="flex gap-4 mt-6">
-        <button
+        <Button
           className="px-4 py-[5px] text-white rounded-lg bg-appPrimary hover:bg-opacity-75"
           onClick={handleFilter}
         >
           Filter
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           className="px-4 py-[5px] bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
             setSelectedCategories([]);
@@ -182,7 +174,7 @@ export const FilterComponent: React.FC = () => {
           }}
         >
           Reset
-        </button>
+        </Button>
       </div>
     </div>
   );

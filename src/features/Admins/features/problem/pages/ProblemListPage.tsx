@@ -3,10 +3,11 @@ import { Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { ProblemList } from "../components";
-import { TCourseFilter } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
-import { FilterDialog } from "../components/FilterDialog";
+// import { FilterDialog } from "../components/FilterDialog";
+import { ProblemFilterType } from "@/types/ProblemType";
+// import { useCourseCategories } from "../../course/hooks";
 
 const TABS = {
   CREATED: "created",
@@ -16,16 +17,15 @@ const TABS = {
 export function ProblemListPage() {
   const [activeTab, setActiveTab] = useState(TABS.CREATED);
   const [showFilter, setShowFilter] = useState(false);
-  const [filter, setFilter] = useState<TCourseFilter>({
+  const [filter, setFilter] = useState<ProblemFilterType>({
     keyword: "",
-    categories: null,
-    rating: null,
-    levels: null,
-    prices: null,
-    priceRange: null,
-    isCompletedCreation: true
+    level: null,
+    status: null,
+    categories: null
   });
   const navigate = useNavigate();
+
+  // const { data: categories, isLoading: loadingCategories } = useCourseCategories();
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
@@ -83,16 +83,16 @@ export function ProblemListPage() {
     );
   };
 
-  const renderFilterDialog = () => {
-    return <FilterDialog isVisible={showFilter} currentFilter={filter} onFilter={setFilter} />;
-  };
+  // const renderFilterDialog = () => {
+  //   return <FilterDialog isVisible={showFilter} currentFilter={filter} onFilter={setFilter} categories={categories || []} />;
+  // };
 
   return (
     <div className="px-2 space-y-6">
       <h1 className="text-4xl font-bold text-appPrimary">Problems</h1>
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
-        {renderFilterDialog()}
+        {/* {renderFilterDialog()} */}
         {renderCourseList()}
       </div>
     </div>

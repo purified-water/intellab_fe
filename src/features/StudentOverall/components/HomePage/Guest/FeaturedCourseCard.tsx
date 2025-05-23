@@ -5,7 +5,7 @@ import { RootState } from "@/redux/rootReducer";
 import { ICourse } from "@/types";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-
+import { rateIcon } from "@/assets";
 interface GuestCourseCardProps {
   course: ICourse;
 }
@@ -37,7 +37,7 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
         <div className="absolute top-2 right-2">
           <div className="flex items-center justify-end px-2 pt-2 mb-5 text-sm text-white">
             <div className="flex items-center px-2 justify-center bg-black/60 rounded-lg max-w-[120px] h-[25px] ml-2">
-              <img className="w-3 h-3 mr-[6px]" src="../../src/assets/rate.svg" alt="Rating" />
+              <img className="w-3 h-3 mr-[6px]" src={rateIcon} alt="Rating" />
               <div className="text-white">
                 {course.averageRating != 0 && course.averageRating ? course.averageRating : NA_VALUE}
               </div>
