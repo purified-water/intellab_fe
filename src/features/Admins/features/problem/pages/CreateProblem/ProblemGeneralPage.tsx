@@ -29,6 +29,7 @@ import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { useCourseCategories } from "../../../course/hooks";
 import { useProblemWizardStep } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
+import { adminProblemAPI } from "@/features/Admins/api";
 
 const problemGeneralSchema = createProblemSchema.pick({
   problemId: true,
@@ -62,18 +63,37 @@ export const ProblemGeneralPage = () => {
   });
 
   const onSubmit = async (data: ProblemGeneralSchema) => {
-    dispatch(setCreateProblem(data));
-    goToNextStep(); // This should be called in muatation function rather than here
+    await adminProblemAPI.createProblemGeneralStep({
+      body: {
+        problemName: data.problemName,
+        categories: data.problemCategories.map((category) => category.categoryId),
+        problemLevel: data.problemLevel.toLowerCase(),
+        score: data.problemScore,
+        isPublished: data.problemIsPublished
+      },
+      onSuccess: async (problem) => {
+        dispatch(
+          setCreateProblem({
+            ...data,
+            problemId: problem.problemId
+          })
+        );
+        goToNextStep();
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+    });
+  };
+
+  const handleSubmitError = (errors: unknown) => {
+    console.error("Form submission errors:", errors);
+    console.log("Form data:", form.getValues());
+    showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
   };
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit, (errors) => {
-          console.error("Form submission errors:", errors);
-          console.log("Form data:", form.getValues());
-          showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
-        })}
+        onSubmit={form.handleSubmit(onSubmit, (errors) => handleSubmitError(errors))}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
       >
         <FormField
@@ -146,7 +166,7 @@ export const ProblemGeneralPage = () => {
                 <RequiredInputLabel label="Score" />
               </FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
               </FormControl>
               <FormMessage />
             </FormItem>

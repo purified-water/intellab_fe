@@ -36,9 +36,7 @@ import {
   TGetCourseForAdminResponse,
   TDeleteCourseResponse,
   TGetCourseForAdminParams,
-  TDeleteCourseParams,
-  TUpdateCourseAvailabilityResponse,
-  TUpdateCourseAvailabilityParams
+  TDeleteCourseParams
 } from "@/features/Admins/features/course/types";
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -485,34 +483,6 @@ export const courseAPI = {
       const data: TDeleteCourseResponse = response.data;
       const { code, result, message } = data;
       if (code == API_RESPONSE_CODE.NO_CONTENT) {
-        await onSuccess(result);
-      } else {
-        await onFail(message ?? DEFAULT_ERROR);
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        await onFail(error.message ?? DEFAULT_ERROR);
-      }
-    } finally {
-      if (onEnd) {
-        await onEnd();
-      }
-    }
-  },
-
-  updateCourseAvailability: async ({ query, onStart, onSuccess, onFail, onEnd }: TUpdateCourseAvailabilityParams) => {
-    const DEFAULT_ERROR = "Error updating course availability";
-    if (onStart) {
-      await onStart();
-    }
-    try {
-      const { courseId, isAvailable } = query!;
-      const response = await apiClient.put(
-        `/course/admin/courses/update-available-status/${courseId}?availableStatus=${isAvailable}`
-      );
-      const data: TUpdateCourseAvailabilityResponse = response.data;
-      const { code, result, message } = data;
-      if (code == API_RESPONSE_CODE.SUCCESS) {
         await onSuccess(result);
       } else {
         await onFail(message ?? DEFAULT_ERROR);

@@ -8,6 +8,8 @@ import { Button } from "@/components/ui";
 // import { FilterDialog } from "../components/FilterDialog";
 import { ProblemFilterType } from "@/types/ProblemType";
 // import { useCourseCategories } from "../../course/hooks";
+import { useDispatch } from "react-redux";
+import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
 
 const TABS = {
   CREATED: "created",
@@ -24,6 +26,7 @@ export function ProblemListPage() {
     categories: null
   });
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // const { data: categories, isLoading: loadingCategories } = useCourseCategories();
 
@@ -35,13 +38,18 @@ export function ProblemListPage() {
       }));
     };
 
+    const handleCreateProblem = () => {
+      dispatch(resetCreateProblem());
+      navigate("/admin/problems/create/general");
+    };
+
     return (
       <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
         <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} width={800} />
         <div className="pl-4 ml-2 border-l border-gray4">
           <Button
-            onClick={() => navigate("/admin/problems/create")}
+            onClick={handleCreateProblem}
             className="px-4 py-5 text-lg font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
           >
             <Plus className="w-4 h-4" />
