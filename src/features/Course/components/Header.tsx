@@ -139,17 +139,20 @@
 //   );
 // };
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ProgressBar, AnimatedButton, Spinner } from "@/components/ui";
 import { ICourse } from "@/types";
 import { BookOpenText, Users } from "lucide-react";
 import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
-import { aiAPI } from "@/lib/api";
+import { aiAPI, courseAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
+
+// Define certificate statuses
+type CertificateStatus = "idle" | "generating" | "ready" | "failed";
 
 interface HeaderProps {
   course: ICourse;
@@ -157,10 +160,11 @@ interface HeaderProps {
   onContinue: () => void;
   onViewCertificate: () => void;
   onPurchase: () => Promise<void>;
+  onCertificateReady?: (updatedCourse: ICourse) => void;
 }
 
 export const Header = (props: HeaderProps) => {
-  const { course, onEnroll, onContinue, onViewCertificate, onPurchase } = props;
+  const { course, onEnroll, onContinue, onViewCertificate, onPurchase, onCertificateReady } = props;
   const [showFullDescription, setShowFullDescription] = useState(false);
   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
   const [summaryContent, setSummaryContent] = useState("");
@@ -179,6 +183,125 @@ export const Header = (props: HeaderProps) => {
     reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
     reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
 
+  // Certificate generation state management
+  const [certificateStatus, setCertificateStatus] = useState<CertificateStatus>("idle");
+  const [retryCount, setRetryCount] = useState(0);
+  const wasGenerating = useRef(false);
+  const hasCertificateUrl = course.certificateUrl && course.certificateId;
+
+  // This effect handles the certificate initialization and polling
+  useEffect(() => {
+    let intervalId: NodeJS.Timeout;
+
+    // First-time completion detection
+    const isFirstTimeCompletion = isFinished && !hasCertificateUrl;
+
+    // Initialize certificate generation if course is newly completed
+    if (isFirstTimeCompletion && certificateStatus === "idle") {
+      setCertificateStatus("generating");
+      wasGenerating.current = true;
+
+      // Show toast notification that certificate is being generated
+      toast.toast({
+        title: "Certificate is being generated",
+        description: "Please wait while we prepare your certificate. This may take a moment."
+      });
+    }
+
+    // Poll for certificate status when in generating state
+    if (certificateStatus === "generating" && isFinished) {
+      const checkCertificateStatus = async () => {
+        try {
+          // Make API call to check certificate status
+          const response = await courseAPI.getCourseDetail(course.courseId);
+
+          // Check if certificate is ready (i.e., certificate URL is available)
+          if (response.result.certificateUrl && response.result.certificateId) {
+            // Certificate is ready
+            setCertificateStatus("ready");
+
+            // Update course data with new certificate information
+            if (onCertificateReady) {
+              // Call the callback with the updated course to trigger page re-render
+              onCertificateReady(response.result);
+            }
+
+            // Show success notification
+            toast.toast({
+              title: "Certificate Ready!",
+              description: "Your certificate has been successfully generated."
+            });
+
+            clearInterval(intervalId);
+          } else {
+            // Certificate not ready yet, increment retry counter
+            setRetryCount((prevCount) => prevCount + 1);
+
+            // After some retries, show a pending message to reassure the user
+            if (retryCount === 3) {
+              toast.toast({
+                title: "Still working on it",
+                description: "Your certificate is being processed. This might take a moment."
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error checking certificate status:", error);
+
+          // After several failed attempts, mark as failed
+          if (retryCount > 5) {
+            setCertificateStatus("failed");
+            clearInterval(intervalId);
+
+            toast.toast({
+              title: "Certificate Generation Failed",
+              description: "We couldn't generate your certificate. Please try again later.",
+              variant: "destructive"
+            });
+          }
+        }
+      };
+
+      // Initial check
+      checkCertificateStatus();
+
+      // Poll every 5 seconds (better user experience than 3s, less server load)
+      intervalId = setInterval(checkCertificateStatus, 5000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isFinished, certificateStatus, hasCertificateUrl, retryCount, course.courseId, toast]);
+
+  // Reset certificate status to generating when retry is clicked
+  const handleRetryCertificate = async () => {
+    // Show loading notification
+    toast.toast({
+      title: "Retrying certificate generation",
+      description: "We're attempting to generate your certificate again."
+    });
+
+    setCertificateStatus("generating");
+    setRetryCount(0);
+
+    try {
+      // Make an explicit API call to trigger certificate regeneration
+      await courseAPI.regenerateCertificate(course.courseId);
+
+      // Polling mechanism will continue to check the status
+    } catch (error) {
+      console.error("Failed to retry certificate generation:", error);
+      toast.toast({
+        title: "Error",
+        description: "Failed to restart certificate generation. Please try again later.",
+        variant: "destructive"
+      });
+      // Reset status to failed if the API call fails
+      setCertificateStatus("failed");
+    }
+  };
+
   const renderLeftButton = () => {
     let buttonText;
     let onClick;
@@ -186,11 +309,55 @@ export const Header = (props: HeaderProps) => {
 
     if (course.userEnrolled) {
       if (isFinished) {
-        buttonText = "View Certificate";
-        onClick = onViewCertificate;
-        if (!course.certificateId || !course.certificateUrl) {
-          disable = true;
-          console.log("Certificate ID or URL is missing");
+        // Special handling for certificate states
+        if (certificateStatus === "generating") {
+          return (
+            <div className="flex gap-4">
+              <button
+                disabled
+                aria-label="Generating Certificate"
+                title="Please wait while we generate your certificate"
+                className="px-6 py-2 text-base font-bold text-white bg-appPrimary/70 rounded-lg shadow transition flex items-center justify-center min-w-[180px]"
+              >
+                <span className="mr-2">Generating Certificate</span>
+                <svg
+                  className="animate-spin h-4 w-4 text-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                >
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  ></path>
+                </svg>
+              </button>
+              {renderRightButton()}
+            </div>
+          );
+        } else if (certificateStatus === "failed") {
+          return (
+            <button
+              onClick={handleRetryCertificate}
+              aria-label="Retry Certificate Generation"
+              title="Click to try generating your certificate again"
+              className="px-6 py-2 text-base font-bold text-white bg-red-500 rounded-lg hover:bg-red-600 shadow transition min-w-[180px]"
+            >
+              Retry Certificate
+            </button>
+          );
+        } else {
+          // Default certificate view button (idle or ready states)
+          buttonText = "View Certificate";
+          onClick = onViewCertificate;
+
+          // Disable if certificate isn't available yet
+          if (!course.certificateId || !course.certificateUrl) {
+            disable = true;
+            buttonText = "Certificate Unavailable";
+          }
         }
       } else {
         buttonText = "Continue";
@@ -209,7 +376,9 @@ export const Header = (props: HeaderProps) => {
     return (
       <button
         disabled={disable}
-        className="px-6 py-2 text-base font-bold text-white bg-appPrimary rounded-lg hover:bg-appPrimary/80 shadow transition"
+        aria-label={buttonText}
+        title={disable ? "Certificate not ready yet" : buttonText}
+        className={`px-6 py-2 text-base font-bold text-white bg-appPrimary rounded-lg hover:bg-appPrimary/80 shadow transition flex items-center justify-center min-w-[150px] ${disable ? "opacity-60 cursor-not-allowed" : ""}`}
         onClick={onClick}
       >
         {buttonText}
@@ -246,7 +415,8 @@ export const Header = (props: HeaderProps) => {
     return (
       <div className="flex gap-4 mt-4">
         {renderLeftButton()}
-        {isFinished && renderRightButton()}
+        {/* Only show AI Summary button when course is finished and certificate isn't in the process of generation */}
+        {isFinished && certificateStatus !== "generating" && certificateStatus !== "failed" && renderRightButton()}
       </div>
     );
   };

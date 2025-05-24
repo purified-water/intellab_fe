@@ -4,7 +4,7 @@ import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
 import { IEnrolledLesson } from "../types";
 import { ICourse, ILesson } from "@/types";
-import { Spinner, Pagination } from "@/components/ui";
+import { Spinner, Pagination, EmptyList } from "@/components/ui";
 import { DEFAULT_COURSE } from "@/constants/defaultData";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useNavigate } from "react-router-dom";
@@ -37,6 +37,8 @@ export const CourseDetailPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
+  // Add a refresh trigger state to force re-renders when needed
+  // const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -250,6 +252,18 @@ export const CourseDetailPage = () => {
     }
   };
 
+  const handleCertificateReady = (updatedCourse: ICourse) => {
+    // Update course with new certificate info
+    setCourse(updatedCourse);
+    // Re-fetch course lessons to refresh the UI
+    getCourseLessons(currentPage);
+    // Show a toast indicating the course data has been updated
+    showToastSuccess({
+      toast: toast.toast,
+      message: "Certificate is ready! Course information has been updated."
+    });
+  };
+
   const renderHeader = () => {
     return (
       course && (
@@ -259,6 +273,7 @@ export const CourseDetailPage = () => {
           onContinue={handleContinueClick}
           onViewCertificate={handleViewCertificateClick}
           onPurchase={handlePurchaseClick}
+          onCertificateReady={handleCertificateReady}
         />
       )
     );
@@ -270,12 +285,18 @@ export const CourseDetailPage = () => {
       case TAB_BUTTONS.LESSONS:
         content = (
           <div>
-            <LessonList
-              lessons={lessons}
-              isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
-              lastViewedLessonId={course?.latestLessonId}
-              course={course!}
-            />
+            {lessons.length === 0 && !loading ? (
+              <div className="text-center py-10">
+                <EmptyList message="No lessons available for this course yet." />
+              </div>
+            ) : (
+              <LessonList
+                lessons={lessons}
+                isEnrolled={course?.userEnrolled || DEFAULT_COURSE.userEnrolled}
+                lastViewedLessonId={course?.latestLessonId}
+                course={course!}
+              />
+            )}
             {totalPages != 0 && (
               <Pagination
                 currentPage={currentPage}
@@ -328,7 +349,7 @@ export const CourseDetailPage = () => {
   const renderBody = () => {
     return (
       <>
-        <div className="flex gap-10 pl-10 mb-4 text-xl font-bold ml-14">
+        <div className="flex justify-center gap-10 mb-4 text-xl font-bold">
           {Object.values(TAB_BUTTONS).map((tab, index) => renderTabButton(tab, index))}
         </div>
         <div className="px-6 justify-items-center">{renderTabContent()}</div>
@@ -344,7 +365,7 @@ export const CourseDetailPage = () => {
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
       <div className="flex flex-col min-h-screen">
         <div className="w-full">{renderHeader()}</div>
-        <div className="pb-8 mx-auto max-w-7xl flex-grow">
+        <div className="pb-8 px-32 mx-auto w-full flex-grow">
           {renderBody()}
           {renderSpinner()}
         </div>
