@@ -13,6 +13,7 @@ import { useProblemWizardStep } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { isGeneralStepValid } from "../../utils";
+import { adminProblemAPI } from "@/features/Admins/api";
 
 const problemDescriptionSchema = createProblemSchema.pick({
   problemDescription: true
@@ -35,8 +36,17 @@ export const ProblemDescriptionPage = () => {
   });
 
   const onSubmit = async (data: ProblemDescriptionSchema) => {
-    dispatch(setCreateProblem(data));
-    goToNextStep(); // This should be called in muatation function rather than here
+    await adminProblemAPI.createProblemDescriptionStep({
+      body: {
+        problemId: formData.problemId,
+        description: data.problemDescription
+      },
+      onSuccess: async (problem) => {
+        dispatch(setCreateProblem({ problemDescription: problem.description }));
+        goToNextStep();
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+    });
   };
 
   return (

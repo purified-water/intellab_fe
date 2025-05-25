@@ -7,7 +7,7 @@ import { NA_VALUE } from "@/constants";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
-  MODIFY: "Modify",
+  EDIT: "Edit",
   CONTINUE_EDIT: "Continue Edit",
   DELETE: "Delete"
 };
@@ -43,7 +43,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
         case DROP_DOWN_MENU_ITEMS.VIEW:
           handleViewDetails();
           break;
-        case DROP_DOWN_MENU_ITEMS.MODIFY:
+        case DROP_DOWN_MENU_ITEMS.EDIT:
           console.log("Modify clicked for item:");
           break;
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
@@ -67,7 +67,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
           {[
             DROP_DOWN_MENU_ITEMS.VIEW,
-            problem.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.MODIFY : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
+            problem.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.EDIT : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
             DROP_DOWN_MENU_ITEMS.DELETE
           ].map((action) => (
             <DropdownMenuItem

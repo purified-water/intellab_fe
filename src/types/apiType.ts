@@ -1,22 +1,22 @@
-type TApiResponse<T> = {
+type TApiResponse<ResultDataType> = {
   code: number;
   message: string | null;
-  result: T;
+  result: ResultDataType;
 };
 
-type TApiParams<Data> = {
+type TApiParams<ResultDataType> = {
   onStart?: () => Promise<void>;
-  onSuccess: (data: Data) => Promise<void>;
+  onSuccess: (data: ResultDataType) => Promise<void>;
   onFail: (message: string) => Promise<void>;
   onEnd?: () => Promise<void>;
 };
 
-type TGetApiParams<Querry, Data> = TApiParams<Data> & {
-  query?: Querry;
+type TGetApiParams<QueryParamsType, ResultDataType> = TApiParams<ResultDataType> & {
+  query?: QueryParamsType;
 };
 
-type TPostApiParams<Querry, Body, Data> = TGetApiParams<Querry, Data> & {
-  body?: Body;
+type TPostApiParams<QueryParamsType, BodyDataType, ResultDataType> = TGetApiParams<QueryParamsType, ResultDataType> & {
+  body?: BodyDataType;
 };
 
 type APIResponseCode = {
