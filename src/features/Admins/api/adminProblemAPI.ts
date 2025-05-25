@@ -35,7 +35,7 @@ export const adminProblemAPI = {
     console.log("Admin Problem List Response:", response.data);
     return response.data;
   },
-  
+
   createProblemGeneralStep: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreateProblemGeneralStepParams) => {
     const DEFAULT_ERROR = "Error in creating problem's general step";
 

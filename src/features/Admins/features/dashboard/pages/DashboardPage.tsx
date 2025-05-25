@@ -70,12 +70,12 @@ export const DashboardPage = () => {
       changeType: overviewStats.find((stat) => stat.title === "Subscriptions")?.changeType || "neutral"
     },
     {
-      title: overviewStats.find((stat) => stat.title === "Active Users")?.title || "Active Users",
-      value: overviewStats.find((stat) => stat.title === "Active Users")?.value?.toString() || "0",
+      title: overviewStats.find((stat) => stat.title === "New Users")?.title || "New Users",
+      value: overviewStats.find((stat) => stat.title === "New Users")?.value?.toString() || "0",
       icon: Activity,
-      change: overviewStats.find((stat) => stat.title === "Active Users")?.change || "0",
-      changeNote: overviewStats.find((stat) => stat.title === "Active Users")?.changeNote || "since last hour",
-      changeType: overviewStats.find((stat) => stat.title === "Active Users")?.changeType || "neutral"
+      change: overviewStats.find((stat) => stat.title === "New Users")?.change || "0",
+      changeNote: overviewStats.find((stat) => stat.title === "New Users")?.changeNote || "since last hour",
+      changeType: overviewStats.find((stat) => stat.title === "New Users")?.changeType || "neutral"
     },
     {
       title: overviewStats.find((stat) => stat.title === "Courses Purchased")?.title || "Courses Purchased",

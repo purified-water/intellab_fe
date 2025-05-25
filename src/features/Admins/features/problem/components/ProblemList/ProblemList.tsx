@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ListFilter } from "lucide-react";
 import { AlertDialog, EmptyList } from "@/components/ui";
 import { ProblemListItem } from "./ProblemListItem";
 import { AdminProblemParams, GetAdminProblem } from "../../types/ProblemListType";
@@ -37,10 +36,7 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
         <tr>
           {[...TABLE_HEADERS.common, ...extraHeaders].map((header) => (
             <th key={header} className="py-4">
-              <div className="flex items-center gap-2">
-                {header}
-                <ListFilter className="size-4" />
-              </div>
+              <div className="flex items-center gap-2">{header}</div>
             </th>
           ))}
           <th />

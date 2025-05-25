@@ -2,7 +2,7 @@ import { IUser } from "@/types";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn";
-import { shortenDate } from "@/utils";
+import { capitalizeFirstLetter, shortenDate } from "@/utils";
 import { NA_VALUE } from "@/constants";
 
 const DROP_DOWN_MENU_ITEMS = {
@@ -99,11 +99,11 @@ export function UserListItem(props: UserListItemProps) {
     return (
       <>
         <tr key={user.userUid} className="text-base border-b border-gray5">
-          <td className="px-2 py-1 max-w-[200px]">{user.email}</td>
+          <td className="px-2 py-1 max-w-[200px] truncate">{user.email}</td>
           <td className="px-2 py-1 max-w-[200px]">{user.displayName}</td>
           <td className="px-2 py-1 max-w-[350px]">{shortenDate(user.creationTimestamp!)}</td>
           <td className="px-2 py-1 max-w-[350px]">{shortenDate(user.lastSignInTimestamp!)}</td>
-          <td className="px-2 py-1 max-w-[100px]">{user.premiumType ?? NA_VALUE}</td>
+          <td className="px-2 py-1 max-w-[100px]">{capitalizeFirstLetter(user.premiumType ?? NA_VALUE)}</td>
           <td className="px-2 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

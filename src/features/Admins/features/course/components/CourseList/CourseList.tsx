@@ -1,5 +1,4 @@
 import { ICourse, TCourseFilter } from "@/types";
-import { ListFilter } from "lucide-react";
 import { CourseListItem } from "./CourseListItem";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks";
@@ -122,61 +121,37 @@ export function CourseList(props: CourseListProps) {
       <thead>
         <tr className="font-normal text-left border-t border-b border-gray5">
           <th className="py-4">
-            <div className="flex items-center gap-2">
-              {TABLE_HEADERS.COURSE_NAME}
-              <ListFilter className="w-4 h-4" />
-            </div>
+            <div className="flex items-center gap-2">{TABLE_HEADERS.COURSE_NAME}</div>
           </th>
           <th className="">
-            <div className="flex items-center gap-2">
-              {TABLE_HEADERS.LEVEL}
-              <ListFilter className="w-4 h-4" />
-            </div>
+            <div className="flex items-center gap-2">{TABLE_HEADERS.LEVEL}</div>
           </th>
           <th className="">
-            <div className="flex items-center gap-2">
-              {TABLE_HEADERS.PRICE}
-              <ListFilter className="w-4 h-4" />
-            </div>
+            <div className="flex items-center gap-2">{TABLE_HEADERS.PRICE}</div>
           </th>
           {filter.isCompletedCreation && (
             <th className="">
-              <div className="flex items-center justify-center gap-2">
-                {TABLE_HEADERS.AVAILABLE}
-                <ListFilter className="w-4 h-4" />
-              </div>
+              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.AVAILABLE}</div>
             </th>
           )}
           {filter.isCompletedCreation && (
             <th className="">
-              <div className="flex items-center justify-center gap-2">
-                {TABLE_HEADERS.ENROLLMENTS}
-                <ListFilter className="w-4 h-4" />
-              </div>
+              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.ENROLLMENTS}</div>
             </th>
           )}
           {filter.isCompletedCreation && (
             <th className="">
-              <div className="flex items-center justify-center gap-2">
-                {TABLE_HEADERS.RATING}
-                <ListFilter className="w-4 h-4" />
-              </div>
+              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.RATING}</div>
             </th>
           )}
           {!filter.isCompletedCreation && (
             <th className="">
-              <div className="flex items-center justify-center gap-2">
-                {TABLE_HEADERS.CREATED_AT}
-                <ListFilter className="w-4 h-4" />
-              </div>
+              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.CREATED_AT}</div>
             </th>
           )}
           {!filter.isCompletedCreation && (
             <th className="">
-              <div className="flex items-center justify-center gap-2">
-                {TABLE_HEADERS.CURRENT_STEP}
-                <ListFilter className="w-4 h-4" />
-              </div>
+              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.CURRENT_STEP}</div>
             </th>
           )}
           <th className="" />
