@@ -64,7 +64,8 @@ export const CourseFinalStepsPage = () => {
     const formatPayload: CreateCourseFinalStepPayload = {
       price: data.coursePrice || 0,
       unitPrice: "VND",
-      templateCode: data.courseCertificate
+      templateCode: data.courseCertificate,
+      aiSummaryContent: data.courseSummary
     };
 
     dispatch(setCreateCourse(data));

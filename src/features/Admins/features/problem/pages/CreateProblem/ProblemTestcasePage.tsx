@@ -8,6 +8,9 @@ import { TestcaseAction } from "../../types";
 import { RootState } from "@/redux/rootReducer";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { isBoilerplateStepValid } from "../../utils";
+import { adminProblemAPI } from "@/features/Admins/api";
+import { useToast } from "@/hooks";
+import { showToastError } from "@/utils";
 
 export const ProblemTestcasePage = () => {
   const [isLoading] = useState(false); // This will be replaced with the isLoading from useQuery function to get testcases
@@ -17,11 +20,23 @@ export const ProblemTestcasePage = () => {
   const dispatch = useDispatch();
   const formData = useSelector((state: RootState) => state.createProblem);
   const testcaseList = formData.problemTestcases || [];
+  const toast = useToast();
 
-  const handleUpdateTestcases = (newTestcase: CreateTestcaseSchema) => {
-    // Update the testcases in the state or perform any other action
-    dispatch(setCreateProblem({ problemTestcases: [...testcaseList, newTestcase] }));
-    setTestcaseAction({ type: "default" });
+  const handleUpdateTestcases = async (newTestcase: CreateTestcaseSchema) => {
+    await adminProblemAPI.createProblemTestCaseStepSingle({
+      body: {
+        problemId: formData.problemId,
+        input: newTestcase.testcaseInput,
+        output: newTestcase.expectedOutput
+      },
+      onSuccess: async (testcase) => {
+        dispatch(
+          setCreateProblem({ problemTestcases: [...testcaseList, { ...newTestcase, testcaseId: testcase.testcaseId }] })
+        );
+        setTestcaseAction({ type: "default" });
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+    });
   };
 
   const renderPageContent = () => {

@@ -2,8 +2,7 @@ import { ICourse } from "@/types";
 import { MoreHorizontal, Star } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton, Switch } from "@/components/ui/shadcn";
-import { courseAPI } from "@/lib/api";
-import { showToastError } from "@/utils";
+import { showToastError, shortenDate } from "@/utils";
 import { useToast } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -11,10 +10,11 @@ import { setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { NA_VALUE } from "@/constants";
 import { imageURLToFile } from "@/utils";
 import { CREATE_COURSE_STEP_NUMBERS, steps } from "../../constants";
+import { adminCourseAPI } from "@/features/Admins/api";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
-  MODIFY: "Modify",
+  EDIT: "Edit",
   CONTINUE_EDIT: "Continue Edit",
   DELETE: "Delete"
 };
@@ -33,10 +33,12 @@ export function CourseListItem(props: CourseListItemProps) {
   const dispatch = useDispatch();
 
   const updateCourseAvailabilityAPI = async () => {
-    await courseAPI.updateCourseAvailability({
+    await adminCourseAPI.updateCourseAvailability({
       query: { courseId: course.courseId, isAvailable: !course.isAvailable },
+      onStart: async () => {},
       onSuccess: async (response) => onToggleCourseAvailability(course.courseId, response.isAvailable),
-      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+      onFail: async (error) =>
+        showToastError({ toast: toast.toast, title: "Error while updating course availability", message: error })
     });
   };
 
@@ -85,7 +87,7 @@ export function CourseListItem(props: CourseListItemProps) {
         case DROP_DOWN_MENU_ITEMS.VIEW:
           handleViewDetails();
           break;
-        case DROP_DOWN_MENU_ITEMS.MODIFY:
+        case DROP_DOWN_MENU_ITEMS.EDIT:
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
           handleEdit();
           break;
@@ -107,7 +109,7 @@ export function CourseListItem(props: CourseListItemProps) {
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
           {[
             DROP_DOWN_MENU_ITEMS.VIEW,
-            course.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.MODIFY : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
+            course.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.EDIT : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
             DROP_DOWN_MENU_ITEMS.DELETE
           ].map((action) => (
             <DropdownMenuItem
@@ -193,7 +195,9 @@ export function CourseListItem(props: CourseListItemProps) {
               <span className="text-base font-light text-gray3">({course.reviewCount ?? 0} reviews)</span>
             </td>
           )}
-          {!course.isCompletedCreation && <td className="px-2 py-1 text-center">{course.createdAt ?? NA_VALUE}</td>}
+          {!course.isCompletedCreation && (
+            <td className="px-2 py-1 text-center">{shortenDate(course.createdAt) ?? NA_VALUE}</td>
+          )}
           {!course.isCompletedCreation && (
             <td className="px-2 py-1 text-center">{course.currentCreationStepDescription}</td>
           )}
