@@ -1,8 +1,13 @@
 const imageURLToFile = async (url: string, fileName = "thumbnail.png"): Promise<File> => {
-  const response = await fetch(url);
+  const bustUrl = url + (url.includes("?") ? "&" : "?") + "cb=" + Date.now();
+  const response = await fetch(bustUrl, { cache: "no-cache" });
+  if (!response.ok) {
+    throw new Error(`Failed to fetch image: ${response.statusText}`);
+  }
   const data = await response.blob();
   const mimeType = data.type || "image/png";
-  return new File([data], fileName, { type: mimeType });
+  const result = new File([data], fileName, { type: mimeType });
+  return result;
 };
 
 export { imageURLToFile };

@@ -8,12 +8,11 @@ import { showToastError } from "@/utils";
 import { Pagination } from "@/components/ui";
 
 const TABLE_HEADERS = [
-  { key: "ID", label: "ID", icon: <ListFilter className="h-4 w-4" /> },
   { key: "EMAIL_ADDRESS", label: "Email Address", icon: <ListFilter className="h-4 w-4" /> },
   { key: "USER_NAME", label: "Username", icon: <ListFilter className="h-4 w-4" /> },
   { key: "CREATED", label: "Created", icon: <ListFilter className="h-4 w-4" /> },
   { key: "LAST_LOGIN", label: "Last Login", icon: <ListFilter className="h-4 w-4" /> },
-  { key: "TYPE", label: "Type", icon: <Funnel className="h-4 w-4 text-back" /> }
+  { key: "TYPE", label: "User Type", icon: <Funnel className="h-4 w-4 text-back" /> }
 ];
 
 interface UserListProps {
@@ -58,12 +57,9 @@ export function UserList(props: UserListProps) {
   const renderHeader = () => (
     <thead>
       <tr className="border-b border-gray5">
-        {TABLE_HEADERS.map(({ key, label, icon }) => (
+        {TABLE_HEADERS.map(({ key, label }) => (
           <th key={key} className={`text-left font-medium text-base border-t py-3 px-2 `}>
-            <div className={`flex items-center gap-2`}>
-              {label}
-              {icon}
-            </div>
+            <div className={`flex items-center gap-2`}>{label}</div>
           </th>
         ))}
         <th className="text-left font-medium text-base border-t" />

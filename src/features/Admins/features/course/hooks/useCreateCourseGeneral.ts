@@ -68,3 +68,21 @@ export const useChangeCourseImageLink = () => {
     }
   });
 };
+
+export const useUploadImage = () => {
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: ({ file }: { file: File }) => adminCourseAPI.uploadImage(file),
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Image uploaded successfully" });
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message });
+      } else {
+        showToastError({ toast: toast.toast, message: "An unexpected error occurred" });
+      }
+    }
+  });
+};

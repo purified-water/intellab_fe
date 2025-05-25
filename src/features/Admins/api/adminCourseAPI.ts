@@ -12,8 +12,14 @@ import {
 } from "@/types";
 import { CreateQuizSchema } from "../features/course/schemas/createQuizSchema";
 import { CreateLessonSchema } from "../features/course/schemas";
-import { ILessonResponse } from "../features/course/types";
+import {
+  ILessonResponse,
+  TUpdateCourseAvailabilityParams,
+  TUpdateCourseAvailabilityResponse
+} from "../features/course/types";
 import { DEFAULT_QUIZ } from "../features/course/constants";
+import { AxiosError } from "axios";
+import { apiResponseCodeUtils } from "@/utils";
 
 export const adminCourseAPI = {
   // Step 1
@@ -48,6 +54,20 @@ export const adminCourseAPI = {
       }
     });
     return response.data;
+  },
+
+  uploadImage: async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    const imageId = crypto.randomUUID();
+
+    const response = await apiClient.post(`course/admin/courses/image/${imageId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    return response.data.result;
   },
 
   // Step 2
@@ -153,5 +173,39 @@ export const adminCourseAPI = {
   deleteCreateLesson: async (lessonId: string) => {
     const response = await apiClient.delete(`course/admin/lessons/${lessonId}`);
     return response.data;
+  },
+
+  updateCourseAvailability: async ({ query, onStart, onSuccess, onFail, onEnd }: TUpdateCourseAvailabilityParams) => {
+    const DEFAULT_ERROR = "Error updating course availability";
+
+    const handleResponseData = async (data: TUpdateCourseAvailabilityResponse) => {
+      const { code, result, message } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { courseId, isAvailable } = query!;
+      const response = await apiClient.put(
+        `/course/admin/courses/update-available-status/${courseId}?availableStatus=${isAvailable}`
+      );
+      await handleResponseData(response.data as TUpdateCourseAvailabilityResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TUpdateCourseAvailabilityResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        await onEnd();
+      }
+    }
   }
 };

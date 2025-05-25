@@ -2,11 +2,12 @@ import { IUser } from "@/types";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn";
-import { shortenDate } from "@/utils";
+import { capitalizeFirstLetter, shortenDate } from "@/utils";
+import { NA_VALUE } from "@/constants";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
-  MODIFY: "Modify",
+  EDIT: "Edit",
   DELETE: "Delete"
 };
 
@@ -36,7 +37,7 @@ export function UserListItem(props: UserListItemProps) {
         case DROP_DOWN_MENU_ITEMS.VIEW:
           handleViewDetails();
           break;
-        case DROP_DOWN_MENU_ITEMS.MODIFY:
+        case DROP_DOWN_MENU_ITEMS.EDIT:
           handleEditUser();
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
@@ -55,7 +56,7 @@ export function UserListItem(props: UserListItemProps) {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
-          {[DROP_DOWN_MENU_ITEMS.VIEW, DROP_DOWN_MENU_ITEMS.MODIFY, DROP_DOWN_MENU_ITEMS.DELETE].map((action) => (
+          {[DROP_DOWN_MENU_ITEMS.VIEW, DROP_DOWN_MENU_ITEMS.EDIT, DROP_DOWN_MENU_ITEMS.DELETE].map((action) => (
             <DropdownMenuItem
               key={action}
               onClick={() => handleDropdownMenuItemClick(action)}
@@ -72,9 +73,6 @@ export function UserListItem(props: UserListItemProps) {
   const renderLoading = () => {
     return (
       <tr className="text-base border-b border-gray5">
-        <td className="px-2 py-1">
-          <Skeleton className="h-4 w-20" />
-        </td>
         <td className="px-2 py-1">
           <Skeleton className="h-4 w-32" />
         </td>
@@ -101,12 +99,11 @@ export function UserListItem(props: UserListItemProps) {
     return (
       <>
         <tr key={user.userUid} className="text-base border-b border-gray5">
-          <td className="px-2 py-1 max-w-[100px] truncate">{user.userUid}</td>
-          <td className="px-2 py-1 max-w-[200px]">{user.email}</td>
+          <td className="px-2 py-1 max-w-[200px] truncate">{user.email}</td>
           <td className="px-2 py-1 max-w-[200px]">{user.displayName}</td>
           <td className="px-2 py-1 max-w-[350px]">{shortenDate(user.creationTimestamp!)}</td>
           <td className="px-2 py-1 max-w-[350px]">{shortenDate(user.lastSignInTimestamp!)}</td>
-          <td className="px-2 py-1 max-w-[100px]">{user.premiumType}</td>
+          <td className="px-2 py-1 max-w-[100px]">{capitalizeFirstLetter(user.premiumType ?? NA_VALUE)}</td>
           <td className="px-2 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

@@ -45,7 +45,7 @@ export const UserFeaturedCourses = ({ courses, isLoading, type = "featured", cla
                   <FeaturedCourseCard course={course} />
                 </div>
               ))}
-          {courses.length === 0 && (
+          {!isLoading && courses.length === 0 && (
             <EmptyList message="No courses available" className="w-full h-[320px] flex items-center justify-center" />
           )}
         </div>

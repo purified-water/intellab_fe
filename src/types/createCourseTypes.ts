@@ -77,6 +77,7 @@ export interface CreateCourseFinalStepPayload {
   price: number;
   unitPrice: string;
   templateCode: number;
+  aiSummaryContent: string;
 }
 
 // Step 4: Preview and publish

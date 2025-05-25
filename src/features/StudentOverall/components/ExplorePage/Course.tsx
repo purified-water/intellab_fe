@@ -156,7 +156,7 @@ export function Course(props: CourseProps) {
           {buttonText(detailCourse!)}
         </button>
         <span className="text-lg font-bold text-appPrimary">
-          {detailCourse?.price ? priceText(detailCourse!.price, detailCourse.unitPrice) : NA_VALUE}
+          {detailCourse?.price != undefined ? priceText(detailCourse!.price, detailCourse.unitPrice) : NA_VALUE}
         </span>
       </div>
     </div>

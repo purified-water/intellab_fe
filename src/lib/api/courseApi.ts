@@ -37,8 +37,8 @@ import {
   TDeleteCourseResponse,
   TGetCourseForAdminParams,
   TDeleteCourseParams,
-  TUpdateCourseAvailabilityResponse,
-  TUpdateCourseAvailabilityParams
+  TUpdateCourseAvailabilityParams,
+  TUpdateCourseAvailabilityResponse
 } from "@/features/Admins/features/course/types";
 
 const DEFAULT_PAGE_SIZE = 10;
@@ -46,6 +46,18 @@ const DEFAULT_PAGE_SIZE = 10;
 export const courseAPI = {
   getCourses: async () => {
     const response = await apiClient.get(`course/courses?isAvailable=true&isCompletedCreation=true`);
+    const data: IGetCoursesResponse = response.data;
+    return data;
+  },
+
+  getFeaturedCourses: async () => {
+    const response = await apiClient.get(`course/courses/featured-courses`);
+    const data = response.data; // Data is contained in result (not result.content)
+    return data;
+  },
+
+  getFreeCourses: async () => {
+    const response = await apiClient.get(`course/courses/free-courses`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },
@@ -525,6 +537,41 @@ export const courseAPI = {
       if (onEnd) {
         await onEnd();
       }
+    }
+  },
+
+  // Certificate status check API
+  checkCertificateStatus: async (courseId: string) => {
+    try {
+      // We use the standard course detail endpoint since it already contains certificate info
+      const response = await apiClient.get(`/course/courses/${courseId}`);
+      const data: IGetCourseDetailResponse = response.data;
+
+      if (data.code === API_RESPONSE_CODE.SUCCESS) {
+        const { certificateId, certificateUrl } = data.result;
+        return {
+          isReady: !!(certificateId && certificateUrl),
+          certificateId,
+          certificateUrl
+        };
+      }
+      return { isReady: false };
+    } catch (error) {
+      console.error("Error checking certificate status:", error);
+      return { isReady: false, error };
+    }
+  },
+
+  // API to trigger certificate regeneration
+  regenerateCertificate: async (courseId: string) => {
+    try {
+      // In a real implementation, this would be a POST request to an endpoint that triggers certificate regeneration
+      // For now, we're just using the course detail endpoint to simulate this
+      const response = await apiClient.get(`/course/courses/${courseId}`);
+      return response.data;
+    } catch (error) {
+      console.error("Error regenerating certificate:", error);
+      throw error;
     }
   }
 };

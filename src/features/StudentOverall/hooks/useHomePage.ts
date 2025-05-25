@@ -1,17 +1,29 @@
 import { useQuery } from "@tanstack/react-query";
 import { courseAPI, leaderboardAPI, userAPI } from "@/lib/api";
 import { ICourse } from "@/types";
-import { IUserCourse } from "../types";
 import { TGetLeaderboardParamsTanstack } from "@/features/Leaderboard/types/apiType";
 
 export const useGetFeaturedCourses = () => {
   return useQuery<ICourse[]>({
     queryKey: ["featuredCourses"],
     queryFn: async () => {
-      const response = await courseAPI.getCourses();
+      const response = await courseAPI.getFeaturedCourses();
+      return response.result;
+    },
+    staleTime: 1000 * 60 * 60,
+    placeholderData: (previous) => previous
+  });
+};
+
+export const useGetFreeCourses = () => {
+  return useQuery<ICourse[]>({
+    queryKey: ["freeCourses"],
+    queryFn: async () => {
+      const response = await courseAPI.getFreeCourses();
       return response.result.content;
     },
-    enabled: true
+    staleTime: 1000 * 60 * 60,
+    placeholderData: (previous) => previous
   });
 };
 
@@ -20,7 +32,7 @@ export const useGetYourCourses = () => {
     queryKey: ["yourCourses"],
     queryFn: async () => {
       const response = await courseAPI.getUserEnrolledCourses();
-      return response.result.content as IUserCourse[];
+      return response.result.content as ICourse[];
     },
     placeholderData: (previous) => previous
   });
@@ -57,6 +69,8 @@ export const useGetLeaderboard = (query: TGetLeaderboardParamsTanstack) => {
       const response = await leaderboardAPI.getLeaderboardTanstack(query);
       return response.content;
     },
-    placeholderData: (previous) => previous
+    placeholderData: (previous) => previous,
+    staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
+    gcTime: 1000 * 60 * 10 // Garbage collect after 10 minutes
   });
 };

@@ -8,3 +8,4 @@ export * from "./stringUtils";
 export * from "./toastUtils";
 export * from "./navigationUtils";
 export * from "./fileUtil";
+export * from "./apiUtils";

@@ -1,13 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { ProblemList } from "../components";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui";
+import { Button, Pagination } from "@/components/ui";
 // import { FilterDialog } from "../components/FilterDialog";
-import { ProblemFilterType } from "@/types/ProblemType";
+import { useGetAdminProblemList } from "../hooks";
+import { AdminProblemParams } from "../types/ProblemListType";
+import { APIMetaData } from "@/types";
 // import { useCourseCategories } from "../../course/hooks";
+import { useDispatch } from "react-redux";
+import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
 
 const TABS = {
   CREATED: "created",
@@ -17,15 +21,25 @@ const TABS = {
 export function ProblemListPage() {
   const [activeTab, setActiveTab] = useState(TABS.CREATED);
   const [showFilter, setShowFilter] = useState(false);
-  const [filter, setFilter] = useState<ProblemFilterType>({
-    keyword: "",
-    level: null,
-    status: null,
-    categories: null
+  const [filter, setFilter] = useState<AdminProblemParams>({
+    isComplete: true,
+    page: 0
   });
   const navigate = useNavigate();
+  const [totalPages, setTotalPages] = useState(1);
+  const dispatch = useDispatch();
 
   // const { data: categories, isLoading: loadingCategories } = useCourseCategories();
+  const { data, isLoading: loadingProblems } = useGetAdminProblemList(filter);
+  const problems = data?.result.content || [];
+  const meta = data?.result || ({} as APIMetaData);
+
+  useEffect(() => {
+    if (meta) {
+      // If theres 1 page, the api return 0 so we set it to 1
+      setTotalPages(meta.totalPages === 0 ? 1 : meta.totalPages);
+    }
+  }, [meta]);
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
@@ -35,13 +49,18 @@ export function ProblemListPage() {
       }));
     };
 
+    const handleCreateProblem = () => {
+      dispatch(resetCreateProblem());
+      navigate("/admin/problems/create/general");
+    };
+
     return (
       <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
-        <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} width={800} />
+        <SearchBar value={""} onSearch={handleKeywordSearch} width={800} />
         <div className="pl-4 ml-2 border-l border-gray4">
           <Button
-            onClick={() => navigate("/admin/problems/create")}
+            onClick={handleCreateProblem}
             className="px-4 py-5 text-lg font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
           >
             <Plus className="w-4 h-4" />
@@ -52,12 +71,12 @@ export function ProblemListPage() {
     );
   };
 
-  const renderCourseList = () => {
+  const renderProblemList = () => {
     const handleTabChange = (tab: string) => {
       setActiveTab(tab);
       setFilter((prev) => ({
         ...prev,
-        isCompletedCreation: tab === TABS.CREATED ? true : false
+        isComplete: tab === TABS.CREATED ? true : false
       }));
     };
 
@@ -77,7 +96,16 @@ export function ProblemListPage() {
               </TabsTrigger>
             ))}
           </TabsList>
-          <ProblemList filter={filter} tab={activeTab} />
+
+          <ProblemList problems={problems} isLoading={loadingProblems} filter={filter} tab={activeTab} />
+
+          {totalPages && totalPages > 1 && (
+            <Pagination
+              currentPage={filter.page || 0}
+              totalPages={totalPages}
+              onPageChange={(page) => setFilter((prev) => ({ ...prev, page }))}
+            />
+          )}
         </Tabs>
       </div>
     );
@@ -93,7 +121,7 @@ export function ProblemListPage() {
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
         {/* {renderFilterDialog()} */}
-        {renderCourseList()}
+        {renderProblemList()}
       </div>
     </div>
   );

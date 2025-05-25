@@ -8,7 +8,8 @@ import {
   useCourseWizardStep,
   useEditCourseGeneral,
   useEditingCourse,
-  useUploadCourseImage
+  useUploadCourseImage,
+  useUploadImage
 } from "../../hooks";
 import {
   FormField,
@@ -58,6 +59,7 @@ export const CourseGeneralPage = () => {
   const editCoursse = useEditCourseGeneral();
   const uploadThumbnail = useUploadCourseImage();
   const changeCourseImageLink = useChangeCourseImageLink();
+  const uploadImage = useUploadImage();
   const { goToNextStep } = useCourseWizardStep();
   const { isEditingCourse } = useEditingCourse();
 
@@ -89,15 +91,12 @@ export const CourseGeneralPage = () => {
       formData.currentCreationStep > CREATE_COURSE_STEP_NUMBERS.GENERAL
     ) {
       try {
+        if (data.courseThumbnail != formData.courseThumbnail) {
+          const imageLink = await uploadImage.mutateAsync({ file: data.courseThumbnail! });
+          await changeCourseImageLink.mutateAsync({ courseId: data.courseId, imageLink: imageLink });
+        }
         const course = await editCoursse.mutateAsync({ courseId: formData.courseId!, payload: formatPayload });
         dispatch(setCreateCourse({ courseId: course.courseId }));
-        if (data.courseThumbnail != formData.courseThumbnail) {
-          const imageLink = await uploadThumbnail.mutateAsync({
-            courseId: course.courseId,
-            file: data.courseThumbnail!
-          });
-          changeCourseImageLink.mutateAsync({ courseId: data.courseId, imageLink: imageLink });
-        }
         goToNextStep();
       } catch (error) {
         console.error("Error in updating course:", error);

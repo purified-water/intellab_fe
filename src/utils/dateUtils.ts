@@ -48,6 +48,7 @@ export const formatDateInProblem = (
     dayFormat?: "numeric" | "2-digit";
   } = { yearFormat: "numeric", monthFormat: "long", dayFormat: "numeric" }
 ): string => {
+  if (!dateStr) return "";
   const date = new Date(dateStr);
   const now = new Date();
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000);
