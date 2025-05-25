@@ -4,7 +4,7 @@ import { NotificationCard } from "./NotificationCard";
 import { useSelector } from "react-redux";
 import { useAppDispatch } from "@/redux/store"; // Import the typed dispatch
 import { RootState } from "@/redux/rootReducer";
-import { Button, Spinner } from "@/components/ui";
+import { Button, EmptyMessage, Spinner } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import { fetchNotifications, markAllAsRead } from "@/redux/notifications/notificationsSlice"; // Import the fetchNotifications action
 import { notificationAPI } from "@/lib/api/notificationAPI";
@@ -81,7 +81,7 @@ export const NotificationMenu = ({ isOpen, setIsOpen }: NotificationMenuProps) =
               {error && <div className="p-4 text-center text-red-500">Error: {error}</div>}
               {notifications.length > 0
                 ? notifications.map((notif) => <NotificationCard key={notif.id} type="menu" notification={notif} />)
-                : !loading && <div className="p-4 text-center text-gray-500">No notifications</div>}
+                : !loading && <EmptyMessage message="No notifications yet" />}
             </div>
             <div className="flex px-4 py-1 rounded-b-lg">
               <Button

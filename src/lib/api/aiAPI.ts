@@ -294,5 +294,10 @@ export const aiAPI = {
   getProblemChatbotUsage: async () => {
     const response = await apiClient.get(`/ai/stream/problem_chatbot/usage`);
     return response.data;
+  },
+  // GET LESSON CHATBOT MESSAGE COUNT
+  getLessonChatbotUsage: async () => {
+    const response = await apiClient.get(`/ai/stream/lesson_chatbot/usage`);
+    return response.data;
   }
 };

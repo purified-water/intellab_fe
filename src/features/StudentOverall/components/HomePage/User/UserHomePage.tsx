@@ -1,5 +1,5 @@
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { StatsCards } from "./StatsCard";
 import { YourCourses } from "./YourCourses";
@@ -8,6 +8,7 @@ import { Leaderboard } from "./Leaderboard";
 import { UserFeaturedCourses } from "./UserFeaturedCourses";
 import {
   useGetFeaturedCourses,
+  useGetFreeCourses,
   useGetLeaderboard,
   useGetProgressLevel,
   useGetYourCourses
@@ -26,17 +27,15 @@ export const UserHomePage = () => {
       return to;
     })()
   });
+  const leaderboardQueryParams = useMemo(() => ({ filter: "all", page: 1, size: 10 }), []);
+
   // Hooks
   const { data: yourCourseList, isPending: isFetchingYourCourses } = useGetYourCourses();
   const { data: featuredCourses, isPending: isFetchingFeaturedCourses } = useGetFeaturedCourses();
+  const { data: freeCourses, isPending: isFetchingFreeCourses } = useGetFreeCourses();
   const { data: progressLevel, isPending: isFetchingProgressLevel } = useGetProgressLevel(userId || "");
-  const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard({
-    filter: "all",
-    page: 1,
-    size: 10 // fetch more to ensure enough data
-  });
+  const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard(leaderboardQueryParams);
   const leaderboardData = leaderboardDataRaw?.slice(0, 5) || [];
-  const freeCourses = featuredCourses?.filter((course) => course.price === 0) || []; // Temporary filter for free courses
   const userRedux = useSelector((state: RootState) => state.user.user);
 
   return (
@@ -65,7 +64,7 @@ export const UserHomePage = () => {
         </div>
 
         <UserFeaturedCourses courses={featuredCourses || []} className="mb-24" isLoading={isFetchingFeaturedCourses} />
-        <UserFeaturedCourses courses={freeCourses} type="free" />
+        <UserFeaturedCourses courses={freeCourses || []} isLoading={isFetchingFreeCourses} type="free" />
       </div>
     </main>
   );

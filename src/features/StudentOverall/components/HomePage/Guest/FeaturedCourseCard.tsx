@@ -24,7 +24,7 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
 
   return (
     <Card
-      className="flex min-w-[300px] w-[370px] max-w-[370px] flex-col overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out hover:shadow-lg"
+      className="flex min-w-[300px] w-[370px] max-w-[370px] min-h-[380px] max-h-[380px] flex-col overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out hover:shadow-lg"
       onClick={() => navigate(`/course/${course.courseId}`)}
     >
       <div className="relative h-44">
@@ -47,8 +47,14 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
       </div>
 
       <CardContent className="flex-grow px-4 pt-2 pb-0">
-        <h3 className="text-lg font-bold">{course.courseName}</h3>
-        <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{course.description}</p>
+        <h3 className="text-lg font-bold line-clamp-2">{course.courseName}</h3>
+        <p
+          className={`mt-2 text-sm text-muted-foreground ${
+            course.courseName && course.courseName.length > 40 ? "line-clamp-1" : "line-clamp-2"
+          }`}
+        >
+          {course.description}
+        </p>
         <LevelCard level={course.level} categories={course.categories} />
       </CardContent>
       <CardFooter className="p-4 pt-0">

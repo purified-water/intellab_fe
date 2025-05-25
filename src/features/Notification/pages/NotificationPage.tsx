@@ -6,7 +6,7 @@ import { NotificationCard } from "../components";
 import { useAppDispatch } from "@/redux/store";
 import { useEffect } from "react";
 import { fetchNotifications, markAllAsRead, selectHasUnread } from "@/redux/notifications/notificationsSlice";
-import { Pagination } from "@/components/ui";
+import { EmptyList, Pagination } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { notificationAPI } from "@/lib/api/notificationAPI";
 
@@ -91,7 +91,7 @@ export const NotificationPage = () => {
         {notifications.length > 0 ? (
           notifications.map((notif) => <NotificationCard key={notif.id} type="page" notification={notif} />)
         ) : (
-          <div className="p-4 text-center text-gray-500">No notification</div>
+          <EmptyList message="No notifications yet" className="flex items-center justify-center h-64" />
         )}
       </div>
       {totalPages != 0 && (

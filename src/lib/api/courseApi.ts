@@ -48,6 +48,18 @@ export const courseAPI = {
     return data;
   },
 
+  getFeaturedCourses: async () => {
+    const response = await apiClient.get(`course/courses/featured-courses`);
+    const data = response.data; // Data is contained in result (not result.content)
+    return data;
+  },
+
+  getFreeCourses: async () => {
+    const response = await apiClient.get(`course/courses/free-courses`);
+    const data: IGetCoursesResponse = response.data;
+    return data;
+  },
+
   getUnEnrollCourses: async (userUid: string) => {
     const response = await apiClient.get(`course/courses/exceptEnrolled?userUid=${userUid}`);
     // const data: IGetCoursesResponse = response.data;

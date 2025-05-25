@@ -77,10 +77,10 @@ export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
             ))}
           </tr>
         </thead>
-        <tbody>
+        <tbody className="text-xs sm:text-sm">
           {status === "loading"
             ? Array.from({ length: 5 }).map((_, i) => (
-                <tr key={i} className={`text-xs sm:text-base ${i % 2 === 0 ? "bg-white" : "bg-gray6/50"}`}>
+                <tr key={i} className={`${i % 2 === 0 ? "bg-white" : "bg-gray6/50"}`}>
                   <td className="w-2/6 px-4 py-3">
                     <Skeleton className="w-3/4 h-4" />
                   </td>
@@ -104,10 +104,12 @@ export const ProblemListItem = ({ problems, status }: ProblemListItemProps) => {
                   className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6/50"}`}
                   onClick={() => handleProblemListItemClicked(row.problemId)}
                 >
-                  <td className="w-2/6 px-4 py-2 font-semibold hover:text-appPrimary">
-                    {row.problemName}
+                  <td className="w-3/6 px-4 py-2 font-medium hover:text-appPrimary">
+                    <span className="inline-block max-w-[400px] truncate align-middle" title={row.problemName}>
+                      {row.problemName}
+                    </span>
                     {!row.isPublished && (
-                      <div className="inline px-2 py-1 ml-2 text-xs rounded text-appAccent bg-appFadedAccent">
+                      <div className="inline px-2 py-1 ml-2 text-xs align-middle rounded text-appAccent bg-appFadedAccent">
                         Premium
                       </div>
                     )}

@@ -1,19 +1,19 @@
 import { Dialog, DialogContent } from "@/components/ui/shadcn/dialog";
-import { ProblemFilterType } from "@/types/ProblemType";
 import { useState } from "react";
 import { Button } from "@/components/ui";
 import { Category } from "@/types";
-import { Input, Select } from "@/components/ui/shadcn";
+// import { Input, Select } from "@/components/ui/shadcn";
+import { AdminProblemParams } from "../types/ProblemListType";
 
 type Props = {
   isVisible: boolean;
-  currentFilter: ProblemFilterType;
-  onFilter: (filter: ProblemFilterType) => void;
+  currentFilter: AdminProblemParams;
+  onFilter: (filter: AdminProblemParams) => void;
   categories: Category;
 };
 
 export function FilterDialog({ isVisible, currentFilter, onFilter }: Props) {
-  const [localFilter, setLocalFilter] = useState<ProblemFilterType>(currentFilter);
+  const [localFilter] = useState<AdminProblemParams>(currentFilter);
 
   const handleApply = () => {
     onFilter(localFilter);
@@ -24,16 +24,16 @@ export function FilterDialog({ isVisible, currentFilter, onFilter }: Props) {
       <DialogContent className="space-y-4 w-[400px]">
         <h2 className="text-xl font-bold">Filter Problems</h2>
 
-        <div className="space-y-2">
-          <label className="font-semibold">Keyword</label>
+        {/* <div className="space-y-2">
+          <label className="font-semibold">searchKey</label>
           <Input
-            value={localFilter.keyword || ""}
-            onChange={(e) => setLocalFilter({ ...localFilter, keyword: e.target.value })}
+            value={localFilter.searchKey || ""}
+            onChange={(e) => setLocalFilter({ ...localFilter, searchKey: e.target.value })}
           />
 
           <label className="font-semibold">Level</label>
           <Select
-            value={localFilter.level || ""}
+            value={localFilter.pro || ""}
             onValueChange={(value: string) =>
               setLocalFilter({ ...localFilter, level: value as "easy" | "medium" | "hard" })
             }
@@ -47,7 +47,7 @@ export function FilterDialog({ isVisible, currentFilter, onFilter }: Props) {
           <label className="font-semibold">Status</label>
           <Select
             value={localFilter.status || ""}
-            onValueChange={(value: string) => setLocalFilter({ ...localFilter, status: value as "done" | "not done" })}
+            onValueChange={(value: string) => setLocalFilter({ ...localFilter, isCom: value as "done" | "not done" })}
           >
             <option value="">Select status</option>
             <option value="done">Done</option>
@@ -55,7 +55,7 @@ export function FilterDialog({ isVisible, currentFilter, onFilter }: Props) {
           </Select>
 
           <label className="font-semibold">Categories</label>
-          {/* <MultiSelect
+          <MultiSelect
             value={localFilter.categories || []}
             onChange={(categories: ProblemCategoryType[]) => setLocalFilter({ ...localFilter, categories })}
             options={[
@@ -65,8 +65,8 @@ export function FilterDialog({ isVisible, currentFilter, onFilter }: Props) {
               // Extend this list as needed
             ]}
             placeholder="Select categories"
-          /> */}
-        </div>
+          />
+        </div> */}
 
         <div className="flex justify-end gap-2">
           <Button variant="outline" onClick={() => onFilter(currentFilter)}>

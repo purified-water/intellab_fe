@@ -2,11 +2,11 @@ import { HeroSection } from "./HeroSection";
 import { FeatureSection } from "./FeatureSection";
 import { FeaturedCoursesSection } from "./FeaturedCoursesSection";
 import { PricingSection } from "./PricingSection";
-import { useGetFeaturedCourses } from "@/features/StudentOverall/hooks/useHomePage";
+import { useGetFeaturedCourses, useGetFreeCourses } from "@/features/StudentOverall/hooks/useHomePage";
 
 export default function GuestHomePage() {
   const { data: featuredCourses, isPending: isFetchingFeaturedCourses } = useGetFeaturedCourses();
-  const freeCourses = featuredCourses?.filter((course) => course.price === 0) || []; // Temporary filter for free courses
+  const { data: freeCourses, isPending: isFetchingFreeCourses } = useGetFreeCourses();
 
   return (
     <main className="flex-1">
@@ -16,7 +16,7 @@ export default function GuestHomePage() {
         featuredCourses={featuredCourses || []}
         isFetchingFeatured={isFetchingFeaturedCourses}
         freeCourses={freeCourses || []}
-        isFetchingFree={false}
+        isFetchingFree={isFetchingFreeCourses}
       />
       <PricingSection />
     </main>

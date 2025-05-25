@@ -8,3 +8,4 @@ export * from "./premiumValues";
 export * from "./loginTypes";
 export * from "./fileSizes";
 export * from "./userRoles";
+export * from "./global";

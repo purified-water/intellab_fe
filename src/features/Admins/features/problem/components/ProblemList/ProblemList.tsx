@@ -1,85 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useState } from "react";
 import { ListFilter } from "lucide-react";
-import { useToast } from "@/hooks";
-import { AlertDialog, Pagination } from "@/components/ui";
+import { AlertDialog, EmptyList } from "@/components/ui";
 import { ProblemListItem } from "./ProblemListItem";
-import { ProblemFilterType } from "@/types/ProblemType";
-
-export type Problem = {
-  id: string;
-  problemName: string;
-  level: "easy" | "medium" | "hard";
-  categories: string[];
-  publish: "private" | "public";
-  submission: number;
-  acceptanceRate: number;
-  isCompletedCreation: boolean;
-  isPublished: boolean;
-};
-
-const dummyProblemListCreated: Problem[] = [
-  {
-    id: "p1",
-    problemName: "Two Sum",
-    level: "easy",
-    categories: ["array", "hashmap", "two pointers", "binary search"],
-    publish: "public",
-    submission: 15000,
-    acceptanceRate: 0.45,
-    isCompletedCreation: true,
-    isPublished: false
-  },
-  {
-    id: "p2",
-    problemName: "Longest Substring Without Repeating Characters",
-    level: "medium",
-    categories: ["string", "sliding window"],
-    publish: "public",
-    submission: 12000,
-    acceptanceRate: 0.37,
-    isCompletedCreation: true,
-    isPublished: true
-  },
-  {
-    id: "p4",
-    problemName: "Climbing Stairs",
-    level: "easy",
-    categories: ["dynamic programming"],
-    publish: "public",
-    submission: 18000,
-    acceptanceRate: 0.55,
-    isCompletedCreation: true,
-    isPublished: true
-  }
-];
-
-const dummyProblemListDraft: Problem[] = [
-  {
-    id: "p3",
-    problemName: "Merge K Sorted Lists",
-    level: "hard",
-    categories: [],
-    publish: "private",
-    submission: 8000,
-    acceptanceRate: 0.29,
-    isCompletedCreation: false,
-    isPublished: false
-  },
-  {
-    id: "p5",
-    problemName: "Word Ladder",
-    level: "hard",
-    categories: ["graph", "bfs"],
-    publish: "private",
-    submission: 9500,
-    acceptanceRate: 0.25,
-    isCompletedCreation: false,
-    isPublished: false
-  }
-];
-
+import { AdminProblemParams, GetAdminProblem } from "../../types/ProblemListType";
 interface ProblemListProps {
-  filter: ProblemFilterType;
+  problems: GetAdminProblem[];
+  filter: AdminProblemParams;
+  isLoading: boolean;
   tab: string;
 }
 
@@ -89,37 +16,11 @@ const TABLE_HEADERS = {
   draft: ["Created At", "Current Step"]
 };
 
-export function ProblemList({ tab }: ProblemListProps) {
-  const [problems, setProblems] = useState<Problem[]>(dummyProblemListCreated);
-  const [loading] = useState(false); // Handling loading problems
-  const [totalPages] = useState<number | null>(null); // Later
-  const [currentPage, setCurrentPage] = useState(0);
+export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [, setDeletingProblem] = useState<Problem | null>(null); // Later
+  const [, setDeletingProblem] = useState<GetAdminProblem | null>(null); // Later
 
-  const toast = useToast();
-
-  const loadProblems = useCallback(
-    async (page: number) => {
-      console.log("Loading problems for tab:", tab, "Page:", page);
-    },
-    [tab, toast]
-  );
-
-  useEffect(() => {
-    loadProblems(currentPage);
-  }, [tab, currentPage, loadProblems]);
-
-  // Dummy data for demonstration
-  useEffect(() => {
-    if (tab === "created") {
-      setProblems(dummyProblemListCreated);
-    } else if (tab === "draft") {
-      setProblems(dummyProblemListDraft);
-    }
-  }, [tab]);
-
-  const handleDeleteProblem = (problem: Problem) => {
+  const handleDeleteProblem = (problem: GetAdminProblem) => {
     setDeletingProblem(problem);
     setTimeout(() => setOpenDeleteDialog(true), 0);
   };
@@ -151,28 +52,36 @@ export function ProblemList({ tab }: ProblemListProps) {
   const renderBody = () => {
     return (
       <tbody>
-        {loading ? (
+        {isLoading ? (
           Array.from({ length: 5 }).map((_, i) => (
             <ProblemListItem
               key={i}
               isLoading={true}
-              problem={{} as Problem}
-              onDeleteProblem={handleDeleteProblem}
-              onToggleProblemPublication={handleToggleProblemPublication}
+              problem={{} as GetAdminProblem}
+              onDeleteProblem={() => {}}
+              onToggleProblemPublication={() => {}}
             />
           ))
         ) : problems.length === 0 ? (
           <tr>
-            <td colSpan={8} className="py-5 text-center text-gray-500">
-              No problems found
+            <td
+              colSpan={
+                TABLE_HEADERS.common.length +
+                (tab === "created" ? TABLE_HEADERS.created.length : TABLE_HEADERS.draft.length) +
+                1
+              }
+            >
+              <div className="flex justify-center py-8">
+                <EmptyList message="No problems found." />
+              </div>
             </td>
           </tr>
         ) : (
           problems.map((problem) => (
             <ProblemListItem
-              key={problem.id}
+              key={problem.problemId}
               problem={problem}
-              isLoading={false}
+              isLoading={isLoading}
               onDeleteProblem={handleDeleteProblem}
               onToggleProblemPublication={handleToggleProblemPublication}
             />
@@ -188,10 +97,6 @@ export function ProblemList({ tab }: ProblemListProps) {
         {renderHeader()}
         {renderBody()}
       </table>
-
-      {totalPages && totalPages > 1 && (
-        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={(page) => setCurrentPage(page)} />
-      )}
 
       <AlertDialog
         open={openDeleteDialog}
