@@ -4,11 +4,13 @@ import { RootState } from "@/redux/rootReducer";
 // rather than null/undefined
 export const isGeneralStepValid = (state: RootState): boolean => {
   return !!(
-    state.createProblem.problemName &&
-    state.createProblem.problemCategories.length > 0 &&
-    state.createProblem.problemLevel &&
-    state.createProblem.problemScore &&
-    state.createProblem.problemIsPublished
+    (
+      state.createProblem.problemName &&
+      state.createProblem.problemCategories.length > 0 &&
+      state.createProblem.problemLevel &&
+      state.createProblem.problemScore
+    )
+    //&& state.createProblem.problemIsPublished
   );
 };
 

@@ -36,9 +36,7 @@ import {
   TGetCourseForAdminResponse,
   TDeleteCourseResponse,
   TGetCourseForAdminParams,
-  TDeleteCourseParams,
-  TUpdateCourseAvailabilityResponse,
-  TUpdateCourseAvailabilityParams
+  TDeleteCourseParams
 } from "@/features/Admins/features/course/types";
 
 const DEFAULT_PAGE_SIZE = 10;

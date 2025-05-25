@@ -13,6 +13,7 @@ import { useProblemWizardStep } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { isTestcasesStepValid } from "../../utils";
 import { StepGuard } from "../../../course/components/StepGuard";
+import { adminProblemAPI } from "@/features/Admins/api";
 
 const problemSolutionSchema = createProblemSchema.pick({
   problemSolution: true
@@ -25,6 +26,7 @@ export const ProblemSolutionPage = () => {
   const dispatch = useDispatch();
   const { goToNextStep } = useProblemWizardStep();
   const formData = useSelector((state: RootState) => state.createProblem);
+  const userRedux = useSelector((state: RootState) => state.user.user);
 
   // Initialize form with Zod validation
   const form = useForm<ProblemSolutionSchema>({
@@ -37,6 +39,18 @@ export const ProblemSolutionPage = () => {
   const onSubmit = async (data: ProblemSolutionSchema) => {
     dispatch(setCreateProblem(data));
     goToNextStep(); // This should be called in mutation function rather than here
+    await adminProblemAPI.createProblemSolutionStep({
+      body: {
+        content: data.problemSolution,
+        problemId: formData.problemId,
+        authorId: userRedux!.userId!
+      },
+      onSuccess: async (solution) => {
+        dispatch(setCreateProblem({ problemSolution: solution.content }));
+        goToNextStep();
+      },
+      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+    });
   };
 
   return (

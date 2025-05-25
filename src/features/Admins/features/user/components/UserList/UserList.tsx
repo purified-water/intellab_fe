@@ -8,7 +8,6 @@ import { showToastError } from "@/utils";
 import { Pagination } from "@/components/ui";
 
 const TABLE_HEADERS = [
-  { key: "ID", label: "ID", icon: <ListFilter className="h-4 w-4" /> },
   { key: "EMAIL_ADDRESS", label: "Email Address", icon: <ListFilter className="h-4 w-4" /> },
   { key: "USER_NAME", label: "Username", icon: <ListFilter className="h-4 w-4" /> },
   { key: "CREATED", label: "Created", icon: <ListFilter className="h-4 w-4" /> },
