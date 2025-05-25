@@ -1,4 +1,13 @@
-import { ICourse, ILesson, IPageable, TCategory, TGetApiParams, TPremiumStatus } from "@/types";
+import {
+  APIMetaData,
+  APIResponseCode,
+  ICourse,
+  ILesson,
+  IPageable,
+  TCategory,
+  TGetApiParams,
+  TPremiumStatus
+} from "@/types";
 
 export interface IGetCoursesResponse {
   code: number;
@@ -64,22 +73,11 @@ export interface IUserCourse {
   lastAccessedDate: string;
 }
 
-export interface IGetUserEnrolledCoursesResponse {
-  code: number;
+export type IGetUserEnrolledCoursesResponse = APIResponseCode & {
   result: {
-    content: IUserCourse[];
-    pageable: IPageable;
-    totalPages: number;
-    totalElements: number;
-    last: boolean;
-    size: number;
-    number: number;
-    sort: { property: string; direction: "ASC" | "DESC" }[];
-    numberOfElements: number;
-    first: boolean;
-    empty: boolean;
-  };
-}
+    content: ICourse[];
+  } & APIMetaData;
+};
 
 export interface IGetCategories {
   code: number;

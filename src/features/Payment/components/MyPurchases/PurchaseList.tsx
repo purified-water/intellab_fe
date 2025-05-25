@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { paymentAPI } from "@/lib/api";
 import { shortenDate, showToastError } from "@/utils";
 import { VNPAY_TRANSACTION_CODE } from "../../constants";
-import { Pagination } from "@/components/ui";
+import { EmptyList, Pagination } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 interface PurchaseListProps {
@@ -103,8 +103,8 @@ export const PurchaseList = ({ paymentFor }: PurchaseListProps) => {
 
           {!loading && purchases.length === 0 && (
             <tr>
-              <td className="px-4 py-3 text-center" colSpan={4}>
-                No payment history
+              <td colSpan={4}>
+                <EmptyList message="No purchases found" />
               </td>
             </tr>
           )}

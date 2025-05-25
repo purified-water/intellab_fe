@@ -24,6 +24,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
 import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
+import { ScrollToTop } from "./hooks/useScrollToTop";
 
 const queryClient = new QueryClient(); // Define outside of the component to avoid re-creating it on every render
 
@@ -44,6 +45,8 @@ export const Layout = () => {
 
   return (
     <>
+      {/* Force when navigating to new page, scroll to top */}
+      <ScrollToTop />
       <VerifyAccountBanner />
       {!hideNavbar && <Navbar isDarkMode={darkMode} toggleDarkMode={() => setDarkMode(!darkMode)} />}
       <Outlet />

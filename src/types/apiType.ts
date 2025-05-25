@@ -19,4 +19,36 @@ type TPostApiParams<Querry, Body, Data> = TGetApiParams<Querry, Data> & {
   body?: Body;
 };
 
-export type { TApiParams, TApiResponse, TGetApiParams, TPostApiParams };
+type APIResponseCode = {
+  code: number;
+  message: string;
+};
+
+type APIMetaData = {
+  pageable: {
+    pageNumber: number;
+    pageSize: number;
+    sort: {
+      empty: boolean;
+      sorted: boolean;
+      unsorted: boolean;
+    };
+    offset: number;
+    paged: boolean;
+    unpaged: boolean;
+  };
+  last: boolean;
+  totalElements: number;
+  totalPages: number;
+  size: number;
+  number: number;
+  sort: {
+    empty: boolean;
+    sorted: boolean;
+    unsorted: boolean;
+  };
+  first: boolean;
+  numberOfElements: number;
+  empty: boolean;
+};
+export type { TApiParams, TApiResponse, TGetApiParams, TPostApiParams, APIResponseCode, APIMetaData };

@@ -1,26 +1,27 @@
 import { Card, CardContent, CardHeader, CardTitle, Progress, Skeleton } from "@/components/ui/shadcn";
 import { Button, EmptyMessage } from "@/components/ui";
-import { IUserCourse } from "@/features/StudentOverall/types";
-import { useGetEnrolledCourseDetail } from "@/features/StudentOverall/hooks/useHomePage";
 import { useNavigate } from "react-router-dom";
+import { ICourse } from "@/types";
 
 interface YourCoursesProps {
-  userEnrollCourses: IUserCourse[];
+  userEnrollCourses: ICourse[];
   isLoading?: boolean;
   className?: string;
 }
 
-export const YourCourseCard = (course: IUserCourse) => {
-  if (!course) return null;
+export const YourCourseCard = (courseDetail: ICourse) => {
+  if (!courseDetail) return null;
   const navigate = useNavigate();
-  const { data: courseDetail } = useGetEnrolledCourseDetail(course.enrollId.courseId || "");
   const isFinished = courseDetail?.progressPercent === 100;
 
   return (
-    <div className="flex items-stretch w-full overflow-hidden border rounded-lg">
+    <div
+      onClick={() => navigate(`/course/${courseDetail?.courseId}`)}
+      className="flex items-stretch w-full overflow-hidden border rounded-lg cursor-pointer"
+    >
       {/* Left: Image */}
-      <div className="w-2/5 max-w-[300px]">
-        <img src={courseDetail?.courseImage} alt={courseDetail?.courseName} className="object-cover h-full" />
+      <div className="w-2/5 max-w-[300px] max-h-[180px] overflow-hidden">
+        <img src={courseDetail?.courseImage} alt={courseDetail?.courseName} className="object-fill" />
       </div>
 
       {/* Right: Course Content */}
