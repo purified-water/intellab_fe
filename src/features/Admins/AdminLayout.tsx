@@ -1,20 +1,15 @@
 import { useState, useEffect } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { AdminSidebar, BreadcrumbNav } from "./components/Navigation";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { SidebarInset } from "@/components/ui/shadcn/sidebar";
 import { USER_ROLES } from "@/constants";
-import { useEditingCourse } from "./features/course/hooks";
-import { resetCreateCourse, initialState } from "@/redux/createCourse/createCourseSlice";
 
 export const AdminLayout = () => {
   const userRedux = useSelector((state: RootState) => state.user.user);
-  const createCourseRedux = useSelector((state: RootState) => state.createCourse);
   const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const { isEditingCourse } = useEditingCourse();
 
   const [openButton, setOpenButton] = useState(false); // handle showing the sidebar using icon button
 
@@ -27,12 +22,6 @@ export const AdminLayout = () => {
       navigate("/");
     }
   }, [userRedux]);
-
-  useEffect(() => {
-    if (!isEditingCourse && createCourseRedux !== initialState) {
-      dispatch(resetCreateCourse());
-    }
-  }, [isEditingCourse]);
 
   let layout = null;
   if (userRedux && userRedux?.role === USER_ROLES.ADMIN) {

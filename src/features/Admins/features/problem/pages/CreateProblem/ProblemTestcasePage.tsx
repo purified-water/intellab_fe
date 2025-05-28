@@ -1,5 +1,5 @@
 import { Spinner } from "@/components/ui";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ProblemTestcaseForm, ProblemTestcaseList, ProblemWizardButtons } from "../../components/CreateProblem";
 import { CreateTestcaseSchema } from "../../schemas";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,6 +11,8 @@ import { isBoilerplateStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { useToast } from "@/hooks";
 import { showToastError } from "@/utils";
+import { useEditingProblem } from "../../hooks";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 export const ProblemTestcasePage = () => {
   const [isLoading] = useState(false); // This will be replaced with the isLoading from useQuery function to get testcases
@@ -21,6 +23,13 @@ export const ProblemTestcasePage = () => {
   const formData = useSelector((state: RootState) => state.createProblem);
   const testcaseList = formData.problemTestcases || [];
   const toast = useToast();
+  const { isEditingProblem } = useEditingProblem();
+
+  useEffect(() => {
+    if (formData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.TESTCASE) {
+      dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.TESTCASE }));
+    }
+  }, []);
 
   const handleUpdateTestcases = async (newTestcase: CreateTestcaseSchema) => {
     await adminProblemAPI.createProblemTestCaseStepSingle({
@@ -62,8 +71,13 @@ export const ProblemTestcasePage = () => {
     }
   };
 
+  let redirectUrl = "/admin/problems/create/boilerplate";
+  if (isEditingProblem) {
+    redirectUrl += "?editProblem=true";
+  }
+
   return (
-    <StepGuard checkValid={isBoilerplateStepValid} redirectTo="/admin/problems/create/boilerplate">
+    <StepGuard checkValid={isBoilerplateStepValid} redirectTo={redirectUrl}>
       <div className="flex w-full">
         {isLoading ? (
           <div className="flex items-center justify-center w-24">

@@ -4,6 +4,10 @@ import { Skeleton, Switch, Tooltip, TooltipContent, TooltipProvider, TooltipTrig
 import { capitalizeFirstLetter, formatDateInProblem } from "@/utils";
 import { GetAdminProblem } from "../../types/ProblemListType";
 import { NA_VALUE } from "@/constants";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
+import { CREATE_PROBLEM_STEP_NUMBERS, steps } from "../../constants";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
@@ -21,6 +25,8 @@ interface ProblemListItemProps {
 
 export function ProblemListItem(props: ProblemListItemProps) {
   const { problem, isLoading, onToggleProblemPublication, onDeleteProblem } = props;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChangeProblemPublication = async () => {
     console.log("handleChangeProblemPublication");
@@ -37,6 +43,39 @@ export function ProblemListItem(props: ProblemListItemProps) {
     onDeleteProblem(problem);
   };
 
+  const handleEdit = () => {
+    dispatch(
+      setCreateProblem({
+        problemId: problem.problemId,
+        problemName: problem.problemName,
+        problemDescription: problem.description || "",
+        problemLevel: capitalizeFirstLetter(problem.problemLevel) as "Easy" | "Medium" | "Hard",
+        problemScore: problem.score,
+        problemIsPublished: problem.isPublished,
+        problemCategories: problem.categories,
+        problemStructure: problem.problemStructure
+          ? {
+              functionName: problem.problemStructure.functionName,
+              inputStructure: problem.problemStructure.inputStructure.map((input) => {
+                return { inputName: input.name, inputType: input.type };
+              }),
+              outputStructure: problem.problemStructure.outputStructure.map((output) => {
+                return { outputName: output.name, outputType: output.type };
+              })
+            }
+          : undefined,
+        problemTestcases: [],
+        problemSolution: problem.solution ? problem.solution.content : "",
+        currentCreationStep: problem.currentCreationStep
+      })
+    );
+    if (problem.currentCreationStep === CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) {
+      navigate("/admin/problems/create/general?editProblem=true");
+    } else {
+      navigate(`/admin/problems/create/${steps[problem.currentCreationStep - 1].path}?editProblem=true`);
+    }
+  };
+
   const renderDropdownMenu = () => {
     const handleDropdownMenuItemClick = async (action: string) => {
       switch (action) {
@@ -44,10 +83,8 @@ export function ProblemListItem(props: ProblemListItemProps) {
           handleViewDetails();
           break;
         case DROP_DOWN_MENU_ITEMS.EDIT:
-          console.log("Modify clicked for item:");
-          break;
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
-          console.log("Continue Edit clicked for item:");
+          handleEdit();
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
           handleDeleteCourse();
@@ -152,7 +189,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
           {!problem.isCompletedCreation && (
             <td className="px-2 py-1">{formatDateInProblem(problem.createdAt) || NA_VALUE}</td>
           )}
-          {!problem.isCompletedCreation && <td className="px-2 py-1">{problem.currentCreationStep}</td>}
+          {!problem.isCompletedCreation && <td className="px-2 py-1">{problem.currentCreationStepDescription}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

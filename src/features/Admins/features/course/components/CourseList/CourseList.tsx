@@ -5,6 +5,7 @@ import { useToast } from "@/hooks";
 import { courseAPI } from "@/lib/api";
 import { showToastError, showToastSuccess } from "@/utils";
 import { AlertDialog, Pagination } from "@/components/ui";
+import { useDeleteCourseImage } from "../../hooks";
 
 const TABLE_HEADERS = {
   COURSE_NAME: "Course Name",
@@ -29,8 +30,10 @@ export function CourseList(props: CourseListProps) {
   const [deletingCourse, setDeletingCourse] = useState<ICourse | null>(null);
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
+  const [deleting, setDeleting] = useState(false);
 
   const toast = useToast();
+  const deleteCourseImage = useDeleteCourseImage();
 
   const filterCoursesByPrice = (courses: ICourse[]) => {
     if (!filter.priceRange) {
@@ -68,6 +71,10 @@ export function CourseList(props: CourseListProps) {
   };
 
   const deleteCourseAPI = async (course: ICourse) => {
+    setDeleting(true);
+    if (course.courseImage) {
+      await deleteCourseImage.mutateAsync({ courseId: course.courseId });
+    }
     await courseAPI.deleteCourse({
       query: { courseId: course.courseId },
       onSuccess: async (result) => {
@@ -81,6 +88,7 @@ export function CourseList(props: CourseListProps) {
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
+    setDeleting(false);
   };
 
   useEffect(() => {
@@ -216,6 +224,7 @@ export function CourseList(props: CourseListProps) {
         message="This action is irreversible. Once the course is deleted, it cannot be recovery."
         onConfirm={() => deleteCourseAPI(deletingCourse!)}
         onCancel={() => setOpenDeleteDialog(false)}
+        processing={deleting}
       />
     );
   };

@@ -70,6 +70,11 @@ export const adminCourseAPI = {
     return response.data.result;
   },
 
+  deleteCourseImage: async (courseId: string) => {
+    const response = await apiClient.delete(`course/admin/courses/${courseId}/image`);
+    return response.data.result;
+  },
+
   // Step 2
   // Add a lesson (call first to init the lessonId)
   postCreateCourseLesson: async (payload: CreateCourseLessonStepPayload) => {

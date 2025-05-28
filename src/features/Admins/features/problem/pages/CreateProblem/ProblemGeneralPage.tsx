@@ -27,9 +27,10 @@ import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { useCourseCategories } from "../../../course/hooks";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 const problemGeneralSchema = createProblemSchema.pick({
   problemId: true,
@@ -48,6 +49,7 @@ export const ProblemGeneralPage = () => {
   const { data: categories, isLoading: isLoadingCategories } = useCourseCategories(); // Use get course category for testing first
   const formData = useSelector((state: RootState) => state.createProblem);
   const { goToNextStep } = useProblemWizardStep();
+  const { isEditingProblem } = useEditingProblem();
 
   // Initialize form with Zod validation
   const form = useForm<ProblemGeneralSchema>({
@@ -62,7 +64,11 @@ export const ProblemGeneralPage = () => {
     }
   });
 
-  const onSubmit = async (data: ProblemGeneralSchema) => {
+  const handleEditProblem = async (data: ProblemGeneralSchema) => {
+    console.log("---> handleEditProblem called with data:", data);
+  };
+
+  const handleCreateProblem = async (data: ProblemGeneralSchema) => {
     await adminProblemAPI.createProblemGeneralStep({
       body: {
         problemName: data.problemName,
@@ -82,6 +88,17 @@ export const ProblemGeneralPage = () => {
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
+  };
+
+  const onSubmit = async (data: ProblemGeneralSchema) => {
+    if (
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.GENERAL) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.GENERAL
+    ) {
+      await handleEditProblem(data);
+    } else {
+      await handleCreateProblem(data);
+    }
   };
 
   const handleSubmitError = (errors: unknown) => {

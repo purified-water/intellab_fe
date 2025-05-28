@@ -49,11 +49,7 @@ export function CourseListItem(props: CourseListItemProps) {
   const handleEdit = async () => {
     let thumbnailFile = null;
     if (course.courseImage) {
-      try {
-        thumbnailFile = await imageURLToFile(course.courseImage, course.courseName);
-      } catch (error) {
-        console.error("--> Error converting image URL to file:", error);
-      }
+      thumbnailFile = await imageURLToFile(course.courseImage, course.courseName);
     }
     dispatch(
       setCreateCourse({
@@ -63,11 +59,13 @@ export function CourseListItem(props: CourseListItemProps) {
         courseCategories: course.categories,
         courseLevel: course.level,
         courseThumbnail: thumbnailFile,
-        courseCertificate: course.templateCode ?? 1,
+        courseCertificate: course.templateCode || undefined,
         coursePrice: course.price ?? 0,
-        courseSummary: course.aiSummaryContent ?? "placeholder",
+        courseSummary: course.aiSummaryContent || undefined,
         courseMakeAvailable: course.isAvailable,
-        currentCreationStep: course.currentCreationStep
+        currentCreationStep: course.currentCreationStep,
+        courseThumbnailUrl: course.courseImage,
+        courseLessons: []
       })
     );
     if (course.currentCreationStep === CREATE_COURSE_STEP_NUMBERS.PREVIEW) {
