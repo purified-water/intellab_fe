@@ -41,7 +41,7 @@ export const UserFeaturedCourses = ({ courses, isLoading, type = "featured", cla
                 <Skeleton key={i} className="min-w-[300px] w-[370px] h-[320px] rounded-xl" />
               ))
             : courses.map((course) => (
-                <div key={course.courseId} className="snap-start">
+                <div key={course.courseId} className="pb-4 snap-start">
                   <FeaturedCourseCard course={course} />
                 </div>
               ))}

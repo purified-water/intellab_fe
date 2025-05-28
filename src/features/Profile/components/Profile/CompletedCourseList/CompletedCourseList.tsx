@@ -5,6 +5,7 @@ import { courseAPI } from "@/lib/api";
 import { CompletedCourseItem } from "./CompletedCourseItem";
 import { ICompletedCourse } from "@/types";
 import { API_RESPONSE_CODE } from "@/constants";
+import { EmptyList, Separator } from "@/components/ui";
 
 type CompletedCourseListProps = {
   userId: string;
@@ -65,11 +66,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   };
 
   const renderEmpty = () => {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-lg text-gray3">Finish courses to display your accomplishment here!</p>
-      </div>
-    );
+    return <EmptyList message="Finish your course to see your accomplishments here!" size="sm" />;
   };
 
   let content = null;
@@ -84,7 +81,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   return (
     <div className="w-full bg-white rounded-[10px] flex flex-col p-6 space-y-3">
       <p className="text-xl font-bold text-appPrimary">Completed Courses</p>
-      <div className="border-t-2 border-gray" />
+      <Separator className="my-2" />
       {content}
     </div>
   );

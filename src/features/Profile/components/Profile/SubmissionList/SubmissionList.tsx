@@ -7,6 +7,7 @@ import { SubmissionItem } from "./SubmissionItem";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { EmptyList, Separator } from "@/components/ui";
 
 type SubmissionListProps = {
   userId: string;
@@ -68,11 +69,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
   };
 
   const renderEmpty = () => {
-    return (
-      <div className="flex items-center justify-center h-full">
-        <p className="text-lg text-gray3">No submissions yet!</p>
-      </div>
-    );
+    return <EmptyList message="No submissions yet!" size="sm" />;
   };
 
   let content = null;
@@ -98,7 +95,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
         <p className="text-xl font-bold text-appPrimary">All Submissions</p>
         {isMe && submissions.length > 0 && renderViewAllSubmissions()}
       </div>
-      <div className="border-t-2 border-gray" />
+      <Separator className="my-2" />
       {content}
     </div>
   );

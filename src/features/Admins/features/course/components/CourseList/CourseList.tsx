@@ -213,7 +213,7 @@ export function CourseList(props: CourseListProps) {
       <AlertDialog
         open={openDeleteDialog}
         title="You are about to delete the course"
-        message="This action is irreversible. Once the course is deleted, it cannot be recovery."
+        message="This action is irreversible. Once the course is deleted, it cannot be recovered."
         onConfirm={() => deleteCourseAPI(deletingCourse!)}
         onCancel={() => setOpenDeleteDialog(false)}
       />

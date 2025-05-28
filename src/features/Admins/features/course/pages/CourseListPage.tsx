@@ -46,12 +46,12 @@ export function CourseListPage() {
       <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
         <SearchBar value={filter?.keyword || ""} onSearch={handleKeywordSearch} width={800} />
-        <div className="border-l border-gray4 pl-4 ml-2">
+        <div className="pl-4 ml-2 border-l border-gray4">
           <Button
             onClick={handleCreateCourse}
-            className="bg-appPrimary hover:bg-appPrimary hover:opacity-80 rounded-lg font-semibold text-lg py-5 px-4"
+            className="px-4 py-5 text-base font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="w-4 h-4" />
             New Course
           </Button>
         </div>
@@ -95,7 +95,7 @@ export function CourseListPage() {
   };
 
   return (
-    <div className="space-y-6 px-2">
+    <div className="px-2 space-y-6">
       <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}

@@ -24,7 +24,7 @@ export function EditProfilePage() {
   }, [isAuthenticated]);
 
   return (
-    <div className="flex justify-center min-h-screen py-8 space-x-4 bg-gray6">
+    <div className="flex justify-center min-h-screen py-8 space-x-4 bg-gray6/50">
       <SideBar activeTab={activeTab} setActiveTab={setActiveTab} />
       <div className="w-[800px] mt-3">
         {activeTab === EDIT_PROFILE_TABS.ACCOUNT ? <EditProfileSection /> : <NotificationSection />}

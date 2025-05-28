@@ -1,7 +1,7 @@
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton, Switch, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/shadcn";
-import { capitalizeFirstLetter, formatDateInProblem } from "@/utils";
+import { capitalizeFirstLetter, shortenDate } from "@/utils";
 import { GetAdminProblem } from "../../types/ProblemListType";
 import { NA_VALUE } from "@/constants";
 
@@ -16,14 +16,13 @@ interface ProblemListItemProps {
   problem: GetAdminProblem;
   isLoading: boolean;
   onToggleProblemPublication: (problemId: string, isPublish: boolean) => void;
-  onDeleteProblem: (course: GetAdminProblem) => void;
+  onDeleteProblem: (Problem: GetAdminProblem) => void;
 }
 
 export function ProblemListItem(props: ProblemListItemProps) {
   const { problem, isLoading, onToggleProblemPublication, onDeleteProblem } = props;
 
   const handleChangeProblemPublication = async () => {
-    console.log("handleChangeProblemPublication");
     onToggleProblemPublication(problem.problemId, !problem.isPublished);
   };
 
@@ -31,9 +30,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
     console.log("View Details clicked for item:");
   };
 
-  console.log("ProblemListItem rendered with problem:", problem);
-
-  const handleDeleteCourse = () => {
+  const handleDeleteProblem = () => {
     onDeleteProblem(problem);
   };
 
@@ -50,7 +47,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
           console.log("Continue Edit clicked for item:");
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
-          handleDeleteCourse();
+          handleDeleteProblem();
           break;
         default:
           break;
@@ -89,7 +86,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
         {Array(6)
           .fill(null)
           .map((_, index) => (
-            <td key={index} className="px-2 py-1">
+            <td key={index} className="py-1">
               <Skeleton className={index === 5 ? "w-1/4 h-4" : index === 6 ? "size-4" : "w-[80%] h-4"} />
             </td>
           ))}
@@ -101,9 +98,9 @@ export function ProblemListItem(props: ProblemListItemProps) {
     return (
       <>
         <tr key={problem.problemId} className="text-base border-b border-gray5">
-          <td className="px-2 py-1 max-w-[300px] truncate">{problem.problemName}</td>
+          <td className="py-1 max-w-[300px] truncate">{problem.problemName}</td>
           <td
-            className={`px-2 py-1 font-medium ${
+            className={`py-1 font-medium ${
               problem.problemLevel === "easy"
                 ? "text-appEasy"
                 : problem.problemLevel === "medium"
@@ -113,7 +110,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
           >
             {capitalizeFirstLetter(problem.problemLevel)}
           </td>
-          <td className="px-2 py-1">
+          <td className="py-1">
             <div
               className="truncate max-w-[200px]"
               title={problem.categories?.map((category) => category.name).join(", ") ?? ""}
@@ -123,14 +120,14 @@ export function ProblemListItem(props: ProblemListItemProps) {
           </td>
           {problem.isCompletedCreation && (
             <>
-              <td className="px-2 py-1">
+              <td className="py-1">
                 <Switch
                   checked={problem.isPublished}
                   onCheckedChange={handleChangeProblemPublication}
                   className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
                 />
               </td>
-              <td className="px-2 py-1">
+              <td className="px-4 py-1 text-right">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -144,15 +141,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </td>{" "}
-              <td className="px-2 py-1">{problem.acceptanceRate}%</td>
+              </td>
+              <td className="py-1 text-right">{problem.acceptanceRate}%</td>
             </>
           )}
 
-          {!problem.isCompletedCreation && (
-            <td className="px-2 py-1">{formatDateInProblem(problem.createdAt) || NA_VALUE}</td>
-          )}
-          {!problem.isCompletedCreation && <td className="px-2 py-1">{problem.currentCreationStep}</td>}
+          {!problem.isCompletedCreation && <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>}
+          {!problem.isCompletedCreation && <td className="py-1">{problem.currentCreationStep}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

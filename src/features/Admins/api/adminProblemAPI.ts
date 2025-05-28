@@ -26,13 +26,10 @@ export const adminProblemAPI = {
   getAdminProblemList: async (params: AdminProblemParams): Promise<GetAdminProblemResponseType> => {
     const response = await apiClient.get(`problem/admin/problems`, {
       params: {
-        isComplete: params.isComplete,
-        page: params.page,
-        size: params.size || DEFAULT_PAGE_SIZE,
-        sort: params.sort
+        ...params,
+        size: params.size || DEFAULT_PAGE_SIZE
       }
     });
-    console.log("Admin Problem List Response:", response.data);
     return response.data;
   },
 
@@ -320,5 +317,17 @@ export const adminProblemAPI = {
     if (onEnd) {
       onEnd();
     }
+  },
+
+  updateProblemPublicationStatus: async (problemId: string, isPublished: boolean) => {
+    const response = await apiClient.put(
+      `problem/admin/problems/update-publish-status/${problemId}?publishStatus=${isPublished}`
+    );
+    return response.data;
+  },
+
+  deleteProblem: async (problemId: string) => {
+    const response = await apiClient.delete(`problem/admin/problems/${problemId}`);
+    return response.data;
   }
 };

@@ -10,10 +10,11 @@ import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { AppFooter } from "@/components/AppFooter";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
-import { Course, FilterButton, FilterComponent, SearchResultComponent, SearchBar } from "../components";
+import { Course, FilterComponent, SearchResultComponent } from "../components";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { Button } from "@/components/ui";
 import { ArrowRight } from "lucide-react";
+import { FilterButton, SearchBar } from "@/features/Problem/components";
 
 // const SEARCH_WAIT_TIME = 3000;
 

@@ -12,7 +12,6 @@ import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();
-  // const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const problems = useSelector((state: RootState) => state.problem.problems);
   const currentPage = useSelector((state: RootState) => state.problem.currentPage);
   const totalPages = useSelector((state: RootState) => state.problem.totalPages);
@@ -30,7 +29,6 @@ export const ProblemsPage = () => {
     dispatch(
       fetchPaginatedProblems({ keyword: "", page: 0, size: 20, selectedCategories: [], status: null, level: null })
     ); // Fetch first page initially
-    console.log("fetchPaginatedProblems", problems);
   }, [dispatch]);
 
   // Fetch search results based on query parameter in URL
