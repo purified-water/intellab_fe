@@ -74,7 +74,7 @@ export const CourseLessonsPage = () => {
   };
 
   const updateLesson = async (data: CreateLessonSchema) => {
-    if (lessonAction.type === "add-blank" || lessonAction.type === "add-clone") {
+    if (lessonAction.type === "add-blank" || lessonAction.type === "add-clone" || lessonAction.type === "edit") {
       const updateLessonPayload: UpdateCourseLessonPayload = {
         lessonId: data.lessonId,
         lessonName: data.lessonName,
@@ -90,7 +90,7 @@ export const CourseLessonsPage = () => {
         passingQuestions: data.lessonQuiz?.requiredCorrectQuestions ?? 0,
         questions: (data.lessonQuiz?.quizQuestions ?? []).map((question) => {
           return {
-            questionId: null,
+            questionId: question.questionId ?? null,
             questionContent: question.questionTitle,
             correctAnswer: question.correctAnswer.toString(), // Accept string (from number)
             questionType: "S",

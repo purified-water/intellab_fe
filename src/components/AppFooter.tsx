@@ -2,7 +2,7 @@ import { facebookLogo, intellabDefaultLogo, linkedinLogo } from "@/assets";
 
 export const AppFooter = () => {
   return (
-    <footer className="w-full px-6 py-12 mt-32 text-white bg-appPrimary">
+    <footer className="w-full px-6 py-12 mt-32 border-t bg-gray6/30 text-gray1 border-gray6/50">
       <div className="grid gap-12 mx-auto max-w-7xl md:grid-cols-3">
         {/* Logo & Intro */}
         <div className="flex flex-col items-start gap-4">
@@ -19,7 +19,7 @@ export const AppFooter = () => {
         <div className="flex justify-between gap-8">
           <div>
             <p className="mb-3 text-lg font-semibold">Services</p>
-            <ul className="space-y-2 text-sm opacity-90">
+            <ul className="space-y-2 text-sm font-medium opacity-90">
               <li>
                 <a href="/explore" className="hover:underline hover:text-appAccent">
                   Courses

@@ -46,12 +46,10 @@ export function ProblemListPage() {
 
   useEffect(() => {
     document.title = "Problem List | Intellab";
-    console.log("filter", filter);
   }, [filter]);
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
-      console.log("Search query:", query);
       setTemporarySearchKey(query);
       setFilter((prev) => ({ ...prev, searchKey: query, page: 0 }));
     };

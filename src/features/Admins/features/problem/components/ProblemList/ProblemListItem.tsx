@@ -183,9 +183,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
             </>
           )}
 
-          {!problem.isCompletedCreation && (
-            <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>
-          )}
+          {!problem.isCompletedCreation && <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>}
           {!problem.isCompletedCreation && <td className="py-1">{problem.currentCreationStepDescription}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>

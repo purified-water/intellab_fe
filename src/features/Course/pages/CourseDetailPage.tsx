@@ -97,7 +97,6 @@ export const CourseDetailPage = () => {
       try {
         const response = await courseAPI.getLessonsAfterEnroll(id!, page);
         const lessons = response.result.content;
-        console.log("lessons", lessons);
         setLessons(lessons);
         setLoading(false);
         setCurrentPage(response.result.number);
@@ -182,7 +181,7 @@ export const CourseDetailPage = () => {
         message: (
           <>
             Please go to the{" "}
-            <a href="/profile/edit" className="text-appHyperlink underline">
+            <a href="/profile/edit" className="underline text-appHyperlink">
               Setting Page
             </a>{" "}
             and verify your email to enroll in the course.
@@ -240,7 +239,7 @@ export const CourseDetailPage = () => {
         message: (
           <>
             Please go to the{" "}
-            <a href="/profile/edit" className="text-appHyperlink underline">
+            <a href="/profile/edit" className="underline text-appHyperlink">
               Setting Page
             </a>{" "}
             and verify your email to purchase the course.
@@ -286,7 +285,7 @@ export const CourseDetailPage = () => {
         content = (
           <div>
             {lessons.length === 0 && !loading ? (
-              <div className="text-center py-10">
+              <div className="py-10 text-center">
                 <EmptyList message="No lessons available for this course yet." />
               </div>
             ) : (
@@ -365,7 +364,7 @@ export const CourseDetailPage = () => {
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
       <div className="flex flex-col min-h-screen">
         <div className="w-full">{renderHeader()}</div>
-        <div className="pb-8 px-32 mx-auto w-full flex-grow">
+        <div className="flex-grow w-full px-32 pb-8 mx-auto">
           {renderBody()}
           {renderSpinner()}
         </div>

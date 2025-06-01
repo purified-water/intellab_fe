@@ -89,7 +89,6 @@ const courseSlice = createSlice({
     setExploreCourses: (state, action: PayloadAction<ICourse[]>) => {
       // state.originalExploreCourses = action.payload;
       state.exploreCourses = action.payload; // Display the same data initially
-      // console.log("Set Explore courses length", state.exploreCourses.length);
     },
 
     filterCourses: (

@@ -76,7 +76,7 @@
 //     return (
 //       <button
 //         disabled={disable}
-//         className="px-6 py-2 text-base font-bold text-white bg-appPrimary rounded-lg hover:bg-appSecondary shadow transition"
+//         className="px-6 py-2 text-base font-bold text-white transition rounded-lg shadow bg-appPrimary hover:bg-appSecondary"
 //         onClick={onClick}
 //       >
 //         {buttonText}
@@ -321,7 +321,7 @@ export const Header = (props: HeaderProps) => {
               >
                 <span className="mr-2">Generating Certificate</span>
                 <svg
-                  className="animate-spin h-4 w-4 text-white"
+                  className="w-4 h-4 text-white animate-spin"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -422,13 +422,13 @@ export const Header = (props: HeaderProps) => {
   };
 
   return (
-    <div className="relative w-screen pt-10 px-10 pb-4">
+    <div className="relative w-screen px-10 pt-10 pb-4">
       {/* Background with blurred course image */}
-      <div className="absolute inset-0 w-full h-96 overflow-hidden z-0 rounded-lg">
+      <div className="absolute inset-0 z-0 w-full overflow-hidden rounded-lg h-96">
         <img
           src={coverImageUrl}
           alt="background"
-          className="w-full h-full object-cover opacity-100"
+          className="object-cover w-full h-full opacity-100"
           style={{ filter: "blur(100px)" }}
           onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
         />
@@ -436,21 +436,21 @@ export const Header = (props: HeaderProps) => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col w-full items-center pt-10 pb-5 px-4 relative z-8">
-        <div className="flex flex-row items-center w-full max-w-6xl gap-5 bg-white rounded-2xl shadow-md p-10">
+      <div className="relative flex flex-col items-center w-full px-4 pt-10 pb-5 z-8">
+        <div className="flex flex-row items-center w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
           {/* Left: Cover Image */}
           <div className="w-96 h-72 rounded-[10px] overflow-hidden shadow-md">
             <img
               src={coverImageUrl}
               alt={course.courseName}
-              className="w-full h-full object-cover"
+              className="object-cover w-full h-full"
               onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
             />
           </div>
           {/* Right: Course Info */}
-          <div className="flex flex-col flex-1 justify-between">
+          <div className="flex flex-col justify-between flex-1">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.courseName}</h1>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">{course.courseName}</h1>
 
               <span className={`text-gray2 text-base max-w-2xl ${showFullDescription ? "" : "line-clamp-2"}`}>
                 {course.description}
@@ -458,7 +458,7 @@ export const Header = (props: HeaderProps) => {
 
               {course.description && course.description.length > 70 && (
                 <button
-                  className="text-appPrimary text-sm underline hover:text-appSecondary"
+                  className="text-sm underline text-appPrimary hover:text-appSecondary"
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   type="button"
                 >
@@ -470,7 +470,7 @@ export const Header = (props: HeaderProps) => {
                   {course.level}
                 </span>
               </div>
-              <div className="flex items-center gap-4 text-gray-500 text-sm mb-2">
+              <div className="flex items-center gap-4 mb-2 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <div className="flex items-center justify-start space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
@@ -482,36 +482,34 @@ export const Header = (props: HeaderProps) => {
                       </span>
                     ))}
                   </div>
-                  <span className="font-bold text-black1 ml-1">
+                  <span className="ml-1 font-bold text-black1">
                     {course.averageRating ? course.averageRating.toFixed(1) : "0"}
                   </span>
                   <span>({course.reviewCount ?? 0} reviews)</span>
                 </span>
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  <span className="font-bold text-black1 ml-1">{course.numberOfEnrolledStudents ?? 0}</span> students
+                  <span className="ml-1 font-bold text-black1">{course.numberOfEnrolledStudents ?? 0}</span> students
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpenText className="w-4 h-4" />
-                  <span className="font-bold text-black1 ml-1">{course.lessonCount ?? 0}</span> lessons
+                  <span className="ml-1 font-bold text-black1">{course.lessonCount ?? 0}</span> lessons
                 </span>
               </div>
               {course.userEnrolled ? (
                 <div className="flex flex-col mb-4">
                   <div className="flex flex-row items-center justify-between mb-2">
-                    <span className="text-sm text-black1 font-semibold">Progress</span>
-                    <span className="text-sm text-black1 font-semibold">{course.progressPercent ?? 36.4}%</span>
+                    <span className="text-sm font-semibold text-black1">Progress</span>
+                    <span className="text-sm font-semibold text-black1">
+                      {course.progressPercent.toFixed(2) ?? 0.0}%
+                    </span>
                   </div>
                   <div className="flex-1">
-                    <ProgressBar
-                      progress={parseFloat((course.progressPercent ?? 36.4).toFixed(2))}
-                      showText={false}
-                      height={8}
-                    />
+                    <ProgressBar progress={course.progressPercent ?? 0.0} showText={false} height={8} />
                   </div>
                 </div>
               ) : (
-                <span className="text-md font-bold text-appPrimary inline-flex items-center gap-1">
+                <span className="inline-flex items-center gap-1 font-bold text-md text-appPrimary">
                   {course.price === 0
                     ? "Free"
                     : includedInPremiumPlan && isCurrentPlanActive

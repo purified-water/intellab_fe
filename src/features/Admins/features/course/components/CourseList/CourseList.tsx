@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks";
 import { courseAPI } from "@/lib/api";
 import { showToastError, showToastSuccess } from "@/utils";
-import { AlertDialog, Pagination } from "@/components/ui";
+import { AlertDialog, EmptyList, Pagination } from "@/components/ui";
 import { useDeleteCourseImage } from "../../hooks";
 
 const TABLE_HEADERS = {
@@ -172,7 +172,7 @@ export function CourseList(props: CourseListProps) {
     return (
       <tr className="text-base font-normal text-gray3">
         <td colSpan={8} className="py-5 text-center">
-          No courses found
+          <EmptyList message="No courses found." />
         </td>
       </tr>
     );

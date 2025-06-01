@@ -30,8 +30,6 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
     }
     const selectedTestCase = testCases[activeTab];
 
-    // console.log("selectedTestCase", selectedTestCase);
-
     return (
       <div className="test-case-content">
         <div className="flex flex-col mb-2" key={selectedTestCase.testCaseId}>

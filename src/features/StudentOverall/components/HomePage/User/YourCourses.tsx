@@ -32,7 +32,7 @@ export const YourCourseCard = (courseDetail: ICourse) => {
         <div className="mt-4">
           <div className="flex justify-between mb-1 text-sm">
             <span>Progress</span>
-            <span>{courseDetail?.progressPercent}%</span>
+            <span>{courseDetail?.progressPercent.toFixed(2)}%</span>
           </div>
           <Progress value={courseDetail?.progressPercent} className="h-2" />
         </div>

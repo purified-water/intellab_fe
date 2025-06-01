@@ -54,7 +54,6 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   const handleCategoryClick = (topic: TCategory) => {
     setSelectedCategories((prev) => {
       const newGenres = prev.includes(topic) ? prev.filter((g) => g !== topic) : [...prev, topic];
-      console.log("selected genres:", newGenres);
       return newGenres;
     });
   };

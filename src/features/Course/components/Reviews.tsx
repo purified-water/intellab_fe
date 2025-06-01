@@ -43,7 +43,6 @@ export default function Reviews({
         setReviews([...response.result.content]);
         setPage(1);
         setTotalElements(response.result.totalElements);
-        console.log("reviews get", response);
         fetchReviewStats();
         return;
       }
