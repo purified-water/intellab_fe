@@ -35,7 +35,7 @@ export const VerifyAccountBanner = () => {
     !isEmailVerified && (
       <div className="flex items-center justify-center gap-4 px-6 py-2 bg-opacity-25 rounded-lg bg-appHard/20">
         <p className="font-semibold text-appHard">Verify your account to have full access!</p>
-        <button onClick={handleResendVerificationEmail} className="hover:underline text-appInfo">
+        <button type="button" onClick={handleResendVerificationEmail} className="hover:underline text-appInfo">
           Resend the verification email
         </button>
       </div>

@@ -25,6 +25,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 import { ScrollToTop } from "./hooks/useScrollToTop";
+import { NotFoundPage, ServerErrorPage } from "./features/ErrorPages/pages";
 
 const queryClient = new QueryClient(); // Define outside of the component to avoid re-creating it on every render
 
@@ -59,6 +60,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ServerErrorPage />,
     children: [
       ...StudentOverallRoute, // The index page "HomePage" is included in here
       ...AuthRoute,
@@ -70,13 +72,14 @@ const router = createBrowserRouter([
       ...ProfileRoute,
       ...QuizRoute,
       ...ProblemRoute,
-      ...NotificationRoute
+      ...NotificationRoute,
+      { path: "*", element: <NotFoundPage /> }
     ]
   },
   {
     path: "/admin",
     element: <AdminLayout />,
-    children: [...AdminRoute]
+    children: [...AdminRoute, { path: "*", element: <NotFoundPage /> }]
   }
 ]);
 

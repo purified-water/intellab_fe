@@ -87,7 +87,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
               items={lessons.map((lesson) => ({ id: lesson.lessonId }))}
               strategy={verticalListSortingStrategy}
             >
-              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[400px]">
+              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[400px] scrollbar-hide">
                 {lessons.map((lesson) => (
                   <LessonItem
                     onAction={(action) => {

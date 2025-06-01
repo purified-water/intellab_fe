@@ -4,6 +4,7 @@ import { useAppDispatch } from "@/redux/hooks";
 import { fetchPaginatedProblems, filterProblems } from "@/redux/problem/problemSlice";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/shadcn";
 
 export const FilterComponent: React.FC = () => {
   const [selectedCategories, setSelectedCategories] = useState<TCategory[]>([]);
@@ -13,7 +14,7 @@ export const FilterComponent: React.FC = () => {
   const [categories, setCategories] = useState<TCategory[]>([]);
   const dispatch = useAppDispatch();
   const levels = ["All", "Easy", "Medium", "Hard"];
-  const status = ["All", "Done", "Not Done"];
+  const status = ["All", "Solved", "Not Solved"];
 
   const handleStatusChange = (status: string) => {
     setSelectedStatus(status);
@@ -49,7 +50,7 @@ export const FilterComponent: React.FC = () => {
     let myStatus = null;
     if (selectedStatus === "All" || selectedStatus === null) {
       myStatus = null;
-    } else if (selectedStatus === "Done") {
+    } else if (selectedStatus === "Solved") {
       myStatus = true;
     } else {
       myStatus = false;
@@ -84,58 +85,34 @@ export const FilterComponent: React.FC = () => {
         <div className="flex flex-col items-baseline justify-start gap-7">
           <div className="flex gap-32">
             <div className="flex flex-col">
-              <h3 className="mb-2 text-lg font-semibold">Levels</h3>
-              <div className="space-y-2">
+              <RadioGroup
+                value={selectedLevel || "All"}
+                onValueChange={handleLevelChange}
+                className="flex flex-col space-y-1"
+              >
+                <h3 className="text-lg font-semibold">Levels</h3>
                 {levels.map((level) => (
                   <label key={`level-${level}`} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="level"
-                      value={level}
-                      checked={selectedLevel === level}
-                      onChange={() => handleLevelChange(level)}
-                      className="hidden"
-                      id={`level-${level}`}
-                    />
-                    <div
-                      className={`w-5 h-5 rounded-full border  flex items-center justify-center ${
-                        selectedLevel === level ? "bg-appPrimary" : "bg-white"
-                      }`}
-                    >
-                      {selectedLevel === level && <div className="w-3 h-3 bg-white rounded-full"></div>}
-                    </div>
+                    <RadioGroupItem value={level} id={`level-${level}`} />
                     <span>{level}</span>
-                    {/* Optional: <span className="text-gray-400">({rating.count})</span> */}
                   </label>
                 ))}
-              </div>
+              </RadioGroup>
             </div>
             <div className="flex flex-col">
-              <h3 className="mb-2 text-lg font-semibold">Status</h3>
-              <div className="space-y-2">
+              <RadioGroup
+                value={selectedStatus || "All"}
+                onValueChange={handleStatusChange}
+                className="flex flex-col space-y-1"
+              >
+                <h3 className="text-lg font-semibold">Status</h3>
                 {status.map((isDone) => (
                   <label key={`status-${isDone}`} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="radio"
-                      name="status"
-                      value={isDone}
-                      checked={selectedStatus === isDone}
-                      onChange={() => handleStatusChange(isDone)}
-                      className="hidden"
-                      id={`status-${isDone}`}
-                    />
-                    <div
-                      className={`w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center ${
-                        selectedStatus === isDone ? "border-appPrimary bg-appPrimary" : "bg-white"
-                      }`}
-                    >
-                      {selectedStatus === isDone && <div className="w-3 h-3 bg-white rounded-full"></div>}
-                    </div>
+                    <RadioGroupItem value={isDone} id={`status-${isDone}`} />
                     <span>{isDone}</span>
-                    {/* Optional: <span className="text-gray-400">({rating.count})</span> */}
                   </label>
                 ))}
-              </div>
+              </RadioGroup>
             </div>
           </div>
           {/* Category Selection */}
@@ -158,15 +135,12 @@ export const FilterComponent: React.FC = () => {
 
       {/* Filter Button */}
       <div className="flex gap-4 mt-6">
-        <Button
-          className="px-4 py-[5px] text-white rounded-lg bg-appPrimary hover:bg-opacity-75"
-          onClick={handleFilter}
-        >
+        <Button className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
           Filter
         </Button>
         <Button
           variant="outline"
-          className="px-4 py-[5px] bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
+          className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
             setSelectedCategories([]);
             setSelectedLevel("All");

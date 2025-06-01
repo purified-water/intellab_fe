@@ -58,6 +58,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
       <div className="flex rounded-t-lg">
         {codeBlocks.map((block) => (
           <button
+            type="button"
             key={block.language}
             className={`px-4 py-3 text-sm ${
               activeTab === block.language

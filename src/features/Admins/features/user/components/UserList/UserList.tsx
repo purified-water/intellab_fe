@@ -8,11 +8,11 @@ import { showToastError } from "@/utils";
 import { Pagination } from "@/components/ui";
 
 const TABLE_HEADERS = [
-  { key: "EMAIL_ADDRESS", label: "Email Address", icon: <ListFilter className="h-4 w-4" /> },
-  { key: "USER_NAME", label: "Username", icon: <ListFilter className="h-4 w-4" /> },
-  { key: "CREATED", label: "Created", icon: <ListFilter className="h-4 w-4" /> },
-  { key: "LAST_LOGIN", label: "Last Login", icon: <ListFilter className="h-4 w-4" /> },
-  { key: "TYPE", label: "User Type", icon: <Funnel className="h-4 w-4 text-back" /> }
+  { key: "EMAIL_ADDRESS", label: "Email Address", icon: <ListFilter className="w-4 h-4" /> },
+  { key: "USER_NAME", label: "Username", icon: <ListFilter className="w-4 h-4" /> },
+  { key: "CREATED", label: "Created", icon: <ListFilter className="w-4 h-4" /> },
+  { key: "LAST_LOGIN", label: "Last Login", icon: <ListFilter className="w-4 h-4" /> },
+  { key: "TYPE", label: "User Type", icon: <Funnel className="w-4 h-4 text-back" /> }
 ];
 
 interface UserListProps {
@@ -58,11 +58,11 @@ export function UserList(props: UserListProps) {
     <thead>
       <tr className="border-b border-gray5">
         {TABLE_HEADERS.map(({ key, label }) => (
-          <th key={key} className={`text-left font-medium text-base border-t py-3 px-2 `}>
+          <th key={key} className={`text-left text-base border-t py-3 px-2 `}>
             <div className={`flex items-center gap-2`}>{label}</div>
           </th>
         ))}
-        <th className="text-left font-medium text-base border-t" />
+        <th className="text-base font-medium text-left border-t" />
       </tr>
     </thead>
   );

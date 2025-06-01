@@ -104,7 +104,7 @@ export const ProblemDetail = () => {
   // #region Render
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId || "" }}>
-      <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray5">
+      <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray6/50">
         <div className="flex-grow overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
             <ResizablePanel
@@ -124,7 +124,7 @@ export const ProblemDetail = () => {
               />
             </ResizablePanel>
 
-            <ResizableHandle withHandle className="w-2 bg-gray5" />
+            <ResizableHandle withHandle className="w-2 bg-gray6/50" />
 
             {/* Middle Panel: Playground and test case */}
             <ResizablePanel

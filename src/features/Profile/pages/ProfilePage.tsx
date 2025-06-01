@@ -15,7 +15,7 @@ export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
 
   return (
-    <div className="bg-gray5">
+    <div className="bg-gray6/50">
       <div className="flex flex-col items-start justify-between min-h-screen px-8 pt-10 sm:px-20 lg:flex-row">
         <div className="flex flex-col space-y-4 items-start w-full lg:w-[470px] h-fit h:full mb-10 lg:mb-20">
           <SubscriptionCard userId={id!} loading={false} />

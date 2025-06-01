@@ -152,7 +152,10 @@ export function AdminSidebar() {
       <div className="group-data-[collapsible=icon]:flex group-data-[collapsible=icon]:justify-center">
         <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <button className="transition-all duration-300 ease-in-out flex w-full items-center justify-between rounded-md py-1 px-2 hover:bg-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1">
+            <button
+              type="button"
+              className="transition-all duration-300 ease-in-out flex w-full items-center justify-between rounded-md py-1 px-2 hover:bg-accent group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:p-1"
+            >
               <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
                 <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
                 <div className="flex flex-col items-start text-sm group-data-[collapsible=icon]:hidden">

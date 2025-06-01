@@ -36,6 +36,9 @@ export type GetAdminProblemResponseType = APIResponseCode & {
 export type AdminProblemParams = {
   isComplete: boolean;
   searchKey?: string;
+  level?: "" | "easy" | "medium" | "hard";
+  isPublished?: boolean;
+  categories?: TCategory[];
   page?: number;
   size?: number;
   sort?: string;

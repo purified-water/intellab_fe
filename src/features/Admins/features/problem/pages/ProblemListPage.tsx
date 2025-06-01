@@ -5,13 +5,13 @@ import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { ProblemList } from "../components";
 import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "@/components/ui";
-// import { FilterDialog } from "../components/FilterDialog";
 import { useGetAdminProblemList } from "../hooks";
 import { AdminProblemParams } from "../types/ProblemListType";
 import { APIMetaData } from "@/types";
-// import { useCourseCategories } from "../../course/hooks";
+import { useCourseCategories } from "../../course/hooks";
 import { useDispatch } from "react-redux";
 import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
+import { AdminProblemFilterDialog } from "../components/AdminProblemFilterDialog";
 
 const TABS = {
   CREATED: "created",
@@ -23,13 +23,16 @@ export function ProblemListPage() {
   const [showFilter, setShowFilter] = useState(false);
   const [filter, setFilter] = useState<AdminProblemParams>({
     isComplete: true,
+    searchKey: "",
     page: 0
   });
+  const [temporarySearchKey, setTemporarySearchKey] = useState(filter.searchKey || "");
+
   const navigate = useNavigate();
   const [totalPages, setTotalPages] = useState(1);
   const dispatch = useDispatch();
 
-  // const { data: categories, isLoading: loadingCategories } = useCourseCategories();
+  const { data: categories, isLoading: isLoadingCategories } = useCourseCategories();
   const { data, isLoading: loadingProblems } = useGetAdminProblemList(filter);
   const problems = data?.result.content || [];
   const meta = data?.result || ({} as APIMetaData);
@@ -41,12 +44,16 @@ export function ProblemListPage() {
     }
   }, [meta]);
 
+  useEffect(() => {
+    document.title = "Problem List | Intellab";
+    console.log("filter", filter);
+  }, [filter]);
+
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
-      setFilter((prev) => ({
-        ...prev,
-        keyword: query
-      }));
+      console.log("Search query:", query);
+      setTemporarySearchKey(query);
+      setFilter((prev) => ({ ...prev, searchKey: query, page: 0 }));
     };
 
     const handleCreateProblem = () => {
@@ -57,11 +64,11 @@ export function ProblemListPage() {
     return (
       <div className="flex items-center">
         <FilterButton onClick={() => setShowFilter(!showFilter)} />
-        <SearchBar value={""} onSearch={handleKeywordSearch} width={800} />
+        <SearchBar value={temporarySearchKey} onSearch={handleKeywordSearch} width={800} />
         <div className="pl-4 ml-2 border-l border-gray4">
           <Button
             onClick={handleCreateProblem}
-            className="px-4 py-5 text-lg font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
+            className="px-4 py-5 text-base font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
           >
             <Plus className="w-4 h-4" />
             New Problem
@@ -111,16 +118,24 @@ export function ProblemListPage() {
     );
   };
 
-  // const renderFilterDialog = () => {
-  //   return <FilterDialog isVisible={showFilter} currentFilter={filter} onFilter={setFilter} categories={categories || []} />;
-  // };
+  const renderFilterDialog = () => {
+    return (
+      <AdminProblemFilterDialog
+        isVisible={showFilter}
+        currentFilter={filter}
+        onApplyFilter={setFilter}
+        categories={categories || []}
+        isLoadingCategories={isLoadingCategories}
+      />
+    );
+  };
 
   return (
     <div className="px-2 space-y-6">
       <h1 className="text-4xl font-bold text-appPrimary">Problems</h1>
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
-        {/* {renderFilterDialog()} */}
+        {renderFilterDialog()}
         {renderProblemList()}
       </div>
     </div>

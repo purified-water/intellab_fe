@@ -177,7 +177,12 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
                 <RequiredInputLabel label="Lesson Content" />
               </FormLabel>
               <FormControl>
-                <AddMarkdownContent value={field.value} onChange={field.onChange} readOnly={isReadOnly} />
+                <AddMarkdownContent
+                  value={field.value}
+                  onChange={field.onChange}
+                  readOnly={isReadOnly}
+                  allowImage={true}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

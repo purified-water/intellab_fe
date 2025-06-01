@@ -24,7 +24,7 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
 
   return (
     <Card
-      className="flex min-w-[300px] w-[370px] max-w-[370px] min-h-[380px] max-h-[380px] flex-col overflow-hidden cursor-pointer transition-shadow duration-200 ease-in-out hover:shadow-lg"
+      className="flex min-w-[300px] w-[370px] max-w-[370px] min-h-[380px] max-h-[380px] flex-col overflow-hidden cursor-pointer transition-shadow duration-300 ease-in-out hover:shadow-lg"
       onClick={() => navigate(`/course/${course.courseId}`)}
     >
       <div className="relative h-44">

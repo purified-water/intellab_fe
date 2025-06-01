@@ -4,10 +4,11 @@ import { ICourse } from "@/types";
 import { courseAPI } from "@/lib/api";
 import { Pagination } from "@/components/ui";
 import { motion } from "framer-motion";
-import { FilterComponent, SearchBar, SearchResultComponent, FilterButton } from "../components";
+import { FilterComponent, SearchResultComponent } from "../components";
 import { useDispatch, useSelector } from "react-redux";
 import { getExploreCourse } from "@/redux/course/courseSlice";
 import { RootState } from "@/redux/rootReducer";
+import { FilterButton, SearchBar } from "@/features/Problem/components";
 
 export const SectionDetailPage: React.FC = () => {
   const [searchedCourses, setSearchedCourses] = useState<ICourse[]>([]);
@@ -75,9 +76,6 @@ export const SectionDetailPage: React.FC = () => {
     fetchCourses(0);
   }, []);
 
-  //const sectionCourses = getSectionCourses(section || "");
-  //const displayedCourses = query ? searchedCourses : sectionCourses;
-
   const renderSearchResult = () => {
     return (
       <div className="pl-10">
@@ -85,23 +83,6 @@ export const SectionDetailPage: React.FC = () => {
       </div>
     );
   };
-
-  // const renderCourses = () => {
-  //   return (
-  //     <div>
-  //       <div className="mb-6 text-4xl font-bold tracking-wide sm:text-4xl sm:mb-11 text-appPrimary">
-  //         {section && section.charAt(0).toUpperCase() + section.slice(1)} Courses
-  //       </div>
-  //       <div className="flex flex-wrap gap-7">
-  //         {displayedCourses.map((course, index) => (
-  //           <div key={index}>
-  //             <Course course={course} loading={loading} />
-  //           </div>
-  //         ))}
-  //       </div>
-  //     </div>
-  //   );
-  // };
 
   return (
     <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
