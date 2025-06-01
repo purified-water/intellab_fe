@@ -1,15 +1,14 @@
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCourseSchema } from "../../schemas";
 import { CourseWizardButtons, CourseCategoriesSelect } from "../../components/CreateCourse";
 import {
-  useChangeCourseImageLink,
   useCourseCategories,
   useCourseWizardStep,
   useEditCourseGeneral,
   useEditingCourse,
-  useUploadCourseImage,
-  useUploadImage
+  useUploadCourseImage
 } from "../../hooks";
 import {
   FormField,
@@ -37,6 +36,8 @@ import { useToast } from "@/hooks";
 import { CreateCourseGeneralStepPayload } from "@/types";
 import { RequiredInputLabel } from "@/features/Admins/components";
 import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
+import { imageURLToFile } from "@/utils";
+import _ from "lodash";
 
 const courseGeneralSchema = createCourseSchema.pick({
   courseId: true,
@@ -56,12 +57,12 @@ export const CourseGeneralPage = () => {
 
   const { data: categories, isLoading: loadingCategories } = useCourseCategories();
   const createCourse = useCreateCourseGeneral();
-  const editCoursse = useEditCourseGeneral();
+  const editCourse = useEditCourseGeneral();
   const uploadThumbnail = useUploadCourseImage();
-  const changeCourseImageLink = useChangeCourseImageLink();
-  const uploadImage = useUploadImage();
   const { goToNextStep } = useCourseWizardStep();
   const { isEditingCourse } = useEditingCourse();
+
+  const [courseThumbnailFile, setCourseThumbnailFile] = useState<File | null>(null);
 
   // Initialize form with Zod validation
   const form = useForm<CourseGeneralSchema>({
@@ -75,6 +76,61 @@ export const CourseGeneralPage = () => {
       courseThumbnail: formData.courseThumbnail || null
     }
   });
+
+  useEffect(() => {
+    const getCourseThumbnailFile = async () => {
+      if (formData.courseThumbnailUrl) {
+        const image = await imageURLToFile(formData.courseThumbnailUrl, formData.courseName);
+        setCourseThumbnailFile(image);
+      }
+    };
+    getCourseThumbnailFile();
+  }, []);
+
+  // Handle showing the course thumbnail file in the form when reloading the page
+  useEffect(() => {
+    if (courseThumbnailFile) {
+      if (_.isEmpty(form.getValues("courseThumbnail"))) {
+        form.setValue("courseThumbnail", courseThumbnailFile);
+        dispatch(setCreateCourse({ courseThumbnail: courseThumbnailFile }));
+      }
+    }
+  }, [courseThumbnailFile]);
+
+  const handleEditCourse = async (data: CourseGeneralSchema, formatPayload: CreateCourseGeneralStepPayload) => {
+    try {
+      await editCourse.mutateAsync({ courseId: formData.courseId!, payload: formatPayload });
+      if (data.courseThumbnail != formData.courseThumbnail) {
+        const uploadImage = await uploadThumbnail.mutateAsync({
+          courseId: data.courseId,
+          file: data.courseThumbnail!
+        });
+        dispatch(setCreateCourse({ courseThumbnailUrl: uploadImage }));
+      }
+      goToNextStep();
+    } catch (error) {
+      console.error("Error in updating course:", error);
+      showToastError({ toast: toast.toast, message: "Error editing general information" });
+    }
+  };
+
+  const handleCreateCourse = async (data: CourseGeneralSchema, formatPayload: CreateCourseGeneralStepPayload) => {
+    try {
+      const course = await createCourse.mutateAsync(formatPayload);
+      dispatch(setCreateCourse({ courseId: course.courseId }));
+      if (data.courseThumbnail) {
+        const uploadImage = await uploadThumbnail.mutateAsync({
+          courseId: course.courseId,
+          file: data.courseThumbnail!
+        });
+        dispatch(setCreateCourse({ courseThumbnailUrl: uploadImage }));
+      }
+      goToNextStep();
+    } catch (error) {
+      console.error("Error in creating course:", error);
+      showToastError({ toast: toast.toast, message: "Error uploading general information" });
+    }
+  };
 
   const onSubmit = async (data: CourseGeneralSchema) => {
     dispatch(setCreateCourse(data)); // Set data to redux store
@@ -90,33 +146,9 @@ export const CourseGeneralPage = () => {
       (isEditingCourse && formData.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.GENERAL) ||
       formData.currentCreationStep > CREATE_COURSE_STEP_NUMBERS.GENERAL
     ) {
-      try {
-        if (data.courseThumbnail != formData.courseThumbnail) {
-          const imageLink = await uploadImage.mutateAsync({ file: data.courseThumbnail! });
-          await changeCourseImageLink.mutateAsync({ courseId: data.courseId, imageLink: imageLink });
-        }
-        const course = await editCoursse.mutateAsync({ courseId: formData.courseId!, payload: formatPayload });
-        dispatch(setCreateCourse({ courseId: course.courseId }));
-        goToNextStep();
-      } catch (error) {
-        console.error("Error in updating course:", error);
-        showToastError({ toast: toast.toast, message: "Error editing general information" });
-      }
+      await handleEditCourse(data, formatPayload);
     } else {
-      try {
-        const course = await createCourse.mutateAsync(formatPayload);
-        dispatch(setCreateCourse({ courseId: course.courseId }));
-        if (data.courseThumbnail) {
-          uploadThumbnail.mutateAsync({
-            courseId: course.courseId,
-            file: data.courseThumbnail!
-          });
-        }
-        goToNextStep();
-      } catch (error) {
-        console.error("Error in creating course:", error);
-        showToastError({ toast: toast.toast, message: "Error uploading general information" });
-      }
+      await handleCreateCourse(data, formatPayload);
     }
   };
 
@@ -125,7 +157,7 @@ export const CourseGeneralPage = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error("Form submission errors:", errors);
-          console.log("Form data:", form.getValues());
+          //console.log("Form data:", form.getValues());
           showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
         })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"

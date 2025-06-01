@@ -19,11 +19,13 @@ import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { BoilerplateDataItemList } from "../../components/CreateProblem";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { isDescriptionStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { useEffect } from "react";
 
 const problemBoilerplateSchema = createProblemSchema.pick({
   problemStructure: true
@@ -36,20 +38,31 @@ export const ProblemBoilerplatePage = () => {
   const dispatch = useDispatch();
   const { goToNextStep } = useProblemWizardStep();
   const formData = useSelector((state: RootState) => state.createProblem);
+  const { isEditingProblem } = useEditingProblem();
+
+  useEffect(() => {
+    if (formData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE) {
+      dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE }));
+    }
+  }, []);
 
   // Initialize form with Zod validation
   const form = useForm<ProblemBoilerplateSchema>({
     resolver: zodResolver(problemBoilerplateSchema),
     defaultValues: {
       problemStructure: {
-        functionName: formData.problemStructure.functionName || "",
-        inputStructure: formData.problemStructure.inputStructure || [],
-        outputStructure: formData.problemStructure.outputStructure || []
+        functionName: formData.problemStructure ? formData.problemStructure.functionName : "",
+        inputStructure: formData.problemStructure ? formData.problemStructure.inputStructure : [],
+        outputStructure: formData.problemStructure ? formData.problemStructure.outputStructure : []
       }
     }
   });
 
-  const onSubmit = async (data: ProblemBoilerplateSchema) => {
+  const handleEditProblem = async (data: ProblemBoilerplateSchema) => {
+    console.log("--> handleEditProblem called with data:", data);
+  };
+
+  const handleCreateProblem = async (data: ProblemBoilerplateSchema) => {
     await adminProblemAPI.createProblemStructureStep({
       body: {
         problemId: formData.problemId,
@@ -72,8 +85,24 @@ export const ProblemBoilerplatePage = () => {
     });
   };
 
+  const onSubmit = async (data: ProblemBoilerplateSchema) => {
+    if (
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE
+    ) {
+      await handleEditProblem(data);
+    } else {
+      await handleCreateProblem(data);
+    }
+  };
+
+  let redirectUrl = "/admin/problems/create/description";
+  if (isEditingProblem) {
+    redirectUrl += "?editProblem=true";
+  }
+
   return (
-    <StepGuard checkValid={isDescriptionStepValid} redirectTo="/admin/problems/create/description">
+    <StepGuard checkValid={isDescriptionStepValid} redirectTo={redirectUrl}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

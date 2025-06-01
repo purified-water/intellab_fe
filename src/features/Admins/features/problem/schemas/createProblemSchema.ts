@@ -63,3 +63,7 @@ export const createProblemSchema = z.object({
 });
 
 export type CreateProblemSchema = z.infer<typeof createProblemSchema>;
+
+export type CreateProblemSchemaWithCurrentStep = CreateProblemSchema & {
+  currentCreationStep: number;
+};

@@ -60,9 +60,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -96,9 +97,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -132,9 +134,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -168,9 +171,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -204,9 +208,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -234,9 +239,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -275,9 +281,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   },
 
@@ -316,9 +323,10 @@ export const adminProblemAPI = {
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
-    }
-    if (onEnd) {
-      onEnd();
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
     }
   }
 };

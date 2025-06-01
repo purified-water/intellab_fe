@@ -1,15 +1,28 @@
-import { steps } from "../../constants";
-import { useProblemWizardStep } from "../../hooks";
+import { steps, CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 // This component is used to display the stepper header for the course creation wizard.
 export const ProblemWizardStepperHeader = () => {
   const { goToStep, currentStepIndex } = useProblemWizardStep();
+  const { isEditingProblem } = useEditingProblem();
+  const createProblem = useSelector((state: RootState) => state.createProblem);
 
   return (
     <div className="flex items-center gap-4 mb-6">
       {steps.map((step, index) => {
         const isActive = index === currentStepIndex;
-        const isClickable = index <= currentStepIndex;
+        let isClickable = false;
+        if (isEditingProblem) {
+          if (createProblem.currentCreationStep === CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) {
+            isClickable = true;
+          } else {
+            isClickable = index < createProblem.currentCreationStep;
+          }
+        } else {
+          isClickable = index < createProblem.currentCreationStep;
+        }
 
         return (
           <div
