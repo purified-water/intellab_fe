@@ -1,7 +1,8 @@
-import { CreateProblemSchema } from "@/features/Admins/features/problem/schemas";
+import { CreateProblemSchemaWithCurrentStep } from "@/features/Admins/features/problem/schemas";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "@/features/Admins/features/problem/constants";
 
-const initialState: CreateProblemSchema = {
+export const initialState: CreateProblemSchemaWithCurrentStep = {
   problemId: "",
   problemName: "",
   problemCategories: [],
@@ -15,7 +16,8 @@ const initialState: CreateProblemSchema = {
     outputStructure: []
   },
   problemTestcases: [],
-  problemSolution: ""
+  problemSolution: "",
+  currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.GENERAL
 };
 
 const createProblemSlice = createSlice({
@@ -23,7 +25,7 @@ const createProblemSlice = createSlice({
   initialState,
   reducers: {
     // Use partial type to allow partial updates for each steps
-    setCreateProblem: (state, action: PayloadAction<Partial<CreateProblemSchema>>) => {
+    setCreateProblem: (state, action: PayloadAction<Partial<CreateProblemSchemaWithCurrentStep>>) => {
       return { ...state, ...action.payload };
     },
     resetCreateProblem: () => initialState

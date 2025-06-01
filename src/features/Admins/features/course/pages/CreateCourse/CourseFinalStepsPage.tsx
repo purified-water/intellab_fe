@@ -71,7 +71,10 @@ export const CourseFinalStepsPage = () => {
     dispatch(setCreateCourse(data));
 
     if (
-      (isEditingCourse && createCourse.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.FINAL) ||
+      (isEditingCourse &&
+        createCourse.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.FINAL &&
+        createCourse.courseSummary != undefined &&
+        createCourse.courseCertificate != undefined) ||
       createCourse.currentCreationStep > CREATE_COURSE_STEP_NUMBERS.FINAL
     ) {
       createCourseFinalStep.EditFinalStep.mutateAsync(formatPayload);

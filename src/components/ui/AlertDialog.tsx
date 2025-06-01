@@ -16,12 +16,13 @@ type AlertDialogProps = {
   onConfirm: () => void,
   onCancel?: () => void,
   children?: React.ReactNode
-  open?: boolean
+  open?: boolean,
+  processing?: boolean
 }
 
 
 export function AlertDialog(props: AlertDialogProps) {
-  const { title, message, onConfirm, onCancel, children, open } = props
+  const { title, message, onConfirm, onCancel, children, open, processing } = props
 
   return (
     <ShadCNAlertDialog open={open}>
@@ -34,8 +35,8 @@ export function AlertDialog(props: AlertDialogProps) {
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction className="bg-appPrimary hover:bg-appPrimary/80" onClick={onConfirm}>Confirm</AlertDialogAction>
+          <AlertDialogCancel onClick={onCancel} disabled={processing}>Cancel</AlertDialogCancel>
+          <AlertDialogAction className="bg-appPrimary hover:bg-appPrimary/80" onClick={onConfirm} disabled={processing}>Confirm</AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </ShadCNAlertDialog>

@@ -37,7 +37,8 @@ export const createCourseSchema = z.object({
     message: "Course summary must be less than 1500 characters"
   }),
   courseCertificate: z.number().min(1, { message: "Certificate template is required" }),
-  courseMakeAvailable: z.boolean()
+  courseMakeAvailable: z.boolean(),
+  courseThumbnailUrl: z.string().optional()
 });
 
 export type CreateCourseSchema = z.infer<typeof createCourseSchema>;

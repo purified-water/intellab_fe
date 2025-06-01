@@ -86,3 +86,19 @@ export const useUploadImage = () => {
     }
   });
 };
+
+export const useDeleteCourseImage = () => {
+  const toast = useToast();
+
+  return useMutation({
+    mutationFn: ({ courseId }: { courseId: string }) => adminCourseAPI.deleteCourseImage(courseId),
+    onSuccess: () => {},
+    onError: (error) => {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message });
+      } else {
+        showToastError({ toast: toast.toast, message: "An unexpected error occurred" });
+      }
+    }
+  });
+};

@@ -1,15 +1,17 @@
+import { useEffect } from "react";
 import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { ProblemPreview } from "../../components/CreateProblem/ProblemPreview/ProblemPreview";
 import { RootState } from "@/redux/rootReducer";
 import { useSelector, useDispatch } from "react-redux";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { mapCreateProblemSchemaToProblemType } from "../../utils/mappers";
 import { isSolutionStepValid } from "../../utils";
 import { StepGuard } from "../../../course/components/StepGuard";
-import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
+import { resetCreateProblem, setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { useToast } from "@/hooks";
 import { showToastError } from "@/utils";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 export const ProblemPreviewPage = () => {
   const problemData = useSelector((state: RootState) => state.createProblem);
@@ -17,9 +19,19 @@ export const ProblemPreviewPage = () => {
   const { goToNextStep } = useProblemWizardStep();
   const dispatch = useDispatch();
   const toast = useToast();
+  const { isEditingProblem } = useEditingProblem();
 
-  const onSubmit = async (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
+  useEffect(() => {
+    if (problemData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) {
+      dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.PREVIEW }));
+    }
+  }, []);
+
+  const handleEditProblem = async () => {
+    console.log("--> handleEditProblem called with data:", mappedProblemData);
+  };
+
+  const handleCreateCourse = async () => {
     await adminProblemAPI.updateProblemCompletedStatus({
       query: { completedCreation: true },
       body: { problemId: problemData.problemId },
@@ -31,8 +43,25 @@ export const ProblemPreviewPage = () => {
     });
   };
 
+  const onSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if (
+      (isEditingProblem && problemData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) ||
+      problemData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.PREVIEW
+    ) {
+      await handleEditProblem();
+    } else {
+      await handleCreateCourse();
+    }
+  };
+
+  let redirectUrl = "/admin/problems/create/solution";
+  if (isEditingProblem) {
+    redirectUrl += "?editProblem=true";
+  }
+
   return (
-    <StepGuard checkValid={isSolutionStepValid} redirectTo="/admin/problems/create/solution">
+    <StepGuard checkValid={isSolutionStepValid} redirectTo={redirectUrl}>
       <form onSubmit={onSubmit}>
         <ProblemPreview problemDetail={mappedProblemData} />
         <ProblemWizardButtons />
