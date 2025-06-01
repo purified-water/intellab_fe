@@ -207,5 +207,18 @@ export const adminCourseAPI = {
         await onEnd();
       }
     }
+  },
+
+  postLessonImageInMarkdown: async (imageId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await apiClient.post(`course/admin/courses/image/${imageId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    return response.data.result;
   }
 };

@@ -34,6 +34,7 @@ export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
       </div>
       <div className="absolute top-0 bottom-0 left-0 right-0 flex justify-between pointer-events-none">
         <button
+          type="button"
           onClick={goToPrevious}
           className="p-2 text-gray-800 transition-transform duration-300 ease-in-out transform pointer-events-auto backdrop-blur-sm hover:bg-white hover:scale-110"
           aria-label="Previous image"
@@ -41,6 +42,7 @@ export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
           <ChevronLeft size={24} />
         </button>
         <button
+          type="button"
           onClick={goToNext}
           className="p-2 text-gray-800 transition-transform duration-300 ease-in-out transform pointer-events-auto backdrop-blur-sm hover:bg-white hover:scale-110"
           aria-label="Next image"

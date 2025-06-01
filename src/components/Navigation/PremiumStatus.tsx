@@ -31,6 +31,7 @@ export const PremiumStatus = () => {
   return (
     <Link to="/pricing">
       <button
+        type="button"
         className={cn("px-3 py-1 text-[15px] font-semibold rounded-lg transition-colors duration-300 border", color)}
       >
         {title}
