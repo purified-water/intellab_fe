@@ -55,6 +55,7 @@ export interface UpdateCourseLessonPayload {
 // For adding a quiz to a lesson
 export interface CreateCourseLessonQuizPayload {
   lessonId: string;
+  isQuizVisible: boolean;
   questionsPerExercise: number;
   passingQuestions: number;
   questions: QuestionRequest[];

@@ -26,11 +26,12 @@ import { setCreateCourse, updateLessonQuiz } from "@/redux/createCourse/createCo
 
 interface LessonFormProps {
   onSave: (data: CreateLessonSchema) => void;
+  onCancel: () => void;
   lessonId?: string;
   lessonActionType?: "create" | "view" | "edit";
 }
 
-export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: LessonFormProps) => {
+export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "create" }: LessonFormProps) => {
   const courseData = useSelector((state: RootState) => state.createCourse);
   const lessonInCreation = useSelector((state: RootState) => state.createLesson); // For creating a new lesson
   const selectedLesson = courseData.courseLessons.find((lesson: CreateLessonSchema) => lesson.lessonId === lessonId); // For viewing/editing only
@@ -105,12 +106,8 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
   }, [defaultValues, selectedLesson, lessonActionType, lessonInCreation.lessonId]);
 
   const handleCancel = () => {
-    if (lessonActionType === "view") {
-      form.reset();
-      goToStep(1);
-      return;
-    }
     form.reset();
+    onCancel();
     goToStep(1);
   };
 
@@ -252,7 +249,7 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
             control={form.control}
             name="lessonQuiz"
             render={() => (
-              <FormItem>
+              <FormItem className="max-h-[800px] overflow-y-auto">
                 <FormLabel>
                   <RequiredInputLabel label="Lesson Quiz" />
                 </FormLabel>

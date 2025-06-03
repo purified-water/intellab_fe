@@ -95,5 +95,29 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
     queryFn: adminCourseAPI.getCreateLessonProblemList
   });
 
-  return { createLesson, updateLesson, deleteLesson, updateQuiz, reorderLessons, getLessonList, getQuiz, getProblems };
+  const deleteLessonQuestion = useMutation({
+    mutationFn: async (questionId: string) => {
+      if (!questionId) throw new Error("Question ID is required");
+      const response = await adminCourseAPI.deleteLessonQuestion(questionId);
+      return response;
+    },
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Question removed successfully" });
+    },
+    onError: () => {
+      showToastError({ toast: toast.toast, message: "Error in removing question" });
+    }
+  });
+
+  return {
+    createLesson,
+    updateLesson,
+    deleteLesson,
+    updateQuiz,
+    reorderLessons,
+    getLessonList,
+    getQuiz,
+    getProblems,
+    deleteLessonQuestion
+  };
 };

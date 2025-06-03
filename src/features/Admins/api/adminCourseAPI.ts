@@ -225,5 +225,11 @@ export const adminCourseAPI = {
     });
 
     return response.data.result;
+  },
+
+  // Helper for editing a lesson
+  deleteLessonQuestion: async (questionId: string) => {
+    const response = await apiClient.delete(`course/admin/lessons/quiz/removeQuestion/${questionId}`);
+    return response.data.result;
   }
 };
