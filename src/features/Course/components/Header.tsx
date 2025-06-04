@@ -501,7 +501,7 @@ export const Header = (props: HeaderProps) => {
                   <div className="flex flex-row items-center justify-between mb-2">
                     <span className="text-sm font-semibold text-black1">Progress</span>
                     <span className="text-sm font-semibold text-black1">
-                      {course.progressPercent.toFixed(2) ?? 0.0}%
+                      {course.progressPercent.toFixed(0) ?? 0.0}%
                     </span>
                   </div>
                   <div className="flex-1">

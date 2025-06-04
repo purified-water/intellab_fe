@@ -9,7 +9,7 @@ export const AppFooter = () => {
           <div className="flex items-center gap-4">
             <img src={intellabDefaultLogo} alt="Intellab Logo" className="w-12 h-12 md:w-16 md:h-16" />
             <div>
-              <p className="text-2xl font-bold">Intellab</p>
+              <p className="text-2xl font-bold text-appPrimary">Intellab</p>
               <p className="text-sm md:text-base opacity-80">Master Coding Skills at Your Own Pace</p>
             </div>
           </div>

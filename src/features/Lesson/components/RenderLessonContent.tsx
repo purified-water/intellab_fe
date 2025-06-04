@@ -11,6 +11,9 @@ import { TOCItem } from "./TableOfContents";
 import remarkGfm from "remark-gfm";
 import { ImageCarousel } from "@/components/Markdown";
 import { CarouselImage, isImageMarkdown, extractImageInfo } from "@/utils";
+import remarkMath from "remark-math";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 // Type definitions
 interface CodeBlock {
   language: string;
@@ -311,8 +314,25 @@ export const RenderLessonMarkdown: React.FC<{
         {blocks.map((block, index) => {
           if (block.type === "text") {
             return (
-              <div key={index} className="mb-4">
-                <ReactMarkdown rehypePlugins={[remarkGfm, rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}>
+              <div key={index} className="mb-4 prose-sm prose md:prose-base lg:prose-lg max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }], rehypeKatex]}
+                  components={{
+                    // Make sure code in text sections doesn't get affected by prose
+                    code: (props) => {
+                      const { children, ...rest } = props;
+                      const isInline = children;
+                      return isInline ? (
+                        <code className="px-1 py-0.5 bg-gray-100 rounded text-gray-800 font-mono text-sm" {...rest}>
+                          {children}
+                        </code>
+                      ) : (
+                        <code {...props} />
+                      );
+                    }
+                  }}
+                >
                   {block.content as string}
                 </ReactMarkdown>
               </div>

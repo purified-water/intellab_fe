@@ -69,7 +69,6 @@ export const ExplorePage = () => {
     // }
     try {
       const response = await courseAPI.search(query, 0);
-      console.log("Search response:", response);
 
       dispatch(getExploreCourse(response.result.content));
     } catch (error: unknown) {

@@ -48,6 +48,7 @@ h1 {
 @layer base {
   :root {
     --background: 0 0% 100%;
+    --color-appPrimary: #5a3295;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
@@ -126,31 +127,135 @@ h1 {
   }
 }
 
-.markdown > * {
-  all: revert;
+/* Tailwind Typography styling for markdown content */
+.prose {
+  --tw-prose-body: #374151;
+  --tw-prose-headings: #111827;
+  --tw-prose-lead: #4b5563;
+  --tw-prose-links: var(--color-appPrimary);
+  --tw-prose-bold: #111827;
+  --tw-prose-counters: #6b7280;
+  --tw-prose-bullets: #6b7280;
+  --tw-prose-hr: #e5e7eb;
+  --tw-prose-quotes: #111827;
+  --tw-prose-quote-borders: #e5e7eb;
+  --tw-prose-captions: #6b7280;
+  --tw-prose-code: #111827;
+  --tw-prose-pre-code: #e5e7eb;
+  --tw-prose-pre-bg: #1f2937;
+  --tw-prose-th-borders: #d1d5db;
+  --tw-prose-td-borders: #e5e7eb;
 }
-.markdown p {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
+
+/* Heading links styling */
+.prose h1 a,
+.prose h2 a,
+.prose h3 a,
+.prose h4 a,
+.prose h5 a,
+.prose h6 a {
+  color: black !important;
+  text-decoration: none;
 }
-.markdown h1 {
-  font-size: 2rem;
-  font-weight: bold;
+
+.prose h1 a:hover,
+.prose h2 a:hover,
+.prose h3 a:hover,
+.prose h4 a:hover,
+.prose h5 a:hover,
+.prose h6 a:hover {
+  text-decoration: none;
+}
+
+/* Lists styling */
+.prose ul {
+  list-style-type: disc;
+  list-style-position: outside;
   margin-top: 0.75rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  list-style-position: outside;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Nested lists */
+.prose li > ul,
+.prose li > ol {
+  margin-top: 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Links styling */
+.prose a {
+  color: var(--color-appPrimary);
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  text-decoration: none;
+}
+
+/* Blockquote styling */
+.prose blockquote {
+  font-style: italic;
+  border-left: 4px solid var(--tw-prose-quote-borders);
+  padding-left: 1rem;
+  margin-left: 0;
+  color: #4b5563;
+}
+
+/* Table styling */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+.prose thead {
+  background-color: #f3f4f6;
+}
+
+.prose th {
+  font-weight: 600;
+  padding: 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.prose td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Preserve original styling */
+
+.markdown h1 {
+  font-size: 2.25rem;
+  margin-top: 1.75rem;
+  margin-bottom: 1rem;
 }
 .markdown h2 {
-  font-size: 1.5rem;
-  font-weight: bold;
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
+  font-size: 1.75rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
 }
 .markdown h3 {
   font-size: 1.25rem;
-  font-weight: medium;
-  margin-top: 0.25rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
 }
-
 .desc-code {
   font-size: 0.9rem;
   display: inline;
@@ -188,4 +293,49 @@ h1 {
   .desktop-only {
     display: none;
   }
+}
+
+/* Math formula styling */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5rem 0;
+  margin: 1rem 0;
+}
+
+/* Prevent math formulas from overflowing on smaller screens */
+.katex-display > .katex {
+  max-width: 100%;
+  display: block;
+}
+
+/* Improve display of inline math formulas */
+.katex {
+  font-size: 1.1em;
+}
+
+/* Dark mode support for math formulas */
+.dark .katex {
+  color: #f3f4f6;
+}
+
+/* Improve math formula display on different screen sizes */
+@media (max-width: 768px) {
+  .katex-display {
+    font-size: 0.9em;
+  }
+}
+
+/* Fix scrollbar for overflow math content */
+.katex-display::-webkit-scrollbar {
+  height: 4px;
+}
+
+.katex-display::-webkit-scrollbar-thumb {
+  background-color: var(--color-appPrimary);
+  border-radius: 2px;
+}
+
+.katex-display::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
 }
