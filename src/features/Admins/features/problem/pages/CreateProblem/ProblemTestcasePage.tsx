@@ -1,4 +1,3 @@
-import { Spinner } from "@/components/ui";
 import { useState, useEffect } from "react";
 import { ProblemTestcaseForm, ProblemTestcaseList, ProblemWizardButtons } from "../../components/CreateProblem";
 import { CreateTestcaseSchema } from "../../schemas";
@@ -15,7 +14,6 @@ import { useEditingProblem } from "../../hooks";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 export const ProblemTestcasePage = () => {
-  const [isLoading] = useState(false); // This will be replaced with the isLoading from useQuery function to get testcases
   const [testcaseAction, setTestcaseAction] = useState<TestcaseAction>({
     type: "default"
   });
@@ -32,20 +30,47 @@ export const ProblemTestcasePage = () => {
   }, []);
 
   const handleUpdateTestcases = async (newTestcase: CreateTestcaseSchema) => {
-    await adminProblemAPI.createProblemTestCaseStepSingle({
-      body: {
-        problemId: formData.problemId,
-        input: newTestcase.testcaseInput,
-        output: newTestcase.expectedOutput
-      },
-      onSuccess: async (testcase) => {
-        dispatch(
-          setCreateProblem({ problemTestcases: [...testcaseList, { ...newTestcase, testcaseId: testcase.testcaseId }] })
-        );
-        setTestcaseAction({ type: "default" });
-      },
-      onFail: async (error) => showToastError({ toast: toast.toast, message: error })
-    });
+    let _isUpdate: boolean | undefined;
+    let _testcaseId: string | undefined;
+    let _problemId: string | undefined;
+
+    if (testcaseAction.type === "create") {
+      _isUpdate = false;
+      _testcaseId = undefined;
+      _problemId = formData.problemId;
+    } else if (testcaseAction.type === "edit") {
+      _isUpdate = true;
+      _testcaseId = testcaseAction.testcaseId;
+      _problemId = undefined;
+    }
+
+    if (_isUpdate != undefined) {
+      await adminProblemAPI.createProblemTestCaseStepSingle({
+        query: { isUpdate: _isUpdate, testCaseId: _testcaseId },
+        body: {
+          problemId: _problemId,
+          input: newTestcase.testcaseInput,
+          output: newTestcase.expectedOutput
+        },
+        onSuccess: async (testcase) => {
+          if (testcaseAction.type === "create") {
+            dispatch(
+              setCreateProblem({
+                problemTestcases: [...testcaseList, { ...newTestcase, testcaseId: testcase.testcaseId }]
+              })
+            );
+          }
+          if (testcaseAction.type === "edit") {
+            const updatedTestcases = testcaseList.map((t) =>
+              t.testcaseId === testcase.testcaseId ? { ...newTestcase, testcaseId: t.testcaseId } : t
+            );
+            dispatch(setCreateProblem({ problemTestcases: updatedTestcases }));
+          }
+        },
+        onFail: async (error) => showToastError({ toast: toast.toast, message: error })
+      });
+    }
+    setTestcaseAction({ type: "default" });
   };
 
   const renderPageContent = () => {
@@ -79,14 +104,7 @@ export const ProblemTestcasePage = () => {
   return (
     <StepGuard checkValid={isBoilerplateStepValid} redirectTo={redirectUrl}>
       <div className="flex w-full">
-        {isLoading ? (
-          <div className="flex items-center justify-center w-24">
-            <Spinner loading={isLoading} />
-          </div>
-        ) : (
-          <ProblemTestcaseList testcases={testcaseList} onSelectTestcase={setTestcaseAction} />
-        )}
-
+        <ProblemTestcaseList testcases={testcaseList} onSelectTestcase={setTestcaseAction} />
         <div className="flex-1 p-4">
           {renderPageContent()}
           <ProblemWizardButtons ignoreSubmit={true} />

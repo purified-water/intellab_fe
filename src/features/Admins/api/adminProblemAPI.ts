@@ -17,7 +17,9 @@ import {
   TCreateProblemSolutionStepParams,
   TUpdateProblemCompletedStatusParams,
   TUpdateProblemAvailableStatusParams,
-  TUpdateProblemAvailableStatusResponse
+  TUpdateProblemAvailableStatusResponse,
+  TGetTestcasesOfProblemResponse,
+  TGetTestcasesOfProblemParams
 } from "../features/problem/types";
 import { apiResponseCodeUtils } from "@/utils";
 import { AxiosError } from "axios";
@@ -139,6 +141,7 @@ export const adminProblemAPI = {
   },
 
   createProblemTestCaseStepSingle: async ({
+    query,
     body,
     onStart,
     onSuccess,
@@ -160,7 +163,9 @@ export const adminProblemAPI = {
       onStart();
     }
     try {
-      const response = await apiClient.post(`problem/admin/problems/testcase-step`, body);
+      const response = await apiClient.post(`problem/admin/problems/testcase-step`, body, {
+        params: query
+      });
       await handleResponseData(response.data as TCreateProblemTestCaseStepSingleResponse);
     } catch (error: unknown) {
       if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
@@ -212,7 +217,14 @@ export const adminProblemAPI = {
     }
   },
 
-  createProblemSolutionStep: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreateProblemSolutionStepParams) => {
+  createProblemSolutionStep: async ({
+    query,
+    body,
+    onStart,
+    onSuccess,
+    onFail,
+    onEnd
+  }: TCreateProblemSolutionStepParams) => {
     const DEFAULT_ERROR = "Error in creating problem's solution step";
 
     const handleResponseData = async (data: TCreateProblemSolutionStepResponse) => {
@@ -228,7 +240,7 @@ export const adminProblemAPI = {
       onStart();
     }
     try {
-      const response = await apiClient.post(`problem/admin/problems/solution-step`, body);
+      const response = await apiClient.post(`problem/admin/problems/solution-step`, body, { params: query });
       await handleResponseData(response.data as TCreateProblemSolutionStepResponse);
     } catch (error: unknown) {
       if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
@@ -337,5 +349,32 @@ export const adminProblemAPI = {
   deleteProblem: async (problemId: string) => {
     const response = await apiClient.delete(`problem/admin/problems/${problemId}`);
     return response.data;
+  },
+
+  getTestcasesOfProblem: async ({ query, onStart, onSuccess, onEnd, onFail }: TGetTestcasesOfProblemParams) => {
+    const DEFAULT_ERROR = "Error fetching test cases of problem";
+
+    const handleResponseData = async (data: TGetTestcasesOfProblemResponse) => {
+      await onSuccess(data);
+    };
+
+    if (onStart) {
+      onStart();
+    }
+    try {
+      const { problemId } = query!;
+      const response = await apiClient.get(`problem/test-case/problem/${problemId}`);
+      await handleResponseData(response.data as TGetTestcasesOfProblemResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TGetTestcasesOfProblemResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
+    }
   }
 };

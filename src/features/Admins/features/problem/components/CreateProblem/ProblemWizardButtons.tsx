@@ -5,6 +5,7 @@ import { useProblemWizardStep } from "../../hooks";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
+import { useEditingProblem } from "../../hooks";
 
 type ProblemWizardButtonsProps = {
   isSubmitting?: boolean;
@@ -25,6 +26,7 @@ export const ProblemWizardButtons = ({
   const dispatch = useDispatch();
   const currentStepIndex = steps.findIndex((step) => location.pathname.includes(step.path));
   const isLastStep = currentStepIndex === steps.length - 1;
+  const { isEditingProblem } = useEditingProblem();
 
   const handleCancelCreateProblem = () => {
     dispatch(resetCreateProblem());
@@ -43,13 +45,15 @@ export const ProblemWizardButtons = ({
 
   return (
     <div className="flex justify-end mt-6 space-x-8">
-      <AlertDialog
-        title={"Cancel Problem Creation"}
-        message={"Are you sure you want to cancel problem creation? All progress will be lost."}
-        onConfirm={handleCancelCreateProblem}
-      >
-        <div className="px-4 py-2 text-sm text-gray3">Cancel</div>
-      </AlertDialog>
+      {!isEditingProblem && (
+        <AlertDialog
+          title={"Cancel Problem Creation"}
+          message={"Are you sure you want to cancel problem creation? All progress will be lost."}
+          onConfirm={handleCancelCreateProblem}
+        >
+          <div className="px-4 py-2 text-sm text-gray3">Cancel</div>
+        </AlertDialog>
+      )}
 
       {showPrev && (
         <Button

@@ -63,7 +63,8 @@ export function ProblemListItem(props: ProblemListItemProps) {
           : undefined,
         problemTestcases: [],
         problemSolution: problem.solution ? problem.solution.content : "",
-        currentCreationStep: problem.currentCreationStep
+        currentCreationStep: problem.currentCreationStep,
+        isCompletedCreation: problem.isCompletedCreation
       })
     );
     if (problem.currentCreationStep === CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) {
@@ -183,9 +184,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
             </>
           )}
 
-          {!problem.isCompletedCreation && (
-            <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>
-          )}
+          {!problem.isCompletedCreation && <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>}
           {!problem.isCompletedCreation && <td className="py-1">{problem.currentCreationStepDescription}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>

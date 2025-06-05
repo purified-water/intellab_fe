@@ -44,11 +44,12 @@ export const ProblemDescriptionPage = () => {
     }
   });
 
-  const handleEditProblem = async (data: ProblemDescriptionSchema) => {
-    console.log("--> handleEditProblem called with data:", data);
-  };
+  const onSubmit = async (data: ProblemDescriptionSchema) => {
+    // const editingProblem =
+    //   (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION) ||
+    //   formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION;
+    // console.log("--> Editing in Problem Description Page:", editingProblem);
 
-  const handleCreateProblem = async (data: ProblemDescriptionSchema) => {
     await adminProblemAPI.createProblemDescriptionStep({
       body: {
         problemId: formData.problemId,
@@ -60,17 +61,6 @@ export const ProblemDescriptionPage = () => {
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
-  };
-
-  const onSubmit = async (data: ProblemDescriptionSchema) => {
-    if (
-      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION) ||
-      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION
-    ) {
-      await handleEditProblem(data);
-    } else {
-      await handleCreateProblem(data);
-    }
   };
 
   let redirectUtl = "/admin/problems/create/general";
