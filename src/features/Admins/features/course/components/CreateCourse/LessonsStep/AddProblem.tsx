@@ -1,4 +1,4 @@
-import { Button, Spinner } from "@/components/ui";
+import { Button, EndOfListNotice, Spinner } from "@/components/ui";
 import { Input } from "@/components/ui/shadcn";
 import { useEffect, useState } from "react";
 import { useCreateLesson } from "../../../hooks";
@@ -50,7 +50,7 @@ export const AddProblem = ({ value, onChange, readOnly }: AddProblemProps) => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <div className="space-y-2 overflow-y-auto max-h-[600px] scrollbar-hide">
+            <div className="space-y-2 overflow-y-auto max-h-[700px] scrollbar-hide">
               {filteredProblems.map((problem) => (
                 <div
                   key={problem.problemId}
@@ -83,6 +83,7 @@ export const AddProblem = ({ value, onChange, readOnly }: AddProblemProps) => {
                   )}
                 </div>
               ))}
+              <EndOfListNotice />
             </div>
           </div>
         )}
@@ -90,9 +91,9 @@ export const AddProblem = ({ value, onChange, readOnly }: AddProblemProps) => {
         {/* Right: Preview */}
         <div className="col-span-2">
           {selectedProblem && (
-            <div className="p-6 space-y-4 border rounded-xl">
+            <div className="p-6 space-y-4 border rounded-xl max-h-[710px] overflow-y-scroll">
               <h3 className="text-lg font-semibold">Problem description</h3>
-              <div className="h-full overflow-y-scroll text-sm text-gray1">
+              <div className="h-full text-sm text-gray1">
                 <MarkdownRender content={selectedProblem.description} />
               </div>
               <div className="text-right">

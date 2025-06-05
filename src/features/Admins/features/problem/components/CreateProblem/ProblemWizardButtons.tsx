@@ -2,8 +2,7 @@ import { AlertDialog, Button } from "@/components/ui";
 import { steps } from "../../constants";
 import { useLocation } from "react-router-dom";
 import { useProblemWizardStep } from "../../hooks";
-import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
+import { useDispatch } from "react-redux";
 import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { useEditingProblem } from "../../hooks";
 
@@ -22,7 +21,6 @@ export const ProblemWizardButtons = ({
 }: ProblemWizardButtonsProps) => {
   const location = useLocation();
   const { goToPrevStep, goToNextStep, escapeForm } = useProblemWizardStep();
-  const formData = useSelector((state: RootState) => state.createProblem); // For testing to see form data only
   const dispatch = useDispatch();
   const currentStepIndex = steps.findIndex((step) => location.pathname.includes(step.path));
   const isLastStep = currentStepIndex === steps.length - 1;
@@ -35,11 +33,8 @@ export const ProblemWizardButtons = ({
 
   const handleContinueWithoutSubmit = () => {
     if (isLastStep) {
-      console.log("Last step, cannot continue without submit");
-      console.log("Form data:", formData);
       return;
     }
-    console.log("Continue without submit");
     goToNextStep();
   };
 

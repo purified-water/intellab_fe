@@ -74,7 +74,7 @@ export const CourseLessonsPage = () => {
   };
 
   const updateLesson = async (data: CreateLessonSchema) => {
-    if (lessonAction.type === "add-blank" || lessonAction.type === "add-clone") {
+    if (lessonAction.type === "add-blank" || lessonAction.type === "add-clone" || lessonAction.type === "edit") {
       const updateLessonPayload: UpdateCourseLessonPayload = {
         lessonId: data.lessonId,
         lessonName: data.lessonName,
@@ -86,13 +86,16 @@ export const CourseLessonsPage = () => {
 
       const updateQuizPayload: CreateCourseLessonQuizPayload = {
         lessonId: data.lessonId,
+        isQuizVisible: data.hasQuiz,
         questionsPerExercise: data.lessonQuiz?.displayedQuestions ?? 0,
         passingQuestions: data.lessonQuiz?.requiredCorrectQuestions ?? 0,
         questions: (data.lessonQuiz?.quizQuestions ?? []).map((question) => {
+          // For new questions (created locally), send null as questionId
+          const isNewQuestion = question.questionId?.startsWith("new-");
           return {
-            questionId: null,
+            questionId: isNewQuestion ? null : question.questionId,
             questionContent: question.questionTitle,
-            correctAnswer: question.correctAnswer.toString(), // Accept string (from number)
+            correctAnswer: question.correctAnswer.toString(),
             questionType: "S",
             optionRequests: question.options.map((option) => ({
               order: option.order,
@@ -103,10 +106,11 @@ export const CourseLessonsPage = () => {
       };
 
       try {
-        await Promise.all([
-          createCourseLesson.updateLesson.mutateAsync(updateLessonPayload),
-          createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload)
-        ]);
+        // Update quiz first
+        await createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload);
+
+        // Only proceed with lesson update if quiz update succeeded
+        await createCourseLesson.updateLesson.mutateAsync(updateLessonPayload);
 
         // Remove the lesson in the redux store
         dispatch(resetCreateLesson());
@@ -115,8 +119,9 @@ export const CourseLessonsPage = () => {
         dispatch(setCreateCourse({ courseLessons: updatedLessonList }));
         setLessonAction({ type: "default" });
       } catch (error) {
-        console.log("Error updating lesson:", error);
+        console.error("Error updating lesson or quiz:", error);
         showToastError({ toast: toast.toast, message: "Error updating lesson" });
+        throw error; // Re-throw to prevent further processing
       }
     } else {
       return;
@@ -134,11 +139,25 @@ export const CourseLessonsPage = () => {
   const renderPageContent = () => {
     switch (lessonAction?.type) {
       case "view":
-        return <LessonForm lessonId={lessonAction.lessonId} onSave={updateLesson} lessonActionType="view" />;
+        return (
+          <LessonForm
+            lessonId={lessonAction.lessonId}
+            onSave={updateLesson}
+            onCancel={() => setLessonAction({ type: "default" })}
+            lessonActionType="view"
+          />
+        );
       case "edit":
-        return <LessonForm lessonId={lessonAction.lessonId} onSave={updateLesson} lessonActionType="edit" />;
+        return (
+          <LessonForm
+            lessonId={lessonAction.lessonId}
+            onSave={updateLesson}
+            onCancel={() => setLessonAction({ type: "default" })}
+            lessonActionType="edit"
+          />
+        );
       case "add-blank":
-        return <LessonForm onSave={updateLesson} />; // Dont add lessonId because use redux instead
+        return <LessonForm onSave={updateLesson} onCancel={() => setLessonAction({ type: "default" })} />; // Dont add lessonId because use redux instead
       case "add-clone":
         return <div>Add Clone Lesson</div>;
       default:

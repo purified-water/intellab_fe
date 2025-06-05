@@ -10,7 +10,7 @@ export const QuizHeader = ({ questionCount }: QuizHeaderProps) => {
       <div id="container" className="flex items-center justify-between w-full px-8 md:px-36">
         <>
           <div id="message" className="text-gray1">
-            <h2 className="text-xl font-bold">Complete the quizz below</h2>
+            <h2 className="text-xl font-bold">Complete the quiz below</h2>
             <p>Answer {questionsToPass} questions correctly or higher to pass</p>
           </div>
         </>

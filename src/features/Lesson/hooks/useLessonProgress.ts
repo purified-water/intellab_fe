@@ -63,7 +63,6 @@ export const useLessonProgress = ({ lesson, userId }: UseLessonProgressProps) =>
               clearBookmark(userId, lesson.lessonId);
             }
             setIsLessonDone(true);
-            console.log("Lesson marked as completed successfully");
           } else {
             theoryUpdateAttempted.current = false; // Reset the flag if the update fails
           }

@@ -24,7 +24,6 @@ export function LearnedSection(props: LearnedSectionProps) {
     );
   } else {
     const categories = certificate?.course.categories;
-    console.log("Certificate categories", certificate?.course.categories);
     if (categories && categories.length > 0) {
       content = (
         <div className="px-6 py-4 space-y-2 border rounded-lg border-gray4">

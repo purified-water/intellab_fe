@@ -1,5 +1,10 @@
 import { z } from "zod";
 import { createQuizSchema } from "./createQuizSchema";
+import { MAX_LESSON_CONTENT_WORD_COUNT } from "@/constants";
+
+function countWords(text: string): number {
+  return text.trim().split(/\s+/).length;
+}
 
 export const createLessonSchema = z
   .object({
@@ -7,12 +12,19 @@ export const createLessonSchema = z
     lessonName: z.string().min(1, { message: "Lesson name is required" }).max(50, {
       message: "Lesson name must be less than 50 characters"
     }),
-    lessonDescription: z.string().min(1, { message: "Lesson description is required" }).max(100, {
-      message: "Lesson description must be less than 100 characters"
+    lessonDescription: z.string().min(1, { message: "Lesson description is required" }).max(500, {
+      message: "Lesson description must be less than 500 characters"
     }),
-    lessonContent: z.string().min(1, { message: "Lesson content is required" }).max(3000, {
-      message: "Lesson content must be less than 3000 characters"
-    }),
+    lessonContent: z
+      .string()
+      .min(1, { message: "Lesson content is required" })
+      .refine(
+        (content) => {
+          const wordCount = countWords(content);
+          return wordCount <= MAX_LESSON_CONTENT_WORD_COUNT; // Maximum 10,000 words
+        },
+        { message: `Lesson content must not exceed ${MAX_LESSON_CONTENT_WORD_COUNT} words` }
+      ),
     hasQuiz: z.boolean(),
     // Keep lessonQuiz as optional in the schema
     lessonQuiz: createQuizSchema.optional(),

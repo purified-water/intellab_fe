@@ -97,7 +97,7 @@ export const AddMarkdownContent = ({
 
       <div className="flex items-center mb-4 space-x-4">
         {renderButtonRow()}
-        <div className={`text-sm ${imageUpload.isUploading ? "text-blue-600 font-medium" : "text-gray-600"}`}>
+        <div className={`text-sm ${imageUpload.isUploading ? "text-appPrimary font-medium" : "text-gray3"}`}>
           {getStatusMessage()}
         </div>
       </div>

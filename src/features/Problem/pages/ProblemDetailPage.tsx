@@ -71,7 +71,6 @@ export const ProblemDetail = () => {
   const fetchProblemDetail = async () => {
     try {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
-      console.log("Problem detail", problemDetail);
       if (problemDetail) {
         setProblemDetail(problemDetail);
         document.title = `${problemDetail.problemName} | Intellab`;
@@ -87,7 +86,6 @@ export const ProblemDetail = () => {
   // #endregion
 
   useEffect(() => {
-    console.log("redirectedCommentId", redirectedCommentId);
     //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
     if (problemId != null && problemId !== "null") {
       fetchProblemDetail();

@@ -27,10 +27,9 @@ const getHighlighterLanguage = (language: string): string => {
 // Output block component
 const OutputBlock: React.FC<{ content: string }> = ({ content }) => {
   return (
-    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-md">
+    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-sm">
       <div className="px-4 py-3 text-sm font-semibold border-b text-appPrimary">Output</div>
-      {/*  */}
-      <div className="p-4 text-white bg-appOutputBG">
+      <div className="p-4 text-white bg-appOutputBG output">
         <pre className="whitespace-pre-wrap">
           <code>{content}</code>
         </pre>
@@ -54,7 +53,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
   }, [activeTab]);
 
   return (
-    <div className="mt-8 mb-4 border rounded-lg shadow-md h-fit code-tabs-headers">
+    <div className="mt-8 mb-4 border rounded-lg shadow-sm h-fit code-tabs-headers">
       <div className="flex rounded-t-lg">
         {codeBlocks.map((block) => (
           <button
@@ -73,7 +72,7 @@ const CodeTabs: React.FC<{ codeBlocks: CodeBlock[] }> = ({ codeBlocks }) => {
       </div>
 
       <div
-        className="overflow-auto rounded-b-lg shadow-md code-content"
+        className="overflow-auto rounded-b-lg shadow-sm code-content"
         style={{ maxHeight: codeHeight }}
         ref={codeRef}
       >

@@ -24,7 +24,6 @@ export const PurchaseList = ({ paymentFor }: PurchaseListProps) => {
     setLoading(true);
     try {
       const response = await paymentAPI.getPaymentMe(paymentFor, page);
-      console.log("Payment history: ", response);
       setTotalPages(response.result.totalPages);
       setCurrentPage(response.result.number);
       setPurchases(response.result.content);

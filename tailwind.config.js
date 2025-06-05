@@ -105,11 +105,16 @@ export default {
           },
           "100%": {
             transform: "translateY(-50%) rotate(360deg)"
-          }
-        }
+          },
+        },
+        fadeIn: {
+          from: { opacity: "0" },
+          to: { opacity: "1" },
+        },
       },
       animation: {
-        disco: "disco 1.5s linear infinite"
+        disco: "disco 1.5s linear infinite",
+        fadeIn: "fadeIn 0.5s ease-in-out forwards",
       },
       boxShadow: {
         gold: "0 4px 6px 0 rgba(255, 215, 0, 0.025), 0 2px 4px 0 rgba(255, 215, 0, 0.015)",
@@ -118,7 +123,7 @@ export default {
       }
     }
   },
-  plugins: [require("tailwindcss-animate"), require("tailwind-scrollbar-hide"), icons],
+  plugins: [require("@tailwindcss/typography"), require("tailwindcss-animate"), require("tailwind-scrollbar-hide"), icons],
   components: {
     icon: {
       default: "gray-500-base",

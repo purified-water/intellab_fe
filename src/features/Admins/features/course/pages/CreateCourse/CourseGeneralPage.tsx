@@ -157,7 +157,6 @@ export const CourseGeneralPage = () => {
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error("Form submission errors:", errors);
-          //console.log("Form data:", form.getValues());
           showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
         })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"

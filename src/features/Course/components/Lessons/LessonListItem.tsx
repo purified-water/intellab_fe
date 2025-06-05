@@ -61,7 +61,7 @@ export default function LessonListItem(props: LessonListItemProps) {
 
   const renderIcons = (lesson: ILesson | IEnrolledLesson) => {
     const unfinishedTheoryIcon = (
-      <div className="w-11 h-11 rounded-[10px] bg-gray5 inline-flex items-center justify-center border-[0.5px] border-gray4">
+      <div className="w-11 h-11 ml-2 rounded-[10px] bg-gray6/50 inline-flex items-center justify-center border-[0.5px] border-gray4">
         <BookOpenText className="w-5 h-5 cursor-pointer text-gray3" onClick={handleExerciseClick} />
       </div>
     );
@@ -78,7 +78,7 @@ export default function LessonListItem(props: LessonListItemProps) {
     };
 
     const unfinishedProblemIcon = (
-      <div className="w-11 h-11 rounded-[10px] bg-gray5 inline-flex items-center justify-center border-[0.5px] border-gray4">
+      <div className="w-11 h-11 rounded-[10px] bg-gray6/50 inline-flex items-center justify-center border-[0.5px] border-gray4">
         <Code className="w-5 h-5 cursor-pointer text-gray3" onClick={handleProblemClick} />
       </div>
     );
@@ -116,7 +116,7 @@ export default function LessonListItem(props: LessonListItemProps) {
     }
 
     return (
-      <div className="flex flex-row flex-1 items-start justify-start gap-5 text-gray3">
+      <div className="flex flex-row items-start justify-start flex-1 gap-5 text-gray3">
         {theoryIcon}
         {problemIcon}
       </div>
@@ -126,15 +126,17 @@ export default function LessonListItem(props: LessonListItemProps) {
   return (
     <li
       key={lesson.lessonId}
-      className={`px-8 py-4 flex-wrap overflow-hidden border-b border-gray4 ${lastViewedLessonId === lesson.lessonId ? "bg-gray5" : ""} hover:bg-gray6/80 min-h-[80px]`}
+      className={`px-8 py-4 flex-wrap overflow-hidden border-b border-gray6 ${lastViewedLessonId === lesson.lessonId ? "bg-appPrimary/10" : ""} hover:bg-gray6/50 min-h-[80px]`}
     >
-      <div className="flex flex-row items-center justify-center overflow-hidden max-w-screen-2xl h-full">
+      <div className="flex flex-row items-center justify-center h-full overflow-hidden max-w-screen-2xl">
         <h2 className="text-3xl font-bold">{lesson.lessonOrder}</h2>
         <div className="ml-8 text-left flex-col min-w-[200px] w-full cursor-pointer " onClick={handleLessonClick}>
           <h4 className="flex items-center overflow-hidden text-xl font-bold text-ellipsis whitespace-nowrap">
             {lesson.lessonName}{" "}
-            <span className="text-base font-normal ml-2">
-              {lastViewedLessonId === lesson.lessonId && " • Last viewed"}
+            <span className="ml-2 text-base font-normal">
+              {lastViewedLessonId === lesson.lessonId && (
+                <span className="text-sm font-medium text-appPrimary">• Last viewed</span>
+              )}
             </span>
             {(hasOnceRequirement || hasBothRequirements) && <div>{FINISHED_ICON}</div>}
           </h4>

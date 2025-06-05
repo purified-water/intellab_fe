@@ -25,7 +25,6 @@ export const fetchNotifications = createAsyncThunk(
   async ({ page = 0, size = 10 }: { page: number; size: number }, { rejectWithValue }) => {
     try {
       const response = await notificationAPI.getNotifications(page, size);
-      console.log("Fetched notifications:", response);
       // Set the current page and total pages in the state
       const { number: currentPage, totalPages } = response.result;
       return { ...response.result, currentPage, totalPages };
