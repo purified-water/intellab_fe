@@ -12,7 +12,6 @@ import { RootState } from "@/redux/rootReducer";
 import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
-import { rateIcon } from "@/assets";
 import { Button } from "@/components/ui/Button";
 interface CourseProps {
   course: ICourse | null;
@@ -123,7 +122,9 @@ export function Course(props: CourseProps) {
         />
         <div className="absolute top-2 right-2 max-w-[280px]">
           <div className="px-2 py-1 mb-5 text-xs bg-black/40 backdrop-blur-md rounded-lg text-white whitespace-nowrap overflow-hidden text-ellipsis">
-            {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount} lessons • {`${amountTransformer(detailCourse?.reviewCount ?? 0)} reviews`} • ⭐ {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : NA_VALUE}
+            {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount} lessons •{" "}
+            {`${amountTransformer(detailCourse?.reviewCount ?? 0)} reviews`} • ⭐{" "}
+            {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : NA_VALUE}
           </div>
         </div>
       </div>

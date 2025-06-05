@@ -26,10 +26,7 @@ export function ActiveUsersTodayMiniChart({ rangeType, dateRange }: Props) {
         <AreaChart data={data}>
           <Area type="monotone" dataKey="users" stroke="#5a3295" fill="rgba(90, 50, 149, 0.1)" strokeWidth={2} />
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis
-            dataKey={rangeType === "Month" ? "month" : "custom"}
-            fontSize={10}
-          />{" "}
+          <XAxis dataKey={rangeType === "Month" ? "month" : "custom"} fontSize={10} />{" "}
           <YAxis fontSize={10} width={25} tickMargin={4} />
           <Tooltip />
         </AreaChart>

@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { CourseCompletionRateItem } from "@/features/Admins/types/apiType";
 
-function getFallbackData(rangeType: "Month" | "Year" | "Custom") {
+function getFallbackData(rangeType: "Month" | "Year" | "Custom" | "Daily" | "Weekly") {
   // Fallback data in case API fails
   const fallbackData = {
     Daily: [
@@ -81,7 +81,7 @@ function getFallbackData(rangeType: "Month" | "Year" | "Custom") {
 }
 
 interface Props {
-  rangeType: "Month" | "Year" | "Custom";
+  rangeType: "Month" | "Year" | "Custom" | "Daily" | "Weekly";
   dateRange: DateRange | undefined;
   selectedMonth?: number;
   selectedYear?: number;

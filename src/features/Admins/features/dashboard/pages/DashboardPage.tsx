@@ -21,7 +21,7 @@ export const DashboardPage = () => {
     from: new Date(),
     to: new Date()
   });
-  
+
   // New state for month/year selection
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
   const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
@@ -300,7 +300,6 @@ export const DashboardPage = () => {
 
       {/* Khối 2: Biểu đồ nhỏ */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-
         <ZoomableChartCard
           title="Revenue"
           rangeType={rangeType}
@@ -311,15 +310,17 @@ export const DashboardPage = () => {
           setDateRange={setDateRange}
           setSelectedMonth={setSelectedMonth}
           setSelectedYear={setSelectedYear}
-          largeChart={<RevenueLargeBarChart 
-            rangeType={rangeType} 
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />}
+          largeChart={
+            <RevenueLargeBarChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          }
         >
-          <RevenueMiniBarChart 
-            rangeType={rangeType} 
+          <RevenueMiniBarChart
+            rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
@@ -328,12 +329,14 @@ export const DashboardPage = () => {
 
         <ZoomableChartCard
           title="User Growth"
-          largeChart={<UserGrowthLargeChart 
-            rangeType={rangeType} 
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />}
+          largeChart={
+            <UserGrowthLargeChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          }
           rangeType={rangeType}
           dateRange={dateRange}
           selectedMonth={selectedMonth}
@@ -343,8 +346,8 @@ export const DashboardPage = () => {
           setSelectedMonth={setSelectedMonth}
           setSelectedYear={setSelectedYear}
         >
-          <UserGrowthMiniChart 
-            rangeType={rangeType} 
+          <UserGrowthMiniChart
+            rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
@@ -356,12 +359,14 @@ export const DashboardPage = () => {
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <ZoomableChartCard
           title="Subscription Growth"
-          largeChart={<SubscriptionGrowthLargeChart 
-            rangeType={rangeType} 
-            dateRange={dateRange} 
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />}
+          largeChart={
+            <SubscriptionGrowthLargeChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          }
           rangeType={rangeType}
           dateRange={dateRange}
           selectedMonth={selectedMonth}
@@ -371,8 +376,8 @@ export const DashboardPage = () => {
           setSelectedMonth={setSelectedMonth}
           setSelectedYear={setSelectedYear}
         >
-          <SubscriptionGrowthMiniChart 
-            rangeType={rangeType} 
+          <SubscriptionGrowthMiniChart
+            rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
@@ -389,15 +394,17 @@ export const DashboardPage = () => {
           setDateRange={setDateRange}
           setSelectedMonth={setSelectedMonth}
           setSelectedYear={setSelectedYear}
-          largeChart={<CompletionRateLargeChart 
-            rangeType={rangeType} 
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />}
+          largeChart={
+            <CompletionRateLargeChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          }
         >
-          <CompletionRateMiniChart 
-            rangeType={rangeType} 
+          <CompletionRateMiniChart
+            rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}

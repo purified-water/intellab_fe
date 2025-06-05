@@ -1,9 +1,6 @@
 import { DateRange } from "react-day-picker";
 
-export function getDataBasedOnFilter(
-  rangeType: "Month" | "Custom",
-  _dateRange: DateRange | undefined
-) {
+export function getDataBasedOnFilter(rangeType: "Month" | "Custom", _dateRange: DateRange | undefined) {
   // Lọc dữ liệu dựa trên rangeType và _dateRange
   const _data = {
     Month: [
