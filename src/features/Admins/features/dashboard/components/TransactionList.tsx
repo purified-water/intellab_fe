@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/shadcn/card";
 import { Button } from "@/components/ui/Button";
 import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
@@ -14,7 +14,9 @@ import {
   PaginationNext,
   PaginationPrevious
 } from "@/components/ui/shadcn/pagination";
-import { Funnel } from "lucide-react"; // Import the funnel icon
+import { Funnel } from "lucide-react";
+import { transactionAPI } from "@/lib/api";
+import { Skeleton } from "@/components/ui";
 
 interface Transaction {
   name: string;
@@ -27,18 +29,68 @@ interface Transaction {
 
 interface TransactionsListProps {
   title?: string;
-  transactions: Transaction[];
+  transactions?: Transaction[];
   limit?: number;
 }
 
-export function TransactionsList({ title = "Recent Transactions", transactions, limit = 3 }: TransactionsListProps) {
+export function TransactionsList({
+  title = "Recent Transactions",
+  transactions: initialTransactions,
+  limit = 3
+}: TransactionsListProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<"Course" | "Plan" | "All">("All");
   const [selectedStatus, setSelectedStatus] = useState<"Completed" | "Pending" | "Failed" | "all">("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
+  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions || []);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>("");
   const itemsPerPage = 10;
+
+  const loadTransactions = async (page: number = 0) => {
+    // if (initialTransactions) return;
+
+    setIsLoading(true);
+    setErrorMessage("");
+    try {
+      console.log("Loading transactions for page:", page);
+      const apiTransactions = await transactionAPI.getTransactions(page);
+
+      if (apiTransactions.length === 0) {
+        setErrorMessage("No transactions found or unable to fetch transactions.");
+      } else {
+        const formattedTransactions = apiTransactions.map((transaction) => ({
+          name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
+          email: transaction.user.email,
+          amount: `$${transaction.amount.toLocaleString()}`,
+          date: new Date(transaction.date).toLocaleDateString(),
+          status: transaction.status,
+          type: transaction.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
+        }));
+        setTransactions(formattedTransactions);
+      }
+    } catch (error) {
+      console.error("Failed to fetch transactions:", error);
+      setErrorMessage("Failed to fetch transactions. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Reload data when page changes
+  useEffect(() => {
+    console.log("Current page changed:", currentPage);
+    loadTransactions(currentPage - 1); // API uses 0-based indexing
+  }, [currentPage, open]);
+
+  // Initial data load
+  useEffect(() => {
+    if (!initialTransactions) {
+      loadTransactions();
+    }
+  }, [initialTransactions]);
 
   // Filter transactions based on search query, type, and status
   const filteredTransactions = transactions.filter(
@@ -52,8 +104,8 @@ export function TransactionsList({ title = "Recent Transactions", transactions, 
 
   // Sort transactions by amount
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    const amountA = parseFloat(a.amount.replace(/,/g, ""));
-    const amountB = parseFloat(b.amount.replace(/,/g, ""));
+    const amountA = parseFloat(a.amount.replace(/[$,]/g, ""));
+    const amountB = parseFloat(b.amount.replace(/[$,]/g, ""));
     return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
   });
 
@@ -72,22 +124,42 @@ export function TransactionsList({ title = "Recent Transactions", transactions, 
           </Button>
         </CardHeader>
         <CardContent>
-          <ul className="space-y-2">
-            {paginatedTransactions.slice(0, limit).map((transaction, idx) => (
-              <li key={idx} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div className="font-medium text-sm">{transaction.name}</div>
-                    <div className="text-xs text-muted-foreground">{transaction.email}</div>
+          {isLoading ? (
+            <div className="space-y-2">
+              {Array.from({ length: limit }).map((_, idx) => (
+                <div key={idx} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <div className="space-y-1">
+                      <Skeleton className="h-4 w-24" />
+                      <Skeleton className="h-3 w-32" />
+                    </div>
                   </div>
+                  <Skeleton className="h-4 w-16" />
                 </div>
-                <div className="text-sm">{transaction.amount}</div>
-              </li>
-            ))}
-          </ul>
+              ))}
+            </div>
+          ) : (
+            <ul className="space-y-2">
+              {paginatedTransactions.slice(0, limit).map((transaction, idx) => (
+                <li key={idx} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-medium text-sm">{transaction.name}</div>
+                      <div className="text-xs text-muted-foreground">{transaction.email}</div>
+                    </div>
+                  </div>
+                  <div className="text-sm">{transaction.amount}</div>
+                </li>
+              ))}
+              {transactions.length === 0 && !isLoading && (
+                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No transactions found"}</li>
+              )}
+            </ul>
+          )}
         </CardContent>
       </Card>
 
@@ -103,158 +175,216 @@ export function TransactionsList({ title = "Recent Transactions", transactions, 
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
             />
+            <Button
+              variant="outline"
+              size="sm"
+              className="shrink-0"
+              onClick={() => loadTransactions(currentPage - 1)}
+              disabled={isLoading}
+            >
+              {isLoading ? <Skeleton className="h-4 w-4 mr-2" /> : null}
+              Refresh
+            </Button>
           </div>
 
-          <div className="rounded-md border overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[40%]">User</TableHead>
-                  {transactions[0]?.date && <TableHead>Date</TableHead>}
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <span>Amount</span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="p-0 h-auto text-xs"
-                        onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-                      >
-                        {sortOrder === "asc" ? "↑" : "↓"}
-                      </Button>
-                    </div>
-                  </TableHead>
-                  {transactions[0]?.status && (
+          {isLoading ? (
+            <div className="rounded-md border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40%]">User</TableHead>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Amount</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Type</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {Array.from({ length: 10 }).map((_, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <Skeleton className="h-8 w-8 rounded-full" />
+                          <div className="space-y-1">
+                            <Skeleton className="h-4 w-32" />
+                            <Skeleton className="h-3 w-40" />
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-20" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-4 w-16" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-6 w-20 rounded-full" />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton className="h-6 w-16 rounded-full" />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          ) : (
+            <div className="rounded-md border overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="w-[40%]">User</TableHead>
+                    {transactions[0]?.date && <TableHead>Date</TableHead>}
                     <TableHead>
                       <div className="flex items-center gap-1">
-                        <span>Status</span>
+                        <span>Amount</span>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="p-0 h-auto text-xs"
+                          onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                        >
+                          {sortOrder === "asc" ? "↑" : "↓"}
+                        </Button>
+                      </div>
+                    </TableHead>
+                    {transactions[0]?.status && (
+                      <TableHead>
+                        <div className="flex items-center gap-1">
+                          <span>Status</span>
+                          <Select
+                            value={selectedStatus}
+                            onValueChange={(value) =>
+                              setSelectedStatus(value as "Completed" | "Pending" | "Failed" | "all")
+                            }
+                          >
+                            <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
+                              <Funnel className="h-4 w-4 cursor-pointer" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="all">All</SelectItem>
+                              <SelectItem value="Completed">Completed</SelectItem>
+                              <SelectItem value="Pending">Pending</SelectItem>
+                              <SelectItem value="Failed">Failed</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </TableHead>
+                    )}
+                    <TableHead>
+                      <div className="flex items-center gap-1">
+                        <span>Type</span>
                         <Select
-                          value={selectedStatus}
-                          onValueChange={(value) =>
-                            setSelectedStatus(value as "Completed" | "Pending" | "Failed" | "all")
-                          }
+                          value={selectedType}
+                          onValueChange={(value) => setSelectedType(value as "Course" | "Plan" | "All")}
                         >
                           <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
                             <Funnel className="h-4 w-4 cursor-pointer" />
-                          </SelectTrigger>
+                          </SelectTrigger>{" "}
                           <SelectContent>
-                            <SelectItem value="all">All</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="Pending">Pending</SelectItem>
-                            <SelectItem value="Failed">Failed</SelectItem>
+                            <SelectItem value="All">All</SelectItem>
+                            <SelectItem value="Course">Course</SelectItem>
+                            <SelectItem value="Plan">Plan</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                     </TableHead>
-                  )}
-                  <TableHead>
-                    <div className="flex items-center gap-1">
-                      <span>Type</span>
-                      <Select
-                        value={selectedType}
-                        onValueChange={(value) => setSelectedType(value as "Course" | "Plan" | "All")}
-                      >
-                        <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
-                          <Funnel className="h-4 w-4 cursor-pointer" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="all">All</SelectItem>
-                          <SelectItem value="course">Course</SelectItem>
-                          <SelectItem value="plan">Plan</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {paginatedTransactions.length > 0 ? (
-                  paginatedTransactions.map((transaction, idx) => (
-                    <TableRow key={idx}>
-                      <TableCell>
-                        <div className="flex items-center gap-2">
-                          <Avatar className="h-8 w-8">
-                            <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <div className="font-medium">{transaction.name}</div>
-                            <div className="text-sm text-muted-foreground">{transaction.email}</div>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedTransactions.length > 0 ? (
+                    paginatedTransactions.map((transaction, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Avatar className="h-8 w-8">
+                              <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <div className="font-medium">{transaction.name}</div>
+                              <div className="text-sm text-muted-foreground">{transaction.email}</div>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      {transaction.date && <TableCell>{transaction.date}</TableCell>}
-                      <TableCell>{transaction.amount}</TableCell>
-                      {transaction.status && (
+                        </TableCell>
+                        {transaction.date && <TableCell>{transaction.date}</TableCell>}
+                        <TableCell>{transaction.amount}</TableCell>
+                        {transaction.status && (
+                          <TableCell>
+                            <div
+                              className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                transaction.status === "Completed"
+                                  ? "bg-green-100 text-green-800"
+                                  : transaction.status === "Pending"
+                                    ? "bg-yellow-100 text-yellow-800"
+                                    : "bg-red-100 text-red-800"
+                              }`}
+                            >
+                              {transaction.status}
+                            </div>
+                          </TableCell>
+                        )}
                         <TableCell>
                           <div
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              transaction.status === "Completed"
-                                ? "bg-green-100 text-green-800"
-                                : transaction.status === "Pending"
-                                  ? "bg-yellow-100 text-yellow-800"
-                                  : "bg-red-100 text-red-800"
+                              transaction.type === "Course"
+                                ? "bg-blue-100 text-blue-800"
+                                : "bg-purple-100 text-purple-800"
                             }`}
                           >
-                            {transaction.status}
+                            {transaction.type}
                           </div>
                         </TableCell>
-                      )}
-                      <TableCell>
-                        <div
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                            transaction.type === "Course"
-                              ? "bg-blue-100 text-blue-800"
-                              : "bg-purple-100 text-purple-800"
-                          }`}
-                        >
-                          {transaction.type}
-                        </div>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={5} className="text-center py-8">
+                        {errorMessage || "No transactions found"}
                       </TableCell>
                     </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      No transactions found
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-          </div>
+                  )}
+                </TableBody>
+              </Table>
+            </div>
+          )}
 
-          {totalPages > 1 && (
-            <Pagination className="mt-4">
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
+          {totalPages >= 1 && (
+            <div className="mt-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                      className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
 
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  const pageToShow =
-                    currentPage > 3 && totalPages > 5
-                      ? currentPage - 3 + i + (currentPage + 2 > totalPages ? totalPages - currentPage - 2 : 0)
-                      : i + 1;
-                  return pageToShow <= totalPages ? (
-                    <PaginationItem key={pageToShow}>
-                      <PaginationLink isActive={currentPage === pageToShow} onClick={() => setCurrentPage(pageToShow)}>
-                        {pageToShow}
-                      </PaginationLink>
-                    </PaginationItem>
-                  ) : null;
-                })}
+                  {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    const pageToShow =
+                      currentPage > 3 && totalPages > 5
+                        ? currentPage - 3 + i + (currentPage + 2 > totalPages ? totalPages - currentPage - 2 : 0)
+                        : i + 1;
+                    return pageToShow <= totalPages ? (
+                      <PaginationItem key={pageToShow}>
+                        <PaginationLink
+                          isActive={currentPage === pageToShow}
+                          onClick={() => setCurrentPage(pageToShow)}
+                        >
+                          {pageToShow}
+                        </PaginationLink>
+                      </PaginationItem>
+                    ) : null;
+                  })}
 
-                <PaginationItem>
-                  <PaginationNext
-                    onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
-                    className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-                  />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+                      className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
           )}
         </DialogContent>
       </Dialog>

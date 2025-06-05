@@ -9,7 +9,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 
 interface ProblemTestcaseFormProps {
-  onSave: (data: CreateTestcaseSchema) => void;
+  onSave: (data: CreateTestcaseSchema) => Promise<void>;
   testcaseId?: string;
   testcaseActionType?: "create" | "view" | "edit";
 }
@@ -31,7 +31,6 @@ export const ProblemTestcaseForm = ({
         testcaseOrder: 0
       };
     } else if (testcaseActionType === "view" || (testcaseActionType === "edit" && selectedTestcase)) {
-      console.log("selectedTestcase", selectedTestcase);
       return {
         testcaseId: selectedTestcase?.testcaseId || "",
         testcaseInput: selectedTestcase?.testcaseInput || "",
@@ -53,15 +52,14 @@ export const ProblemTestcaseForm = ({
     defaultValues: defaultValues
   });
 
-  const handleSubmit = (data: CreateTestcaseSchema) => {
-    onSave({
+  const handleSubmit = async (data: CreateTestcaseSchema) => {
+    await onSave({
       ...data,
-      testcaseId: data.testcaseId || `testcase-${Date.now()}` // For testing: use a HARD-coded ID
+      testcaseId: data.testcaseId
     });
     form.reset();
   };
 
-  // inside your component
   useEffect(() => {
     form.reset(defaultValues);
   }, [defaultValues, form]);
@@ -84,7 +82,7 @@ export const ProblemTestcaseForm = ({
                 <RequiredInputLabel label="Input" />
               </FormLabel>
               <FormControl>
-                <Textarea className="h-32 max-h-48" {...field} />
+                <Textarea className="h-32 max-h-48" {...field} disabled={testcaseActionType === "view"} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -100,7 +98,7 @@ export const ProblemTestcaseForm = ({
                 <RequiredInputLabel label="Expected output" />
               </FormLabel>
               <FormControl>
-                <Textarea className="h-24 max-h-48" {...field} />
+                <Textarea className="h-24 max-h-48" {...field} disabled={testcaseActionType === "view"} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -108,10 +106,20 @@ export const ProblemTestcaseForm = ({
         />
 
         <div className="flex justify-end">
-          <Button type="button" className="mr-2" variant="outline" onClick={() => {}}>
+          <Button
+            type="button"
+            className="mr-2"
+            variant="outline"
+            onClick={() => {}}
+            disabled={testcaseActionType === "view" || form.formState.isSubmitting}
+          >
             Cancel
           </Button>
-          <Button type="submit" className="bg-appPrimary hover:bg-appPrimary/80">
+          <Button
+            type="submit"
+            className="bg-appPrimary hover:bg-appPrimary/80"
+            disabled={testcaseActionType === "view" || form.formState.isSubmitting}
+          >
             Save Test Case
           </Button>
         </div>

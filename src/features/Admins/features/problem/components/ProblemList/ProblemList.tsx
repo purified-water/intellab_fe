@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { AlertDialog, EmptyList } from "@/components/ui";
+import { AlertDialog, EmptyList, Spinner } from "@/components/ui";
 import { ProblemListItem } from "./ProblemListItem";
 import { AdminProblemParams, GetAdminProblem } from "../../types/ProblemListType";
+import { useDeleteProblem, usePutProblemPublication } from "../../hooks";
 interface ProblemListProps {
   problems: GetAdminProblem[];
   filter: AdminProblemParams;
@@ -11,21 +12,24 @@ interface ProblemListProps {
 
 const TABLE_HEADERS = {
   common: ["Problem Name", "Level", "Categories"],
-  created: ["Publish", "Submissions", "Acceptance"],
+  created: ["Published", "Submissions", "Acceptance"],
   draft: ["Created At", "Current Step"]
 };
 
 export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
-  const [, setDeletingProblem] = useState<GetAdminProblem | null>(null); // Later
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [deletingProblem, setDeletingProblem] = useState<GetAdminProblem | null>(null); // Later
+
+  const { mutate: updateProblemPublication, isPending: isUpdatingPublication } = usePutProblemPublication();
+  const { mutate: deleteProblem, isPending: isDeletingProblem } = useDeleteProblem();
 
   const handleDeleteProblem = (problem: GetAdminProblem) => {
     setDeletingProblem(problem);
-    setTimeout(() => setOpenDeleteDialog(true), 0);
+    setTimeout(() => setIsDeleteDialogOpen(true), 0);
   };
 
   const handleToggleProblemPublication = async (problemId: string, isPublish: boolean) => {
-    console.log("Toggle publication for problem:", problemId, isPublish);
+    updateProblemPublication({ problemId, isPublished: isPublish });
   };
 
   const renderHeader = () => {
@@ -86,6 +90,13 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
       </tbody>
     );
   };
+  if (isUpdatingPublication || isDeletingProblem) {
+    return (
+      <div className="flex justify-center py-8">
+        <Spinner loading overlay={true} />
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -95,14 +106,18 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
       </table>
 
       <AlertDialog
-        open={openDeleteDialog}
-        title="Delete Problem"
-        message="This action cannot be undone."
+        open={isDeleteDialogOpen}
+        title="You are about to delete the problem"
+        message="This action is irreversible. Once the problem is deleted, it cannot be recovered."
         onConfirm={() => {
-          // Call your delete API
-          setOpenDeleteDialog(false);
+          deleteProblem(deletingProblem?.problemId || "", {
+            onSettled: () => {
+              setIsDeleteDialogOpen(false);
+              setDeletingProblem(null);
+            }
+          });
         }}
-        onCancel={() => setOpenDeleteDialog(false)}
+        onCancel={() => setIsDeleteDialogOpen(false)}
       />
     </div>
   );

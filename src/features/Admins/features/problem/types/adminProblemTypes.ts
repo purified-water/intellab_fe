@@ -1,10 +1,10 @@
 type TInputStructure = {
-  type: string;
+  type: "string" | "float" | "int" | "bool" | "list<int>" | "list<float>" | "list<string>" | "list<bool>";
   name: string;
 };
 
 type TOutputStructure = {
-  type: string;
+  type: "string" | "float" | "int" | "bool" | "list<int>" | "list<float>" | "list<string>" | "list<bool>";
   name: string;
 };
 
@@ -18,17 +18,18 @@ type TAdminProblemStructure = {
 type TAdminProblem = {
   problemId: string;
   problemName: string;
-  description: string;
+  description: string | undefined;
   problemLevel: string;
   score: number;
-  acceptanceRate: number;
-  isAvailable: boolean;
+  acceptanceRate: number | undefined;
+  isAvailable: boolean | undefined;
   isPublished: boolean;
-  problemStructure: TAdminProblemStructure;
+  problemStructure: TAdminProblemStructure | undefined;
   hasSolution: boolean;
   isCompletedCreation: boolean;
   currentCreationStep: number;
   categories: string[];
+  solution: TAdminProblemSolution | undefined;
 };
 
 type TAdminTestCase = {

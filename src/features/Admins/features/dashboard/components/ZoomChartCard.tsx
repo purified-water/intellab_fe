@@ -5,20 +5,20 @@ import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@
 import { Maximize2 } from "lucide-react";
 import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
+import { MonthYearPicker } from "@/components/ui/MonthYearPicker";
 
-// interface ZoomableChartCardProps {
-//   title: string;
-//   children: React.ReactNode;
-//   largeChart: React.ReactNode;
-// }
 interface ZoomableChartCardProps {
   title: string;
   children: React.ReactNode;
   largeChart: React.ReactNode;
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
-  setRangeType: (type: "Daily" | "Weekly" | "Monthly" | "Custom") => void;
-  setDateRange: (date: DateRange | undefined) => void;
+  selectedMonth: number;
+  selectedYear: number;
+  setRangeType: (rangeType: "Month" | "Year" | "Custom") => void;
+  setDateRange: (dateRange: DateRange | undefined) => void;
+  setSelectedMonth: (month: number) => void;
+  setSelectedYear: (year: number) => void;
 }
 
 export function ZoomableChartCard({
@@ -27,8 +27,12 @@ export function ZoomableChartCard({
   largeChart,
   rangeType,
   dateRange,
+  selectedMonth,
+  selectedYear,
   setRangeType,
-  setDateRange
+  setDateRange,
+  setSelectedMonth,
+  setSelectedYear
 }: ZoomableChartCardProps) {
   const [open, setOpen] = useState(false);
   //   const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly">("Monthly");
@@ -63,14 +67,26 @@ export function ZoomableChartCard({
                 <SelectValue placeholder={rangeType} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Daily">Daily</SelectItem>
-                <SelectItem value="Weekly">Weekly</SelectItem>
-                <SelectItem value="Monthly">Monthly</SelectItem>
+                <SelectItem value="Month">Month</SelectItem>
+                <SelectItem value="Year">Year</SelectItem>
                 <SelectItem value="Custom">Custom Range</SelectItem>
               </SelectContent>
             </Select>
 
-            {/* Date Picker */}
+            {/* Month/Year Picker for Month and Year filters */}
+            {(rangeType === "Month" || rangeType === "Year") && (
+              <MonthYearPicker
+                rangeType={rangeType}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+                onMonthYearChange={(month, year) => {
+                  setSelectedMonth(month);
+                  setSelectedYear(year);
+                }}
+              />
+            )}
+
+            {/* Date Picker for Custom range */}
             {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={setDateRange} />}
           </div>
 

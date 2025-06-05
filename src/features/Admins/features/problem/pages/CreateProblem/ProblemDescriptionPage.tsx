@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/shadcn";
@@ -9,11 +10,12 @@ import { createProblemSchema } from "../../schemas";
 import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { isGeneralStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 const problemDescriptionSchema = createProblemSchema.pick({
   problemDescription: true
@@ -26,6 +28,13 @@ export const ProblemDescriptionPage = () => {
   const dispatch = useDispatch();
   const { goToNextStep } = useProblemWizardStep();
   const formData = useSelector((state: RootState) => state.createProblem);
+  const { isEditingProblem } = useEditingProblem();
+
+  useEffect(() => {
+    if (formData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION) {
+      dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION }));
+    }
+  }, []);
 
   // Initialize form with Zod validation
   const form = useForm<ProblemDescriptionSchema>({
@@ -36,6 +45,11 @@ export const ProblemDescriptionPage = () => {
   });
 
   const onSubmit = async (data: ProblemDescriptionSchema) => {
+    // const editingProblem =
+    //   (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION) ||
+    //   formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.DESCRIPTION;
+    // console.log("--> Editing in Problem Description Page:", editingProblem);
+
     await adminProblemAPI.createProblemDescriptionStep({
       body: {
         problemId: formData.problemId,
@@ -49,8 +63,13 @@ export const ProblemDescriptionPage = () => {
     });
   };
 
+  let redirectUtl = "/admin/problems/create/general";
+  if (isEditingProblem) {
+    redirectUtl += "?editProblem=true";
+  }
+
   return (
-    <StepGuard checkValid={isGeneralStepValid} redirectTo="/admin/problems/create/general">
+    <StepGuard checkValid={isGeneralStepValid} redirectTo={redirectUtl}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

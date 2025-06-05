@@ -147,7 +147,7 @@ export const LessonDetailPage = () => {
   const renderContent = () => {
     if (lesson && lesson.content != null) {
       return (
-        <div className="pr-4 space-y-6" id="lesson-detail-content">
+        <div className="pr-8 space-y-6" id="lesson-detail-content">
           <RenderLessonMarkdown lesson={lesson} setTocItems={setTocItems} />
           {LessonNav?.renderContinueToQuiz()}
           {lesson?.nextLessonId && <div className="text-2xl font-bold">What's next?</div>}

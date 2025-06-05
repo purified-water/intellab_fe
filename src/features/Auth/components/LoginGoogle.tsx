@@ -66,6 +66,10 @@ const GoogleLogin = (props: TLoginGoogleProps) => {
       }
     } catch (error) {
       console.log("Login with Google error", error);
+      showToastError({
+        toast: toast.toast,
+        message: "Login with Google failed. Please try again."
+      });
     }
   };
 

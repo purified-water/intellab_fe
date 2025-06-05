@@ -20,9 +20,9 @@ export const isDescriptionStepValid = (state: RootState): boolean => {
 
 export const isBoilerplateStepValid = (state: RootState): boolean => {
   return !!(
-    state.createProblem.problemStructure.functionName &&
-    state.createProblem.problemStructure.inputStructure.length > 0 &&
-    state.createProblem.problemStructure.outputStructure.length > 0
+    state.createProblem.problemStructure!.functionName &&
+    state.createProblem.problemStructure!.inputStructure.length > 0 &&
+    state.createProblem.problemStructure!.outputStructure.length > 0
   );
 };
 

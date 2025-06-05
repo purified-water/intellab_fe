@@ -5,36 +5,53 @@ import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { RevenueItem } from "@/features/Admins/types/apiType";
 
 // Fallback data in case API fails
-function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): ChartData[] {
+function getFallbackData(rangeType: "Month" | "Year" | "Custom"): ChartData[] {
   const fallbackData = {
-    Daily: [
-      { label: "Mon", value: 500000 },
-      { label: "Tue", value: 700000 },
-      { label: "Wed", value: 600000 },
-      { label: "Thu", value: 800000 },
-      { label: "Fri", value: 1200000 },
-      { label: "Sat", value: 900000 },
-      { label: "Sun", value: 750000 }
+    Month: [
+      { label: "1", value: 400000 },
+      { label: "2", value: 520000 },
+      { label: "3", value: 380000 },
+      { label: "4", value: 650000 },
+      { label: "5", value: 720000 },
+      { label: "6", value: 580000 },
+      { label: "7", value: 800000 },
+      { label: "8", value: 750000 },
+      { label: "9", value: 680000 },
+      { label: "10", value: 900000 },
+      { label: "11", value: 620000 },
+      { label: "12", value: 950000 },
+      { label: "13", value: 730000 },
+      { label: "14", value: 850000 },
+      { label: "15", value: 780000 },
+      { label: "16", value: 1100000 },
+      { label: "17", value: 820000 },
+      { label: "18", value: 920000 },
+      { label: "19", value: 700000 },
+      { label: "20", value: 1050000 },
+      { label: "21", value: 890000 },
+      { label: "22", value: 1200000 },
+      { label: "23", value: 950000 },
+      { label: "24", value: 1150000 },
+      { label: "25", value: 980000 },
+      { label: "26", value: 1300000 },
+      { label: "27", value: 1080000 },
+      { label: "28", value: 1250000 },
+      { label: "29", value: 1120000 },
+      { label: "30", value: 1400000 }
     ],
-    Weekly: [
-      { label: "Week 1", value: 3500000 },
-      { label: "Week 2", value: 4200000 },
-      { label: "Week 3", value: 3800000 },
-      { label: "Week 4", value: 4500000 }
-    ],
-    Monthly: [
-      { label: "Jan", value: 12000000 },
-      { label: "Feb", value: 10000000 },
-      { label: "Mar", value: 15000000 },
-      { label: "Apr", value: 17000000 },
-      { label: "May", value: 19000000 },
-      { label: "Jun", value: 16000000 },
-      { label: "Jul", value: 18000000 },
-      { label: "Aug", value: 20000000 },
-      { label: "Sep", value: 22000000 },
-      { label: "Oct", value: 19000000 },
-      { label: "Nov", value: 21000000 },
-      { label: "Dec", value: 25000000 }
+    Year: [
+      { label: "Jan", value: 18000000 },
+      { label: "Feb", value: 16000000 },
+      { label: "Mar", value: 22000000 },
+      { label: "Apr", value: 25000000 },
+      { label: "May", value: 28000000 },
+      { label: "Jun", value: 24000000 },
+      { label: "Jul", value: 26000000 },
+      { label: "Aug", value: 30000000 },
+      { label: "Sep", value: 32000000 },
+      { label: "Oct", value: 28000000 },
+      { label: "Nov", value: 31000000 },
+      { label: "Dec", value: 35000000 }
     ],
     Custom: [
       { label: "Apr 1", value: 5000000 },
@@ -46,22 +63,22 @@ function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): 
     ]
   };
 
-  if (rangeType === "Monthly") {
-    return fallbackData.Monthly;
-  } else if (rangeType === "Weekly") {
-    return fallbackData.Weekly;
-  } else if (rangeType === "Daily") {
-    return fallbackData.Daily;
+  if (rangeType === "Month") {
+    return fallbackData.Month;
+  } else if (rangeType === "Year") {
+    return fallbackData.Year;
   } else if (rangeType === "Custom") {
     return fallbackData.Custom;
   }
 
-  return fallbackData.Monthly; // Default fallback
+  return fallbackData.Month; // Default fallback
 }
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
+  selectedMonth?: number;
+  selectedYear?: number;
 }
 
 interface ChartData {
@@ -69,7 +86,7 @@ interface ChartData {
   value: number;
 }
 
-export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {
+export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -79,10 +96,20 @@ export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
+    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
       period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -117,7 +144,7 @@ export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchRevenue();
@@ -164,7 +191,7 @@ export function RevenueMiniBarChart({ rangeType, dateRange }: Props) {
   );
 }
 
-export function RevenueLargeBarChart({ rangeType, dateRange }: Props) {
+export function RevenueLargeBarChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -175,10 +202,20 @@ export function RevenueLargeBarChart({ rangeType, dateRange }: Props) {
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
+    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
       period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -213,7 +250,7 @@ export function RevenueLargeBarChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchRevenue();
@@ -247,7 +284,7 @@ export function RevenueLargeBarChart({ rangeType, dateRange }: Props) {
         <XAxis dataKey="label" />
         <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
         <Tooltip formatter={(value) => `${value.toLocaleString()}₫`} />
-        <Bar dataKey="value" fill="#4f46e5" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="value" fill="#5a3295" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

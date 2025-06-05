@@ -36,6 +36,7 @@ export function DeleteSuccessfulDialog(props: DeleteSuccessfulDialogProps) {
           <p className="mx-12 mb-12 text-lg text-light text-gray2">The course has been removed</p>
           <div className="flex justify-center space-x-4">
             <button
+              type="button"
               className="bg-appPrimary text-white font-semibold text-lg px-4 py-2 rounded-lg hover:bg-opacity-80 w-[150px]"
               onClick={onClose}
             >

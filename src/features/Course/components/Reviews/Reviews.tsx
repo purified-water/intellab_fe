@@ -47,7 +47,6 @@ export function Reviews({
         setReviews([...response.result.content]);
         setPage(1);
         setTotalElements(response.result.totalElements);
-        console.log("reviews get", response);
         return;
       }
       const response = await courseAPI.getReviews(courseId, expectedPage, numOfElements, ratingFilter);
@@ -71,7 +70,6 @@ export function Reviews({
 
   const fetchReviewStats = async () => {
     const response = await courseAPI.getReviewStats(courseId);
-    console.log("review", response);
     setReviewStats(response.result);
   };
 
@@ -80,7 +78,6 @@ export function Reviews({
     setReviews(response.result.content);
     setPage(1);
     setTotalElements(response.result.totalElements);
-    console.log("reviews filter get", response);
   };
 
   useEffect(() => {

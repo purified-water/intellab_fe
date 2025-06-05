@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState } from "react";
-import { Button } from "@/components/ui";
+import { Button, EndOfListNotice } from "@/components/ui";
 import { Plus, ChevronLeft, ChevronRight } from "lucide-react";
 import { AddLessonModal } from "./AddLessonModal";
 import { LessonItem } from "./LessonItem";
@@ -87,7 +87,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
               items={lessons.map((lesson) => ({ id: lesson.lessonId }))}
               strategy={verticalListSortingStrategy}
             >
-              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[400px]">
+              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[500px] scrollbar-default">
                 {lessons.map((lesson) => (
                   <LessonItem
                     onAction={(action) => {
@@ -99,6 +99,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
                     selectedLessonId={selectedLesson?.lessonId}
                   />
                 ))}
+                <EndOfListNotice />
               </div>
             </SortableContext>
           </DndContext>

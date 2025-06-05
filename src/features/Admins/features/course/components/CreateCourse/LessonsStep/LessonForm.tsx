@@ -18,19 +18,20 @@ import { AddMarkdownContent } from "@/features/Admins/components";
 import { AddQuiz } from "./AddQuiz";
 import { AddProblem } from "./AddProblem";
 import { DEFAULT_QUIZ } from "../../../constants";
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { updateLessonQuiz } from "@/redux/createCourse/createCourseSlice";
+import { setCreateCourse, updateLessonQuiz } from "@/redux/createCourse/createCourseSlice";
 
 interface LessonFormProps {
   onSave: (data: CreateLessonSchema) => void;
+  onCancel: () => void;
   lessonId?: string;
   lessonActionType?: "create" | "view" | "edit";
 }
 
-export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: LessonFormProps) => {
+export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "create" }: LessonFormProps) => {
   const courseData = useSelector((state: RootState) => state.createCourse);
   const lessonInCreation = useSelector((state: RootState) => state.createLesson); // For creating a new lesson
   const selectedLesson = courseData.courseLessons.find((lesson: CreateLessonSchema) => lesson.lessonId === lessonId); // For viewing/editing only
@@ -39,7 +40,8 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
   const createCourseLesson = useCreateLesson(courseData.courseId, selectedLesson?.lessonId);
   const { data: lessonQuizFromServer } = createCourseLesson.getQuiz;
   const dispatch = useDispatch();
-  // console.log("lessonQuiz from BE", lessonQuizFromServer);
+  // Track if the form is currently submitting
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (lessonQuizFromServer) {
@@ -104,35 +106,66 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
   }, [defaultValues, selectedLesson, lessonActionType, lessonInCreation.lessonId]);
 
   const handleCancel = () => {
-    if (lessonActionType === "view") {
-      form.reset();
-      goToStep(1);
-      return;
-    }
     form.reset();
+    onCancel();
     goToStep(1);
   };
 
   const { hasQuiz, hasProblem } = form.watch();
 
   // Modified onSubmit handler to process form data before submission
-  const handleSubmit = (data: CreateLessonSchema) => {
-    // If hasQuiz is false, set lessonQuiz to undefined for API calls
-    // but keep the form state with DEFAULT_QUIZ for the component
-    const submissionData = {
-      ...data,
-      lessonQuiz: data.hasQuiz ? data.lessonQuiz : undefined
-    };
+  const handleSubmit = async (data: CreateLessonSchema) => {
+    // If already submitting, prevent duplicate submissions
+    if (isSubmitting) return;
 
-    onSave(submissionData);
+    try {
+      // Set loading state to prevent multiple submissions
+      setIsSubmitting(true);
+
+      // If hasQuiz is false, set lessonQuiz to undefined for API calls
+      // but keep the form state with DEFAULT_QUIZ for the component
+      const submissionData = {
+        ...data,
+        lessonQuiz: data.hasQuiz ? data.lessonQuiz : undefined
+      };
+
+      // Call the onSave function and await for it to complete
+      await onSave(submissionData);
+
+      // If this is an edit, update the Redux state with the edited lesson data
+      if (lessonActionType === "edit" && lessonId) {
+        const updatedLesson = {
+          ...data,
+          lessonId: lessonId
+        };
+
+        // Find the lesson index in the courseLessons array
+        const lessonIndex = courseData.courseLessons.findIndex(
+          (lesson: CreateLessonSchema) => lesson.lessonId === lessonId
+        );
+
+        if (lessonIndex !== -1) {
+          // Create a new array with the updated lesson
+          const updatedLessons = [...courseData.courseLessons];
+          updatedLessons[lessonIndex] = updatedLesson;
+
+          // Update the Redux store
+          dispatch(setCreateCourse({ courseLessons: updatedLessons }));
+        }
+      }
+    } catch (error) {
+      console.error("Error saving lesson:", error);
+    } finally {
+      // Reset loading state
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit(handleSubmit, (errors) => {
-          console.log("form data:", form.getValues());
-          console.log("Validation errors:", errors);
+          console.error("Form submission errors:", errors);
         })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
       >
@@ -177,7 +210,12 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
                 <RequiredInputLabel label="Lesson Content" />
               </FormLabel>
               <FormControl>
-                <AddMarkdownContent value={field.value} onChange={field.onChange} readOnly={isReadOnly} />
+                <AddMarkdownContent
+                  value={field.value}
+                  onChange={field.onChange}
+                  readOnly={isReadOnly}
+                  allowImage={true}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -211,7 +249,7 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
             control={form.control}
             name="lessonQuiz"
             render={() => (
-              <FormItem>
+              <FormItem className="max-h-[800px] overflow-y-auto">
                 <FormLabel>
                   <RequiredInputLabel label="Lesson Quiz" />
                 </FormLabel>
@@ -266,8 +304,8 @@ export const LessonForm = ({ onSave, lessonId, lessonActionType = "create" }: Le
           <Button type="button" className="mr-2" variant="outline" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button type="submit" className="bg-appPrimary hover:bg-appPrimary/80" disabled={isReadOnly}>
-            Save Lesson
+          <Button type="submit" className="bg-appPrimary hover:bg-appPrimary/80" disabled={isReadOnly || isSubmitting}>
+            {isSubmitting ? "Saving..." : "Save Lesson"}{" "}
           </Button>
         </div>
       </form>

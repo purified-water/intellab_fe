@@ -1,4 +1,4 @@
-import { TApiResponse, TPostApiParams } from "@/types";
+import { TApiResponse, TGetApiParams, TPostApiParams } from "@/types";
 import { TAdminProblem, TAdminTestCase, TAdminProblemSolution, TAdminProblemStructure } from "./adminProblemTypes";
 
 type TCreateProblemGeneralStepResponse = TApiResponse<TAdminProblem>;
@@ -17,6 +17,8 @@ type TUpdateProblemCompletedStatusResponse = TApiResponse<TAdminProblem>;
 
 type TUpdateProblemAvailableStatusResponse = TApiResponse<TAdminProblem>;
 
+type TGetTestcasesOfProblemResponse = TAdminTestCase[];
+
 type TCreateProblemGeneralStepParams = TPostApiParams<
   undefined,
   {
@@ -25,6 +27,7 @@ type TCreateProblemGeneralStepParams = TPostApiParams<
     problemLevel: string;
     score: number;
     isPublished: boolean;
+    problemId?: string;
   },
   TAdminProblem
 >;
@@ -48,9 +51,12 @@ type TCreateProblemStructureStepParams = TPostApiParams<
 >;
 
 type TCreateProblemTestCaseStepSingleParams = TPostApiParams<
-  undefined,
   {
-    problemId: string;
+    isUpdate: boolean;
+    testCaseId?: string;
+  },
+  {
+    problemId?: string;
     input: string;
     output: string;
   },
@@ -68,7 +74,9 @@ type TCreateProblemTestCaseStepMultipleParams = TPostApiParams<
 >;
 
 type TCreateProblemSolutionStepParams = TPostApiParams<
-  undefined,
+  {
+    isUpdate: boolean;
+  },
   {
     problemId: string;
     content: string;
@@ -97,6 +105,8 @@ type TUpdateProblemAvailableStatusParams = TPostApiParams<
   TAdminProblem
 >;
 
+type TGetTestcasesOfProblemParams = TGetApiParams<{ problemId: string }, TAdminTestCase[]>;
+
 export type {
   TCreateProblemGeneralStepResponse,
   TCreateProblemDescriptionStepResponse,
@@ -113,5 +123,7 @@ export type {
   TCreateProblemTestCaseStepMultipleParams,
   TCreateProblemSolutionStepParams,
   TUpdateProblemCompletedStatusParams,
-  TUpdateProblemAvailableStatusParams
+  TUpdateProblemAvailableStatusParams,
+  TGetTestcasesOfProblemResponse,
+  TGetTestcasesOfProblemParams
 };

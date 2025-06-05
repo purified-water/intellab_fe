@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
 import { Button } from "@/components/ui";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/shadcn";
 
 interface FilterDialogProps {
   isVisible: boolean;
@@ -101,27 +102,12 @@ export function FilterDialog(props: FilterDialogProps) {
   const renderRatings = () => (
     <div>
       <h3 className="mb-2 text-lg font-semibold">Ratings</h3>
-      <div className="space-y-2">
+      <RadioGroup value={selectedRating || "0"} onValueChange={setSelectedRating} className="space-y-1">
         {ratings.map((rating) => (
           <label key={rating.value} className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="radio"
-              name="rating"
-              value={rating.value}
-              checked={selectedRating === rating.value}
-              onChange={() => setSelectedRating(rating.value)}
-              className="hidden"
-              id={`rating-${rating.value}`}
-            />
-            <div
-              className={`w-5 h-5 rounded-full border border-gray-300 flex items-center justify-center ${
-                selectedRating === rating.value ? "border-appPrimary bg-appPrimary" : "bg-white"
-              }`}
-            >
-              {selectedRating === rating.value && <div className="w-3 h-3 bg-white rounded-full"></div>}
-            </div>
+            <RadioGroupItem value={rating.value} id={`rating-${rating.value}`} />
             {rating.value !== "0" && (
-              <div className="flex items-center gap-1 text-yellow-600">
+              <div className="flex items-center gap-1 text-appMedium">
                 {"★".repeat(Math.floor(parseFloat(rating.value)))}
                 {"☆".repeat(5 - Math.floor(parseFloat(rating.value)))}
               </div>
@@ -129,7 +115,7 @@ export function FilterDialog(props: FilterDialogProps) {
             <span>{rating.label}</span>
           </label>
         ))}
-      </div>
+      </RadioGroup>
     </div>
   );
 

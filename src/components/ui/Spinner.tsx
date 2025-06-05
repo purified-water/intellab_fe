@@ -46,7 +46,7 @@ export function Spinner({ loading, overlay = false, size, className }: SpinnerPr
   if (overlay) {
     return (
       <div className="fixed inset-0 flex items-center justify-center z-[100]">
-        <div className="flex flex-col items-center justify-center rounded-full bg-gray6 size-[4rem]">
+        <div className="flex flex-col items-center justify-center rounded-full bg-gray6/50 size-[4rem]">
           {spinner}
         </div>
       </div>

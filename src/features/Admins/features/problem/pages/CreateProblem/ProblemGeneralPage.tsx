@@ -27,9 +27,10 @@ import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { useCourseCategories } from "../../../course/hooks";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
 const problemGeneralSchema = createProblemSchema.pick({
   problemId: true,
@@ -48,6 +49,7 @@ export const ProblemGeneralPage = () => {
   const { data: categories, isLoading: isLoadingCategories } = useCourseCategories(); // Use get course category for testing first
   const formData = useSelector((state: RootState) => state.createProblem);
   const { goToNextStep } = useProblemWizardStep();
+  const { isEditingProblem } = useEditingProblem();
 
   // Initialize form with Zod validation
   const form = useForm<ProblemGeneralSchema>({
@@ -63,19 +65,26 @@ export const ProblemGeneralPage = () => {
   });
 
   const onSubmit = async (data: ProblemGeneralSchema) => {
+    const editingProblem =
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.GENERAL) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.GENERAL;
+
+    console.log("--> Editing in Problem General Page:", editingProblem);
+
     await adminProblemAPI.createProblemGeneralStep({
       body: {
         problemName: data.problemName,
         categories: data.problemCategories.map((category) => category.categoryId),
         problemLevel: data.problemLevel.toLowerCase(),
         score: data.problemScore,
-        isPublished: data.problemIsPublished
+        isPublished: data.problemIsPublished,
+        problemId: editingProblem ? formData.problemId : undefined
       },
       onSuccess: async (problem) => {
         dispatch(
           setCreateProblem({
             ...data,
-            problemId: problem.problemId
+            problemId: editingProblem ? formData.problemId : problem.problemId
           })
         );
         goToNextStep();

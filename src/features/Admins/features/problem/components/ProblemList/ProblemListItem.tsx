@@ -1,9 +1,13 @@
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton, Switch, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/shadcn";
-import { capitalizeFirstLetter, formatDateInProblem } from "@/utils";
+import { capitalizeFirstLetter, shortenDate } from "@/utils";
 import { GetAdminProblem } from "../../types/ProblemListType";
 import { NA_VALUE } from "@/constants";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
+import { CREATE_PROBLEM_STEP_NUMBERS, steps } from "../../constants";
 
 const DROP_DOWN_MENU_ITEMS = {
   VIEW: "View",
@@ -16,14 +20,15 @@ interface ProblemListItemProps {
   problem: GetAdminProblem;
   isLoading: boolean;
   onToggleProblemPublication: (problemId: string, isPublish: boolean) => void;
-  onDeleteProblem: (course: GetAdminProblem) => void;
+  onDeleteProblem: (Problem: GetAdminProblem) => void;
 }
 
 export function ProblemListItem(props: ProblemListItemProps) {
   const { problem, isLoading, onToggleProblemPublication, onDeleteProblem } = props;
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChangeProblemPublication = async () => {
-    console.log("handleChangeProblemPublication");
     onToggleProblemPublication(problem.problemId, !problem.isPublished);
   };
 
@@ -31,10 +36,42 @@ export function ProblemListItem(props: ProblemListItemProps) {
     console.log("View Details clicked for item:");
   };
 
-  console.log("ProblemListItem rendered with problem:", problem);
-
-  const handleDeleteCourse = () => {
+  const handleDeleteProblem = () => {
     onDeleteProblem(problem);
+  };
+
+  const handleEdit = () => {
+    dispatch(
+      setCreateProblem({
+        problemId: problem.problemId,
+        problemName: problem.problemName,
+        problemDescription: problem.description || "",
+        problemLevel: capitalizeFirstLetter(problem.problemLevel) as "Easy" | "Medium" | "Hard",
+        problemScore: problem.score,
+        problemIsPublished: problem.isPublished,
+        problemCategories: problem.categories,
+        problemStructure: problem.problemStructure
+          ? {
+              functionName: problem.problemStructure.functionName,
+              inputStructure: problem.problemStructure.inputStructure.map((input) => {
+                return { inputName: input.name, inputType: input.type };
+              }),
+              outputStructure: problem.problemStructure.outputStructure.map((output) => {
+                return { outputName: output.name, outputType: output.type };
+              })
+            }
+          : undefined,
+        problemTestcases: [],
+        problemSolution: problem.solution ? problem.solution.content : "",
+        currentCreationStep: problem.currentCreationStep,
+        isCompletedCreation: problem.isCompletedCreation
+      })
+    );
+    if (problem.currentCreationStep === CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) {
+      navigate("/admin/problems/create/general?editProblem=true");
+    } else {
+      navigate(`/admin/problems/create/${steps[problem.currentCreationStep - 1].path}?editProblem=true`);
+    }
   };
 
   const renderDropdownMenu = () => {
@@ -44,13 +81,11 @@ export function ProblemListItem(props: ProblemListItemProps) {
           handleViewDetails();
           break;
         case DROP_DOWN_MENU_ITEMS.EDIT:
-          console.log("Modify clicked for item:");
-          break;
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
-          console.log("Continue Edit clicked for item:");
+          handleEdit();
           break;
         case DROP_DOWN_MENU_ITEMS.DELETE:
-          handleDeleteCourse();
+          handleDeleteProblem();
           break;
         default:
           break;
@@ -89,7 +124,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
         {Array(6)
           .fill(null)
           .map((_, index) => (
-            <td key={index} className="px-2 py-1">
+            <td key={index} className="py-1">
               <Skeleton className={index === 5 ? "w-1/4 h-4" : index === 6 ? "size-4" : "w-[80%] h-4"} />
             </td>
           ))}
@@ -101,9 +136,9 @@ export function ProblemListItem(props: ProblemListItemProps) {
     return (
       <>
         <tr key={problem.problemId} className="text-base border-b border-gray5">
-          <td className="px-2 py-1 max-w-[300px] truncate">{problem.problemName}</td>
+          <td className="py-1 max-w-[300px] truncate">{problem.problemName}</td>
           <td
-            className={`px-2 py-1 font-medium ${
+            className={`py-1 font-medium ${
               problem.problemLevel === "easy"
                 ? "text-appEasy"
                 : problem.problemLevel === "medium"
@@ -113,7 +148,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
           >
             {capitalizeFirstLetter(problem.problemLevel)}
           </td>
-          <td className="px-2 py-1">
+          <td className="py-1">
             <div
               className="truncate max-w-[200px]"
               title={problem.categories?.map((category) => category.name).join(", ") ?? ""}
@@ -123,14 +158,14 @@ export function ProblemListItem(props: ProblemListItemProps) {
           </td>
           {problem.isCompletedCreation && (
             <>
-              <td className="px-2 py-1">
+              <td className="py-1">
                 <Switch
                   checked={problem.isPublished}
                   onCheckedChange={handleChangeProblemPublication}
                   className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
                 />
               </td>
-              <td className="px-2 py-1">
+              <td className="px-4 py-1 text-right">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -144,15 +179,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
-              </td>{" "}
-              <td className="px-2 py-1">{problem.acceptanceRate}%</td>
+              </td>
+              <td className="py-1 text-right">{problem.acceptanceRate}%</td>
             </>
           )}
 
-          {!problem.isCompletedCreation && (
-            <td className="px-2 py-1">{formatDateInProblem(problem.createdAt) || NA_VALUE}</td>
-          )}
-          {!problem.isCompletedCreation && <td className="px-2 py-1">{problem.currentCreationStep}</td>}
+          {!problem.isCompletedCreation && <td className="py-1">{shortenDate(problem.createdAt) || NA_VALUE}</td>}
+          {!problem.isCompletedCreation && <td className="py-1">{problem.currentCreationStepDescription}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

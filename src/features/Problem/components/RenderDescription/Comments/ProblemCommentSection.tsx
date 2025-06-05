@@ -82,16 +82,13 @@ export const ProblemCommentSection = () => {
           const data = response.result;
           if (data.parentCommentId) {
             setRedirectedParentCommentId(data.parentCommentId);
-            console.log("Parent comment ID:", data.parentCommentId);
             // If the comment has a parent, fetch the parent comment
             const parentResponse = await problemAPI.getCommentParentAndChildren(data.parentCommentId, userId);
-            console.log("Parent comment response:", parentResponse);
             const parentData = parentResponse.result;
 
             setProblemComments([parentData]);
           } else {
             // If the comment does not have a parent, set it directly
-            console.log("Parent comment ID not found");
             setProblemComments([data]);
           }
           setTotalPages(1);

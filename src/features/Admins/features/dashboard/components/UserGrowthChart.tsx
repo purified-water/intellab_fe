@@ -4,8 +4,10 @@ import { useState, useEffect, useCallback } from "react";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
+  selectedMonth?: number;
+  selectedYear?: number;
 }
 
 interface ChartData {
@@ -39,7 +41,7 @@ const getFallbackData = (rangeType: string): ChartData[] => {
   return fallbackData;
 };
 
-export function UserGrowthMiniChart({ rangeType, dateRange }: Props) {
+export function UserGrowthMiniChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,10 +51,20 @@ export function UserGrowthMiniChart({ rangeType, dateRange }: Props) {
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
+    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
       period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -129,7 +141,7 @@ export function UserGrowthMiniChart({ rangeType, dateRange }: Props) {
   );
 }
 
-export function UserGrowthLargeChart({ rangeType, dateRange }: Props) {
+export function UserGrowthLargeChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -139,10 +151,20 @@ export function UserGrowthLargeChart({ rangeType, dateRange }: Props) {
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
+    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
       period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API

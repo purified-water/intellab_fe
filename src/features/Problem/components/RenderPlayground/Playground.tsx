@@ -29,8 +29,6 @@ export const Playground = forwardRef<PlaygroundRef, PlaygroundProps>(({ language
       const range = { from: 0, to: view.state.doc.length };
       const selection = { anchor: range.from, head: range.to };
 
-      console.log("Formatting code...");
-
       view.dispatch(
         view.state.update({
           selection,

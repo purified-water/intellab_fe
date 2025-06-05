@@ -8,3 +8,4 @@ export * from "./aiAPI";
 export * from "./certificateApi";
 export * from "./paymentAPI";
 export * from "./adminDashboardAPI";
+export * from "./transactionApi";

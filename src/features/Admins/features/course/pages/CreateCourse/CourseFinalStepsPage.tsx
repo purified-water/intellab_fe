@@ -24,6 +24,8 @@ import { isLessonsStepValid } from "../../utils/courseStepGuard";
 import { RequiredInputLabel } from "@/features/Admins/components";
 import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 import { useEffect } from "react";
+import { showToastError } from "@/utils";
+import { useToast } from "@/hooks";
 
 const courseFinalStepsSchema = createCourseSchema.pick({
   coursePrice: true,
@@ -37,6 +39,7 @@ export const CourseFinalStepsPage = () => {
   const dispatch = useDispatch();
   const formData = useSelector((state: RootState) => state.createCourse);
   const courseId = useSelector((state: RootState) => state.createCourse.courseId);
+  const toast = useToast();
 
   const createCourse = useSelector((state: RootState) => state.createCourse);
 
@@ -71,7 +74,10 @@ export const CourseFinalStepsPage = () => {
     dispatch(setCreateCourse(data));
 
     if (
-      (isEditingCourse && createCourse.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.FINAL) ||
+      (isEditingCourse &&
+        createCourse.currentCreationStep >= CREATE_COURSE_STEP_NUMBERS.FINAL &&
+        createCourse.courseSummary != undefined &&
+        createCourse.courseCertificate != undefined) ||
       createCourse.currentCreationStep > CREATE_COURSE_STEP_NUMBERS.FINAL
     ) {
       createCourseFinalStep.EditFinalStep.mutateAsync(formatPayload);
@@ -102,6 +108,7 @@ export const CourseFinalStepsPage = () => {
         <form
           onSubmit={form.handleSubmit(onSubmit, (error) => {
             console.log("Error: ", error);
+            showToastError({ toast: toast.toast, message: "Please fix the errors in the form" });
           })}
           className="flex flex-col mx-auto gap-8 max-w-[1000px]"
         >

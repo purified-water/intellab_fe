@@ -11,7 +11,7 @@ export const isImageMarkdown = (line: string): boolean => {
 
 // Helper function to extract image info from markdown
 export const extractImageInfo = (line: string): CarouselImage[] => {
-  const imageRegex = /!\[(.*?)\]\((.*?)\)/g;
+  const imageRegex = /!\[(.*?)\]\(((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*)\)/g;
   const images: CarouselImage[] = [];
   let match;
 

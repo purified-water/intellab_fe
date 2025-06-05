@@ -1,3 +1,5 @@
+import { useToast } from "@/hooks";
+import { showToastError } from "@/utils";
 import { useState, useEffect, useRef } from "react";
 
 interface UseAIExplainerProps {
@@ -10,6 +12,7 @@ export const useAIExplainer = ({ isExplainerToggled }: UseAIExplainerProps) => {
   const [selectedText, setSelectedText] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const selectionTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const toast = useToast();
 
   // Track whether the explainer menu is being reset to prevent race conditions
   const isResettingRef = useRef(false);
@@ -40,6 +43,10 @@ export const useAIExplainer = ({ isExplainerToggled }: UseAIExplainerProps) => {
       }
     } catch (error) {
       console.log("Failed to clear selection", error);
+      showToastError({
+        toast: toast.toast,
+        message: "Failed to clear text selection. Please try again."
+      });
     }
 
     // Add a small delay before allowing new selections

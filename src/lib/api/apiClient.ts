@@ -75,7 +75,6 @@ export class TokenRefreshManager {
 
         return data.accessToken;
       } else if (loginType === LOGIN_TYPES.GOOGLE) {
-        console.log("Refreshing Google token");
         // Google login (Firebase) token refresh
         const auth = getAuth();
         const currentUser = auth.currentUser;
@@ -158,8 +157,6 @@ apiClient.interceptors.response.use(
 
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthRoute) {
       originalRequest._retry = true;
-      console.log("Token expired, refreshing...");
-
       try {
         const newToken = await TokenRefreshManager.handleTokenRefresh();
 

@@ -70,6 +70,11 @@ export const adminCourseAPI = {
     return response.data.result;
   },
 
+  deleteCourseImage: async (courseId: string) => {
+    const response = await apiClient.delete(`course/admin/courses/${courseId}/image`);
+    return response.data.result;
+  },
+
   // Step 2
   // Add a lesson (call first to init the lessonId)
   postCreateCourseLesson: async (payload: CreateCourseLessonStepPayload) => {
@@ -207,5 +212,24 @@ export const adminCourseAPI = {
         await onEnd();
       }
     }
+  },
+
+  postLessonImageInMarkdown: async (imageId: string, file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await apiClient.post(`course/admin/courses/image/${imageId}`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      }
+    });
+
+    return response.data.result;
+  },
+
+  // Helper for editing a lesson
+  deleteLessonQuestion: async (questionId: string) => {
+    const response = await apiClient.delete(`course/admin/lessons/quiz/removeQuestion/${questionId}`);
+    return response.data.result;
   }
 };

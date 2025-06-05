@@ -77,6 +77,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
         <div className="flex items-center">
           <div className="flex items-center justify-center lg:hidden">
             <button
+              type="button"
               onClick={() => setIsMenuOpen((prev) => !prev)}
               className="mr-3 -ml-5 transition text-gray3 mp-2 hover:text-gray1"
             >
@@ -97,7 +98,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
               isMenuOpen ? "flex" : "hidden"
             }`}
           >
-            <button onClick={() => setIsMenuOpen(false)} className="absolute top-3 right-3 lg:hidden">
+            <button type="button" onClick={() => setIsMenuOpen(false)} className="absolute top-3 right-3 lg:hidden">
               <MdClose className="icon-lg icon-gray3" />
             </button>
             <Link
@@ -127,7 +128,10 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
         <div id="premium" className="relative flex items-center space-x-3">
           {(!isCurrentPlanActive || !isPremiumPlan) && (
             <Link to="/pricing">
-              <button className="px-3 py-1 font-medium transition rounded-lg bg-appFadedAccent/50 text-appAccent hover:bg-appFadedAccent/80">
+              <button
+                type="button"
+                className="px-3 py-1 font-medium transition rounded-lg bg-appFadedAccent/50 text-appAccent hover:bg-appFadedAccent/80"
+              >
                 Premium
               </button>
             </Link>
@@ -137,6 +141,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
             <>
               <div className="relative notification-menu">
                 <Button
+                  type="button"
                   variant="ghost"
                   size="lg"
                   className="px-2 py-1 transition text-gray3 hover:text-gray1 [&_svg]:size-5"
@@ -180,6 +185,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
             </>
           ) : (
             <button
+              type="button"
               onClick={handleLogin}
               className="px-3 py-1 text-base font-medium transition border rounded-lg text-appPrimary border-appPrimary hover:bg-appPrimary hover:text-white"
             >

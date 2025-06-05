@@ -16,9 +16,13 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase }:
 
     switch (type) {
       case "view":
+        if (onSelectTestcase) {
+          onSelectTestcase({ type: "view", testcaseId });
+        }
+        break;
       case "edit":
         if (onSelectTestcase) {
-          onSelectTestcase({ type, testcaseId });
+          onSelectTestcase({ type: "edit", testcaseId });
         }
         break;
       case "delete":
@@ -34,14 +38,15 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase }:
   return (
     <div
       className={`flex items-center justify-between px-3 py-2 border rounded-lg hover:bg-muted cursor-pointer ${selectedTestcaseId === testcase.testcaseId ? "bg-purple-100 border-appFadedPrimary" : ""}`}
-      onClick={() => {
+      onClick={(e) => {
+        e.stopPropagation(); // Prevent overriding actions from dropdown menu
         onSelectTestcase?.({
           type: "view",
           testcaseId: testcase.testcaseId
         } as TestcaseAction);
       }}
     >
-      <span className="text-sm font-medium line-clamp-1">{`Test case ${testcase.testcaseId}`}</span>
+      <span className="text-sm font-medium line-clamp-1">{testcase.testcaseId}</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div onPointerDown={(e) => e.stopPropagation()}>
@@ -52,7 +57,10 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase }:
           {["view", "edit", "delete"].map((action) => (
             <DropdownMenuItem
               key={action}
-              onClick={() => handleAction({ type: action, testcaseId: testcase.testcaseId } as TestcaseAction)}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent parent div's onClick from triggering
+                handleAction({ type: action, testcaseId: testcase.testcaseId } as TestcaseAction);
+              }}
               className={action === "delete" ? "text-appHard" : ""}
             >
               {action.charAt(0).toUpperCase() + action.slice(1)}

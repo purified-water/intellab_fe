@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminCourseAPI } from "@/features/Admins/api";
 import { useToast } from "@/hooks";
 import { showToastError, showToastSuccess } from "@/utils";
@@ -9,6 +9,7 @@ import { setCreateLesson } from "@/redux/createCourse/createLessonSlice";
 export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   const toast = useToast();
   const dispatch = useDispatch();
+  const queryClient = useQueryClient();
 
   const createLesson = useMutation({
     mutationFn: adminCourseAPI.postCreateCourseLesson,
@@ -52,6 +53,10 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
 
   const updateQuiz = useMutation({
     mutationFn: adminCourseAPI.putCreateCourseLessonQuiz,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["createLesson", lessonId, "quizList"] });
+      showToastSuccess({ toast: toast.toast, message: "Quiz updated successfully" });
+    },
     onError: () => {
       showToastError({ toast: toast.toast, message: "Error updating quiz" });
     }
@@ -90,5 +95,29 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
     queryFn: adminCourseAPI.getCreateLessonProblemList
   });
 
-  return { createLesson, updateLesson, deleteLesson, updateQuiz, reorderLessons, getLessonList, getQuiz, getProblems };
+  const deleteLessonQuestion = useMutation({
+    mutationFn: async (questionId: string) => {
+      if (!questionId) throw new Error("Question ID is required");
+      const response = await adminCourseAPI.deleteLessonQuestion(questionId);
+      return response;
+    },
+    onSuccess: () => {
+      showToastSuccess({ toast: toast.toast, message: "Question removed successfully" });
+    },
+    onError: () => {
+      showToastError({ toast: toast.toast, message: "Error in removing question" });
+    }
+  });
+
+  return {
+    createLesson,
+    updateLesson,
+    deleteLesson,
+    updateQuiz,
+    reorderLessons,
+    getLessonList,
+    getQuiz,
+    getProblems,
+    deleteLessonQuestion
+  };
 };

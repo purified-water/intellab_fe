@@ -113,7 +113,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
         {isMe && <VerificationStatus />}
         {isMe && (
           <button
-            className="min-w-full py-2 font-bold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary mt-2 hover:opacity-80"
+            className="min-w-full py-2 font-semibold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary hover:bg-appPrimary hover:text-white transition-colors duration-200"
             onClick={() => navigate("/profile/edit")}
           >
             Edit Profile

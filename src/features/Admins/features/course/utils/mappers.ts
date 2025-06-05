@@ -13,7 +13,7 @@ export const mapCreateCourseToICreateCourse = (state: CreateCourseSchema): ICrea
   price: state.coursePrice || 0,
   progressPercent: 0,
   reviewCount: null,
-  unitPrice: state.coursePrice?.toFixed(2) || "0.00",
+  unitPrice: state.coursePrice?.toFixed(0) || "0.00",
   userEnrolled: false,
   userUid: null,
   certificateUrl: null,

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/shadcn";
@@ -9,11 +10,13 @@ import { createProblemSchema } from "../../schemas";
 import { ProblemWizardButtons } from "../../components/CreateProblem";
 import { useDispatch, useSelector } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
-import { useProblemWizardStep } from "../../hooks";
+import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { isTestcasesStepValid } from "../../utils";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { adminProblemAPI } from "@/features/Admins/api";
+import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import _ from "lodash";
 
 const problemSolutionSchema = createProblemSchema.pick({
   problemSolution: true
@@ -27,6 +30,13 @@ export const ProblemSolutionPage = () => {
   const { goToNextStep } = useProblemWizardStep();
   const formData = useSelector((state: RootState) => state.createProblem);
   const userRedux = useSelector((state: RootState) => state.user.user);
+  const { isEditingProblem } = useEditingProblem();
+
+  useEffect(() => {
+    if (formData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.SOLUTION) {
+      dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.SOLUTION }));
+    }
+  }, []);
 
   // Initialize form with Zod validation
   const form = useForm<ProblemSolutionSchema>({
@@ -37,9 +47,13 @@ export const ProblemSolutionPage = () => {
   });
 
   const onSubmit = async (data: ProblemSolutionSchema) => {
-    dispatch(setCreateProblem(data));
-    goToNextStep(); // This should be called in mutation function rather than here
+    const editingProblem =
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.SOLUTION) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.SOLUTION;
+    //console.log("--> Editing in Problem Solution Page:", editingProblem);
+
     await adminProblemAPI.createProblemSolutionStep({
+      query: { isUpdate: editingProblem && !_.isEmpty(formData.problemSolution) },
       body: {
         content: data.problemSolution,
         problemId: formData.problemId,
@@ -53,8 +67,13 @@ export const ProblemSolutionPage = () => {
     });
   };
 
+  let redirectUrl = "/admin/problems/create/testcase";
+  if (isEditingProblem) {
+    redirectUrl += "?editProblem=true";
+  }
+
   return (
-    <StepGuard checkValid={isTestcasesStepValid} redirectTo="/admin/problems/create/testcase">
+    <StepGuard checkValid={isTestcasesStepValid} redirectTo={redirectUrl}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

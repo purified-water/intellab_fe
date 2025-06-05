@@ -22,7 +22,6 @@ export const NotificationCard = ({ type, notification }: NotificationCardProps) 
         await notificationAPI.putMarkOneAsRead(notification.id).then(() => {
           dispatch(markOneAsRead(notification.id));
         });
-        console.log("Notification marked as read:", notification.id);
       } catch (error) {
         console.log("Error marking notification as read:", error);
       }

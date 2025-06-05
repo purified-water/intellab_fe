@@ -39,12 +39,14 @@ export function DeleteCourseConfirmDialog(props: DeleteCourseConfirmDialogProps)
           </p>
           <div className="flex justify-center space-x-4">
             <button
+              type="button"
               className="bg-appPrimary text-white font-semibold text-lg px-4 py-2 rounded-lg hover:bg-opacity-80 w-[150px]"
               onClick={onClose}
             >
               Cancel
             </button>
             <button
+              type="button"
               className="border-appHard border text-appHard font-semibold text-lg px-4 py-2 rounded-lg hover:opacity-80 w-[150px]"
               onClick={onDelete}
             >

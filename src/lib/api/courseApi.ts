@@ -40,6 +40,8 @@ import {
   TUpdateCourseAvailabilityParams,
   TUpdateCourseAvailabilityResponse
 } from "@/features/Admins/features/course/types";
+import { apiResponseCodeUtils } from "@/utils";
+import { AxiosError } from "axios";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -488,21 +490,27 @@ export const courseAPI = {
 
   deleteCourse: async ({ query, onStart, onSuccess, onFail, onEnd }: TDeleteCourseParams) => {
     const DEFAULT_ERROR = "Error deleting course";
+
+    const handleResponseData = async (data: TDeleteCourseResponse) => {
+      const { code, result, message } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
     if (onStart) {
       await onStart();
     }
     try {
       const { courseId } = query!;
       const response = await apiClient.delete(`/course/admin/courses/${courseId}`);
-      const data: TDeleteCourseResponse = response.data;
-      const { code, result, message } = data;
-      if (code == API_RESPONSE_CODE.NO_CONTENT) {
-        await onSuccess(result);
-      } else {
-        await onFail(message ?? DEFAULT_ERROR);
-      }
+      handleResponseData(response.data as TDeleteCourseResponse);
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TDeleteCourseResponse);
+      } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
     } finally {

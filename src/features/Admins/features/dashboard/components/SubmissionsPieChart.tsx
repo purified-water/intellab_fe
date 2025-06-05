@@ -1,18 +1,10 @@
 import { DateRange } from "react-day-picker";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 
-function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom", _dateRange: DateRange | undefined) {
+function getDataBasedOnFilter(rangeType: "Month" | "Custom", _dateRange: DateRange | undefined) {
   // Mock data for demonstration purposes
   const mockData = {
-    Daily: [
-      { name: "Successful", value: 90 },
-      { name: "Failed", value: 10 }
-    ],
-    Weekly: [
-      { name: "Successful", value: 85 },
-      { name: "Failed", value: 15 }
-    ],
-    Monthly: [
+    Month: [
       { name: "Successful", value: 80 },
       { name: "Failed", value: 20 }
     ],
@@ -23,11 +15,11 @@ function getDataBasedOnFilter(rangeType: "Daily" | "Weekly" | "Monthly" | "Custo
   };
 
   // Return data based on the rangeType
-  return mockData[rangeType] || mockData["Daily"];
+  return mockData[rangeType] || mockData["Month"];
 }
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Custom";
   dateRange: DateRange | undefined;
 }
 
