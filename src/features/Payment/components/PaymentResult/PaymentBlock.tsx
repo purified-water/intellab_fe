@@ -103,7 +103,11 @@ export function PaymentBlock(props: PaymentBlockProps) {
       };
 
       return (
-        <Button className="font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleGoToCourseClick}>
+        <Button
+          type="button"
+          className="font-bold bg-appPrimary hover:bg-appPrimary/80"
+          onClick={handleGoToCourseClick}
+        >
           Start Learning now!
         </Button>
       );
@@ -114,7 +118,7 @@ export function PaymentBlock(props: PaymentBlockProps) {
         {renderStatus()}
         <p className="mt-4 text-lg font-semibold">PAYMENT DETAIL</p>
         {renderInformation()}
-        <div className="space-x-4 mt-16">
+        <div className="mt-16 space-x-4">
           {renderBackButton()}
           {courseFromPayment && renderGoToCourseButton()}
         </div>

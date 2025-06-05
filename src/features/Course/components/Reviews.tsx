@@ -179,7 +179,7 @@ export default function Reviews({
                   {review.comment}
                 </p>
                 {review.comment.length > 200 && (
-                  <button className="mt-2 text-xs text-appPrimary" onClick={() => handleShowMore(index)}>
+                  <button type="button" className="mt-2 text-xs text-appPrimary" onClick={() => handleShowMore(index)}>
                     {expandedReview === index ? "Show Less" : "Show More"}
                   </button>
                 )}
@@ -187,7 +187,7 @@ export default function Reviews({
             ))}
           </div>
           {reviews.length < totalElements && (
-            <button className="mt-4 text-sm underline text-appPrimary" onClick={() => fetchReviews(true)}>
+            <button type="button" className="mt-4 text-sm underline text-appPrimary" onClick={() => fetchReviews(true)}>
               View more...
             </button>
           )}

@@ -42,12 +42,12 @@ export function FilePreviewExample({
 
   return (
     <div className={`flex flex-col items-center gap-4 ${className}`}>
-      <div className="w-64 h-64 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center overflow-hidden bg-gray-50">
+      <div className="flex items-center justify-center w-64 h-64 overflow-hidden border-2 border-gray-300 border-dashed rounded-lg bg-gray-50">
         {preview ? (
           <img 
             src={preview} 
             alt="File Preview" 
-            className="max-w-full max-h-full object-contain"
+            className="object-contain max-w-full max-h-full"
           />
         ) : (
           <span className="text-gray-400">No file selected</span>
@@ -55,11 +55,11 @@ export function FilePreviewExample({
       </div>
 
       <div className="flex gap-2">
-        <Button onClick={handleClick} variant="outline">
+        <Button type="button" onClick={handleClick} variant="outline">
           Select File
         </Button>
         {preview && (
-          <Button onClick={handleReset} variant="outline">
+          <Button type="button" onClick={handleReset} variant="outline">
             Clear
           </Button>
         )}

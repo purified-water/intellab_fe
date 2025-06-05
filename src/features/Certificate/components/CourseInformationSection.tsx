@@ -41,7 +41,7 @@ export function CourseInformationSection(props: CourseInformationSectionProps) {
           </div>
           <span> • {certificate?.course.reviewCount} reviews</span>
         </div>
-        <Button variant={"white"} size={"white"} onClick={handleGoToCourse}>
+        <Button type="button" variant={"white"} size={"white"} onClick={handleGoToCourse}>
           Go to course
         </Button>
       </div>

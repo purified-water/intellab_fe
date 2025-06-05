@@ -95,7 +95,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 p-0">
+          <Button type="button" variant="ghost" className="w-8 h-8 p-0">
             <MoreHorizontal className="w-5 h-5" />
           </Button>
         </DropdownMenuTrigger>

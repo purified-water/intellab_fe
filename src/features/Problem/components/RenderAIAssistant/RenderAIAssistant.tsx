@@ -277,10 +277,15 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
         <div className="flex items-center space-x-1 text-gray3 action-buttons">
           <ChatHistoryDropDown chatHistoryItems={chatHistoryItems} onSelectChat={handleGetChatDetail} />
 
-          <Button onClick={handleNewChat} variant="ghost" className="px-1 py-0 hover:text-gray1">
+          <Button type="button" onClick={handleNewChat} variant="ghost" className="px-1 py-0 hover:text-gray1">
             <Plus />
           </Button>
-          <Button onClick={() => setIsAIAssistantOpen(false)} variant="ghost" className="px-1 py-0 hover:text-gray1">
+          <Button
+            type="button"
+            onClick={() => setIsAIAssistantOpen(false)}
+            variant="ghost"
+            className="px-1 py-0 hover:text-gray1"
+          >
             <X />
           </Button>
         </div>

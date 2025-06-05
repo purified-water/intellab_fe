@@ -187,7 +187,11 @@ export function EditProfileSection() {
         <div className="flex items-center space-x-2">
           <h3 className="text-lg font-semibold">Basic Information</h3>
           {!isBasicInfoEditable && (
-            <button onClick={() => setIsBasicInfoEditable(true)} className="text-gray3 hover:text-gray-700">
+            <button
+              type="button"
+              onClick={() => setIsBasicInfoEditable(true)}
+              className="text-gray3 hover:text-gray-700"
+            >
               <Pencil size={16} />
             </button>
           )}
@@ -226,7 +230,11 @@ export function EditProfileSection() {
             >
               Cancel
             </Button>
-            <Button onClick={handleSaveBasicInfo} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
+            <Button
+              type="button"
+              onClick={handleSaveBasicInfo}
+              className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+            >
               Save
             </Button>
           </div>
@@ -257,7 +265,11 @@ export function EditProfileSection() {
         <div className="flex items-center space-x-2">
           <h3 className="text-lg font-semibold">Account Information</h3>
           {!isAccountInfoEditable && (
-            <button onClick={() => setIsAccountInfoEditable(true)} className="text-gray3 hover:text-gray-700">
+            <button
+              type="button"
+              onClick={() => setIsAccountInfoEditable(true)}
+              className="text-gray3 hover:text-gray-700"
+            >
               <Pencil size={16} />
             </button>
           )}
@@ -368,7 +380,11 @@ export function EditProfileSection() {
         </div>
 
         <div className="flex justify-end mt-8">
-          <Button onClick={handleChangePassword} className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80">
+          <Button
+            type="button"
+            onClick={handleChangePassword}
+            className="px-6 py-1 rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+          >
             Change password
           </Button>
         </div>

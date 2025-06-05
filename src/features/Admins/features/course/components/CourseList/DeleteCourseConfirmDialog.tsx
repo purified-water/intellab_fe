@@ -27,7 +27,7 @@ export function DeleteCourseConfirmDialog(props: DeleteCourseConfirmDialogProps)
     <div className="fixed inset-0 flex items-center justify-center bg-opacity-50 bg-gray2">
       <div className="bg-white pt-3 pb-8 px-6 rounded-lg shadow-lg w-[550px]">
         <div className="flex justify-end">
-          <Button className="-mr-2" variant="ghost" size="icon" onClick={onClose}>
+          <Button type="button" className="-mr-2" variant="ghost" size="icon" onClick={onClose}>
             <X />
           </Button>
         </div>

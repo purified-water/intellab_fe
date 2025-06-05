@@ -135,7 +135,11 @@ export const FilterComponent: React.FC = () => {
 
       {/* Filter Button */}
       <div className="flex gap-4 mt-6">
-        <Button className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
+        <Button
+          type="button"
+          className="px-6 py-3 text-white rounded-lg bg-appPrimary hover:bg-opacity-75"
+          onClick={handleFilter}
+        >
           Filter
         </Button>
         <Button

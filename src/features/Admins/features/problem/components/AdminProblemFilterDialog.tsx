@@ -119,6 +119,7 @@ export function AdminProblemFilterDialog({
                 const isSelected = localFilter.categories?.some((c) => c.categoryId === category.categoryId);
                 return (
                   <button
+                    type="button"
                     key={category.categoryId}
                     className={`px-3 py-1 rounded-md border border-gray-300 transition-colors duration-150 ${
                       isSelected ? "bg-appPrimary text-white" : "bg-white"
@@ -133,7 +134,7 @@ export function AdminProblemFilterDialog({
         </>
 
         <div className="flex justify-end gap-4 mt-6 font-semibold">
-          <Button variant="outline" onClick={handleReset}>
+          <Button type="button" variant="outline" onClick={handleReset}>
             Reset
           </Button>
           <Button onClick={handleApply}>Apply</Button>

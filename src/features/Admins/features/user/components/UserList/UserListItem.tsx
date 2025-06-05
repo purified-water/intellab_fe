@@ -51,7 +51,7 @@ export function UserListItem(props: UserListItemProps) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 p-0">
+          <Button type="button" variant="ghost" className="w-8 h-8 p-0">
             <MoreHorizontal className="w-5 h-5" />
           </Button>
         </DropdownMenuTrigger>
@@ -74,22 +74,22 @@ export function UserListItem(props: UserListItemProps) {
     return (
       <tr className="text-base border-b border-gray5">
         <td className="px-2 py-1">
-          <Skeleton className="h-4 w-32" />
+          <Skeleton className="w-32 h-4" />
         </td>
         <td className="px-2 py-1">
-          <Skeleton className="h-4 w-32" />
-        </td>
-        <td className="px-2 py-1">
-          <Skeleton className="h-4 w-28" />
+          <Skeleton className="w-32 h-4" />
         </td>
         <td className="px-2 py-1">
           <Skeleton className="h-4 w-28" />
         </td>
         <td className="px-2 py-1">
-          <Skeleton className="h-4 w-16" />
+          <Skeleton className="h-4 w-28" />
         </td>
         <td className="px-2 py-1">
-          <Skeleton className="h-8 w-8 rounded-full" />
+          <Skeleton className="w-16 h-4" />
+        </td>
+        <td className="px-2 py-1">
+          <Skeleton className="w-8 h-8 rounded-full" />
         </td>
       </tr>
     );

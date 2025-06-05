@@ -19,7 +19,11 @@ export const QuizResult = ({ isCorrect, grade, onClick }: QuizResultProps) => {
               <p>Grade received: {grade}%. To pass: 70% or higher</p>
             </div>
 
-            <Button onClick={onClick} className="px-4 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80">
+            <Button
+              type="button"
+              onClick={onClick}
+              className="px-4 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+            >
               Return to course
             </Button>
           </>
@@ -30,7 +34,11 @@ export const QuizResult = ({ isCorrect, grade, onClick }: QuizResultProps) => {
               <p>Grade received: {grade}%. To pass: 70% or higher</p>
             </div>
 
-            <Button onClick={onClick} className="px-4 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80">
+            <Button
+              type="button"
+              onClick={onClick}
+              className="px-4 text-white rounded-lg bg-appPrimary hover:bg-appPrimary/80"
+            >
               Try Again
             </Button>
           </>

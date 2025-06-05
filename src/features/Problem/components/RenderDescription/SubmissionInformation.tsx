@@ -125,7 +125,11 @@ export const SubmissionResults = ({
           </div>
         </div>
 
-        <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={onViewAllTestCases}>
+        <Button
+          type="button"
+          className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4"
+          onClick={onViewAllTestCases}
+        >
           All test cases
         </Button>
       </div>
