@@ -28,10 +28,14 @@ export const ProblemPreviewPage = () => {
   }, []);
 
   const handleEditProblem = async () => {
-    console.log("--> handleEditProblem called with data:", mappedProblemData);
+    if (problemData.isCompletedCreation) {
+      goToNextStep();
+    } else {
+      await handleCreateProblem();
+    }
   };
 
-  const handleCreateCourse = async () => {
+  const handleCreateProblem = async () => {
     await adminProblemAPI.updateProblemCompletedStatus({
       query: { completedCreation: true },
       body: { problemId: problemData.problemId },
@@ -45,13 +49,15 @@ export const ProblemPreviewPage = () => {
 
   const onSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    if (
+    const editingProblem =
       (isEditingProblem && problemData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.PREVIEW) ||
-      problemData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.PREVIEW
-    ) {
+      problemData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.PREVIEW;
+    //console.log("--> Editing in Problem Preview Page:", editingProblem);
+
+    if (editingProblem) {
       await handleEditProblem();
     } else {
-      await handleCreateCourse();
+      await handleCreateProblem();
     }
   };
 

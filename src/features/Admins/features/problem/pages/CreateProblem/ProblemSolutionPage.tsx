@@ -16,6 +16,7 @@ import { isTestcasesStepValid } from "../../utils";
 import { StepGuard } from "../../../course/components/StepGuard";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import _ from "lodash";
 
 const problemSolutionSchema = createProblemSchema.pick({
   problemSolution: true
@@ -45,12 +46,14 @@ export const ProblemSolutionPage = () => {
     }
   });
 
-  const handleEditProblem = async (data: ProblemSolutionSchema) => {
-    console.log("--> handleEditProblem called with data:", data);
-  };
+  const onSubmit = async (data: ProblemSolutionSchema) => {
+    const editingProblem =
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.SOLUTION) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.SOLUTION;
+    //console.log("--> Editing in Problem Solution Page:", editingProblem);
 
-  const handleCreateProblem = async (data: ProblemSolutionSchema) => {
     await adminProblemAPI.createProblemSolutionStep({
+      query: { isUpdate: editingProblem && !_.isEmpty(formData.problemSolution) },
       body: {
         content: data.problemSolution,
         problemId: formData.problemId,
@@ -62,17 +65,6 @@ export const ProblemSolutionPage = () => {
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
-  };
-
-  const onSubmit = async (data: ProblemSolutionSchema) => {
-    if (
-      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.SOLUTION) ||
-      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.SOLUTION
-    ) {
-      await handleEditProblem(data);
-    } else {
-      await handleCreateProblem(data);
-    }
   };
 
   let redirectUrl = "/admin/problems/create/testcase";

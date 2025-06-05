@@ -27,7 +27,7 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTest
       </div>
 
       {showList && (
-        <div className="overflow-y-scroll max-h-[400px] scrollbar-hide">
+        <div className="overflow-y-scroll scrollbar-hide">
           <ul className="space-y-3">
             {testcases.map((testcase) => (
               <TestcaseItem key={testcase.testcaseId} testcase={testcase} onSelectTestcase={onSelectTestcase} />

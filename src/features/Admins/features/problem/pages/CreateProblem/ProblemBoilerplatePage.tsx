@@ -58,11 +58,12 @@ export const ProblemBoilerplatePage = () => {
     }
   });
 
-  const handleEditProblem = async (data: ProblemBoilerplateSchema) => {
-    console.log("--> handleEditProblem called with data:", data);
-  };
+  const onSubmit = async (data: ProblemBoilerplateSchema) => {
+    // const editingProblem =
+    //   (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE) ||
+    //   formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE;
+    // console.log("--> Editing in Problem Boilerplate Page:", editingProblem);
 
-  const handleCreateProblem = async (data: ProblemBoilerplateSchema) => {
     await adminProblemAPI.createProblemStructureStep({
       body: {
         problemId: formData.problemId,
@@ -83,17 +84,6 @@ export const ProblemBoilerplatePage = () => {
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
-  };
-
-  const onSubmit = async (data: ProblemBoilerplateSchema) => {
-    if (
-      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE) ||
-      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.BOILERPLATE
-    ) {
-      await handleEditProblem(data);
-    } else {
-      await handleCreateProblem(data);
-    }
   };
 
   let redirectUrl = "/admin/problems/create/description";

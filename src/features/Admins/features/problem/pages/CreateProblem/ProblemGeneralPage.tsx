@@ -64,41 +64,33 @@ export const ProblemGeneralPage = () => {
     }
   });
 
-  const handleEditProblem = async (data: ProblemGeneralSchema) => {
-    console.log("---> handleEditProblem called with data:", data);
-  };
+  const onSubmit = async (data: ProblemGeneralSchema) => {
+    const editingProblem =
+      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.GENERAL) ||
+      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.GENERAL;
 
-  const handleCreateProblem = async (data: ProblemGeneralSchema) => {
+    console.log("--> Editing in Problem General Page:", editingProblem);
+
     await adminProblemAPI.createProblemGeneralStep({
       body: {
         problemName: data.problemName,
         categories: data.problemCategories.map((category) => category.categoryId),
         problemLevel: data.problemLevel.toLowerCase(),
         score: data.problemScore,
-        isPublished: data.problemIsPublished
+        isPublished: data.problemIsPublished,
+        problemId: editingProblem ? formData.problemId : undefined
       },
       onSuccess: async (problem) => {
         dispatch(
           setCreateProblem({
             ...data,
-            problemId: problem.problemId
+            problemId: editingProblem ? formData.problemId : problem.problemId
           })
         );
         goToNextStep();
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error })
     });
-  };
-
-  const onSubmit = async (data: ProblemGeneralSchema) => {
-    if (
-      (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.GENERAL) ||
-      formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.GENERAL
-    ) {
-      await handleEditProblem(data);
-    } else {
-      await handleCreateProblem(data);
-    }
   };
 
   const handleSubmitError = (errors: unknown) => {
