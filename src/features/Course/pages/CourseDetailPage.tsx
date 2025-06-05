@@ -363,9 +363,9 @@ export const CourseDetailPage = () => {
 
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
-      <div className="flex flex-col min-h-screen">
+      <div className="flex flex-col min-h-screen overflow-x-hidden">
         <div className="w-full">{renderHeader()}</div>
-        <div className="pb-8 px-32 mx-auto w-full flex-grow">
+        <div className="pb-8 p-10 mx-auto w-full max-w-6xl flex-grow">
           {renderBody()}
           {renderSpinner()}
         </div>

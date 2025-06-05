@@ -4,7 +4,7 @@ import { DateRange } from "react-day-picker";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { CourseCompletionRateItem } from "@/features/Admins/types/apiType";
 
-function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom") {
+function getFallbackData(rangeType: "Month" | "Year" | "Custom") {
   // Fallback data in case API fails
   const fallbackData = {
     Daily: [
@@ -22,19 +22,51 @@ function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom") {
       { label: "Week 3", completionRate: 78 },
       { label: "Week 4", completionRate: 80 }
     ],
-    Monthly: [
-      { label: "Jan", completionRate: 70 },
-      { label: "Feb", completionRate: 72 },
-      { label: "Mar", completionRate: 68 },
-      { label: "Apr", completionRate: 75 },
-      { label: "May", completionRate: 80 },
-      { label: "Jun", completionRate: 78 },
-      { label: "Jul", completionRate: 82 },
-      { label: "Aug", completionRate: 79 },
-      { label: "Sep", completionRate: 85 },
-      { label: "Oct", completionRate: 83 },
-      { label: "Nov", completionRate: 86 },
-      { label: "Dec", completionRate: 88 }
+    Month: [
+      { label: "1", completionRate: 65 },
+      { label: "2", completionRate: 68 },
+      { label: "3", completionRate: 70 },
+      { label: "4", completionRate: 72 },
+      { label: "5", completionRate: 75 },
+      { label: "6", completionRate: 73 },
+      { label: "7", completionRate: 78 },
+      { label: "8", completionRate: 76 },
+      { label: "9", completionRate: 80 },
+      { label: "10", completionRate: 77 },
+      { label: "11", completionRate: 82 },
+      { label: "12", completionRate: 79 },
+      { label: "13", completionRate: 85 },
+      { label: "14", completionRate: 83 },
+      { label: "15", completionRate: 87 },
+      { label: "16", completionRate: 84 },
+      { label: "17", completionRate: 89 },
+      { label: "18", completionRate: 86 },
+      { label: "19", completionRate: 91 },
+      { label: "20", completionRate: 88 },
+      { label: "21", completionRate: 92 },
+      { label: "22", completionRate: 90 },
+      { label: "23", completionRate: 94 },
+      { label: "24", completionRate: 91 },
+      { label: "25", completionRate: 95 },
+      { label: "26", completionRate: 93 },
+      { label: "27", completionRate: 96 },
+      { label: "28", completionRate: 94 },
+      { label: "29", completionRate: 97 },
+      { label: "30", completionRate: 95 }
+    ],
+    Year: [
+      { label: "Jan", completionRate: 72 },
+      { label: "Feb", completionRate: 74 },
+      { label: "Mar", completionRate: 70 },
+      { label: "Apr", completionRate: 77 },
+      { label: "May", completionRate: 82 },
+      { label: "Jun", completionRate: 80 },
+      { label: "Jul", completionRate: 84 },
+      { label: "Aug", completionRate: 81 },
+      { label: "Sep", completionRate: 87 },
+      { label: "Oct", completionRate: 85 },
+      { label: "Nov", completionRate: 88 },
+      { label: "Dec", completionRate: 90 }
     ],
     Custom: [
       // This would typically be filtered based on the dateRange
@@ -45,12 +77,14 @@ function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom") {
   };
 
   // Return data based on the rangeType
-  return fallbackData[rangeType] || fallbackData["Monthly"];
+  return fallbackData[rangeType] || fallbackData["Month"];
 }
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
+  selectedMonth?: number;
+  selectedYear?: number;
 }
 
 interface ChartData {
@@ -58,7 +92,7 @@ interface ChartData {
   completionRate: number;
 }
 
-export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
+export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -69,10 +103,20 @@ export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
+    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
       period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -107,7 +151,7 @@ export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchCompletionRate();
@@ -143,18 +187,18 @@ export function CompletionRateMiniChart({ rangeType, dateRange }: Props) {
           <Tooltip formatter={(value) => `${value}%`} />
           <defs>
             <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4} />
-              <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+              <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#5a3295" stopOpacity={0} />
             </linearGradient>
           </defs>
-          <Area type="monotone" dataKey="completionRate" stroke="#22c55e" fill="url(#completionGradient)" />
+          <Area type="monotone" dataKey="completionRate" stroke="#5a3295" fill="url(#completionGradient)" />
         </AreaChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
+export function CompletionRateLargeChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -169,6 +213,20 @@ export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
       period = "daily";
     } else if (rangeType === "Weekly") {
       period = "weekly";
+    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
+      period = "daily";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -203,7 +261,7 @@ export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchCourseCompletionRate();
@@ -242,14 +300,14 @@ export function CompletionRateLargeChart({ rangeType, dateRange }: Props) {
         <Tooltip formatter={(value) => `${value}%`} />
         <defs>
           <linearGradient id="completionGradientLarge" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#22c55e" stopOpacity={0.4} />
-            <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+            <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />
+            <stop offset="95%" stopColor="#5a3295" stopOpacity={0} />
           </linearGradient>
         </defs>
         <Area
           type="monotone"
           dataKey="completionRate"
-          stroke="#22c55e"
+          stroke="#5a3295"
           fill="url(#completionGradientLarge)"
           strokeWidth={2}
         />

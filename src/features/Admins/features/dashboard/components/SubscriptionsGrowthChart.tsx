@@ -5,8 +5,10 @@ import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { SubscriptionGrowthItem } from "@/features/Admins/types/apiType";
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Daily" | "Weekly" | "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
+  selectedMonth?: number;
+  selectedYear?: number;
 }
 
 interface ChartData {
@@ -14,7 +16,7 @@ interface ChartData {
   subscriptions: number;
 }
 
-export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
+export function SubscriptionGrowthMiniChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -28,6 +30,20 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
       period = "daily";
     } else if (rangeType === "Weekly") {
       period = "weekly";
+    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
+      period = "daily";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -62,7 +78,7 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchSubscriptionGrowth();
@@ -103,28 +119,19 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange }: Props) {
             formatter={(value) => [`${value} subscribers`, "Subscriptions"]}
             labelFormatter={(label) => `${label}`}
           />
-          <Line
-            type="monotone"
-            dataKey="subscriptions"
-            stroke="#22c55e"
-            strokeWidth={2}
-            activeDot={{ r: 4 }}
-            dot={{ r: 2 }}
-            name="Subscriptions"
-          />
+          <Line type="monotone" dataKey="subscriptions" stroke="#5a3295" strokeWidth={2} name="Subscriptions" />
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 }
 
-export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
+export function SubscriptionGrowthLargeChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSubscriptionGrowth = useCallback(() => {
-    console.log("Fetching subscription growth data", rangeType, dateRange);
     // Convert rangeType to the expected API parameter
     let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
     const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
@@ -133,6 +140,20 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
       period = "daily";
     } else if (rangeType === "Weekly") {
       period = "weekly";
+    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
+      period = "daily";
+      // Calculate date range for the selected month to get daily data
+      const startDate = new Date(selectedYear, selectedMonth, 1);
+      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
+    } else if (rangeType === "Year" && selectedYear !== undefined) {
+      period = "custom";
+      // Calculate date range for the selected year
+      const startDate = new Date(selectedYear, 0, 1);
+      const endDate = new Date(selectedYear, 11, 31);
+      query.start_date = startDate.toISOString().split("T")[0];
+      query.end_date = endDate.toISOString().split("T")[0];
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
       // Format dates as YYYY-MM-DD for API
@@ -167,7 +188,7 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchSubscriptionGrowth();
@@ -207,22 +228,46 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange }: Props) {
           formatter={(value) => [`${value} subscribers`, "Subscriptions"]}
           labelFormatter={(label) => `${label}`}
         />
-        <Line type="monotone" dataKey="subscriptions" stroke="#22c55e" strokeWidth={3} name="Subscriptions" />
+        <Line type="monotone" dataKey="subscriptions" stroke="#5a3295" strokeWidth={3} name="Subscriptions" />
       </LineChart>
     </ResponsiveContainer>
   );
 }
 
 // Fallback data in case API fails
-function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): ChartData[] {
+function getFallbackData(rangeType: "Daily" | "Weekly" | "Month" | "Year" | "Custom"): ChartData[] {
   const fallbackData = {
-    Monthly: [
-      { label: "Jan", subscriptions: 100 },
-      { label: "Feb", subscriptions: 130 },
-      { label: "Mar", subscriptions: 150 },
-      { label: "Apr", subscriptions: 170 },
-      { label: "May", subscriptions: 180 },
-      { label: "Jun", subscriptions: 200 }
+    Month: [
+      { label: "1", subscriptions: 5 },
+      { label: "2", subscriptions: 8 },
+      { label: "3", subscriptions: 6 },
+      { label: "4", subscriptions: 10 },
+      { label: "5", subscriptions: 12 },
+      { label: "6", subscriptions: 9 },
+      { label: "7", subscriptions: 15 },
+      { label: "8", subscriptions: 18 },
+      { label: "9", subscriptions: 14 },
+      { label: "10", subscriptions: 20 },
+      { label: "11", subscriptions: 16 },
+      { label: "12", subscriptions: 22 },
+      { label: "13", subscriptions: 19 },
+      { label: "14", subscriptions: 25 },
+      { label: "15", subscriptions: 21 },
+      { label: "16", subscriptions: 28 },
+      { label: "17", subscriptions: 24 },
+      { label: "18", subscriptions: 30 },
+      { label: "19", subscriptions: 26 },
+      { label: "20", subscriptions: 32 },
+      { label: "21", subscriptions: 29 },
+      { label: "22", subscriptions: 35 },
+      { label: "23", subscriptions: 31 },
+      { label: "24", subscriptions: 38 },
+      { label: "25", subscriptions: 34 },
+      { label: "26", subscriptions: 40 },
+      { label: "27", subscriptions: 36 },
+      { label: "28", subscriptions: 42 },
+      { label: "29", subscriptions: 39 },
+      { label: "30", subscriptions: 45 }
     ],
     Weekly: [
       { label: "Week 1", subscriptions: 30 },
@@ -237,6 +282,20 @@ function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): 
       { label: "Thu", subscriptions: 18 },
       { label: "Fri", subscriptions: 20 }
     ],
+    Year: [
+      { label: "Jan", subscriptions: 120 },
+      { label: "Feb", subscriptions: 135 },
+      { label: "Mar", subscriptions: 155 },
+      { label: "Apr", subscriptions: 180 },
+      { label: "May", subscriptions: 195 },
+      { label: "Jun", subscriptions: 210 },
+      { label: "Jul", subscriptions: 190 },
+      { label: "Aug", subscriptions: 205 },
+      { label: "Sep", subscriptions: 220 },
+      { label: "Oct", subscriptions: 235 },
+      { label: "Nov", subscriptions: 250 },
+      { label: "Dec", subscriptions: 265 }
+    ],
     Custom: [
       { label: "Apr 1", subscriptions: 10 },
       { label: "Apr 8", subscriptions: 15 },
@@ -247,15 +306,5 @@ function getFallbackData(rangeType: "Daily" | "Weekly" | "Monthly" | "Custom"): 
     ]
   };
 
-  if (rangeType === "Monthly") {
-    return fallbackData.Monthly;
-  } else if (rangeType === "Weekly") {
-    return fallbackData.Weekly;
-  } else if (rangeType === "Daily") {
-    return fallbackData.Daily;
-  } else if (rangeType === "Custom") {
-    return fallbackData.Custom;
-  }
-
-  return fallbackData.Monthly; // Default fallback
+  return fallbackData[rangeType] || fallbackData.Month;
 }

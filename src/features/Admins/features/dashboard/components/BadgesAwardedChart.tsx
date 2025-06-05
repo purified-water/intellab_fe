@@ -11,7 +11,7 @@ import { DateRange } from "react-day-picker";
 // ];
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Custom";
   dateRange: DateRange | undefined;
 }
 
@@ -23,9 +23,9 @@ export function BadgesAwardedMiniChart({ rangeType, dateRange }: Props) {
       <ResponsiveContainer width="100%" height={250}>
         <BarChart data={data}>
           <Tooltip />
-          <Bar dataKey="badges" fill="#10b981" radius={[4, 4, 0, 0]} />
+          <Bar dataKey="badges" fill="#5a3295" radius={[4, 4, 0, 0]} />
           {/* <CartesianGrid strokeDasharray="3 3" /> */}
-          <XAxis dataKey={rangeType === "Daily" ? "day" : rangeType === "Weekly" ? "week" : "month"} fontSize={10} />
+          <XAxis dataKey={rangeType === "Month" ? "month" : "custom"} fontSize={10} />
           <YAxis fontSize={10} width={25} tickMargin={4} />
         </BarChart>
       </ResponsiveContainer>
@@ -40,10 +40,10 @@ export function BadgesAwardedLargeChart({ rangeType, dateRange }: Props) {
     <ResponsiveContainer width="100%" height={400}>
       <BarChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={rangeType === "Daily" ? "day" : rangeType === "Weekly" ? "week" : "month"} fontSize={10} />
+        <XAxis dataKey={rangeType === "Month" ? "month" : "custom"} fontSize={10} />
         <YAxis />
         <Tooltip />
-        <Bar dataKey="badges" fill="#10b981" radius={[4, 4, 0, 0]} />
+        <Bar dataKey="badges" fill="#5a3295" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
   );

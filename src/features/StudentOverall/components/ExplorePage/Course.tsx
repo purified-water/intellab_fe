@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom";
 import { amountTransformer } from "@/utils";
 import { DEFAULT_COURSE, NA_VALUE } from "@/constants/defaultData";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { Card, CardContent, CardFooter } from "@/components/ui/shadcn";
+import { LevelCard } from "@/components/LevelCard";
 import { courseAPI } from "@/lib/api";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
@@ -11,6 +13,7 @@ import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
 import { rateIcon } from "@/assets";
+import { Button } from "@/components/ui/Button";
 interface CourseProps {
   course: ICourse | null;
   skeletonLoading?: boolean;
@@ -107,77 +110,75 @@ export function Course(props: CourseProps) {
   };
 
   const renderContent = () => (
-    <div className="flex flex-col transition-shadow duration-200 ease-in-out bg-white border w-80 rounded-xl border-gray4 h-80 hover:shadow-lg">
-      {/* Header section with background gradient and reviews */}
-      <div className="flex flex-col items-end justify-between h-40 p-2 w-80 bg-gradient-to-tr from-appSecondary to-appFadedPrimary rounded-tl-xl rounded-tr-xl">
-        <div className="flex flex-col items-center justify-between">
-          <div className="flex items-center justify-end px-2 pt-2 mb-5">
-            <div className="text-sm font-medium text-white">
-              {`${amountTransformer(detailCourse?.reviewCount ?? 0)} reviews`}
-            </div>
-            <div className="ml-1 text-sm font-normal text-white">•</div>
-            <div className="flex items-center px-2 justify-center bg-black/60 rounded-[9px] w-[58px] h-[25px] ml-2">
-              <img className="w-3 h-3 mr-[6px]" src={rateIcon} alt="Rating" />
-              <div className="text-sm text-white">
-                {detailCourse?.averageRating != 0 && detailCourse?.averageRating
-                  ? detailCourse?.averageRating
-                  : NA_VALUE}
-              </div>
-            </div>
+    <Card
+      className="flex min-w-[300px] w-[320px] max-w-[320px] min-h-[380px] max-h-[380px] flex-col overflow-hidden cursor-pointer transition-shadow duration-300 ease-in-out hover:shadow-lg"
+      onClick={handleTitleClick}
+    >
+      <div className="relative h-44">
+        <img
+          src={detailCourse?.courseImage || "/placeholder.svg"}
+          alt={detailCourse?.courseName || DEFAULT_COURSE.courseName}
+          className="object-cover w-full h-full"
+          loading="lazy"
+        />
+        <div className="absolute top-2 right-2 max-w-[280px]">
+          <div className="px-2 py-1 mb-5 text-xs bg-black/40 backdrop-blur-md rounded-lg text-white whitespace-nowrap overflow-hidden text-ellipsis">
+            {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount} lessons • {`${amountTransformer(detailCourse?.reviewCount ?? 0)} reviews`} • ⭐ {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : NA_VALUE}
           </div>
         </div>
-        <h2 className="w-full pl-2 mb-10 text-2xl font-bold text-white cursor-pointer" onClick={handleTitleClick}>
-          {detailCourse?.courseName ?? DEFAULT_COURSE.courseName}
-        </h2>
       </div>
 
-      {/* Description section */}
-      <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
-        <span className="text-sm font-normal text-black line-clamp-2">
+      <CardContent className="flex-grow px-4 pt-2 pb-0">
+        <h3 className="text-lg font-bold line-clamp-1">{detailCourse?.courseName ?? DEFAULT_COURSE.courseName}</h3>
+        <p
+          className={`mt-2 text-sm text-muted-foreground ${
+            (detailCourse?.courseName ?? DEFAULT_COURSE.courseName).length > 40 ? "line-clamp-1" : "line-clamp-2"
+          }`}
+        >
           {detailCourse?.description ?? DEFAULT_COURSE.description}
-        </span>
-      </div>
+        </p>
+        <LevelCard level={detailCourse?.level ?? DEFAULT_COURSE.level} categories={detailCourse?.categories || []} />
+      </CardContent>
 
-      {/* Difficulty and lessons section */}
-      <div className="flex-grow px-4 mb-3">
-        <span className="w-36 text-[#01000f] text-sm font-bold">{detailCourse?.level ?? DEFAULT_COURSE.level}</span>
-        <span className="mx-2 text-[#01000f] text-sm font-normal">•</span>
-        <span className="w-52 text-[#01000f] text-sm font-normal">
-          Include {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount} lessons
-        </span>
-      </div>
-
-      {/* Footer section */}
-      <div className="flex items-baseline justify-between p-4 mt-auto bg-">
-        <button
-          className="self-end w-36 h-[35px] font-semibold bg-transparent rounded-xl border-appPrimary border text-appPrimary"
-          onClick={() => handleButtonClick(detailCourse?.courseId ?? course!.courseId)}
+      <CardFooter className="p-5 pt-0 flex justify-between items-center">
+        <Button
+          className="px-2 font-semibold text-lg text-white"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleButtonClick(detailCourse?.courseId ?? course!.courseId);
+          }}
         >
           {buttonText(detailCourse!)}
-        </button>
-        <span className="text-lg font-bold text-appPrimary">
+        </Button>
+        <div className="text-lg font-bold text-appPrimary">
           {detailCourse?.price != undefined ? priceText(detailCourse!.price, detailCourse.unitPrice) : NA_VALUE}
-        </span>
-      </div>
-    </div>
+        </div>
+      </CardFooter>
+    </Card>
   );
 
   const renderSkeleton = () => (
-    <div className="flex flex-col bg-white border w-80 rounded-xl border-gray4 h-80">
-      <div className="flex flex-col h-40 p-2 w-80 rounded-tl-xl bg-gray6 rounded-tr-xl">
-        <Skeleton className="self-end w-40 h-10 mb-9" />
-        <Skeleton className="h-10 mb-5 w-50 " />
+    <Card className="flex min-w-[300px] w-[320px] max-w-[320px] min-h-[380px] max-h-[380px] flex-col overflow-hidden">
+      <div className="relative h-44">
+        <Skeleton className="w-full h-full" />
+        <div className="absolute top-2 right-2">
+          <Skeleton className="w-20 h-6 bg-black/30" />
+        </div>
       </div>
-      <div className="items-center flex-grow px-4 py-1 mt-1 w-72">
-        <Skeleton className="h-4 mb-2" />
-      </div>
-      <div className="flex-grow px-4 mb-3">
-        <Skeleton className="h-4 mb-2 " />
-      </div>
-      <div className="flex items-baseline justify-between p-4 mt-auto bg-">
-        <Skeleton className="w-24 h-8 mt-5" />
-      </div>
-    </div>
+
+      <CardContent className="flex-grow px-4 pt-2 pb-0">
+        <Skeleton className="h-6 mb-2 w-3/4" />
+        <Skeleton className="h-4 mb-2 w-full" />
+        <Skeleton className="h-4 mb-4 w-2/3" />
+        <Skeleton className="h-6 mb-2 w-1/2" />
+        <Skeleton className="h-4 w-1/3" />
+      </CardContent>
+
+      <CardFooter className="p-4 pt-0 flex justify-between items-center">
+        <Skeleton className="w-24 h-8" />
+        <Skeleton className="w-16 h-6" />
+      </CardFooter>
+    </Card>
   );
 
   return skeletonLoading || internalLoading ? renderSkeleton() : renderContent();

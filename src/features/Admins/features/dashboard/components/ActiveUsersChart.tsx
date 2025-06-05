@@ -14,7 +14,7 @@ import { DateRange } from "react-day-picker";
 // ];
 
 interface Props {
-  rangeType: "Daily" | "Weekly" | "Monthly" | "Custom";
+  rangeType: "Month" | "Custom";
   dateRange: DateRange | undefined;
 }
 
@@ -24,10 +24,10 @@ export function ActiveUsersTodayMiniChart({ rangeType, dateRange }: Props) {
     <div className="w-full pt-5">
       <ResponsiveContainer width="100%" height={250}>
         <AreaChart data={data}>
-          <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#dbeafe" strokeWidth={2} />
+          <Area type="monotone" dataKey="users" stroke="#5a3295" fill="rgba(90, 50, 149, 0.1)" strokeWidth={2} />
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
-            dataKey={rangeType === "Daily" ? "day" : rangeType === "Weekly" ? "week" : "month"}
+            dataKey={rangeType === "Month" ? "month" : "custom"}
             fontSize={10}
           />{" "}
           <YAxis fontSize={10} width={25} tickMargin={4} />
@@ -45,10 +45,10 @@ export function ActiveUsersTodayLargeChart({ rangeType, dateRange }: Props) {
     <ResponsiveContainer width="100%" height={400}>
       <AreaChart data={data}>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey={rangeType === "Daily" ? "day" : rangeType === "Weekly" ? "week" : "month"} fontSize={10} />
+        <XAxis dataKey={rangeType === "Month" ? "month" : "custom"} fontSize={10} />
         <YAxis />
         <Tooltip />
-        <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#dbeafe" strokeWidth={3} />
+        <Area type="monotone" dataKey="users" stroke="#5a3295" fill="rgba(90, 50, 149, 0.1)" strokeWidth={3} />
       </AreaChart>
     </ResponsiveContainer>
   );

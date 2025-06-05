@@ -18,7 +18,7 @@ import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui";
 
-interface Transaction {
+interface TopPurchasedItem {
   name: string;
   email: string;
   amount: string;
@@ -27,92 +27,85 @@ interface Transaction {
   type: "Course" | "Plan";
 }
 
-interface TransactionsListProps {
+interface TopPurchasedListProps {
   title?: string;
-  transactions?: Transaction[];
+  items?: TopPurchasedItem[];
   limit?: number;
 }
 
-export function TransactionsList({
-  title = "Recent Transactions",
-  transactions: initialTransactions,
-  limit = 3
-}: TransactionsListProps) {
+export function TopPurchasedList({
+  title = "Top Purchased Items",
+  items: initialItems,
+  limit = 5
+}: TopPurchasedListProps) {
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<"Course" | "Plan" | "All">("All");
   const [selectedStatus, setSelectedStatus] = useState<"Completed" | "Pending" | "Failed" | "all">("all");
-  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
-  const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions || []);
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc"); // Default to descending for top items
+  const [items, setItems] = useState<TopPurchasedItem[]>(initialItems || []);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
   const itemsPerPage = 10;
 
-  const loadTransactions = async (page: number = 0) => {
-    // if (initialTransactions) return;
-
+  const loadTopPurchased = async (itemLimit?: number) => {
     setIsLoading(true);
     setErrorMessage("");
     try {
-      console.log("Loading transactions for page:", page);
-      const apiTransactions = await transactionAPI.getTransactions(page);
+      console.log("Loading top purchased items");
+      const apiItems = await transactionAPI.getTopPurchased(itemLimit);
 
-      if (apiTransactions.length === 0) {
-        setErrorMessage("No transactions found or unable to fetch transactions.");
+      if (apiItems.length === 0) {
+        setErrorMessage("No purchased items found or unable to fetch data.");
       } else {
-        const formattedTransactions = apiTransactions.map((transaction) => ({
-          name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
-          email: transaction.user.email,
-          amount: `$${transaction.amount.toLocaleString()}`,
-          date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status,
-          type: transaction.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
+        const formattedItems = apiItems.map((item) => ({
+          name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
+          email: item.user.email,
+          amount: `$${item.amount.toLocaleString()}`,
+          date: new Date(item.date).toLocaleDateString(),
+          status: item.status,
+          type: item.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
         }));
-        setTransactions(formattedTransactions);
+        setItems(formattedItems);
       }
     } catch (error) {
-      console.error("Failed to fetch transactions:", error);
-      setErrorMessage("Failed to fetch transactions. Please try again later.");
+      console.error("Failed to fetch top purchased items:", error);
+      setErrorMessage("Failed to fetch data. Please try again later.");
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Reload data when page changes
-  useEffect(() => {
-    console.log("Current page changed:", currentPage);
-    loadTransactions(currentPage - 1); // API uses 0-based indexing
-  }, [currentPage, open]);
-
   // Initial data load
   useEffect(() => {
-    if (!initialTransactions) {
-      loadTransactions();
-    }
-  }, [initialTransactions]);
+    // if (!initialItems) {
+    //   loadTopPurchased(open ? undefined : limit);
+    // }
+    loadTopPurchased(open ? undefined : limit);
+  }, [initialItems, open, limit]);
 
-  // Filter transactions based on search query, type, and status
-  const filteredTransactions = transactions.filter(
-    (transaction) =>
-      (transaction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        transaction.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        transaction.amount.toLowerCase().includes(searchQuery.toLowerCase())) &&
-      (selectedType === "All" || transaction.type === selectedType) &&
-      (selectedStatus === "all" || transaction.status === selectedStatus)
+  // Filter items based on search query, type, and status
+  const filteredItems = items.filter(
+    (item) =>
+      (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        item.amount.toLowerCase().includes(searchQuery.toLowerCase())) &&
+      (selectedType === "All" || item.type === selectedType) &&
+      (selectedStatus === "all" || item.status === selectedStatus)
   );
 
-  // Sort transactions by amount
-  const sortedTransactions = [...filteredTransactions].sort((a, b) => {
+  // Sort items by amount
+  const sortedItems = [...filteredItems].sort((a, b) => {
     const amountA = parseFloat(a.amount.replace(/[$,]/g, ""));
     const amountB = parseFloat(b.amount.replace(/[$,]/g, ""));
     return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
   });
 
   // Calculate pagination
-  const totalPages = Math.ceil(sortedTransactions.length / itemsPerPage);
+  const totalPages = Math.ceil(sortedItems.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedTransactions = sortedTransactions.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedItems = sortedItems.slice(startIndex, startIndex + itemsPerPage);
 
   return (
     <>
@@ -141,22 +134,22 @@ export function TransactionsList({
             </div>
           ) : (
             <ul className="space-y-2">
-              {paginatedTransactions.slice(0, limit).map((transaction, idx) => (
+              {paginatedItems.slice(0, limit).map((item, idx) => (
                 <li key={idx} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium text-sm">{transaction.name}</div>
-                      <div className="text-xs text-muted-foreground">{transaction.email}</div>
+                      <div className="font-medium text-sm">{item.name}</div>
+                      <div className="text-xs text-muted-foreground">{item.email}</div>
                     </div>
                   </div>
-                  <div className="text-sm">{transaction.amount}</div>
+                  <div className="text-sm">{item.amount}</div>
                 </li>
               ))}
-              {transactions.length === 0 && !isLoading && (
-                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No transactions found"}</li>
+              {items.length === 0 && !isLoading && (
+                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No purchased items found"}</li>
               )}
             </ul>
           )}
@@ -170,7 +163,7 @@ export function TransactionsList({
           </DialogHeader>
           <div className="flex gap-4 mb-4">
             <Input
-              placeholder="Search transactions..."
+              placeholder="Search purchases..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full"
@@ -179,7 +172,7 @@ export function TransactionsList({
               variant="outline"
               size="sm"
               className="shrink-0"
-              onClick={() => loadTransactions(currentPage - 1)}
+              onClick={() => loadTopPurchased()}
               disabled={isLoading}
             >
               {isLoading ? <Skeleton className="h-4 w-4 mr-2" /> : null}
@@ -226,7 +219,7 @@ export function TransactionsList({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-[40%]">User</TableHead>
-                    {transactions[0]?.date && <TableHead>Date</TableHead>}
+                    {items[0]?.date && <TableHead>Date</TableHead>}
                     <TableHead>
                       <div className="flex items-center gap-1">
                         <span>Amount</span>
@@ -240,7 +233,7 @@ export function TransactionsList({
                         </Button>
                       </div>
                     </TableHead>
-                    {transactions[0]?.status && (
+                    {items[0]?.status && (
                       <TableHead>
                         <div className="flex items-center gap-1">
                           <span>Status</span>
@@ -272,7 +265,7 @@ export function TransactionsList({
                         >
                           <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
                             <Funnel className="h-4 w-4 cursor-pointer" />
-                          </SelectTrigger>{" "}
+                          </SelectTrigger>
                           <SelectContent>
                             <SelectItem value="All">All</SelectItem>
                             <SelectItem value="Course">Course</SelectItem>
@@ -284,46 +277,44 @@ export function TransactionsList({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {paginatedTransactions.length > 0 ? (
-                    paginatedTransactions.map((transaction, idx) => (
+                  {paginatedItems.length > 0 ? (
+                    paginatedItems.map((item, idx) => (
                       <TableRow key={idx}>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Avatar className="h-8 w-8">
-                              <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                              <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium">{transaction.name}</div>
-                              <div className="text-sm text-muted-foreground">{transaction.email}</div>
+                              <div className="font-medium">{item.name}</div>
+                              <div className="text-sm text-muted-foreground">{item.email}</div>
                             </div>
                           </div>
                         </TableCell>
-                        {transaction.date && <TableCell>{transaction.date}</TableCell>}
-                        <TableCell>{transaction.amount}</TableCell>
-                        {transaction.status && (
+                        {item.date && <TableCell>{item.date}</TableCell>}
+                        <TableCell>{item.amount}</TableCell>
+                        {item.status && (
                           <TableCell>
                             <div
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                transaction.status === "Completed"
+                                item.status === "Completed"
                                   ? "bg-green-100 text-green-800"
-                                  : transaction.status === "Pending"
+                                  : item.status === "Pending"
                                     ? "bg-yellow-100 text-yellow-800"
                                     : "bg-red-100 text-red-800"
                               }`}
                             >
-                              {transaction.status}
+                              {item.status}
                             </div>
                           </TableCell>
                         )}
                         <TableCell>
                           <div
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                              transaction.type === "Course"
-                                ? "bg-blue-100 text-blue-800"
-                                : "bg-purple-100 text-purple-800"
+                              item.type === "Course" ? "bg-blue-100 text-blue-800" : "bg-purple-100 text-purple-800"
                             }`}
                           >
-                            {transaction.type}
+                            {item.type}
                           </div>
                         </TableCell>
                       </TableRow>
@@ -331,7 +322,7 @@ export function TransactionsList({
                   ) : (
                     <TableRow>
                       <TableCell colSpan={5} className="text-center py-8">
-                        {errorMessage || "No transactions found"}
+                        {errorMessage || "No purchased items found"}
                       </TableCell>
                     </TableRow>
                   )}

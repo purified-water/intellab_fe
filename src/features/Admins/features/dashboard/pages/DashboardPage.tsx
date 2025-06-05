@@ -7,23 +7,34 @@ import { ZoomableChartCard } from "../components/ZoomChartCard";
 import { UserGrowthLargeChart, UserGrowthMiniChart } from "../components/UserGrowthChart";
 import { DateRange } from "react-day-picker";
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange"; // Import DatePicker component
+import { MonthYearPicker } from "@/components/ui/MonthYearPicker"; // Import MonthYear picker component
 import { RevenueLargeBarChart, RevenueMiniBarChart } from "../components/RevenueChart";
 import { CompletionRateLargeChart, CompletionRateMiniChart } from "../components/CompletionChart";
 import { TransactionsList } from "../components/TransactionList";
-import { TopPurchasesList } from "../components/TopPurchasesList";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { OverviewStatItem } from "@/features/Admins/types/apiType";
+import { TopPurchasedList } from "../components/TopPurchasedList";
 
 export const DashboardPage = () => {
-  const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly" | "Custom">("Monthly");
+  const [rangeType, setRangeType] = useState<"Month" | "Year" | "Custom">("Month");
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date()
   });
+  
+  // New state for month/year selection
+  const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
+  const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear());
 
   const [overviewStats, setOverviewStats] = useState<OverviewStatItem[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Function to handle month/year change
+  const handleMonthYearChange = (month: number, year: number) => {
+    setSelectedMonth(month);
+    setSelectedYear(year);
+  };
 
   useEffect(() => {
     const fetchDashboardOverview = () => {
@@ -185,18 +196,18 @@ export const DashboardPage = () => {
   ];
 
   const allPurchases = [
-    { name: "Olivia Martin", email: "olivia@email.com", amount: "200,000,000₫", plan: "Premium" as const },
-    { name: "James Williams", email: "james@email.com", amount: "150,000,000₫", plan: "Premium" as const },
-    { name: "Barbara Nguyen", email: "barbara@email.com", amount: "120,000,000₫", plan: "Free" as const },
-    { name: "Robert Johnson", email: "robert@email.com", amount: "115,000,000₫", plan: "Premium" as const },
-    { name: "Emma Smith", email: "emma@email.com", amount: "110,000,000₫", plan: "Premium" as const },
-    { name: "Michael Lee", email: "michael@email.com", amount: "100,000,000₫", plan: "Free" as const },
-    { name: "Sophia Kim", email: "sophia@email.com", amount: "95,000,000₫", plan: "Free" as const },
-    { name: "David Tran", email: "david@email.com", amount: "90,000,000₫", plan: "Premium" as const },
-    { name: "Emily Wang", email: "emily@email.com", amount: "85,000,000₫", plan: "Free" as const },
-    { name: "William Chen", email: "william@email.com", amount: "80,000,000₫", plan: "Premium" as const },
-    { name: "Ava Garcia", email: "ava@email.com", amount: "75,000,000₫", plan: "Free" as const },
-    { name: "Noah Pham", email: "noah@email.com", amount: "70,000,000₫", plan: "Premium" as const }
+    { name: "Olivia Martin", email: "olivia@email.com", amount: "200,000,000₫", type: "Plan" as const },
+    { name: "James Williams", email: "james@email.com", amount: "150,000,000₫", type: "Plan" as const },
+    { name: "Barbara Nguyen", email: "barbara@email.com", amount: "120,000,000₫", type: "Course" as const },
+    { name: "Robert Johnson", email: "robert@email.com", amount: "115,000,000₫", type: "Plan" as const },
+    { name: "Emma Smith", email: "emma@email.com", amount: "110,000,000₫", type: "Plan" as const },
+    { name: "Michael Lee", email: "michael@email.com", amount: "100,000,000₫", type: "Course" as const },
+    { name: "Sophia Kim", email: "sophia@email.com", amount: "95,000,000₫", type: "Course" as const },
+    { name: "David Tran", email: "david@email.com", amount: "90,000,000₫", type: "Plan" as const },
+    { name: "Emily Wang", email: "emily@email.com", amount: "85,000,000₫", type: "Course" as const },
+    { name: "William Chen", email: "william@email.com", amount: "80,000,000₫", type: "Plan" as const },
+    { name: "Ava Garcia", email: "ava@email.com", amount: "75,000,000₫", type: "Course" as const },
+    { name: "Noah Pham", email: "noah@email.com", amount: "70,000,000₫", type: "Plan" as const }
   ];
 
   return (
@@ -205,19 +216,28 @@ export const DashboardPage = () => {
 
       <div className="flex items-center gap-2">
         {/* Select time range */}
-        <Select value={rangeType} onValueChange={(val: "Daily" | "Weekly" | "Monthly" | "Custom") => setRangeType(val)}>
+        <Select value={rangeType} onValueChange={(val: "Month" | "Year" | "Custom") => setRangeType(val)}>
           <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Monthly" />
+            <SelectValue placeholder="Month" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="Daily">Daily</SelectItem>
-            <SelectItem value="Weekly">Weekly</SelectItem>
-            <SelectItem value="Monthly">Monthly</SelectItem>
+            <SelectItem value="Month">Month</SelectItem>
+            <SelectItem value="Year">Year</SelectItem>
             <SelectItem value="Custom">Custom Range</SelectItem>
           </SelectContent>
         </Select>
 
-        {/* Date Picker */}
+        {/* Month/Year Picker for Month and Year filters */}
+        {(rangeType === "Month" || rangeType === "Year") && (
+          <MonthYearPicker
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onMonthYearChange={handleMonthYearChange}
+            rangeType={rangeType}
+          />
+        )}
+
+        {/* Date Picker for Custom range */}
         {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={setDateRange} />}
       </div>
 
@@ -280,52 +300,108 @@ export const DashboardPage = () => {
 
       {/* Khối 2: Biểu đồ nhỏ */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+
         <ZoomableChartCard
-          title="Subscription Growth"
-          largeChart={<SubscriptionGrowthLargeChart rangeType={rangeType} dateRange={dateRange} />}
+          title="Revenue"
           rangeType={rangeType}
           dateRange={dateRange}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
+          setSelectedMonth={setSelectedMonth}
+          setSelectedYear={setSelectedYear}
+          largeChart={<RevenueLargeBarChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />}
         >
-          <SubscriptionGrowthMiniChart rangeType={rangeType} dateRange={dateRange} />
+          <RevenueMiniBarChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
         </ZoomableChartCard>
 
         <ZoomableChartCard
           title="User Growth"
-          largeChart={<UserGrowthLargeChart rangeType={rangeType} dateRange={dateRange} />}
+          largeChart={<UserGrowthLargeChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />}
           rangeType={rangeType}
           dateRange={dateRange}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
+          setSelectedMonth={setSelectedMonth}
+          setSelectedYear={setSelectedYear}
         >
-          <UserGrowthMiniChart rangeType={rangeType} dateRange={dateRange} />
+          <UserGrowthMiniChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
         </ZoomableChartCard>
       </div>
 
       {/* Khối 3: Revenue Chart + Completion Rate Chart */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Revenue Chart */}
         <ZoomableChartCard
-          title="Revenue"
+          title="Subscription Growth"
+          largeChart={<SubscriptionGrowthLargeChart 
+            rangeType={rangeType} 
+            dateRange={dateRange} 
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />}
           rangeType={rangeType}
           dateRange={dateRange}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
-          largeChart={<RevenueLargeBarChart rangeType={rangeType} dateRange={dateRange} />}
+          setSelectedMonth={setSelectedMonth}
+          setSelectedYear={setSelectedYear}
         >
-          <RevenueMiniBarChart rangeType={rangeType} dateRange={dateRange} />
+          <SubscriptionGrowthMiniChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
         </ZoomableChartCard>
         {/* Completion Rate Chart */}
         <ZoomableChartCard
           title="Course Completion Rate"
           rangeType={rangeType}
           dateRange={dateRange}
+          selectedMonth={selectedMonth}
+          selectedYear={selectedYear}
           setRangeType={setRangeType}
           setDateRange={setDateRange}
-          largeChart={<CompletionRateLargeChart rangeType={rangeType} dateRange={dateRange} />}
+          setSelectedMonth={setSelectedMonth}
+          setSelectedYear={setSelectedYear}
+          largeChart={<CompletionRateLargeChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />}
         >
-          <CompletionRateMiniChart rangeType={rangeType} dateRange={dateRange} />
+          <CompletionRateMiniChart 
+            rangeType={rangeType} 
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+          />
         </ZoomableChartCard>
       </div>
 
@@ -334,7 +410,7 @@ export const DashboardPage = () => {
         {/* Recent Transactions */}
         <TransactionsList title="Recent Transactions" transactions={allTransactions} limit={3} />
         {/* Top Subscribers */}
-        <TopPurchasesList title="Top Purchases" purchases={allPurchases} limit={3} />
+        <TopPurchasedList title="Top Purchases" items={allPurchases} limit={3} />
       </div>
     </div>
   );
