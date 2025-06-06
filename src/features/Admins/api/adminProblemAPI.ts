@@ -29,6 +29,7 @@ export const adminProblemAPI = {
     const response = await apiClient.get(`problem/admin/problems`, {
       params: {
         ...params,
+        sortBy: params.sort || "problemName,asc",
         size: params.size || DEFAULT_PAGE_SIZE
       }
     });

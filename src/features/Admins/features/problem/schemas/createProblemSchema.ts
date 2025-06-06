@@ -6,7 +6,7 @@ export const createInputSchema = z.object({
   inputName: z
     .string()
     .min(1, { message: "Input name is required" })
-    .max(50, { message: "Input name must be less than 50 characters" }),
+    .max(100, { message: "Input name must be less than 100 characters" }),
   inputType: z.enum(BoilerplateDataTypes)
 });
 
@@ -14,7 +14,7 @@ export const createOutputSchema = z.object({
   outputName: z
     .string()
     .min(1, { message: "Output name is required" })
-    .max(50, { message: "Output name must be less than 50 characters" }),
+    .max(100, { message: "Output name must be less than 100 characters" }),
   outputType: z.enum(BoilerplateDataTypes)
 });
 
@@ -23,7 +23,7 @@ export const createProblemSchema = z.object({
   problemName: z
     .string()
     .min(1, { message: "Problem name is required" })
-    .max(100, { message: "Problem name must be less than 100 characters" }),
+    .max(300, { message: "Problem name must be less than 300 characters" }),
   problemCategories: z
     .array(
       z.object({
@@ -40,12 +40,12 @@ export const createProblemSchema = z.object({
   problemDescription: z
     .string()
     .min(1, { message: "Problem description is required" })
-    .max(800, { message: "Problem description must be less than 800 characters" }),
+    .max(3000, { message: "Problem description must be less than 3000 characters" }),
   problemStructure: z.object({
     functionName: z
       .string()
       .min(1, { message: "Function name is required" })
-      .max(50, { message: "Function name must be less than 50 characters" }),
+      .max(200, { message: "Function name must be less than 200 characters" }),
     inputStructure: z.array(createInputSchema).refine((inputs) => inputs.length > 0, {
       message: "At least one input is required"
     }),
@@ -59,7 +59,7 @@ export const createProblemSchema = z.object({
   problemSolution: z
     .string()
     .min(1, { message: "Problem solution is required" })
-    .max(1000, { message: "Problem solution must be less than 1000 characters" }),
+    .max(3000, { message: "Problem solution must be less than 3000 characters" }),
   isCompletedCreation: z.boolean().optional()
 });
 

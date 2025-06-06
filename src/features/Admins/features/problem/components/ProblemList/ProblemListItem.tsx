@@ -159,11 +159,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
           {problem.isCompletedCreation && (
             <>
               <td className="py-1">
-                <Switch
-                  checked={problem.isPublished}
-                  onCheckedChange={handleChangeProblemPublication}
-                  className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
-                />
+                <div className="flex justify-center">
+                  <Switch
+                    checked={problem.isPublished}
+                    onCheckedChange={handleChangeProblemPublication}
+                    className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
+                  />
+                </div>
               </td>
               <td className="px-4 py-1 text-right">
                 <TooltipProvider>

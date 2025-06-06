@@ -2,8 +2,8 @@ import { z } from "zod";
 
 export const quizQuestionSchema = z.object({
   questionId: z.string(),
-  questionTitle: z.string().max(100, {
-    message: "Question must be less than 100 characters"
+  questionTitle: z.string().max(300, {
+    message: "Question must be less than 300 characters"
   }),
   correctAnswer: z
     .number()
@@ -13,8 +13,8 @@ export const quizQuestionSchema = z.object({
     .array(
       z.object({
         order: z.number(),
-        option: z.string().min(1, { message: "Option is required" }).max(100, {
-          message: "Option must be less than 100 characters"
+        option: z.string().min(1, { message: "Option is required" }).max(300, {
+          message: "Option must be less than 300 characters"
         })
       })
     )

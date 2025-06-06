@@ -11,7 +11,7 @@ const TABLE_HEADERS = {
   COURSE_NAME: "Course Name",
   LEVEL: "Level",
   PRICE: "Price",
-  AVAILABLE: "Available",
+  AVAILABLE: "isPublic",
   ENROLLMENTS: "Enrollments",
   RATING: "Rating",
   CREATED_AT: "Created At",
@@ -129,40 +129,40 @@ export function CourseList(props: CourseListProps) {
       <thead>
         <tr className="font-normal text-left border-t border-b border-gray5">
           <th className="py-4">
-            <div className="flex items-center gap-2">{TABLE_HEADERS.COURSE_NAME}</div>
+            <div className="flex items-center">{TABLE_HEADERS.COURSE_NAME}</div>
           </th>
-          <th className="">
-            <div className="flex items-center gap-2">{TABLE_HEADERS.LEVEL}</div>
+          <th>
+            <div className="flex items-center">{TABLE_HEADERS.LEVEL}</div>
           </th>
-          <th className="">
-            <div className="flex items-center gap-2">{TABLE_HEADERS.PRICE}</div>
+          <th>
+            <div className="flex items-center">{TABLE_HEADERS.PRICE}</div>
           </th>
           {filter.isCompletedCreation && (
-            <th className="">
-              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.AVAILABLE}</div>
+            <th>
+              <div className="flex items-center justify-center">{TABLE_HEADERS.AVAILABLE}</div>
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="">
-              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.ENROLLMENTS}</div>
+            <th>
+              <div className="flex items-center justify-center">{TABLE_HEADERS.ENROLLMENTS}</div>
             </th>
           )}
           {filter.isCompletedCreation && (
-            <th className="">
-              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.RATING}</div>
+            <th>
+              <div className="flex items-center justify-center">{TABLE_HEADERS.RATING}</div>
             </th>
           )}
           {!filter.isCompletedCreation && (
-            <th className="">
-              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.CREATED_AT}</div>
+            <th>
+              <div className="flex items-center justify-center">{TABLE_HEADERS.CREATED_AT}</div>
             </th>
           )}
           {!filter.isCompletedCreation && (
-            <th className="">
-              <div className="flex items-center justify-center gap-2">{TABLE_HEADERS.CURRENT_STEP}</div>
+            <th>
+              <div className="flex items-center justify-center">{TABLE_HEADERS.CURRENT_STEP}</div>
             </th>
           )}
-          <th className="" />
+          <th />
         </tr>
       </thead>
     );

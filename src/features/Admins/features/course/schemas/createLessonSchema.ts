@@ -9,11 +9,11 @@ function countWords(text: string): number {
 export const createLessonSchema = z
   .object({
     lessonId: z.string(),
-    lessonName: z.string().min(1, { message: "Lesson name is required" }).max(50, {
-      message: "Lesson name must be less than 50 characters"
+    lessonName: z.string().min(1, { message: "Lesson name is required" }).max(200, {
+      message: "Lesson name must be less than 200 characters"
     }),
-    lessonDescription: z.string().min(1, { message: "Lesson description is required" }).max(500, {
-      message: "Lesson description must be less than 500 characters"
+    lessonDescription: z.string().min(1, { message: "Lesson description is required" }).max(800, {
+      message: "Lesson description must be less than 800 characters"
     }),
     lessonContent: z
       .string()
@@ -56,6 +56,10 @@ export const createLessonSchema = z
           });
         }
       }
+    } else {
+      // When hasQuiz is false, we should not validate the quiz fields
+      // We explicitly set lessonQuiz to undefined for the validation to pass
+      data.lessonQuiz = undefined;
     }
 
     // Problem validation

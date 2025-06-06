@@ -126,26 +126,26 @@ export function CourseListItem(props: CourseListItemProps) {
   const renderLoading = () => {
     return (
       <tr className="text-base border-b border-gray5">
-        <td className="py-1 px-2 max-w-[100px] truncate">
+        <td className="py-1 max-w-[100px] truncate">
           <Skeleton className="w-full h-4" />
         </td>
-        <td className="px-2 py-1">
+        <td className="py-1">
           <Skeleton className="w-3/4 h-4" />
         </td>
-        <td className="px-2 py-1">
+        <td className="py-1">
           <Skeleton className="w-1/2 h-4" />
         </td>
-        <td className="px-2 py-1 text-center">
+        <td className="py-1 text-center">
           <div className="flex justify-center">
             <Skeleton className="w-10 h-4" />
           </div>
         </td>
-        <td className="px-2 py-1">
+        <td className="py-1">
           <div className="flex justify-center">
             <Skeleton className="w-10 h-4" />
           </div>
         </td>
-        <td className="px-2 py-1 text-center">
+        <td className="py-1 text-center">
           <Skeleton className="w-1/4 h-4 mx-auto" />
         </td>
       </tr>
@@ -165,11 +165,11 @@ export function CourseListItem(props: CourseListItemProps) {
     return (
       <>
         <tr key={course.courseId} className="text-base border-b border-gray5">
-          <td className="px-2 py-1">{course.courseName}</td>
-          <td className="px-2 py-1">{course.level}</td>
-          <td className="px-2 py-1">{disPlayPrice}</td>
+          <td className="py-1 truncate max-w-[300px]">{course.courseName}</td>
+          <td className="py-1">{course.level}</td>
+          <td className="py-1">{disPlayPrice}</td>
           {course.isCompletedCreation && (
-            <td className="px-2 py-1">
+            <td className="py-1">
               <div className="flex justify-center">
                 <Switch
                   checked={course.isAvailable}
@@ -179,26 +179,22 @@ export function CourseListItem(props: CourseListItemProps) {
               </div>
             </td>
           )}
+          {course.isCompletedCreation && <td className="py-1 text-center">{course.numberOfEnrolledStudents ?? 0}</td>}
           {course.isCompletedCreation && (
-            <td className="px-2 py-1 text-center">{course.numberOfEnrolledStudents ?? 0}</td>
-          )}
-          {course.isCompletedCreation && (
-            <td className="px-2 py-1 justify-items-center">
+            <td className="py-1 justify-items-center">
               <div className="flex items-center gap-1">
                 <span className="">
                   {course.averageRating && course.averageRating > 0 ? course.averageRating.toFixed(1) : NA_VALUE}
                 </span>
                 <Star className="w-4 h-4 fill-appMedium text-appMedium" />
               </div>
-              <span className="text-base font-light text-gray3">({course.reviewCount ?? 0} reviews)</span>
+              <span className="text-sm font-light text-gray3">({course.reviewCount ?? 0} reviews)</span>
             </td>
           )}
           {!course.isCompletedCreation && (
-            <td className="px-2 py-1 text-center">{shortenDate(course.createdAt) ?? NA_VALUE}</td>
+            <td className="py-1 text-center">{shortenDate(course.createdAt) ?? NA_VALUE}</td>
           )}
-          {!course.isCompletedCreation && (
-            <td className="px-2 py-1 text-center">{course.currentCreationStepDescription}</td>
-          )}
+          {!course.isCompletedCreation && <td className="py-1 text-center">{course.currentCreationStepDescription}</td>}
           <td className="px-5 py-1">{renderDropdownMenu()}</td>
         </tr>
       </>

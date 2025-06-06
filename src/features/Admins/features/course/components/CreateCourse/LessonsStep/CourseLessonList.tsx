@@ -110,7 +110,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
                     selectedLessonId={selectedLesson?.lessonId}
                   />
                 ))}
-                <EndOfListNotice />
+                {lessons && lessons.length !== 0 && <EndOfListNotice />}
               </div>
             </SortableContext>
           </DndContext>
