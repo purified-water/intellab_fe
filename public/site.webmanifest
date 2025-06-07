@@ -1,0 +1,14 @@
+{
+  "name": "Intellab - AI-Powered Programming Learning Platform",
+  "short_name": "Intellab",
+  "description": "Master programming and algorithms with AI assistance. Learn through structured coding courses, solve algorithm problems, and get personalized AI guidance.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#6366f1",
+  "orientation": "portrait-primary",
+  "categories": ["education", "productivity", "utilities", "developer"],
+  "lang": "en",
+  "scope": "/",
+  "prefer_related_applications": false
+}
