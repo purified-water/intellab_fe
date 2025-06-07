@@ -16,39 +16,78 @@ interface ChartData {
   subscriptions: number;
 }
 
+// Helper function to map API data to readable labels
+const mapDataToReadableLabels = (
+  data: SubscriptionGrowthItem[],
+  rangeType: "Daily" | "Weekly" | "Month" | "Year" | "Custom"
+): ChartData[] => {
+  if (rangeType === "Month") {
+    // For Month view, use API response labels (e.g., "W22 2025", "W23 2025")
+    return data.map((item) => ({
+      label: item.label,
+      subscriptions: item.value
+    }));
+  } else if (rangeType === "Year") {
+    // For Year view, map to month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return data.map((item, index) => ({
+      label: monthNames[index] || item.label,
+      subscriptions: item.value
+    }));
+  } else {
+    // For Custom range, format labels to show only date numbers (e.g., "Apr 1" -> "1")
+    return data.map((item) => ({
+      label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
+      subscriptions: item.value
+    }));
+  }
+};
+
 export function SubscriptionGrowthMiniChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchSubscriptionGrowth = useCallback(() => {
-    // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    // Convert rangeType to the expected API parameter (following same pattern as Revenue chart)
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
-      period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
-    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -62,11 +101,17 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange, selectedMont
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: SubscriptionGrowthItem) => ({
-          label: item.label,
-          subscriptions: item.value
-        }));
+        // Handle both new nested API response and old array format
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (!Array.isArray(dataArray)) {
+          console.error("API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+          return;
+        }
+
+        // Transform API data to chart format with readable labels
+        const formattedData = mapDataToReadableLabels(dataArray, rangeType);
         setData(formattedData);
       },
       onFail: async (errorMessage) => {
@@ -132,33 +177,45 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange, selectedMon
   const [error, setError] = useState<string | null>(null);
 
   const fetchSubscriptionGrowth = useCallback(() => {
-    // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    // Convert rangeType to the expected API parameter (following same pattern as Revenue chart)
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
-      period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
-    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -172,11 +229,17 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange, selectedMon
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: SubscriptionGrowthItem) => ({
-          label: item.label,
-          subscriptions: item.value
-        }));
+        // Handle both new nested API response and old array format
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (!Array.isArray(dataArray)) {
+          console.error("API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+          return;
+        }
+
+        // Transform API data to chart format with readable labels
+        const formattedData = mapDataToReadableLabels(dataArray, rangeType);
         setData(formattedData);
       },
       onFail: async (errorMessage) => {

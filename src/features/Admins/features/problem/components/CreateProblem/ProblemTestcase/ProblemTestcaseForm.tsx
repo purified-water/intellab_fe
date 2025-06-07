@@ -28,7 +28,7 @@ export const ProblemTestcaseForm = ({
         testcaseId: "",
         testcaseInput: "",
         expectedOutput: "",
-        testcaseOrder: 0
+        testcaseOrder: testcaseList.length
       };
     } else if (testcaseActionType === "view" || (testcaseActionType === "edit" && selectedTestcase)) {
       return {

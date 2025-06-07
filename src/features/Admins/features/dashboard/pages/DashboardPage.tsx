@@ -17,10 +17,20 @@ import { TopPurchasedList } from "../components/TopPurchasedList";
 
 export const DashboardPage = () => {
   const [rangeType, setRangeType] = useState<"Month" | "Year" | "Custom">("Month");
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date()
-  });
+
+  // Set default date range to last 7 days
+  const getDefaultDateRange = (): DateRange => {
+    const today = new Date();
+    const sevenDaysAgo = new Date();
+    sevenDaysAgo.setDate(today.getDate() - 7);
+
+    return {
+      from: sevenDaysAgo,
+      to: today
+    };
+  };
+
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(getDefaultDateRange());
 
   // New state for month/year selection
   const [selectedMonth, setSelectedMonth] = useState<number>(new Date().getMonth());
@@ -34,6 +44,32 @@ export const DashboardPage = () => {
   const handleMonthYearChange = (month: number, year: number) => {
     setSelectedMonth(month);
     setSelectedYear(year);
+  };
+
+  // Function to handle date range changes with constraints
+  const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
+    if (!newDateRange?.from || !newDateRange?.to) {
+      setDateRange(newDateRange);
+      return;
+    }
+
+    // Calculate the difference in days
+    const timeDiff = newDateRange.to.getTime() - newDateRange.from.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // Constraint: Maximum 30 days (1 month)
+    if (daysDiff > 30) {
+      // If range is too large, adjust the end date to be 30 days from start date
+      const maxEndDate = new Date(newDateRange.from);
+      maxEndDate.setDate(maxEndDate.getDate() + 30);
+
+      setDateRange({
+        from: newDateRange.from,
+        to: maxEndDate
+      });
+    } else {
+      setDateRange(newDateRange);
+    }
   };
 
   useEffect(() => {
@@ -63,10 +99,10 @@ export const DashboardPage = () => {
     {
       title: overviewStats.find((stat) => stat.title === "Total Revenue")?.title || "Total Revenue",
       value: overviewStats.find((stat) => stat.title === "Total Revenue")?.value
-        ? new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(
+        ? new Intl.NumberFormat("vi-VN", { style: "decimal" }).format(
             overviewStats.find((stat) => stat.title === "Total Revenue")?.value || 0
-          )
-        : "0₫",
+          ) + " VND"
+        : "0 VND",
       icon: Coins,
       change: overviewStats.find((stat) => stat.title === "Total Revenue")?.change || "0%",
       changeNote: overviewStats.find((stat) => stat.title === "Total Revenue")?.changeNote || "from last month",
@@ -128,120 +164,11 @@ export const DashboardPage = () => {
   //   { month: "Dec", completionRate: 88 }
   // ];
 
-  const allTransactions = [
-    {
-      name: "Olivia Martin",
-      email: "olivia@email.com",
-      amount: "100,000,000₫",
-      date: "2023-04-23",
-      status: "Completed",
-      type: "Course" as const
-    },
-    {
-      name: "Jack Lee",
-      email: "jack@email.com",
-      amount: "50,000,000₫",
-      date: "2023-04-22",
-      status: "Completed",
-      type: "Plan" as const
-    },
-    {
-      name: "William Brown",
-      email: "william@email.com",
-      amount: "75,000,000₫",
-      date: "2023-04-20",
-      status: "Completed",
-      type: "Plan" as const
-    },
-    {
-      name: "Sophia Garcia",
-      email: "sophia@email.com",
-      amount: "30,000,000₫",
-      date: "2023-04-19",
-      status: "Failed",
-      type: "Course" as const
-    },
-    {
-      name: "Emma Wilson",
-      email: "emma@email.com",
-      amount: "120,000,000₫",
-      date: "2023-04-17",
-      status: "Completed",
-      type: "Course" as const
-    },
-    {
-      name: "Noah Lee",
-      email: "noah@email.com",
-      amount: "45,000,000₫",
-      date: "2023-04-16",
-      status: "Completed",
-      type: "Plan" as const
-    },
-    {
-      name: "Ava Tran",
-      email: "ava@email.com",
-      amount: "90,000,000₫",
-      date: "2023-04-15",
-      status: "Failed",
-      type: "Course" as const
-    },
-    {
-      name: "Mia Jones",
-      email: "mia@email.com",
-      amount: "80,000,000₫",
-      date: "2023-04-13",
-      status: "Completed",
-      type: "Course" as const
-    }
-  ];
-
-  const allPurchases = [
-    { name: "Olivia Martin", email: "olivia@email.com", amount: "200,000,000₫", type: "Plan" as const },
-    { name: "James Williams", email: "james@email.com", amount: "150,000,000₫", type: "Plan" as const },
-    { name: "Barbara Nguyen", email: "barbara@email.com", amount: "120,000,000₫", type: "Course" as const },
-    { name: "Robert Johnson", email: "robert@email.com", amount: "115,000,000₫", type: "Plan" as const },
-    { name: "Emma Smith", email: "emma@email.com", amount: "110,000,000₫", type: "Plan" as const },
-    { name: "Michael Lee", email: "michael@email.com", amount: "100,000,000₫", type: "Course" as const },
-    { name: "Sophia Kim", email: "sophia@email.com", amount: "95,000,000₫", type: "Course" as const },
-    { name: "David Tran", email: "david@email.com", amount: "90,000,000₫", type: "Plan" as const },
-    { name: "Emily Wang", email: "emily@email.com", amount: "85,000,000₫", type: "Course" as const },
-    { name: "William Chen", email: "william@email.com", amount: "80,000,000₫", type: "Plan" as const },
-    { name: "Ava Garcia", email: "ava@email.com", amount: "75,000,000₫", type: "Course" as const },
-    { name: "Noah Pham", email: "noah@email.com", amount: "70,000,000₫", type: "Plan" as const }
-  ];
-
   return (
     <div className="dashboard-container max-w-[1400px] mx-auto p-6 space-y-8">
       <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Dashboard</h1>
 
-      <div className="flex items-center gap-2">
-        {/* Select time range */}
-        <Select value={rangeType} onValueChange={(val: "Month" | "Year" | "Custom") => setRangeType(val)}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Month" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Month">Month</SelectItem>
-            <SelectItem value="Year">Year</SelectItem>
-            <SelectItem value="Custom">Custom Range</SelectItem>
-          </SelectContent>
-        </Select>
-
-        {/* Month/Year Picker for Month and Year filters */}
-        {(rangeType === "Month" || rangeType === "Year") && (
-          <MonthYearPicker
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthYearChange={handleMonthYearChange}
-            rangeType={rangeType}
-          />
-        )}
-
-        {/* Date Picker for Custom range */}
-        {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={setDateRange} />}
-      </div>
-
-      {/* Khối 1: Top KPIs */}
+      {/* Overview Cards - Moved to top */}
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         {isLoading ? (
           // Loading state for KPIs
@@ -297,127 +224,159 @@ export const DashboardPage = () => {
           ))
         )}
       </div>
+      {/* Filter Controls - Moved below charts */}
+      <div className="flex items-center gap-2">
+        {/* Select time range */}
+        <Select value={rangeType} onValueChange={(val: "Month" | "Year" | "Custom") => setRangeType(val)}>
+          <SelectTrigger className="w-[150px]">
+            <SelectValue placeholder="Month" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="Month">Month</SelectItem>
+            <SelectItem value="Year">Year</SelectItem>
+            <SelectItem value="Custom">Custom Range</SelectItem>
+          </SelectContent>
+        </Select>
 
-      {/* Khối 2: Biểu đồ nhỏ */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-        <ZoomableChartCard
-          title="Revenue"
-          rangeType={rangeType}
-          dateRange={dateRange}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-          setSelectedMonth={setSelectedMonth}
-          setSelectedYear={setSelectedYear}
-          largeChart={
-            <RevenueLargeBarChart
+        {/* Month/Year Picker for Month and Year filters */}
+        {(rangeType === "Month" || rangeType === "Year") && (
+          <MonthYearPicker
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onMonthYearChange={handleMonthYearChange}
+            rangeType={rangeType}
+          />
+        )}
+
+        {/* Date Picker for Custom range with constraints */}
+        {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={handleDateRangeChange} />}
+      </div>
+      {/* Charts Section */}
+      <div className="space-y-6">
+        {/* Khối 2: Biểu đồ nhỏ */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+          <ZoomableChartCard
+            title="Revenue"
+            rangeType={rangeType}
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            setRangeType={setRangeType}
+            setDateRange={setDateRange}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+            largeChart={
+              <RevenueLargeBarChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            }
+          >
+            <RevenueMiniBarChart
               rangeType={rangeType}
               dateRange={dateRange}
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
             />
-          }
-        >
-          <RevenueMiniBarChart
+          </ZoomableChartCard>
+
+          <ZoomableChartCard
+            title="User Growth"
+            largeChart={
+              <UserGrowthLargeChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            }
             rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
-          />
-        </ZoomableChartCard>
-
-        <ZoomableChartCard
-          title="User Growth"
-          largeChart={
-            <UserGrowthLargeChart
+            setRangeType={setRangeType}
+            setDateRange={setDateRange}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+          >
+            <UserGrowthMiniChart
               rangeType={rangeType}
               dateRange={dateRange}
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
             />
-          }
-          rangeType={rangeType}
-          dateRange={dateRange}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-          setSelectedMonth={setSelectedMonth}
-          setSelectedYear={setSelectedYear}
-        >
-          <UserGrowthMiniChart
+          </ZoomableChartCard>
+        </div>
+
+        {/* Khối 3: Revenue Chart + Completion Rate Chart */}
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <ZoomableChartCard
+            title="Subscription Growth"
+            largeChart={
+              <SubscriptionGrowthLargeChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            }
             rangeType={rangeType}
             dateRange={dateRange}
             selectedMonth={selectedMonth}
             selectedYear={selectedYear}
-          />
-        </ZoomableChartCard>
+            setRangeType={setRangeType}
+            setDateRange={setDateRange}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+          >
+            <SubscriptionGrowthMiniChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          </ZoomableChartCard>
+          {/* Completion Rate Chart */}
+          <ZoomableChartCard
+            title="Course Completion Rate"
+            rangeType={rangeType}
+            dateRange={dateRange}
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            setRangeType={setRangeType}
+            setDateRange={setDateRange}
+            setSelectedMonth={setSelectedMonth}
+            setSelectedYear={setSelectedYear}
+            largeChart={
+              <CompletionRateLargeChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            }
+          >
+            <CompletionRateMiniChart
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+            />
+          </ZoomableChartCard>
+        </div>
       </div>
 
-      {/* Khối 3: Revenue Chart + Completion Rate Chart */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <ZoomableChartCard
-          title="Subscription Growth"
-          largeChart={
-            <SubscriptionGrowthLargeChart
-              rangeType={rangeType}
-              dateRange={dateRange}
-              selectedMonth={selectedMonth}
-              selectedYear={selectedYear}
-            />
-          }
-          rangeType={rangeType}
-          dateRange={dateRange}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-          setSelectedMonth={setSelectedMonth}
-          setSelectedYear={setSelectedYear}
-        >
-          <SubscriptionGrowthMiniChart
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />
-        </ZoomableChartCard>
-        {/* Completion Rate Chart */}
-        <ZoomableChartCard
-          title="Course Completion Rate"
-          rangeType={rangeType}
-          dateRange={dateRange}
-          selectedMonth={selectedMonth}
-          selectedYear={selectedYear}
-          setRangeType={setRangeType}
-          setDateRange={setDateRange}
-          setSelectedMonth={setSelectedMonth}
-          setSelectedYear={setSelectedYear}
-          largeChart={
-            <CompletionRateLargeChart
-              rangeType={rangeType}
-              dateRange={dateRange}
-              selectedMonth={selectedMonth}
-              selectedYear={selectedYear}
-            />
-          }
-        >
-          <CompletionRateMiniChart
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-          />
-        </ZoomableChartCard>
-      </div>
-
-      {/* Footer: Giao dịch - Subscribers - Problems */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-        {/* Recent Transactions */}
-        <TransactionsList title="Recent Transactions" transactions={allTransactions} limit={3} />
-        {/* Top Subscribers */}
-        <TopPurchasedList title="Top Purchases" items={allPurchases} limit={3} />
+      {/* Divider and Purchases Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">Purchases</h2>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+          {/* Recent Transactions */}
+          <TransactionsList title="Recent Transactions" limit={3} />
+          {/* Top Subscribers */}
+          <TopPurchasedList title="Top Purchases" limit={3} />
+        </div>
       </div>
     </div>
   );

@@ -15,27 +15,60 @@ interface ChartData {
   users: number;
 }
 
+interface ApiDataItem {
+  label: string;
+  value: number;
+}
+
+// Helper function to map API data to readable labels
+const mapDataToReadableLabels = (data: ApiDataItem[], rangeType: "Month" | "Year" | "Custom"): ChartData[] => {
+  if (rangeType === "Month") {
+    // For Month view, use API response labels (e.g., "W22 2025", "W23 2025")
+    return data.map((item) => ({
+      label: item.label,
+      users: item.value
+    }));
+  } else if (rangeType === "Year") {
+    // For Year view, map to month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return data.map((item, index) => ({
+      label: monthNames[index] || item.label,
+      users: item.value
+    }));
+  } else {
+    // For Custom range, format labels to show only date numbers (e.g., "Apr 1" -> "1")
+    return data.map((item) => ({
+      label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
+      users: item.value
+    }));
+  }
+};
+
 // Function to get fallback data if the API fails
 const getFallbackData = (rangeType: string): ChartData[] => {
   const fallbackData: ChartData[] = [];
 
-  if (rangeType === "Daily") {
-    // Simple daily fallback data
-    const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    days.forEach((day, index) => {
-      fallbackData.push({ label: day, users: 10 + index * 5 });
-    });
-  } else if (rangeType === "Weekly") {
-    // Simple weekly fallback data
-    for (let i = 1; i <= 4; i++) {
-      fallbackData.push({ label: `Week ${i}`, users: 30 + i * 10 });
-    }
-  } else {
-    // Simple monthly fallback data
+  if (rangeType === "Month") {
+    // Weekly fallback data for Month view
+    return [
+      { label: "W1", users: 45 },
+      { label: "W2", users: 52 },
+      { label: "W3", users: 48 },
+      { label: "W4", users: 58 }
+    ];
+  } else if (rangeType === "Year") {
+    // Simple yearly fallback data
     const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     months.forEach((month, index) => {
       fallbackData.push({ label: month, users: 50 + index * 10 });
     });
+  } else {
+    // Custom range fallback data
+    return [
+      { label: "Period 1", users: 40 },
+      { label: "Period 2", users: 55 },
+      { label: "Period 3", users: 62 }
+    ];
   }
 
   return fallbackData;
@@ -48,28 +81,44 @@ export function UserGrowthMiniChart({ rangeType, dateRange, selectedMonth, selec
 
   const fetchUserGrowth = useCallback(() => {
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -83,12 +132,17 @@ export function UserGrowthMiniChart({ rangeType, dateRange, selectedMonth, selec
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item) => ({
-          label: item.label,
-          users: item.value
-        }));
-        setData(formattedData);
+        // Transform API data to chart format with readable labels
+        // Check if result has data property (for newer API structure)
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (Array.isArray(dataArray)) {
+          const formattedData = mapDataToReadableLabels(dataArray, rangeType);
+          setData(formattedData);
+        } else {
+          console.error("UserGrowth API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+        }
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);
@@ -99,7 +153,7 @@ export function UserGrowthMiniChart({ rangeType, dateRange, selectedMonth, selec
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchUserGrowth();
@@ -152,28 +206,44 @@ export function UserGrowthLargeChart({ rangeType, dateRange, selectedMonth, sele
 
   const fetchUserGrowth = useCallback(() => {
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -187,12 +257,17 @@ export function UserGrowthLargeChart({ rangeType, dateRange, selectedMonth, sele
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item) => ({
-          label: item.label,
-          users: item.value
-        }));
-        setData(formattedData);
+        // Transform API data to chart format with readable labels
+        // Check if result has data property (for newer API structure)
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (Array.isArray(dataArray)) {
+          const formattedData = mapDataToReadableLabels(dataArray, rangeType);
+          setData(formattedData);
+        } else {
+          console.error("UserGrowth API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+        }
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);
@@ -203,7 +278,7 @@ export function UserGrowthLargeChart({ rangeType, dateRange, selectedMonth, sele
         setIsLoading(false);
       }
     });
-  }, [rangeType, dateRange]);
+  }, [rangeType, dateRange, selectedMonth, selectedYear]);
 
   useEffect(() => {
     fetchUserGrowth();

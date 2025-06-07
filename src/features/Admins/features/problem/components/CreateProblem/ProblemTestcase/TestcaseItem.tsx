@@ -7,9 +7,10 @@ interface TestcaseItemProps {
   testcase: CreateTestcaseSchema;
   selectedTestcaseId?: string;
   onSelectTestcase?: (testcaseAction: TestcaseAction) => void;
+  index: number;
 }
 
-export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase }: TestcaseItemProps) => {
+export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase, index }: TestcaseItemProps) => {
   const handleAction = (action: TestcaseAction) => {
     const { type, testcaseId } = action;
     if (!action) return;
@@ -46,7 +47,7 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase }:
         } as TestcaseAction);
       }}
     >
-      <span className="text-sm font-medium line-clamp-1">{testcase.testcaseId}</span>
+      <span className="text-sm font-medium line-clamp-1">Test case {index}</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div onPointerDown={(e) => e.stopPropagation()}>

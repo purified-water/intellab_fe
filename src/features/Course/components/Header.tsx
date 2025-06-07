@@ -439,7 +439,7 @@ export const Header = (props: HeaderProps) => {
 
       {/* Content */}
       <div className="relative flex flex-col items-center w-full px-4 pt-10 pb-5 z-8">
-        <div className="flex flex-row items-center w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
+        <div className="flex flex-row items-start w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
           {/* Left: Cover Image */}
           <div className="w-96 h-72 rounded-[10px] overflow-hidden shadow-md">
             <img
@@ -504,15 +504,19 @@ export const Header = (props: HeaderProps) => {
                   <span className="ml-1 font-bold text-black1">
                     {course.averageRating ? course.averageRating.toFixed(1) : "0"}
                   </span>
-                  <span>({course.reviewCount ?? 0} reviews)</span>
+                  <span>
+                    ({course.reviewCount ?? 0} {(course.reviewCount ?? 0) <= 1 ? "review" : "reviews"})
+                  </span>
                 </span>
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  <span className="ml-1 font-bold text-black1">{course.numberOfEnrolledStudents ?? 0}</span> students
+                  <span className="ml-1 font-bold text-black1">{course.numberOfEnrolledStudents ?? 0}</span>{" "}
+                  {(course.numberOfEnrolledStudents ?? 0) <= 1 ? "student" : "students"}
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpenText className="w-4 h-4" />
-                  <span className="ml-1 font-bold text-black1">{course.lessonCount ?? 0}</span> lessons
+                  <span className="ml-1 font-bold text-black1">{course.lessonCount ?? 0}</span> lesson
+                  {(course.lessonCount ?? 0) > 1 ? "s" : ""}
                 </span>
               </div>
               {course.userEnrolled ? (

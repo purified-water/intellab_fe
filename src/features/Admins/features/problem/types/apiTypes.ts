@@ -17,6 +17,8 @@ type TUpdateProblemCompletedStatusResponse = TApiResponse<TAdminProblem>;
 
 type TUpdateProblemAvailableStatusResponse = TApiResponse<TAdminProblem>;
 
+type TDeleteTestCaseResponse = TApiResponse<boolean>;
+
 type TGetTestcasesOfProblemResponse = TAdminTestCase[];
 
 type TCreateProblemGeneralStepParams = TPostApiParams<
@@ -53,12 +55,14 @@ type TCreateProblemStructureStepParams = TPostApiParams<
 type TCreateProblemTestCaseStepSingleParams = TPostApiParams<
   {
     isUpdate: boolean;
+    isCreate?: boolean;
     testCaseId?: string;
   },
   {
     problemId?: string;
     input: string;
     output: string;
+    order: number;
   },
   TAdminTestCase
 >;
@@ -107,6 +111,14 @@ type TUpdateProblemAvailableStatusParams = TPostApiParams<
 
 type TGetTestcasesOfProblemParams = TGetApiParams<{ problemId: string }, TAdminTestCase[]>;
 
+type TDeleteTestCaseParams = TPostApiParams<
+  {
+    testcaseId: string;
+  },
+  undefined,
+  boolean
+>;
+
 export type {
   TCreateProblemGeneralStepResponse,
   TCreateProblemDescriptionStepResponse,
@@ -125,5 +137,7 @@ export type {
   TUpdateProblemCompletedStatusParams,
   TUpdateProblemAvailableStatusParams,
   TGetTestcasesOfProblemResponse,
-  TGetTestcasesOfProblemParams
+  TGetTestcasesOfProblemParams,
+  TDeleteTestCaseResponse,
+  TDeleteTestCaseParams
 };
