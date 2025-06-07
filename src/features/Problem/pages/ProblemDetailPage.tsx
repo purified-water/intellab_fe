@@ -79,6 +79,7 @@ export const ProblemDetail = () => {
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 403) {
         setIsPublished(false);
+        return;
       }
       showToastError({ toast: toast, message: "Failed to fetch problem detail" });
     }

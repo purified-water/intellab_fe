@@ -22,16 +22,18 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
     }
   };
 
-  const buttonWidth = size === "large" ? "90px" : "50px";
+  const buttonWidth = size === "large" ? "40px" : "30px";
 
   return (
     <div className="relative w-full">
       <button
         type="button"
-        className="absolute left-0 z-10 flex items-center justify-center h-full p-1 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-r from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
-        style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
+        className="absolute z-10 flex items-center justify-center p-2 transition-transform duration-300 transform -translate-y-1/2 rounded-full shadow-md left-4 bg-white/50 hover:bg-white opacity-70 hover:opacity-100 hover:scale-105 top-1/2"
+        style={{ width: buttonWidth, height: buttonWidth }}
+        onClick={scrollLeft}
+        aria-label="Scroll left"
       >
-        <ChevronLeft size={28} className="pointer-events-auto" onClick={scrollLeft} />
+        <ChevronLeft size={24} className="text-gray3" />
       </button>
       <div
         ref={scrollContainerRef}
@@ -41,10 +43,12 @@ export const ScrollableList = ({ children, size }: ScrollableListProps) => {
       </div>
       <button
         type="button"
-        className="absolute right-0 z-10 flex items-center justify-center h-full p-1 transition-opacity duration-300 transform -translate-y-1/2 pointer-events-none bg-opacity-45 bg-gradient-to-l from-white/30 to-transparent top-1/2 hover:text-gray1 text-gray2/80"
-        style={{ height: scrollContainerRef.current?.offsetHeight, width: buttonWidth }}
+        className="absolute z-10 flex items-center justify-center p-2 transition-transform duration-300 transform -translate-y-1/2 rounded-full shadow-md right-4 bg-white/50 hover:bg-white opacity-70 hover:opacity-100 hover:scale-105 top-1/2"
+        style={{ width: buttonWidth, height: buttonWidth }}
+        onClick={scrollRight}
+        aria-label="Scroll right"
       >
-        <ChevronRight size={28} className="pointer-events-auto" onClick={scrollRight} />
+        <ChevronRight size={24} className="text-gray3" />
       </button>
     </div>
   );
