@@ -9,7 +9,7 @@ import { StepGuard } from "../../../course/components/StepGuard";
 import { isBoilerplateStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { useToast } from "@/hooks";
-import { showToastError } from "@/utils";
+import { showToastError, showToastSuccess } from "@/utils";
 import { useEditingProblem } from "../../hooks";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 
@@ -18,59 +18,109 @@ export const ProblemTestcasePage = () => {
     type: "default"
   });
   const dispatch = useDispatch();
-  const formData = useSelector((state: RootState) => state.createProblem);
-  const testcaseList = formData.problemTestcases || [];
+  const createProblem = useSelector((state: RootState) => state.createProblem);
   const toast = useToast();
   const { isEditingProblem } = useEditingProblem();
 
   useEffect(() => {
-    if (formData.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.TESTCASE) {
+    if (createProblem.currentCreationStep < CREATE_PROBLEM_STEP_NUMBERS.TESTCASE) {
       dispatch(setCreateProblem({ currentCreationStep: CREATE_PROBLEM_STEP_NUMBERS.TESTCASE }));
     }
   }, []);
+
+  const deleteTestcaseAPI = async (testcaseId: string) => {
+    await adminProblemAPI.deleteTestCase({
+      query: { testcaseId },
+      onSuccess: async () => {
+        const updatedTestcases = createProblem.problemTestcases.filter(
+          (testcase) => testcase.testcaseId !== testcaseAction.testcaseId
+        );
+        dispatch(setCreateProblem({ problemTestcases: updatedTestcases }));
+        setTestcaseAction({ type: "default" });
+        showToastSuccess({
+          toast: toast.toast,
+          message: "The test case has been successfully deleted."
+        });
+      },
+      onFail: async (error) => {
+        showToastError({ toast: toast.toast, message: error });
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (testcaseAction.type === "delete" && testcaseAction.testcaseId) {
+      if (createProblem.problemTestcases.length > 1) {
+        deleteTestcaseAPI(testcaseAction.testcaseId);
+      } else {
+        showToastError({
+          toast: toast.toast,
+          title: "Cannot delete the last test case",
+          message: "A problem must have at least one test case."
+        });
+      }
+    }
+  }, [testcaseAction]);
 
   const handleUpdateTestcases = async (newTestcase: CreateTestcaseSchema) => {
     let _isUpdate: boolean | undefined;
     let _testcaseId: string | undefined;
     let _problemId: string | undefined;
+    let _isCreate: boolean | undefined;
 
     if (testcaseAction.type === "create") {
       _isUpdate = false;
       _testcaseId = undefined;
-      _problemId = formData.problemId;
+      _problemId = createProblem.problemId;
+      _isCreate = isEditingProblem ? false : true;
     } else if (testcaseAction.type === "edit") {
       _isUpdate = true;
       _testcaseId = testcaseAction.testcaseId;
       _problemId = undefined;
+      _isCreate = undefined;
     }
 
-    if (_isUpdate != undefined) {
+    if (_isUpdate !== undefined)
       await adminProblemAPI.createProblemTestCaseStepSingle({
-        query: { isUpdate: _isUpdate, testCaseId: _testcaseId },
+        query: { isUpdate: _isUpdate, testCaseId: _testcaseId, isCreate: _isCreate },
         body: {
           problemId: _problemId,
           input: newTestcase.testcaseInput,
-          output: newTestcase.expectedOutput
+          output: newTestcase.expectedOutput,
+          order: newTestcase.testcaseOrder
         },
         onSuccess: async (testcase) => {
           if (testcaseAction.type === "create") {
             dispatch(
               setCreateProblem({
-                problemTestcases: [...testcaseList, { ...newTestcase, testcaseId: testcase.testcaseId }]
+                problemTestcases: [
+                  ...createProblem.problemTestcases,
+                  { ...newTestcase, testcaseId: testcase.testcaseId }
+                ]
               })
             );
+            showToastSuccess({
+              toast: toast.toast,
+              message: "The test case has been successfully created."
+            });
           }
           if (testcaseAction.type === "edit") {
-            const updatedTestcases = testcaseList.map((t) =>
+            const updatedTestcases = createProblem.problemTestcases.map((t) =>
               t.testcaseId === testcase.testcaseId ? { ...newTestcase, testcaseId: t.testcaseId } : t
             );
             dispatch(setCreateProblem({ problemTestcases: updatedTestcases }));
+            showToastSuccess({
+              toast: toast.toast,
+              message: "The test case has been successfully updated."
+            });
           }
+          setTestcaseAction({
+            type: "view",
+            testcaseId: testcase.testcaseId
+          });
         },
         onFail: async (error) => showToastError({ toast: toast.toast, message: error })
       });
-    }
-    setTestcaseAction({ type: "default" });
   };
 
   const renderPageContent = () => {
@@ -104,7 +154,7 @@ export const ProblemTestcasePage = () => {
   return (
     <StepGuard checkValid={isBoilerplateStepValid} redirectTo={redirectUrl}>
       <div className="flex w-full">
-        <ProblemTestcaseList testcases={testcaseList} onSelectTestcase={setTestcaseAction} />
+        <ProblemTestcaseList testcases={createProblem.problemTestcases} onSelectTestcase={setTestcaseAction} />
         <div className="flex-1 p-4">
           {renderPageContent()}
           <ProblemWizardButtons ignoreSubmit={true} />

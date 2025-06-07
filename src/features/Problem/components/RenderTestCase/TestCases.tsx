@@ -14,7 +14,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
         {testCases.map((_tc, idx) => (
           <div
             key={idx}
-            className={`py-1 px-3 font-semibold cursor-pointer rounded-lg ${activeTab === idx ? "bg-gray6 text-gray2" : ""}`}
+            className={`py-1 px-3 font-semibold cursor-pointer rounded-lg ${activeTab === idx ? "bg-gray6 text-gray2 shrink-0" : "shrink-0"}`}
             onClick={() => setActiveTab(idx)} // Set active tab on click
           >
             Case {idx + 1}

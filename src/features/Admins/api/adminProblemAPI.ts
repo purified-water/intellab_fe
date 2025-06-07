@@ -19,7 +19,9 @@ import {
   TUpdateProblemAvailableStatusParams,
   TUpdateProblemAvailableStatusResponse,
   TGetTestcasesOfProblemResponse,
-  TGetTestcasesOfProblemParams
+  TGetTestcasesOfProblemParams,
+  TDeleteTestCaseResponse,
+  TDeleteTestCaseParams
 } from "../features/problem/types";
 import { apiResponseCodeUtils } from "@/utils";
 import { AxiosError } from "axios";
@@ -368,6 +370,38 @@ export const adminProblemAPI = {
     } catch (error: unknown) {
       if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
         await handleResponseData(error.response?.data as TGetTestcasesOfProblemResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
+    }
+  },
+
+  deleteTestCase: async ({ query, onStart, onSuccess, onFail, onEnd }: TDeleteTestCaseParams) => {
+    const DEFAULT_ERROR = "Error deleting test case";
+
+    const handleResponseData = async (data: TDeleteTestCaseResponse) => {
+      const { code, result, message } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
+    if (onStart) {
+      onStart();
+    }
+    try {
+      const { testcaseId } = query!;
+      const response = await apiClient.delete(`problem/admin/problems/testcase/${testcaseId}`);
+      await handleResponseData(response.data as TDeleteTestCaseResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TDeleteTestCaseResponse);
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
