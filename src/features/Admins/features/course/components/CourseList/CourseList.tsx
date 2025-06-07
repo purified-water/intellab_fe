@@ -11,7 +11,7 @@ const TABLE_HEADERS = {
   COURSE_NAME: "Course Name",
   LEVEL: "Level",
   PRICE: "Price",
-  AVAILABLE: "isPublic",
+  AVAILABLE: "Published",
   ENROLLMENTS: "Enrollments",
   RATING: "Rating",
   CREATED_AT: "Created At",

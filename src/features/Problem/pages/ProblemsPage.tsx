@@ -9,6 +9,7 @@ import { FilterButton, FilterComponent, ProblemListItem, SearchBar } from "../co
 import { motion } from "framer-motion";
 import { AppFooter } from "@/components/AppFooter";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
+import { SEO } from "@/components/SEO";
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();
@@ -20,10 +21,6 @@ export const ProblemsPage = () => {
   const location = useLocation();
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
-
-  useEffect(() => {
-    document.title = "Problems | Intellab";
-  }, []);
 
   useEffect(() => {
     dispatch(
@@ -73,6 +70,7 @@ export const ProblemsPage = () => {
 
   return (
     <>
+      <SEO title="Problems | Intellab" />
       <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] md:px-28">
         <div className="flex items-center pt-10">
           <FilterButton

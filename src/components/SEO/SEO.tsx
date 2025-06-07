@@ -20,7 +20,7 @@ export const SEO = ({
   title = "Intellab - AI-Powered Programming Learning Platform",
   description = "Master programming and algorithms with AI assistance on Intellab. Learn through structured coding courses, solve algorithm problems, and get personalized AI guidance to accelerate your programming journey.",
   keywords = "AI programming tutor, coding courses, algorithm problems, programming practice, AI-assisted learning, software development, computer science education, coding bootcamp, programming mentor",
-  image = "https://www.intellab.site/og-image.png",
+  image = "https://www.intellab.site/logos/android-chrome-512x512.png",
   url = "https://www.intellab.site/",
   type = "website",
   article

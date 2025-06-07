@@ -1,5 +1,5 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI } from "@/lib/api";
@@ -9,6 +9,7 @@ import { TNavigationState } from "@/types";
 import { FaSpinner } from "rocketicons/fa6";
 import { useToast } from "@/hooks/use-toast";
 import { showToastSuccess } from "@/utils";
+import { SEO } from "@/components/SEO";
 
 export const SignUpPage = () => {
   const [signUpInfo, setsignUpInfo] = useState({
@@ -34,10 +35,6 @@ export const SignUpPage = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  useEffect(() => {
-    document.title = "Sign Up | Intellab";
-  }, []);
 
   const inputValidation = () => {
     let isValid = true;
@@ -121,6 +118,8 @@ export const SignUpPage = () => {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray5">
+      <SEO title="Sign up | Intellab " />
+
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col items-center mb-6">
           <img src={intellab_bottom} alt="Intellab Logo" className="h-16 mb-2" />

@@ -20,6 +20,7 @@ import { useNotificationSocket } from "@/hooks";
 import AdminRoute from "./features/Admins/route";
 import { AdminLayout } from "./features/Admins/AdminLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { HelmetProvider } from "react-helmet-async";
 
 // Layout component to include conditional Navbar
 import { useState, useEffect } from "react";
@@ -91,8 +92,10 @@ function App() {
     <React.StrictMode>
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>
-          <RouterProvider router={router} />
-          <Toaster />
+          <HelmetProvider>
+            <RouterProvider router={router} />
+            <Toaster />
+          </HelmetProvider>
         </TooltipProvider>
       </QueryClientProvider>
     </React.StrictMode>
