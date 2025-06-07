@@ -27,10 +27,15 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTest
       </div>
 
       {showList && (
-        <div className="overflow-y-scroll scrollbar-hide">
+        <div className="overflow-y-scroll scrollbar-hide max-h-[400px]">
           <ul className="space-y-3">
-            {testcases.map((testcase) => (
-              <TestcaseItem key={testcase.testcaseId} testcase={testcase} onSelectTestcase={onSelectTestcase} />
+            {testcases.map((testcase, index) => (
+              <TestcaseItem
+                key={testcase.testcaseId}
+                testcase={testcase}
+                onSelectTestcase={onSelectTestcase}
+                index={index}
+              />
             ))}
           </ul>
         </div>

@@ -53,6 +53,7 @@ export const ProblemPreview = ({ problemDetail }: ProblemPreviewProps) => {
                     setLanguage(langJudge0.name);
                     setCode(code);
                   }}
+                  passingProblemId={problemDetail?.problemId}
                 />
               </ResizablePanel>
 

@@ -72,8 +72,16 @@ export const ProblemSolutionPage = () => {
     redirectUrl += "?editProblem=true";
   }
 
+  const actualCheckTestcasesStepValid = (state: RootState) => {
+    if (isEditingProblem && !_.isEmpty(formData.problemSolution)) {
+      return true; // In case testcases list is fetching from api, making the testcase step invalid
+    } else {
+      return isTestcasesStepValid(state);
+    }
+  };
+
   return (
-    <StepGuard checkValid={isTestcasesStepValid} redirectTo={redirectUrl}>
+    <StepGuard checkValid={actualCheckTestcasesStepValid} redirectTo={redirectUrl}>
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {
