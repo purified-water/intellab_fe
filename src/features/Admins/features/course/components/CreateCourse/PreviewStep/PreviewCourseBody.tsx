@@ -45,7 +45,7 @@ export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
 
   return (
     <div className="w-full">
-      <div className="flex gap-10 pl-10 my-4 text-xl font-bold ml-14">
+      <div className="flex gap-10 justify-center my-4 text-xl font-bold">
         {Object.values(TAB_BUTTONS).map((tab, index) => renderTabButton(tab, index))}
       </div>
       <div className="px-6 justify-items-center">{renderTabContent()}</div>

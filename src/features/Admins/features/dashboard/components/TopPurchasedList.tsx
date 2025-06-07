@@ -17,6 +17,7 @@ import {
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui";
+import { EmptyList } from "@/components/ui/EmptyList";
 
 interface TopPurchasedItem {
   name: string;
@@ -57,7 +58,7 @@ export function TopPurchasedList({
       const apiItems = await transactionAPI.getTopPurchased(itemLimit);
 
       if (apiItems.length === 0) {
-        setErrorMessage("No purchased items found or unable to fetch data.");
+        setErrorMessage("No purchased items found.");
       } else {
         const formattedItems = apiItems.map((item) => ({
           name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
@@ -149,7 +150,7 @@ export function TopPurchasedList({
                 </li>
               ))}
               {items.length === 0 && !isLoading && (
-                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No purchased items found"}</li>
+                <EmptyList message={errorMessage || "No purchased items found"} size="sm" />
               )}
             </ul>
           )}

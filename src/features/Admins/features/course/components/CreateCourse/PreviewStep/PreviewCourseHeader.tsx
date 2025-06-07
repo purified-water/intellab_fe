@@ -4,6 +4,8 @@ import { useState } from "react";
 import { Users, BookOpenText } from "lucide-react";
 import { CreateCourseSchema } from "../../../schemas";
 import { useFilePreview } from "@/hooks";
+import clsx from "clsx";
+import { CourseLevels, ProblemLevels } from "@/constants/enums/appLevels";
 
 interface PreviewCourseHeaderProps {
   course: CreateCourseSchema;
@@ -62,13 +64,17 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.courseName}</h1>
 
-              <span className={`text-gray2 text-base ml-1 max-w-2xl ${showFullDescription ? "" : "line-clamp-2"}`}>
-                {course.courseDescription}
-              </span>
+              <div className="overflow-hidden">
+                <span
+                  className={`text-gray2 text-base max-w-2xl transition-all duration-300 ease-in-out ${showFullDescription ? "max-h-none" : "line-clamp-2"}`}
+                >
+                  {course.courseDescription}
+                </span>
+              </div>
 
               {course.courseDescription && course.courseDescription.length > 70 && (
                 <button
-                  className="text-appPrimary text-base text-bold underline hover:text-appSecondary"
+                  className="text-sm underline text-appPrimary hover:text-appSecondary transition-colors duration-200 mt-1"
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   type="button"
                 >
@@ -76,9 +82,26 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                 </button>
               )}
               <div className="flex items-center gap-2 mt-5 mb-2">
-                <span className="bg-gray5 text-black1 text-xs font-semibold px-2 py-1 rounded-[10px]">
-                  {course.courseLevel || "Beginner"}
+                <span
+                  className={clsx("rounded-lg bg-gray5 px-2 py-1 text-xs font-medium", {
+                    "text-appEasy":
+                      course.courseLevel.toLowerCase() === ProblemLevels.EASY ||
+                      course.courseLevel.toLowerCase() === CourseLevels.BEGINNER,
+                    "text-appMedium":
+                      course.courseLevel.toLowerCase() === ProblemLevels.MEDIUM ||
+                      course.courseLevel.toLowerCase() === CourseLevels.INTERMEDIATE,
+                    "text-appHard":
+                      course.courseLevel.toLowerCase() === ProblemLevels.HARD ||
+                      course.courseLevel.toLowerCase() === CourseLevels.ADVANCED
+                  })}
+                >
+                  {course.courseLevel}
                 </span>
+                {course.courseCategories.map((category, index) => (
+                  <span key={index} className="bg-gray5 text-black1 text-xs font-semibold px-2 py-1 rounded-lg">
+                    {category.name}
+                  </span>
+                ))}
               </div>
               <div className="flex items-center gap-4 text-gray-500 text-sm mb-2">
                 <span className="flex items-center gap-1">
@@ -90,18 +113,21 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                     ))}
                   </div>
                   <span className="font-bold text-black1">5</span>
-                  <span>({0} reviews)</span>
+                  <span>
+                    ({0} {"review"})
+                  </span>
                 </span>
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
                   <span>
-                    <span className="font-bold text-black1">{110}</span> students
+                    <span className="font-bold text-black1">{110}</span> {"students"}
                   </span>
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpenText className="w-4 h-4" />
                   <span>
-                    <span className="font-bold text-black1">{course.courseLessons.length ?? 0}</span> lessons
+                    <span className="font-bold text-black1">{course.courseLessons.length ?? 0}</span> lesson
+                    {(course.courseLessons.length ?? 0) > 1 ? "s" : ""}
                   </span>
                 </span>
               </div>
