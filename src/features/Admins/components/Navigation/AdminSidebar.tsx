@@ -10,7 +10,8 @@ import {
   Settings,
   Bell,
   LogOut,
-  FileCode
+  FileCode,
+  Gavel
 } from "lucide-react";
 import {
   Sidebar,
@@ -38,7 +39,8 @@ const navItems = [
   { title: "Dashboard", icon: LayoutDashboard, href: "/admin/dashboard" },
   { title: "Users", icon: Users, href: "/admin/users" },
   { title: "Courses", icon: GraduationCap, href: "/admin/courses" },
-  { title: "Problems", icon: FileCode, href: "/admin/problems" }
+  { title: "Problems", icon: FileCode, href: "/admin/problems" },
+  { title: "Online Judge", icon: Gavel, href: "/admin/judge-management" }
 ];
 
 interface DropdownMenuItem {
