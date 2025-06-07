@@ -21,7 +21,7 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTest
     <div className={`max-w-sm p-4 bg-white ${showList ? "w-64" : "size-18"}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className={`text-lg font-semibold ${showList ? "block" : "hidden"}`}>Test Case List</h2>
-        <Button variant="ghost" size="icon" onClick={toggleList}>
+        <Button type="button" variant="ghost" size="icon" onClick={toggleList}>
           {showList ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </Button>
       </div>
@@ -41,7 +41,12 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTest
         </div>
       )}
       <div className="mt-4">
-        <Button variant="outline" className="w-full" onClick={() => onSelectTestcase?.({ type: "create" })}>
+        <Button
+          type="button"
+          variant="outline"
+          className="w-full"
+          onClick={() => onSelectTestcase?.({ type: "create" })}
+        >
           <Plus className="w-4 h-4 mr-2" />
           Add Test Case
         </Button>

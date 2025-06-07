@@ -36,13 +36,13 @@ export function VerificationStatus(props: VerificationStatusProps) {
 
   return (
     !isEmailVerified && (
-      <div className="flex bg-appHard bg-opacity-25 rounded-lg py-2 px-6 items-center gap-5">
+      <div className="flex items-center gap-5 px-6 py-2 bg-opacity-25 rounded-lg bg-appHard">
         <MdWarning className={`text-appPrimary size-${showFull ? "12" : "8"} icon-appHard`} />
         <div className="text-appHard">
           <p className="font-bold">Account Not Verified</p>
           {showFull && <p>You account has not been verified yet.</p>}
           {showFull && (
-            <button className="hover:underline text-appInfo" onClick={handleResendVerificationEmail}>
+            <button type="button" className="hover:underline text-appInfo" onClick={handleResendVerificationEmail}>
               Click here to resend the verification email.
             </button>
           )}

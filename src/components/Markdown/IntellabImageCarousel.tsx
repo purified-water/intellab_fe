@@ -38,6 +38,7 @@ export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
       {hasMultipleImages && (
         <>
           <button
+            type="button"
             onClick={goToPrevious}
             className="absolute z-10 p-2 transition -translate-y-1/2 rounded-full shadow-sm pointer-events-auto left-4 top-1/2 bg-white/80 hover:bg-white"
             aria-label="Previous image"
@@ -45,6 +46,7 @@ export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
             <ChevronLeft size={20} className="text-gray3" />
           </button>
           <button
+            type="button"
             onClick={goToNext}
             className="absolute z-10 p-2 transition -translate-y-1/2 rounded-full shadow-sm pointer-events-auto right-4 top-1/2 bg-white/80 hover:bg-white"
             aria-label="Next image"

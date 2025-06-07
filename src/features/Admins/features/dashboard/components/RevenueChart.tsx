@@ -198,8 +198,12 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
   if (error && data.length === 0) {
     return (
       <div className="h-[300px] mt-4 flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load revenue data</div>
-        <button className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200" onClick={fetchRevenue}>
+        <div className="mb-2 text-red-500">Failed to load revenue data</div>
+        <button
+          type="button"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
+          onClick={fetchRevenue}
+        >
           Retry
         </button>
       </div>
@@ -324,8 +328,12 @@ export function RevenueLargeBarChart({ rangeType, dateRange, selectedMonth, sele
   if (error && data.length === 0) {
     return (
       <div className="w-full h-[400px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load revenue data</div>
-        <button className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200" onClick={fetchRevenue}>
+        <div className="mb-2 text-red-500">Failed to load revenue data</div>
+        <button
+          type="button"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
+          onClick={fetchRevenue}
+        >
           Retry
         </button>
       </div>

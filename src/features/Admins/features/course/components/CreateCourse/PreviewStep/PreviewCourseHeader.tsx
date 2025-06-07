@@ -24,7 +24,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   const renderButtons = () => {
     return (
       <div className="flex gap-8 mt-6">
-        <button className="px-6 py-1 bg-appPrimary text-white font-semibold rounded-lg shadow transition">
+        <button type="button" className="px-6 py-1 font-semibold text-white transition rounded-lg shadow bg-appPrimary">
           View Certificate
         </button>
 
@@ -34,13 +34,13 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   };
 
   return (
-    <div className="relative w-full pt-10 px-5 pb-4">
+    <div className="relative w-full px-5 pt-10 pb-4">
       {/* Background with blurred course image */}
-      <div className="absolute inset-0 w-full h-96 overflow-hidden z-0 rounded-lg">
+      <div className="absolute inset-0 z-0 w-full overflow-hidden rounded-lg h-96">
         <img
           src={coverImageUrl}
           alt="background"
-          className="w-full h-full object-cover opacity-100"
+          className="object-cover w-full h-full opacity-100"
           style={{ filter: "blur(100px)" }}
           onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
         />
@@ -48,21 +48,21 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
       </div>
 
       {/* Content */}
-      <div className="flex flex-col w-full items-center pt-10 pb-5 px-4 relative z-8">
-        <div className="flex flex-row items-center w-full max-w-6xl gap-5 bg-white rounded-2xl shadow-md p-10">
+      <div className="relative flex flex-col items-center w-full px-4 pt-10 pb-5 z-8">
+        <div className="flex flex-row items-center w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
           {/* Left: Cover Image */}
           <div className="w-96 h-72 rounded-[10px] overflow-hidden shadow-md">
             <img
               src={coverImageUrl}
               alt={course.courseName}
-              className="w-full h-full object-cover"
+              className="object-cover w-full h-full"
               onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
             />
           </div>
           {/* Right: Course Info */}
-          <div className="flex flex-col flex-1 justify-between">
+          <div className="flex flex-col justify-between flex-1">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">{course.courseName}</h1>
+              <h1 className="mb-2 text-3xl font-bold text-gray-900">{course.courseName}</h1>
 
               <div className="overflow-hidden">
                 <span
@@ -74,7 +74,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
 
               {course.courseDescription && course.courseDescription.length > 70 && (
                 <button
-                  className="text-sm underline text-appPrimary hover:text-appSecondary transition-colors duration-200 mt-1"
+                  className="mt-1 text-sm underline transition-colors duration-200 text-appPrimary hover:text-appSecondary"
                   onClick={() => setShowFullDescription(!showFullDescription)}
                   type="button"
                 >
@@ -98,12 +98,12 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                   {course.courseLevel}
                 </span>
                 {course.courseCategories.map((category, index) => (
-                  <span key={index} className="bg-gray5 text-black1 text-xs font-semibold px-2 py-1 rounded-lg">
+                  <span key={index} className="px-2 py-1 text-xs font-semibold rounded-lg bg-gray5 text-black1">
                     {category.name}
                   </span>
                 ))}
               </div>
-              <div className="flex items-center gap-4 text-gray-500 text-sm mb-2">
+              <div className="flex items-center gap-4 mb-2 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <div className="flex items-center justify-start space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (

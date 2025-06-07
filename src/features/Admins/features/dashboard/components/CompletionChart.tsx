@@ -177,8 +177,12 @@ export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, s
   if (error && data.length === 0) {
     return (
       <div className="w-full h-[300px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load completion rate data</div>
-        <button className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200" onClick={fetchCompletionRate}>
+        <div className="mb-2 text-red-500">Failed to load completion rate data</div>
+        <button
+          type="button"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
+          onClick={fetchCompletionRate}
+        >
           Retry
         </button>
       </div>
@@ -306,9 +310,9 @@ export function CompletionRateLargeChart({ rangeType, dateRange, selectedMonth, 
   if (error && data.length === 0) {
     return (
       <div className="w-full h-[400px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load revenue data</div>
+        <div className="mb-2 text-red-500">Failed to load revenue data</div>
         <button
-          className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
           onClick={fetchCourseCompletionRate}
         >
           Retry

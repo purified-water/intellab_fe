@@ -203,7 +203,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
       >
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" className="flex items-center space-x-2 hover:text-gray1">
+            <Button type="button" variant="ghost" className="flex items-center space-x-2 hover:text-gray1">
               <SquarePen />
             </Button>
           </TooltipTrigger>
@@ -215,7 +215,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
         <span className="text-base font-semibold">Intellab AI</span>
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button variant="ghost" className="hover:text-gray1" onClick={onClose}>
+            <Button type="button" variant="ghost" className="hover:text-gray1" onClick={onClose}>
               <Minus />
             </Button>
           </TooltipTrigger>

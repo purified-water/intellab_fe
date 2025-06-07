@@ -7,9 +7,10 @@ import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { arrayMove, SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { LessonAction } from "../../../types";
 import { CreateLessonSchema } from "../../../schemas";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteLesson, setCreateCourse } from "@/redux/createCourse/createCourseSlice";
 import { useCreateLesson } from "../../../hooks";
+import { RootState } from "@/redux/rootReducer";
 
 interface CourseLessonListProps {
   lessons: CreateLessonSchema[];
@@ -24,7 +25,8 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
   const [modalOpen, setModalOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const dispatch = useDispatch();
-  const createCourseLesson = useCreateLesson();
+  const courseId = useSelector((state: RootState) => state.createCourse.courseId);
+  const createCourseLesson = useCreateLesson(courseId);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -61,8 +63,17 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
     }
     if (action.type === "delete") {
       if (!action.lessonId) return;
-      createCourseLesson.deleteLesson.mutateAsync(action.lessonId).then(() => {
-        dispatch(deleteLesson(action.lessonId!));
+      // Immediately update the UI by dispatching the action first
+      dispatch(deleteLesson(action.lessonId!));
+      // Reset selected lesson after deletion
+      setSelectedLesson(null);
+      // Then perform the server deletion
+      createCourseLesson.deleteLesson.mutateAsync(action.lessonId).catch((error) => {
+        console.error("Error deleting lesson:", error);
+        // If there's an error, we should refresh the lesson list from the server
+        if (courseId) {
+          createCourseLesson.getLessonList.refetch();
+        }
       });
     }
   };
@@ -75,7 +86,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
     <div className={`max-w-sm p-4 bg-white ${showList ? "w-80" : "size-18"}`}>
       <div className="flex items-center justify-between mb-4">
         <h2 className={`text-lg font-semibold ${showList ? "block" : "hidden"}`}>Lessons List</h2>
-        <Button variant="ghost" size="icon" onClick={toggleList}>
+        <Button type="button" variant="ghost" size="icon" onClick={toggleList}>
           {showList ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
         </Button>
       </div>
@@ -99,13 +110,13 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
                     selectedLessonId={selectedLesson?.lessonId}
                   />
                 ))}
-                <EndOfListNotice />
+                {lessons && lessons.length !== 0 && <EndOfListNotice />}
               </div>
             </SortableContext>
           </DndContext>
 
           <div className="mt-4">
-            <Button variant="outline" className="w-full" onClick={() => setModalOpen(true)}>
+            <Button type="button" variant="outline" className="w-full" onClick={() => setModalOpen(true)}>
               <Plus className="w-4 h-4 mr-2" />
               Add New Lesson
             </Button>

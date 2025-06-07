@@ -106,16 +106,27 @@ export const CourseLessonsPage = () => {
       };
 
       try {
-        // Update quiz first
-        await createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload);
-
-        // Only proceed with lesson update if quiz update succeeded
+        // Update lesson content first
         await createCourseLesson.updateLesson.mutateAsync(updateLessonPayload);
 
+        // Only update quiz if hasQuiz is true
+        if (data.hasQuiz) {
+          // Update quiz second
+          await createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload);
+        }
+
+        // Update the lesson in the course lessons list
+        let updatedLessonList;
+        if (lessonAction.type === "edit") {
+          // For edit, find and update the existing lesson
+          updatedLessonList = courseLessons.map((lesson) => (lesson.lessonId === data.lessonId ? data : lesson));
+        } else {
+          // For add (blank or clone), append the new lesson
+          updatedLessonList = [...courseLessons, data];
+        }
         // Remove the lesson in the redux store
         dispatch(resetCreateLesson());
-        // Update the lesson in the course lessons list
-        const updatedLessonList = [...courseLessons, data];
+
         dispatch(setCreateCourse({ courseLessons: updatedLessonList }));
         setLessonAction({ type: "default" });
       } catch (error) {

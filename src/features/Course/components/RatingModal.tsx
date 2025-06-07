@@ -193,7 +193,11 @@ const RatingModal: React.FC<RatingModalProps> = ({
         </div>
 
         <div className="flex items-center justify-end mt-4">
-          <button className="w-24 px-4 py-2 font-bold text-white rounded-xl bg-appPrimary" onClick={handleSubmit}>
+          <button
+            type="button"
+            className="w-24 px-4 py-2 font-bold text-white rounded-xl bg-appPrimary"
+            onClick={handleSubmit}
+          >
             Submit
           </button>
         </div>

@@ -36,7 +36,7 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
     if (isEditing) {
       return (
         <Textarea
-          className="w-full h-[500px] p-2 border rounded-lg max-h-[700px]"
+          className="w-full h-[300px] p-2 border rounded-lg max-h-[700px]"
           value={value}
           onChange={(e) => onChange(e.target.value)}
         />
@@ -57,9 +57,6 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
           <FormLabel>
             <RequiredInputLabel className="mb-2" label="Summary Content" />
           </FormLabel>
-          <div className="text-sm text-muted-foreground">
-            Note: Provide a summary for your entire course. This will appear after the user has completed the course.
-          </div>
         </div>
 
         <AnimatedButton className="[&_svg]:size-4" label="Summarize with AI" onClick={() => {}} />
@@ -68,6 +65,11 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
       <div className="flex items-center mb-4 space-x-4">{renderButtonRow()}</div>
 
       {renderLessonContent()}
+
+      <div className="mt-2 text-[0.8rem] text-muted-foreground">
+        Note: Provide a summary for your entire course. This will appear after the user has completed the course to help
+        them reflect on what they have learned.
+      </div>
     </div>
   );
 };

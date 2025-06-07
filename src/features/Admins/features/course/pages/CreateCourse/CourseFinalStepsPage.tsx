@@ -131,18 +131,6 @@ export const CourseFinalStepsPage = () => {
 
           <FormField
             control={form.control}
-            name="courseSummary"
-            render={({ field }) => (
-              <FormItem>
-                <AddSummaryMarkdown value={field.value} onChange={field.onChange} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Choose certificate template here */}
-          <FormField
-            control={form.control}
             name="courseCertificate"
             render={({ field }) => (
               <FormItem>
@@ -152,6 +140,17 @@ export const CourseFinalStepsPage = () => {
                 <FormControl>
                   <AddCertificateTemplate value={field.value} onChange={(val) => field.onChange(Number(val))} />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="courseSummary"
+            render={({ field }) => (
+              <FormItem>
+                <AddSummaryMarkdown value={field.value} onChange={field.onChange} />
                 <FormMessage />
               </FormItem>
             )}

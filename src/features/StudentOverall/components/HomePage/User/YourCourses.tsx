@@ -39,9 +39,13 @@ export const YourCourseCard = (courseDetail: ICourse) => {
 
         <div className="flex items-center justify-end mt-4">
           {isFinished ? (
-            <Button onClick={() => navigate(`/certificate/${courseDetail?.certificateId}`)}>View Certificate</Button>
+            <Button type="button" onClick={() => navigate(`/certificate/${courseDetail?.certificateId}`)}>
+              View Certificate
+            </Button>
           ) : (
-            <Button onClick={() => navigate(`/course/${courseDetail?.courseId}`)}>Continue</Button>
+            <Button type="button" onClick={() => navigate(`/course/${courseDetail?.courseId}`)}>
+              Continue
+            </Button>
           )}
         </div>
       </div>

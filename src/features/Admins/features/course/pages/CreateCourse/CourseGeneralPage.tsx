@@ -23,7 +23,8 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
+  FormDescription
 } from "@/components/ui/shadcn";
 import { z } from "zod";
 import { ImageUploadForm, Spinner } from "@/components/ui";
@@ -189,6 +190,10 @@ export const CourseGeneralPage = () => {
                 <Textarea className="h-24 max-h-48" {...field} />
               </FormControl>
               <FormMessage />
+              <FormDescription>
+                Note: Provide a brief description of the course content. This will help your student understand the
+                objectives of the course
+              </FormDescription>
             </FormItem>
           )}
         />

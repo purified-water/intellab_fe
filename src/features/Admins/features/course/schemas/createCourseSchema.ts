@@ -4,8 +4,8 @@ import { createLessonSchema } from "./createLessonSchema";
 
 export const createCourseSchema = z.object({
   courseId: z.string(),
-  courseName: z.string().min(1, { message: "Course name is required" }).max(100, {
-    message: "Course name must be less than 100 characters"
+  courseName: z.string().min(1, { message: "Course name is required" }).max(200, {
+    message: "Course name must be less than 200 characters"
   }),
   courseDescription: z.string().min(1, { message: "Course description is required" }).max(800, {
     message: "Course description must be less than 800 characters"
@@ -33,8 +33,8 @@ export const createCourseSchema = z.object({
   }),
 
   coursePrice: z.number().optional(),
-  courseSummary: z.string().min(1, { message: "Course summary is required" }).max(3000, {
-    message: "Course summary must be less than 1500 characters"
+  courseSummary: z.string().min(1, { message: "Course summary is required" }).max(5000, {
+    message: "Course summary must be less than 5000 characters"
   }),
   courseCertificate: z.number().min(1, { message: "Certificate template is required" }),
   courseMakeAvailable: z.boolean(),

@@ -18,13 +18,17 @@ export function EmailVerifiedBlock(props: EmailVerifiedBlock) {
 
   const renderContent = () => {
     return (
-      <div className="justify-items-center w-full">
+      <div className="w-full justify-items-center">
         <p className="text-3xl font-semibold text-appEasy">Email Verified</p>
-        <CircleCheck size={100} className="text-appEasy my-2" />
+        <CircleCheck size={100} className="my-2 text-appEasy" />
         <p className="text-center">
           Congratulations! You have successfully verified your email address. You can continue using the application.
         </p>
-        <Button className="mt-14 font-bold bg-appPrimary hover:bg-appPrimary/80" onClick={handleBackHomePageClick}>
+        <Button
+          type="button"
+          className="font-bold mt-14 bg-appPrimary hover:bg-appPrimary/80"
+          onClick={handleBackHomePageClick}
+        >
           Back to Home Page
         </Button>
       </div>
@@ -33,12 +37,12 @@ export function EmailVerifiedBlock(props: EmailVerifiedBlock) {
 
   const renderSkeleton = () => {
     return (
-      <div className="justify-items-center w-full">
-        <Skeleton className="h-8 w-64 mb-4" />
-        <Skeleton className="h-24 w-24 rounded-full my-2" />
-        <Skeleton className="h-6 w-full mb-4" />
-        <Skeleton className="h-6 w-3/4 mb-4" />
-        <Skeleton className="h-12 w-48 mt-20" />
+      <div className="w-full justify-items-center">
+        <Skeleton className="w-64 h-8 mb-4" />
+        <Skeleton className="w-24 h-24 my-2 rounded-full" />
+        <Skeleton className="w-full h-6 mb-4" />
+        <Skeleton className="w-3/4 h-6 mb-4" />
+        <Skeleton className="w-48 h-12 mt-20" />
       </div>
     );
   };
