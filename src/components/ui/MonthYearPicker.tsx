@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/shadcn/select";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -33,21 +33,44 @@ export function MonthYearPicker({
   rangeType = "Month" // Default to Month
 }: MonthYearPickerProps) {
   const [isOpen, setIsOpen] = useState(false);
+  // Store temporary selections that will only be applied when "Done" is clicked
+  const [tempMonth, setTempMonth] = useState(selectedMonth);
+  const [tempYear, setTempYear] = useState(selectedYear);
+
+  // Update temp values when props change (external updates)
+  useEffect(() => {
+    setTempMonth(selectedMonth);
+    setTempYear(selectedYear);
+  }, [selectedMonth, selectedYear]);
 
   const handleMonthChange = (month: string) => {
     const monthIndex = months.indexOf(month);
-    onMonthYearChange(monthIndex, selectedYear);
+    setTempMonth(monthIndex);
   };
 
   const handleYearChange = (year: string) => {
-    onMonthYearChange(selectedMonth, parseInt(year));
+    setTempYear(parseInt(year));
+  };
+
+  const handleDone = () => {
+    onMonthYearChange(tempMonth, tempYear);
+    setIsOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    if (open) {
+      // Reset temp values to current selected values when opening
+      setTempMonth(selectedMonth);
+      setTempYear(selectedYear);
+    }
+    setIsOpen(open);
   };
 
   const isYearOnly = rangeType === "Year";
 
   return (
     <div className={className}>
-      <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <Popover open={isOpen} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
@@ -62,7 +85,7 @@ export function MonthYearPicker({
             {!isYearOnly && (
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium">Month</label>
-                <Select value={months[selectedMonth]} onValueChange={handleMonthChange}>
+                <Select value={months[tempMonth]} onValueChange={handleMonthChange}>
                   <SelectTrigger className="w-[140px]">
                     <SelectValue />
                   </SelectTrigger>
@@ -78,7 +101,7 @@ export function MonthYearPicker({
             )}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium">Year</label>
-              <Select value={selectedYear.toString()} onValueChange={handleYearChange}>
+              <Select value={tempYear.toString()} onValueChange={handleYearChange}>
                 <SelectTrigger className="w-[100px]">
                   <SelectValue />
                 </SelectTrigger>
@@ -95,7 +118,7 @@ export function MonthYearPicker({
           <div className="flex justify-end mt-4">
             <Button 
               size="sm" 
-              onClick={() => setIsOpen(false)}
+              onClick={handleDone}
               className="bg-appPrimary hover:bg-appPrimary/90"
             >
               Done

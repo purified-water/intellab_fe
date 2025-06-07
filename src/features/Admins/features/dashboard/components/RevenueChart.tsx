@@ -8,36 +8,10 @@ import { RevenueItem } from "@/features/Admins/types/apiType";
 function getFallbackData(rangeType: "Month" | "Year" | "Custom"): ChartData[] {
   const fallbackData = {
     Month: [
-      { label: "1", value: 400000 },
-      { label: "2", value: 520000 },
-      { label: "3", value: 380000 },
-      { label: "4", value: 650000 },
-      { label: "5", value: 720000 },
-      { label: "6", value: 580000 },
-      { label: "7", value: 800000 },
-      { label: "8", value: 750000 },
-      { label: "9", value: 680000 },
-      { label: "10", value: 900000 },
-      { label: "11", value: 620000 },
-      { label: "12", value: 950000 },
-      { label: "13", value: 730000 },
-      { label: "14", value: 850000 },
-      { label: "15", value: 780000 },
-      { label: "16", value: 1100000 },
-      { label: "17", value: 820000 },
-      { label: "18", value: 920000 },
-      { label: "19", value: 700000 },
-      { label: "20", value: 1050000 },
-      { label: "21", value: 890000 },
-      { label: "22", value: 1200000 },
-      { label: "23", value: 950000 },
-      { label: "24", value: 1150000 },
-      { label: "25", value: 980000 },
-      { label: "26", value: 1300000 },
-      { label: "27", value: 1080000 },
-      { label: "28", value: 1250000 },
-      { label: "29", value: 1120000 },
-      { label: "30", value: 1400000 }
+      { label: "W1", value: 2500000 },
+      { label: "W2", value: 3200000 },
+      { label: "W3", value: 2800000 },
+      { label: "W4", value: 3500000 }
     ],
     Year: [
       { label: "Jan", value: 18000000 },
@@ -86,6 +60,40 @@ interface ChartData {
   value: number;
 }
 
+// Helper function to map API data to readable labels
+const mapDataToReadableLabels = (data: RevenueItem[], rangeType: "Month" | "Year" | "Custom"): ChartData[] => {
+  if (rangeType === "Month") {
+    // For Month view, use API response labels (e.g., "W22 2025", "W23 2025")
+    return data.map(
+      (item) => (
+        console.log("Revenue chart response month", item),
+        {
+          label: item.label,
+          value: item.value
+        }
+      )
+    );
+  } else if (rangeType === "Year") {
+    // For Year view, map to month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return data.map((item, index) => ({
+      label: monthNames[index] || item.label,
+      value: item.value
+    }));
+  } else {
+    // For Custom range, format labels to show only date numbers (e.g., "Apr 1" -> "1")
+    return data.map(
+      (item) => (
+        console.log("Revenue chart response", item),
+        {
+          label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
+          value: item.value
+        }
+      )
+    );
+  }
+};
+
 export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selectedYear }: Props) {
   const [data, setData] = useState<ChartData[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -93,28 +101,44 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
 
   const fetchRevenue = useCallback(() => {
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -124,24 +148,35 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
     adminDashboardAPI.getRevenue({
       query,
       onStart: async () => {
+        console.log("Fetching revenue data with query:", query);
         setIsLoading(true);
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: RevenueItem) => ({
-          label: item.label,
-          value: item.value
-        }));
-        setData(formattedData);
+        console.log("Revenue API Response:", responseData);
+
+        // Check if result has data property (for newer API structure)
+        const dataArray = responseData.result?.data || responseData.result;
+        console.log("Data array:", dataArray);
+
+        // Transform API data to chart format with readable labels
+        if (Array.isArray(dataArray)) {
+          const formattedData = mapDataToReadableLabels(dataArray, rangeType);
+          setData(formattedData);
+        } else {
+          console.error("API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+        }
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);
         // Fall back to sample data if API fails
         setData(getFallbackData(rangeType));
+        console.error("Failed to fetch revenue data:", errorMessage);
       },
       onEnd: async () => {
         setIsLoading(false);
+        console.log("Revenue data fetch completed");
       }
     });
   }, [rangeType, dateRange, selectedMonth, selectedYear]);
@@ -197,30 +232,45 @@ export function RevenueLargeBarChart({ rangeType, dateRange, selectedMonth, sele
   const [error, setError] = useState<string | null>(null);
 
   const fetchRevenue = useCallback(() => {
-    console.log("Fetching revenue data", rangeType, dateRange);
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with year range: <year>-01-01 to <year>-12-31
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -234,12 +284,17 @@ export function RevenueLargeBarChart({ rangeType, dateRange, selectedMonth, sele
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: RevenueItem) => ({
-          label: item.label,
-          value: item.value
-        }));
-        setData(formattedData);
+        // Transform API data to chart format with readable labels
+        // Check if result has data property (for newer API structure)
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (Array.isArray(dataArray)) {
+          const formattedData = mapDataToReadableLabels(dataArray, rangeType);
+          setData(formattedData);
+        } else {
+          console.error("Revenue API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+        }
       },
       onFail: async (errorMessage) => {
         setError(errorMessage);

@@ -4,55 +4,41 @@ import { DateRange } from "react-day-picker";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { CourseCompletionRateItem } from "@/features/Admins/types/apiType";
 
-function getFallbackData(rangeType: "Month" | "Year" | "Custom" | "Daily" | "Weekly") {
+// Helper function to map API data to readable labels
+const mapDataToReadableLabels = (
+  data: CourseCompletionRateItem[],
+  rangeType: "Month" | "Year" | "Custom"
+): ChartData[] => {
+  if (rangeType === "Month") {
+    // For Month view, use API response labels (e.g., "W22 2025", "W23 2025")
+    return data.map((item) => ({
+      label: item.label,
+      completionRate: item.value
+    }));
+  } else if (rangeType === "Year") {
+    // For Year view, map to month names
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    return data.map((item, index) => ({
+      label: monthNames[index] || item.label,
+      completionRate: item.value
+    }));
+  } else {
+    // For Custom range, format labels to show only date numbers (e.g., "Apr 1" -> "1")
+    return data.map((item) => ({
+      label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
+      completionRate: item.value
+    }));
+  }
+};
+
+function getFallbackData(rangeType: "Month" | "Year" | "Custom") {
   // Fallback data in case API fails
   const fallbackData = {
-    Daily: [
-      { label: "Mon", completionRate: 75 },
-      { label: "Tue", completionRate: 78 },
-      { label: "Wed", completionRate: 80 },
-      { label: "Thu", completionRate: 77 },
-      { label: "Fri", completionRate: 82 },
-      { label: "Sat", completionRate: 85 },
-      { label: "Sun", completionRate: 79 }
-    ],
-    Weekly: [
-      { label: "Week 1", completionRate: 72 },
-      { label: "Week 2", completionRate: 75 },
-      { label: "Week 3", completionRate: 78 },
-      { label: "Week 4", completionRate: 80 }
-    ],
     Month: [
-      { label: "1", completionRate: 65 },
-      { label: "2", completionRate: 68 },
-      { label: "3", completionRate: 70 },
-      { label: "4", completionRate: 72 },
-      { label: "5", completionRate: 75 },
-      { label: "6", completionRate: 73 },
-      { label: "7", completionRate: 78 },
-      { label: "8", completionRate: 76 },
-      { label: "9", completionRate: 80 },
-      { label: "10", completionRate: 77 },
-      { label: "11", completionRate: 82 },
-      { label: "12", completionRate: 79 },
-      { label: "13", completionRate: 85 },
-      { label: "14", completionRate: 83 },
-      { label: "15", completionRate: 87 },
-      { label: "16", completionRate: 84 },
-      { label: "17", completionRate: 89 },
-      { label: "18", completionRate: 86 },
-      { label: "19", completionRate: 91 },
-      { label: "20", completionRate: 88 },
-      { label: "21", completionRate: 92 },
-      { label: "22", completionRate: 90 },
-      { label: "23", completionRate: 94 },
-      { label: "24", completionRate: 91 },
-      { label: "25", completionRate: 95 },
-      { label: "26", completionRate: 93 },
-      { label: "27", completionRate: 96 },
-      { label: "28", completionRate: 94 },
-      { label: "29", completionRate: 97 },
-      { label: "30", completionRate: 95 }
+      { label: "W22 2025", completionRate: 72 },
+      { label: "W23 2025", completionRate: 78 },
+      { label: "W24 2025", completionRate: 75 },
+      { label: "W25 2025", completionRate: 82 }
     ],
     Year: [
       { label: "Jan", completionRate: 72 },
@@ -81,7 +67,7 @@ function getFallbackData(rangeType: "Month" | "Year" | "Custom" | "Daily" | "Wee
 }
 
 interface Props {
-  rangeType: "Month" | "Year" | "Custom" | "Daily" | "Weekly";
+  rangeType: "Month" | "Year" | "Custom";
   dateRange: DateRange | undefined;
   selectedMonth?: number;
   selectedYear?: number;
@@ -100,28 +86,44 @@ export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, s
   const fetchCompletionRate = useCallback(() => {
     console.log("Fetching completion rate data", rangeType, dateRange);
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with date range for the selected year
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -135,11 +137,17 @@ export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, s
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: CourseCompletionRateItem) => ({
-          label: item.label,
-          completionRate: item.value
-        }));
+        // Handle both new nested API response and old array format
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (!Array.isArray(dataArray)) {
+          console.error("CompletionRate API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+          return;
+        }
+
+        // Transform API data to chart format with readable labels
+        const formattedData = mapDataToReadableLabels(dataArray, rangeType);
         setData(formattedData);
       },
       onFail: async (errorMessage) => {
@@ -206,32 +214,44 @@ export function CompletionRateLargeChart({ rangeType, dateRange, selectedMonth, 
   const fetchCourseCompletionRate = useCallback(() => {
     console.log("Fetching CourseCompletionRate data", rangeType, dateRange);
     // Convert rangeType to the expected API parameter
-    let period: "daily" | "weekly" | "monthly" | "custom" = "monthly";
-    const query: { period?: "daily" | "weekly" | "monthly" | "custom"; start_date?: string; end_date?: string } = {};
+    let period: "monthly" | "yearly" | "custom" = "monthly";
+    const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};
 
-    if (rangeType === "Daily") {
-      period = "daily";
-    } else if (rangeType === "Weekly") {
-      period = "weekly";
-    } else if (rangeType === "Month" && selectedMonth !== undefined && selectedYear !== undefined) {
-      period = "daily";
-      // Calculate date range for the selected month to get daily data
-      const startDate = new Date(selectedYear, selectedMonth, 1);
-      const endDate = new Date(selectedYear, selectedMonth + 1, 0);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+    if (rangeType === "Month") {
+      period = "monthly";
+      if (selectedMonth !== undefined && selectedYear !== undefined) {
+        // Calculate date range for the selected month to get specific monthly data
+        const startDate = new Date(selectedYear, selectedMonth, 1);
+        const endDate = new Date(selectedYear, selectedMonth + 1, 0);
+
+        // Format dates without timezone conversion issues
+        const formatDate = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, "0");
+          const day = String(date.getDate()).padStart(2, "0");
+          return `${year}-${month}-${day}`;
+        };
+
+        query.start_date = formatDate(startDate);
+        query.end_date = formatDate(endDate);
+      }
+      // If no specific month selected, API will default to current month
     } else if (rangeType === "Year" && selectedYear !== undefined) {
-      period = "custom";
-      // Calculate date range for the selected year
-      const startDate = new Date(selectedYear, 0, 1);
-      const endDate = new Date(selectedYear, 11, 31);
-      query.start_date = startDate.toISOString().split("T")[0];
-      query.end_date = endDate.toISOString().split("T")[0];
+      period = "yearly";
+      // Use yearly period with date range for the selected year
+      query.start_date = `${selectedYear}-01-01`;
+      query.end_date = `${selectedYear}-12-31`;
     } else if (rangeType === "Custom" && dateRange?.from && dateRange?.to) {
       period = "custom";
-      // Format dates as YYYY-MM-DD for API
-      query.start_date = dateRange.from.toISOString().split("T")[0];
-      query.end_date = dateRange.to.toISOString().split("T")[0];
+      // Format dates as YYYY-MM-DD for API without timezone conversion issues
+      const formatDate = (date: Date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, "0");
+        const day = String(date.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
+      query.start_date = formatDate(dateRange.from);
+      query.end_date = formatDate(dateRange.to);
     } else {
       period = "monthly";
     }
@@ -245,11 +265,17 @@ export function CompletionRateLargeChart({ rangeType, dateRange, selectedMonth, 
         setError(null);
       },
       onSuccess: async (responseData) => {
-        // Transform API data to chart format
-        const formattedData = responseData.result.map((item: CourseCompletionRateItem) => ({
-          label: item.label,
-          completionRate: item.value
-        }));
+        // Handle both new nested API response and old array format
+        const dataArray = responseData.result?.data || responseData.result;
+
+        if (!Array.isArray(dataArray)) {
+          console.error("CompletionRate API response data is not an array:", dataArray);
+          setData(getFallbackData(rangeType));
+          return;
+        }
+
+        // Transform API data to chart format with readable labels
+        const formattedData = mapDataToReadableLabels(dataArray, rangeType);
         setData(formattedData);
       },
       onFail: async (errorMessage) => {

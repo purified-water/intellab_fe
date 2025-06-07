@@ -17,6 +17,7 @@ import {
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui";
+import { EmptyList } from "@/components/ui/EmptyList";
 
 interface Transaction {
   name: string;
@@ -59,7 +60,7 @@ export function TransactionsList({
       const apiTransactions = await transactionAPI.getTransactions(page);
 
       if (apiTransactions.length === 0) {
-        setErrorMessage("No transactions found or unable to fetch transactions.");
+        setErrorMessage("No transactions found.");
       } else {
         const formattedTransactions = apiTransactions.map((transaction) => ({
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
@@ -156,7 +157,7 @@ export function TransactionsList({
                 </li>
               ))}
               {transactions.length === 0 && !isLoading && (
-                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No transactions found"}</li>
+                <EmptyList message={errorMessage || "No transactions found"} size="sm" />
               )}
             </ul>
           )}
