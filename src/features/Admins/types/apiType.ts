@@ -20,13 +20,16 @@ export interface SubscriptionGrowthItem {
 
 export interface TSubscriptionGrowthResponse {
   code: number;
-  result: SubscriptionGrowthItem[];
+  result: {
+    type: string;
+    data: SubscriptionGrowthItem[];
+  };
 }
 
 export interface TSubscriptionGrowthQuery {
-  period?: "daily" | "weekly" | "monthly" | "custom";
-  start_date?: string; // YYYY-MM-DD format for custom range
-  end_date?: string; // YYYY-MM-DD format for custom range
+  period?: "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  start_date?: string; // YYYY-MM-DD format for custom range or yearly range
+  end_date?: string; // YYYY-MM-DD format for custom range or yearly range
 }
 
 export interface CourseCompletionRateItem {
@@ -36,13 +39,16 @@ export interface CourseCompletionRateItem {
 
 export interface TCourseCompletionRateResponse {
   code: number;
-  result: CourseCompletionRateItem[];
+  result: {
+    type: string;
+    data: CourseCompletionRateItem[];
+  };
 }
 
 export interface TCourseCompletionRateQuery {
-  period?: "daily" | "weekly" | "monthly" | "custom";
-  start_date?: string; // YYYY-MM-DD format for custom range
-  end_date?: string; // YYYY-MM-DD format for custom range
+  period?: "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  start_date?: string; // YYYY-MM-DD format for custom range or yearly range
+  end_date?: string; // YYYY-MM-DD format for custom range or yearly range
 }
 
 export interface RevenueItem {
@@ -52,13 +58,16 @@ export interface RevenueItem {
 
 export interface TRevenueResponse {
   code: number;
-  result: RevenueItem[];
+  result: {
+    type: string;
+    data: RevenueItem[];
+  };
 }
 
 export interface TRevenueQuery {
-  period?: "daily" | "weekly" | "monthly" | "custom";
-  start_date?: string; // YYYY-MM-DD format for custom range
-  end_date?: string; // YYYY-MM-DD format for custom range
+  period?: "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  start_date?: string; // YYYY-MM-DD format for custom range or yearly range
+  end_date?: string; // YYYY-MM-DD format for custom range or yearly range
 }
 
 export interface UserGrowthItem {
@@ -68,13 +77,16 @@ export interface UserGrowthItem {
 
 export interface TUserGrowthResponse {
   code: number;
-  result: UserGrowthItem[];
+  result: {
+    type: string;
+    data: UserGrowthItem[];
+  };
 }
 
 export interface TUserGrowthQuery {
-  period?: "daily" | "weekly" | "monthly" | "custom";
-  start_date?: string; // YYYY-MM-DD format for custom range
-  end_date?: string; // YYYY-MM-DD format for custom range
+  period?: "daily" | "weekly" | "monthly" | "yearly" | "custom";
+  start_date?: string; // YYYY-MM-DD format for custom range or yearly range
+  end_date?: string; // YYYY-MM-DD format for custom range or yearly range
 }
 
 export type TGetDashboardOverviewParams = TApiParams<TDashboardOverviewResponse>;

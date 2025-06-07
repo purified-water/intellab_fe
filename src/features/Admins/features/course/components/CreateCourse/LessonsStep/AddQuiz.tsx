@@ -40,17 +40,17 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
   const value = watch("lessonQuiz") ?? EMPTY_QUIZ;
 
   useEffect(() => {
-    if (value.quizQuestions.length > 0) {
+    if (value.quizQuestions && value.quizQuestions.length > 0) {
       setValue("lessonQuiz.totalQuestions", value.quizQuestions.length);
     }
-  }, [value.quizQuestions.length]);
+  }, [value.quizQuestions?.length]);
 
   const handleChange = (partial: Partial<CreateQuizSchema>) => {
     setValue("lessonQuiz", { ...value, ...partial }, { shouldValidate: true });
   };
 
   const updateQuestion = (index: number, updated: CreateQuizSchema["quizQuestions"][number]) => {
-    const quizQuestions = [...value.quizQuestions];
+    const quizQuestions = [...(value.quizQuestions || [])];
     quizQuestions[index] = updated;
     handleChange({ quizQuestions });
   };
@@ -64,7 +64,7 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
     }
 
     // Update local state
-    const updated = value.quizQuestions.filter((_, i) => i !== questionToDelete.index);
+    const updated = (value.quizQuestions || []).filter((_, i) => i !== questionToDelete.index);
     handleChange({ quizQuestions: updated });
 
     // Reset delete confirmation state
@@ -74,7 +74,7 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
   const addQuestion = () => {
     handleChange({
       quizQuestions: [
-        ...value.quizQuestions,
+        ...(value.quizQuestions || []),
         {
           questionId: `new-${Date.now()}`, // Add new- prefix for new questions
           questionTitle: "Untitled Question",
@@ -95,7 +95,7 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
       <div className="space-y-6">
         <div className="space-y-4">
           <div className="text-sm">
-            Total questions: {value.quizQuestions.length}
+            Total questions: {value.quizQuestions?.length || 0}
             {errors.lessonQuiz?.totalQuestions && (
               <p className="text-sm text-appHard">{errors.lessonQuiz.totalQuestions.message}</p>
             )}
@@ -139,7 +139,7 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
             <p className="text-sm text-appHard">{errors.lessonQuiz.quizQuestions.message}</p>
           )}
 
-          {value.quizQuestions.map((q, qIdx) => {
+          {(value.quizQuestions || []).map((q, qIdx) => {
             const questionError = errors.lessonQuiz?.quizQuestions?.[qIdx];
             const isNewQuestion = q.questionId.startsWith("new-");
 
@@ -208,7 +208,7 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
                     className="p-0"
                     disabled={readOnly}
                     onClick={() => {
-                      const updated = value.quizQuestions.filter((_, i) => i !== qIdx);
+                      const updated = (value.quizQuestions || []).filter((_, i) => i !== qIdx);
                       handleChange({ quizQuestions: updated });
                     }}
                   >

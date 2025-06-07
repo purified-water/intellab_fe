@@ -44,6 +44,8 @@ export const useCreateLesson = (courseId?: string, lessonId?: string) => {
   const deleteLesson = useMutation({
     mutationFn: adminCourseAPI.deleteCreateLesson,
     onSuccess: () => {
+      // Invalidate the lessons query cache to refresh the lesson list
+      queryClient.invalidateQueries({ queryKey: ["createLesson", courseId, "lessonList"] });
       showToastSuccess({ toast: toast.toast, message: "Lesson deleted successfully" });
     },
     onError: () => {

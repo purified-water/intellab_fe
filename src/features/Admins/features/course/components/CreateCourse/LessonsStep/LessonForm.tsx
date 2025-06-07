@@ -23,6 +23,8 @@ import { Button } from "@/components/ui";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { setCreateCourse, updateLessonQuiz } from "@/redux/createCourse/createCourseSlice";
+import { showToastError } from "@/utils";
+import { useToast } from "@/hooks";
 
 interface LessonFormProps {
   onSave: (data: CreateLessonSchema) => void;
@@ -42,7 +44,7 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
   const dispatch = useDispatch();
   // Track if the form is currently submitting
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const toast = useToast();
   useEffect(() => {
     if (lessonQuizFromServer) {
       dispatch(
@@ -72,10 +74,13 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
 
     // For editing or viewing an existing lesson
     if (selectedLesson) {
+      // Only provide quiz data if hasQuiz is true
       return {
         ...selectedLesson,
-        // Ensure lessonQuiz has a default structure if it's undefined
-        lessonQuiz: lessonQuizFromServer || selectedLesson.lessonQuiz || DEFAULT_QUIZ
+        // Only use quiz data if hasQuiz is true, otherwise set to undefined
+        lessonQuiz: selectedLesson.hasQuiz
+          ? lessonQuizFromServer || selectedLesson.lessonQuiz || DEFAULT_QUIZ
+          : undefined
       };
     }
 
@@ -113,6 +118,17 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
 
   const { hasQuiz, hasProblem } = form.watch();
 
+  // Watch for hasQuiz changes and update the form state accordingly
+  useEffect(() => {
+    // When hasQuiz is turned off, set lessonQuiz to undefined to avoid validation errors
+    if (!hasQuiz) {
+      form.setValue("lessonQuiz", undefined);
+    } else if (!form.getValues("lessonQuiz")) {
+      // When hasQuiz is turned on and lessonQuiz is undefined, set default quiz
+      form.setValue("lessonQuiz", DEFAULT_QUIZ);
+    }
+  }, [hasQuiz, form]);
+
   // Modified onSubmit handler to process form data before submission
   const handleSubmit = async (data: CreateLessonSchema) => {
     // If already submitting, prevent duplicate submissions
@@ -122,12 +138,17 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       // Set loading state to prevent multiple submissions
       setIsSubmitting(true);
 
-      // If hasQuiz is false, set lessonQuiz to undefined for API calls
-      // but keep the form state with DEFAULT_QUIZ for the component
-      const submissionData = {
-        ...data,
-        lessonQuiz: data.hasQuiz ? data.lessonQuiz : undefined
-      };
+      // Create a clean submission data object
+      let submissionData = { ...data };
+
+      // If hasQuiz is false, explicitly set lessonQuiz to undefined
+      // This ensures the validation will skip quiz validation
+      if (!submissionData.hasQuiz) {
+        submissionData = {
+          ...submissionData,
+          lessonQuiz: undefined
+        };
+      }
 
       // Call the onSave function and await for it to complete
       await onSave(submissionData);
@@ -135,7 +156,7 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       // If this is an edit, update the Redux state with the edited lesson data
       if (lessonActionType === "edit" && lessonId) {
         const updatedLesson = {
-          ...data,
+          ...submissionData, // Use submissionData to include the lessonQuiz modification
           lessonId: lessonId
         };
 
@@ -166,6 +187,15 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       <form
         onSubmit={form.handleSubmit(handleSubmit, (errors) => {
           console.error("Form submission errors:", errors);
+
+          // Force reset lessonQuiz if hasQuiz is false but we still have errors
+          if (!form.getValues("hasQuiz") && errors.lessonQuiz) {
+            console.log("Detected quiz validation errors when hasQuiz is false, resetting quiz data");
+            form.setValue("lessonQuiz", undefined, { shouldValidate: true });
+            return;
+          }
+
+          showToastError({ toast: toast.toast, message: "Please fix the errors in the form." });
         })}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
       >

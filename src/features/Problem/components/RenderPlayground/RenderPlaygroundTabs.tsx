@@ -24,16 +24,24 @@ interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
   mode?: "user" | "admin";
   boilerplateCodeFromAdmin?: string;
+  passingProblemId?: string;
 }
 
-export const RenderPGTabs = ({ setLanguagePackage, mode = "user", boilerplateCodeFromAdmin }: RenderPGTabsProps) => {
+export const RenderPGTabs = ({
+  setLanguagePackage,
+  mode = "user",
+  boilerplateCodeFromAdmin,
+  passingProblemId
+}: RenderPGTabsProps) => {
   const [playgroundActive, setPlaygroundActive] = useState("Code");
   const [language, setLanguage] = useState<SupportedLanguages>(SupportedLanguages.Python);
   const [matchingLanguage, setMatchingLanguage] = useState<LanguageCodeType>(DEFAULT_LANGUAGE_CODE);
   const [code, setCode] = useState("");
   const [boilerplateCode, setBoilerplateCode] = useState("");
-  const problemId = useParams<{ problemId: string }>().problemId;
+  const paramsProblemId = useParams<{ problemId: string }>().problemId;
   const [boilerplateList, setBoilerplateList] = useState<BoilerplateType[]>([]);
+
+  const problemId = passingProblemId || paramsProblemId;
 
   // For function buttons
   const playgroundRef = useRef<{ codeFormat: () => void }>(null);
@@ -92,8 +100,7 @@ export const RenderPGTabs = ({ setLanguagePackage, mode = "user", boilerplateCod
     setLanguage(newLanguage);
     // Update the code with the new language
     const matchingBoilerplate = boilerplateList.find(
-      // Find the matching with the start name, if 2 languages have the same start name, it will return the first one
-      (boilerplate) => boilerplate.longName.toLowerCase().startsWith(newLanguage.toLowerCase())
+      (boilerplate) => newLanguage.toLowerCase() === boilerplate.shortName.toLowerCase()
     );
 
     if (matchingBoilerplate) {

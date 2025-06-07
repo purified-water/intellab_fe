@@ -262,7 +262,12 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       >
         <div className="flex items-center">
           {!isMinimized && (
-            <Button variant="ghost" onClick={() => setIsSidebarOpen(!isSidebarOpen)} className=" hover:text-gray1">
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              className=" hover:text-gray1"
+            >
               {isSidebarOpen ? <PanelLeftClose /> : <PanelLeft />}
             </Button>
           )}
@@ -324,7 +329,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
           >
             {isMinimized ? <Maximize2 /> : <Minus />}
           </Button>
-          <Button variant="ghost" className="hover:text-gray1" onClick={onClose}>
+          <Button type="button" variant="ghost" className="hover:text-gray1" onClick={onClose}>
             <X />
           </Button>
         </div>

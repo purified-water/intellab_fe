@@ -81,7 +81,7 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
           <h2 className="text-lg font-semibold">All Problems</h2>
           <AllProblemsListItem problems={problems} toggleSidebar={handleClose} />
         </div>
-        <button className="absolute text-gray-500 top-4 right-4" onClick={handleClose}>
+        <button type="button" className="absolute text-gray-500 top-4 right-4" onClick={handleClose}>
           <MdClose className="icon-lg" />
         </button>
       </div>

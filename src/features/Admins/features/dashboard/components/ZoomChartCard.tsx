@@ -35,11 +35,32 @@ export function ZoomableChartCard({
   setSelectedYear
 }: ZoomableChartCardProps) {
   const [open, setOpen] = useState(false);
-  //   const [rangeType, setRangeType] = useState<"Daily" | "Weekly" | "Monthly">("Monthly");
-  //   const [dateRange, setDateRange] = useState<DateRange | undefined>({
-  //     from: new Date(),
-  //     to: new Date()
-  //   });
+
+  // Function to handle date range changes with constraints
+  const handleDateRangeChange = (newDateRange: DateRange | undefined) => {
+    if (!newDateRange?.from || !newDateRange?.to) {
+      setDateRange(newDateRange);
+      return;
+    }
+
+    // Calculate the difference in days
+    const timeDiff = newDateRange.to.getTime() - newDateRange.from.getTime();
+    const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
+
+    // Constraint: Maximum 30 days (1 month)
+    if (daysDiff > 30) {
+      // If range is too large, adjust the end date to be 30 days from start date
+      const maxEndDate = new Date(newDateRange.from);
+      maxEndDate.setDate(maxEndDate.getDate() + 30);
+
+      setDateRange({
+        from: newDateRange.from,
+        to: maxEndDate
+      });
+    } else {
+      setDateRange(newDateRange);
+    }
+  };
 
   return (
     <>
@@ -86,8 +107,8 @@ export function ZoomableChartCard({
               />
             )}
 
-            {/* Date Picker for Custom range */}
-            {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={setDateRange} />}
+            {/* Date Picker for Custom range with constraints */}
+            {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={handleDateRangeChange} />}
           </div>
 
           <div className="h-[400px] mt-6">{largeChart}</div>

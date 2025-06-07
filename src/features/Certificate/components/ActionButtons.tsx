@@ -45,11 +45,12 @@ export function ActionButtons(props: ActionButtonsProps) {
   if (!loading) {
     content = (
       <div className="flex space-x-3">
-        <Button className="rounded-lg bg-appPrimary hover:bg-appPrimary/80" onClick={handleShareClick}>
+        <Button type="button" className="rounded-lg bg-appPrimary hover:bg-appPrimary/80" onClick={handleShareClick}>
           <Share />
           Share
         </Button>
         <Button
+          type="button"
           className="bg-white border rounded-lg border-appPrimary text-appPrimary hover:bg-white/75 hover:text-opacity-75 hover:border-opacity-75"
           onClick={handleDownloadClick}
         >

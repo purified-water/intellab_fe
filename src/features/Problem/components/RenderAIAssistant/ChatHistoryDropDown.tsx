@@ -27,7 +27,12 @@ export const ChatHistoryDropDown = ({ chatHistoryItems, onSelectChat }: ChatHist
     <div className="">
       <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
-          <Button onClick={() => setDropdownOpen(!dropdownOpen)} variant="ghost" className="p-1 hover:text-gray1">
+          <Button
+            type="button"
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+            variant="ghost"
+            className="p-1 hover:text-gray1"
+          >
             <History />
           </Button>
         </DropdownMenuTrigger>

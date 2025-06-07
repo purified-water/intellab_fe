@@ -95,7 +95,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="w-8 h-8 p-0">
+          <Button type="button" variant="ghost" className="w-8 h-8 p-0">
             <MoreHorizontal className="w-5 h-5" />
           </Button>
         </DropdownMenuTrigger>
@@ -159,11 +159,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
           {problem.isCompletedCreation && (
             <>
               <td className="py-1">
-                <Switch
-                  checked={problem.isPublished}
-                  onCheckedChange={handleChangeProblemPublication}
-                  className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
-                />
+                <div className="flex justify-center">
+                  <Switch
+                    checked={problem.isPublished}
+                    onCheckedChange={handleChangeProblemPublication}
+                    className="data-[state=checked]:bg-appPrimary data-[state=unchecked]:bg-gray5"
+                  />
+                </div>
               </td>
               <td className="px-4 py-1 text-right">
                 <TooltipProvider>

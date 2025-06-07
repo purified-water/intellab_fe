@@ -4,12 +4,14 @@ import DashboardRoute from "./features/dashboard/route";
 import ProblemRoute from "./features/problem/route";
 import UserRoute from "./features/user/route";
 import { PermissionDeniedPage } from "./pages";
+import JudgeManagementRoute from "./features/onlineJudge/route";
 
 const AdminRoute: RouteObject[] = [
   ...CourseRoute,
   ...DashboardRoute,
   ...ProblemRoute,
   ...UserRoute,
+  ...JudgeManagementRoute,
   {
     path: "permission-denied",
     element: <PermissionDeniedPage />

@@ -79,6 +79,7 @@ export const ProblemDetail = () => {
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 403) {
         setIsPublished(false);
+        return;
       }
       showToastError({ toast: toast, message: "Failed to fetch problem detail" });
     }
@@ -183,7 +184,11 @@ export const ProblemDetail = () => {
         {/* Bottom bar */}
         <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-6 bg-white border-t h-14">
           <div className="flex space-x-2">
-            <Button className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4" onClick={toggleSidebar}>
+            <Button
+              type="button"
+              className="font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4"
+              onClick={toggleSidebar}
+            >
               <MdList className="inline-block icon-base icon-gray3" />
               All Problems
             </Button>

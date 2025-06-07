@@ -59,10 +59,17 @@ export default function LessonListItem({ lesson }: LessonListItemProps) {
     //     </div>
     //   );
     // };
+
+    // Check if lesson has content to show theory icon
+    const hasContent = lesson.lessonContent && lesson.lessonContent.trim() !== "";
+
+    // Check if lesson has problem to show problem icon
+    const hasProblem = lesson.hasProblem && lesson.lessonProblemId;
+
     return (
       <div className="flex flex-row flex-1 items-start justify-start gap-5 text-gray3">
-        {unfinishedTheoryIcon}
-        {unfinishedProblemIcon}
+        {hasContent && unfinishedTheoryIcon}
+        {hasProblem && unfinishedProblemIcon}
       </div>
     );
   };

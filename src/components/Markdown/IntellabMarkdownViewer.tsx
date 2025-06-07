@@ -7,6 +7,10 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import remarkGfm from "remark-gfm";
 import { CarouselImage, isImageMarkdown, extractImageInfo } from "@/utils";
 import { ImageCarousel } from "./IntellabImageCarousel";
+import remarkMath from "remark-math";
+import rehypeSlug from "rehype-slug";
+import rehypeKatex from "rehype-katex";
+import "katex/dist/katex.min.css";
 // Type definitions
 interface CodeBlock {
   language: string;
@@ -273,8 +277,26 @@ export const RenderMarkdown = ({ content }: RenderMarkdownProps) => {
         {blocks.map((block, index) => {
           if (block.type === "text") {
             return (
-              <div key={index} className="mb-4">
-                <ReactMarkdown rehypePlugins={[remarkGfm, [rehypeAutolinkHeadings, { behavior: "wrap" }]]}>
+              <div key={index} className="mb-4 prose-sm prose md:prose-base lg:prose-lg max-w-none">
+                <ReactMarkdown
+                  remarkPlugins={[remarkGfm, remarkMath]}
+                  rehypePlugins={[rehypeSlug, [rehypeAutolinkHeadings, { behavior: "wrap" }], rehypeKatex]}
+                  components={{
+                    // Make sure code in text sections doesn't get affected by prose
+                    code: (props) => {
+                      // eslint-disable-next-line react/prop-types
+                      const { children, ...rest } = props;
+                      const isInline = children;
+                      return isInline ? (
+                        <code className="px-1 py-0.5 bg-gray-100 rounded text-gray-800 font-mono text-sm" {...rest}>
+                          {children}
+                        </code>
+                      ) : (
+                        <code {...props} />
+                      );
+                    }
+                  }}
+                >
                   {block.content as string}
                 </ReactMarkdown>
               </div>

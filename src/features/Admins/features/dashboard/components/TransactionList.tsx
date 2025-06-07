@@ -17,6 +17,7 @@ import {
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
 import { Skeleton } from "@/components/ui";
+import { EmptyList } from "@/components/ui/EmptyList";
 
 interface Transaction {
   name: string;
@@ -59,7 +60,7 @@ export function TransactionsList({
       const apiTransactions = await transactionAPI.getTransactions(page);
 
       if (apiTransactions.length === 0) {
-        setErrorMessage("No transactions found or unable to fetch transactions.");
+        setErrorMessage("No transactions found.");
       } else {
         const formattedTransactions = apiTransactions.map((transaction) => ({
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
@@ -119,7 +120,7 @@ export function TransactionsList({
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-sm">{title}</CardTitle>
-          <Button variant="link" className="text-xs p-0 h-auto" onClick={() => setOpen(true)}>
+          <Button type="button" variant="link" className="h-auto p-0 text-xs" onClick={() => setOpen(true)}>
             View all &gt;
           </Button>
         </CardHeader>
@@ -129,13 +130,13 @@ export function TransactionsList({
               {Array.from({ length: limit }).map((_, idx) => (
                 <div key={idx} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Skeleton className="h-8 w-8 rounded-full" />
+                    <Skeleton className="w-8 h-8 rounded-full" />
                     <div className="space-y-1">
-                      <Skeleton className="h-4 w-24" />
-                      <Skeleton className="h-3 w-32" />
+                      <Skeleton className="w-24 h-4" />
+                      <Skeleton className="w-32 h-3" />
                     </div>
                   </div>
-                  <Skeleton className="h-4 w-16" />
+                  <Skeleton className="w-16 h-4" />
                 </div>
               ))}
             </div>
@@ -144,11 +145,11 @@ export function TransactionsList({
               {paginatedTransactions.slice(0, limit).map((transaction, idx) => (
                 <li key={idx} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="w-8 h-8">
                       <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <div className="font-medium text-sm">{transaction.name}</div>
+                      <div className="text-sm font-medium">{transaction.name}</div>
                       <div className="text-xs text-muted-foreground">{transaction.email}</div>
                     </div>
                   </div>
@@ -156,7 +157,7 @@ export function TransactionsList({
                 </li>
               ))}
               {transactions.length === 0 && !isLoading && (
-                <li className="text-center py-4 text-muted-foreground">{errorMessage || "No transactions found"}</li>
+                <EmptyList message={errorMessage || "No transactions found"} size="sm" />
               )}
             </ul>
           )}
@@ -182,13 +183,13 @@ export function TransactionsList({
               onClick={() => loadTransactions(currentPage - 1)}
               disabled={isLoading}
             >
-              {isLoading ? <Skeleton className="h-4 w-4 mr-2" /> : null}
+              {isLoading ? <Skeleton className="w-4 h-4 mr-2" /> : null}
               Refresh
             </Button>
           </div>
 
           {isLoading ? (
-            <div className="rounded-md border overflow-hidden">
+            <div className="overflow-hidden border rounded-md">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -204,24 +205,24 @@ export function TransactionsList({
                     <TableRow key={idx}>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <Skeleton className="h-8 w-8 rounded-full" />
+                          <Skeleton className="w-8 h-8 rounded-full" />
                           <div className="space-y-1">
-                            <Skeleton className="h-4 w-32" />
-                            <Skeleton className="h-3 w-40" />
+                            <Skeleton className="w-32 h-4" />
+                            <Skeleton className="w-40 h-3" />
                           </div>
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-20" />
+                        <Skeleton className="w-20 h-4" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-4 w-16" />
+                        <Skeleton className="w-16 h-4" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-6 w-20 rounded-full" />
+                        <Skeleton className="w-20 h-6 rounded-full" />
                       </TableCell>
                       <TableCell>
-                        <Skeleton className="h-6 w-16 rounded-full" />
+                        <Skeleton className="w-16 h-6 rounded-full" />
                       </TableCell>
                     </TableRow>
                   ))}
@@ -229,7 +230,7 @@ export function TransactionsList({
               </Table>
             </div>
           ) : (
-            <div className="rounded-md border overflow-hidden">
+            <div className="overflow-hidden border rounded-md">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -241,7 +242,7 @@ export function TransactionsList({
                         <Button
                           variant="ghost"
                           size="sm"
-                          className="p-0 h-auto text-xs"
+                          className="h-auto p-0 text-xs"
                           onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
                         >
                           {sortOrder === "asc" ? "↑" : "↓"}
@@ -258,8 +259,8 @@ export function TransactionsList({
                               setSelectedStatus(value as "Completed" | "Pending" | "Failed" | "all")
                             }
                           >
-                            <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
-                              <Funnel className="h-4 w-4 cursor-pointer" />
+                            <SelectTrigger className="w-auto h-auto p-0 border-none shadow-none">
+                              <Funnel className="w-4 h-4 cursor-pointer" />
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">All</SelectItem>
@@ -278,8 +279,8 @@ export function TransactionsList({
                           value={selectedType}
                           onValueChange={(value) => setSelectedType(value as "Course" | "Plan" | "All")}
                         >
-                          <SelectTrigger className="w-auto p-0 h-auto border-none shadow-none">
-                            <Funnel className="h-4 w-4 cursor-pointer" />
+                          <SelectTrigger className="w-auto h-auto p-0 border-none shadow-none">
+                            <Funnel className="w-4 h-4 cursor-pointer" />
                           </SelectTrigger>{" "}
                           <SelectContent>
                             <SelectItem value="All">All</SelectItem>
@@ -297,7 +298,7 @@ export function TransactionsList({
                       <TableRow key={idx}>
                         <TableCell>
                           <div className="flex items-center gap-2">
-                            <Avatar className="h-8 w-8">
+                            <Avatar className="w-8 h-8">
                               <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <div>
@@ -338,7 +339,7 @@ export function TransactionsList({
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell colSpan={5} className="text-center py-8">
+                      <TableCell colSpan={5} className="py-8 text-center">
                         {errorMessage || "No transactions found"}
                       </TableCell>
                     </TableRow>

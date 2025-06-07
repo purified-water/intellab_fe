@@ -12,7 +12,7 @@ interface ProblemListProps {
 
 const TABLE_HEADERS = {
   common: ["Problem Name", "Level", "Categories"],
-  created: ["Published", "Submissions", "Acceptance"],
+  created: ["isFree", "Submissions", "Acceptance"],
   draft: ["Created At", "Current Step"]
 };
 
@@ -20,7 +20,7 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [deletingProblem, setDeletingProblem] = useState<GetAdminProblem | null>(null); // Later
 
-  const { mutate: updateProblemPublication, isPending: isUpdatingPublication } = usePutProblemPublication();
+  const { mutate: updateProblemPublication } = usePutProblemPublication();
   const { mutate: deleteProblem, isPending: isDeletingProblem } = useDeleteProblem();
 
   const handleDeleteProblem = (problem: GetAdminProblem) => {
@@ -90,7 +90,7 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
       </tbody>
     );
   };
-  if (isUpdatingPublication || isDeletingProblem) {
+  if (isDeletingProblem) {
     return (
       <div className="flex justify-center py-8">
         <Spinner loading overlay={true} />

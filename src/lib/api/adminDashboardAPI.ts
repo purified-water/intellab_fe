@@ -18,7 +18,7 @@ import { revenueMockData } from "@/features/Admins/features/dashboard/mock/reven
 import { userGrowthMockData } from "@/features/Admins/features/dashboard/mock/userGrowthData";
 
 // Set to true to use mock data for development
-const USE_MOCK_DATA = import.meta.env.DEV;
+const USE_MOCK_DATA = false;
 
 export const adminDashboardAPI = {
   getOverviewStats: async ({ onStart, onSuccess, onFail, onEnd }: TGetDashboardOverviewParams) => {
@@ -62,7 +62,7 @@ export const adminDashboardAPI = {
     }
 
     try {
-      if (!USE_MOCK_DATA) {
+      if (USE_MOCK_DATA) {
         // Use mock data in development
         const period = query?.period || "monthly";
         // Simulate network delay
@@ -82,18 +82,18 @@ export const adminDashboardAPI = {
       } else {
         // Real API call for production
         const params = {
-          type: query?.period || "monthly" // daily, weekly, monthly, custom
+          type: query?.period || "monthly" // daily, weekly, monthly, yearly, custom
         };
 
-        // Add start_date and end_date params for custom period
-        if (query?.period === "custom") {
+        // Add start_date and end_date params for custom, monthly, and yearly periods
+        if (query?.period === "custom" || query?.period === "monthly" || query?.period === "yearly") {
           Object.assign(params, {
             start_date: query?.start_date,
             end_date: query?.end_date
           });
         }
 
-        const response = await apiClient.get("identity/admin/course-complete-rate", {
+        const response = await apiClient.get("identity/admin/dashboard/course-completion-rate", {
           params
         });
 
@@ -129,7 +129,7 @@ export const adminDashboardAPI = {
     }
 
     try {
-      if (!USE_MOCK_DATA) {
+      if (USE_MOCK_DATA) {
         // Use mock data in development
         const period = query?.period || "monthly";
         // Simulate network delay
@@ -149,11 +149,11 @@ export const adminDashboardAPI = {
       } else {
         // Real API call for production
         const params = {
-          type: query?.period || "monthly" // daily, weekly, monthly, custom
+          type: query?.period || "monthly" // daily, weekly, monthly, yearly, custom
         };
 
-        // Add start_date and end_date params for custom period
-        if (query?.period === "custom") {
+        // Add start_date and end_date params for custom, monthly, and yearly periods
+        if (query?.period === "custom" || query?.period === "monthly" || query?.period === "yearly") {
           Object.assign(params, {
             start_date: query?.start_date,
             end_date: query?.end_date
@@ -196,7 +196,7 @@ export const adminDashboardAPI = {
     }
 
     try {
-      if (!USE_MOCK_DATA) {
+      if (USE_MOCK_DATA) {
         // Use mock data in development
         const period = query?.period || "monthly";
         // Simulate network delay
@@ -216,11 +216,11 @@ export const adminDashboardAPI = {
       } else {
         // Real API call for production
         const params = {
-          type: query?.period || "monthly" // daily, weekly, monthly, custom
+          type: query?.period || "monthly" // daily, weekly, monthly, yearly, custom
         };
 
-        // Add start_date and end_date params for custom period
-        if (query?.period === "custom") {
+        // Add start_date and end_date params for custom, monthly, and yearly periods
+        if (query?.period === "custom" || query?.period === "monthly" || query?.period === "yearly") {
           Object.assign(params, {
             start_date: query?.start_date,
             end_date: query?.end_date
@@ -263,7 +263,7 @@ export const adminDashboardAPI = {
     }
 
     try {
-      if (!USE_MOCK_DATA) {
+      if (USE_MOCK_DATA) {
         // Use mock data in development
         const period = query?.period || "monthly";
         // Simulate network delay
@@ -283,11 +283,11 @@ export const adminDashboardAPI = {
       } else {
         // Real API call for production
         const params = {
-          type: query?.period || "monthly" // daily, weekly, monthly, custom
+          type: query?.period || "monthly" // daily, weekly, monthly, yearly, custom
         };
 
-        // Add start_date and end_date params for custom period
-        if (query?.period === "custom") {
+        // Add start_date and end_date params for custom, monthly, and yearly periods
+        if (query?.period === "custom" || query?.period === "monthly" || query?.period === "yearly") {
           Object.assign(params, {
             start_date: query?.start_date,
             end_date: query?.end_date

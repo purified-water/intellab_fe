@@ -239,10 +239,15 @@ export function FilterDialog(props: FilterDialogProps) {
   const renderButtons = () => {
     return (
       <div className="flex gap-4 mt-6 font-semibold">
-        <Button className="px-6 py-2 text-white rounded-lg bg-appPrimary hover:bg-opacity-75" onClick={handleFilter}>
+        <Button
+          type="button"
+          className="px-6 py-2 text-white rounded-lg bg-appPrimary hover:bg-opacity-75"
+          onClick={handleFilter}
+        >
           Filter
         </Button>
         <Button
+          type="button"
           variant="outline"
           className="px-6 py-2 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={handleResetClick}

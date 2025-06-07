@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import { ICourse } from "@/types";
 import { useNavigate } from "react-router-dom";
 import { EmptyList } from "@/components/ui/EmptyList";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 interface UserFeaturedCoursesProps {
   courses: ICourse[];
@@ -34,22 +35,27 @@ export const UserFeaturedCourses = ({ courses, isLoading, type = "featured", cla
         </Button>
       </div>
 
-      <div className="overflow-x-auto">
-        <div className="flex gap-6 px-1 snap-x snap-mandatory">
-          {isLoading
-            ? Array.from({ length: 3 }).map((_, i) => (
-                <Skeleton key={i} className="min-w-[300px] w-[370px] h-[320px] rounded-xl" />
-              ))
-            : courses.map((course) => (
-                <div key={course.courseId} className="pb-4 snap-start">
-                  <FeaturedCourseCard course={course} />
-                </div>
-              ))}
-          {!isLoading && courses.length === 0 && (
-            <EmptyList message="No courses available" className="w-full h-[320px] flex items-center justify-center" />
-          )}
+      {!isLoading && courses.length === 0 ? (
+        <div className="flex items-center justify-center w-full py-8">
+          <EmptyList message="No courses available" className="w-full h-[300px] flex items-center justify-center" />
         </div>
-      </div>
+      ) : (
+        <div className="overflow-x-auto">
+          <ScrollableList size="large">
+            <div className="flex gap-6 px-1 snap-x snap-mandatory">
+              {isLoading
+                ? Array.from({ length: 3 }).map((_, i) => (
+                    <Skeleton key={i} className="min-w-[300px] w-[370px] h-[320px] rounded-xl" />
+                  ))
+                : courses.map((course) => (
+                    <div key={course.courseId} className="pb-4 snap-start">
+                      <FeaturedCourseCard course={course} />
+                    </div>
+                  ))}
+            </div>
+          </ScrollableList>
+        </div>
+      )}
     </div>
   );
 };
