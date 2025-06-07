@@ -12,7 +12,7 @@ interface ProblemListProps {
 
 const TABLE_HEADERS = {
   common: ["Problem Name", "Level", "Categories"],
-  created: ["isFree", "Submissions", "Acceptance"],
+  created: ["Free", "Submissions", "Acceptance"],
   draft: ["Created At", "Current Step"]
 };
 

@@ -1,17 +1,13 @@
-import { useEffect } from "react";
 import { LeaderboardList, PodiumList } from "../components";
 import { ChevronLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
+import { SEO } from "@/components/SEO";
 
 export function LeaderboardPage() {
   const navigate = useNavigate();
 
   const { width } = useWindowDimensions();
-
-  useEffect(() => {
-    document.title = "Leaderboard | Intellab";
-  }, []);
 
   const onLeaderboardClick = () => {
     navigate("/");
@@ -28,6 +24,7 @@ export function LeaderboardPage() {
 
   return (
     <div className="py-4">
+      <SEO title="Leaderboard | Intellab" />
       <div style={{ marginLeft: width / 5, marginRight: width / 5 }}>
         {renderTitle()}
         <div className="space-y-8 justify-items-center">
