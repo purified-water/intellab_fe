@@ -20,15 +20,15 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
   }
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center px-4">
       {query !== "" && (
-        <div className="self-start mb-6 text-lg text-black sm:text-xl sm:mb-8">
+        <div className="self-start mb-4 text-lg text-black sm:text-xl sm:mb-6">
           {query && courses.length === 0 ? "Course not found!" : "Search results"}
         </div>
       )}
 
       <div className="flex justify-center w-full">
-        <div className="flex flex-wrap gap-4 justify-start max-w-[1000px]">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] w-full">
           {courses.map((course) => (
             <Course key={course.courseId} course={course} skeletonLoading={loading} />
           ))}
