@@ -15,6 +15,7 @@ import { getUserIdFromLocalStorage } from "@/utils";
 import { Button } from "@/components/ui";
 import { ArrowRight } from "lucide-react";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
+import { SEO } from "@/components/SEO";
 
 // const SEARCH_WAIT_TIME = 3000;
 
@@ -28,10 +29,6 @@ export const ExplorePage = () => {
   const dispatch = useDispatch();
   const exploreCourses = useSelector((state: RootState) => state.course.exploreCourses);
   const hasFilter = useSelector((state: RootState) => state.course.hasFilter);
-
-  useEffect(() => {
-    document.title = "Explore | Intellab";
-  }, []);
 
   const fetchCourses = async () => {
     setLoading(true);
@@ -123,7 +120,7 @@ export const ExplorePage = () => {
 
   const renderGridCourses = () => (
     <div className="flex flex-wrap gap-7 sm:pl-10">
-      {displayedCourses.map((course) => (
+      {displayedCourses.map((course: ICourse) => (
         <Course key={course.courseId} course={course} skeletonLoading={loading} />
       ))}
     </div>
@@ -131,6 +128,7 @@ export const ExplorePage = () => {
 
   return (
     <>
+      <SEO title="Explore | Intellab" />
       <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
         {/* Header section with filter button and search bar */}
         <div className="flex items-center pt-10">

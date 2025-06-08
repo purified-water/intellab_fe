@@ -32,10 +32,10 @@ export function HeroSection() {
           {/* Visual Column */}
           <div className="relative w-full aspect-[4/3] lg:aspect-[5/3] desktop-only">
             {/* Blobs */}
-            <img src={BLOB_RED} alt="Red blob" className="absolute w-[70%] max-w-[500px] -top-[40%] left-0 z-0" />
+            <img src={BLOB_RED} alt="Background-red" className="absolute w-[70%] max-w-[500px] -top-[40%] left-0 z-0" />
             <img
               src={BLOB_PURPLE}
-              alt="Purple blob"
+              alt="Background-purple"
               className="absolute w-[80%] max-w-[500px] top-[0%] right-0 z-0 opacity-80"
             />
 

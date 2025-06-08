@@ -1,5 +1,5 @@
 import intellab_bottom from "@/assets/logos/intellab_bottom.svg";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { MdOutlineVisibility, MdOutlineVisibilityOff } from "rocketicons/md";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authAPI, userAPI } from "@/lib/api";
@@ -16,6 +16,7 @@ import { FaSpinner } from "rocketicons/fa6";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
 import { LOGIN_TYPES, USER_ROLES } from "@/constants";
 import { AxiosError } from "axios";
+import { SEO } from "@/components/SEO";
 
 type inputValidationParams = {
   emailRequired: boolean;
@@ -34,9 +35,6 @@ export const LoginPage = () => {
 
   const previousNavigationState = location.state as TNavigationState;
 
-  useEffect(() => {
-    document.title = "Login | Intellab";
-  }, []);
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -145,6 +143,7 @@ export const LoginPage = () => {
 
   return (
     <div className="flex items-center justify-center h-screen bg-gray5">
+      <SEO title="Login | Intellab" />
       <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
         <div className="flex flex-col items-center mb-6">
           <img src={intellab_bottom} alt="Intellab Logo" className="h-16 mb-2" />
