@@ -12,12 +12,14 @@ interface ProblemTestcaseFormProps {
   onSave: (data: CreateTestcaseSchema) => Promise<void>;
   testcaseId?: string;
   testcaseActionType?: "create" | "view" | "edit";
+  onCancel: () => void;
 }
 
 export const ProblemTestcaseForm = ({
   onSave,
   testcaseId,
-  testcaseActionType = "create"
+  testcaseActionType = "create",
+  onCancel
 }: ProblemTestcaseFormProps) => {
   const testcaseList = useSelector((state: RootState) => state.createProblem.problemTestcases);
   const selectedTestcase = testcaseList.find((testcase: CreateTestcaseSchema) => testcase.testcaseId === testcaseId);
@@ -110,7 +112,7 @@ export const ProblemTestcaseForm = ({
             type="button"
             className="mr-2"
             variant="outline"
-            onClick={() => {}}
+            onClick={onCancel}
             disabled={testcaseActionType === "view" || form.formState.isSubmitting}
           >
             Cancel

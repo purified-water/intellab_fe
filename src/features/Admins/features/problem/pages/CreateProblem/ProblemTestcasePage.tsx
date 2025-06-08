@@ -123,16 +123,21 @@ export const ProblemTestcasePage = () => {
       });
   };
 
+  const handleCancelTestcaseForm = () => {
+    setTestcaseAction({ type: "default" });
+  };
+
   const renderPageContent = () => {
     switch (testcaseAction.type) {
       case "create":
-        return <ProblemTestcaseForm onSave={handleUpdateTestcases} />;
+        return <ProblemTestcaseForm onSave={handleUpdateTestcases} onCancel={handleCancelTestcaseForm} />;
       case "edit":
         return (
           <ProblemTestcaseForm
             onSave={handleUpdateTestcases}
             testcaseId={testcaseAction.testcaseId}
             testcaseActionType="edit"
+            onCancel={handleCancelTestcaseForm}
           />
         );
       case "view":
@@ -141,6 +146,7 @@ export const ProblemTestcasePage = () => {
             onSave={handleUpdateTestcases}
             testcaseId={testcaseAction.testcaseId}
             testcaseActionType="view"
+            onCancel={handleCancelTestcaseForm}
           />
         );
     }
@@ -154,7 +160,11 @@ export const ProblemTestcasePage = () => {
   return (
     <StepGuard checkValid={isBoilerplateStepValid} redirectTo={redirectUrl}>
       <div className="flex w-full">
-        <ProblemTestcaseList testcases={createProblem.problemTestcases} onSelectTestcase={setTestcaseAction} />
+        <ProblemTestcaseList
+          testcases={createProblem.problemTestcases}
+          onSelectTestcase={setTestcaseAction}
+          selectedTestcaseId={testcaseAction.testcaseId}
+        />
         <div className="flex-1 p-4">
           {renderPageContent()}
           <ProblemWizardButtons ignoreSubmit={true} />
