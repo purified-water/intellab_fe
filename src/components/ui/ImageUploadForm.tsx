@@ -45,8 +45,8 @@ export const ImageUploadForm = ({ value, onChange }: ImageUploadProps) => {
   return (
     <div className="flex flex-col gap-2">
       {preview ? (
-        <div className="relative w-full max-w-md">
-          <img src={preview} alt="Preview" className="object-cover w-full h-auto rounded-md" />
+        <div className="relative w-[400px] h-[200px]">
+          <img src={preview} alt="Preview" className="object-cover w-full h-full rounded-md" />
           <Button type="button" variant="ghost" size="icon" onClick={removeFile} className="absolute rounded-full top-1 right-1 bg-white/80 hover:bg-white">
             <X className="w-4 h-4" />
           </Button>
@@ -64,6 +64,7 @@ export const ImageUploadForm = ({ value, onChange }: ImageUploadProps) => {
               <span className="underline text-primary">Click to upload</span> or drag and drop
             </p>
             <p className="text-xs text-gray3">{`Max. File Size: ${CREATE_COURSE_THUMBNAIL_MAX_SIZE / (1024 * 1024)}MB`}</p>
+            <p className="text-xs text-gray3">Image dimensions should be 400px x 200px</p>
           </div>
           <input type="file" accept="image/*" className="hidden" ref={inputRef} onChange={handleUpload} />
         </div>

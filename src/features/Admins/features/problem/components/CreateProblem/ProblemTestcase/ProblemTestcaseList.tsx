@@ -8,9 +8,10 @@ import { TestcaseAction } from "../../../types";
 interface ProblemTestcaseListProps {
   testcases: CreateTestcaseSchema[];
   onSelectTestcase?: (testcaseAction: TestcaseAction) => void;
+  selectedTestcaseId?: string;
 }
 
-export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTestcaseListProps) => {
+export const ProblemTestcaseList = ({ testcases, onSelectTestcase, selectedTestcaseId }: ProblemTestcaseListProps) => {
   const [showList, setShowList] = useState(true);
 
   const toggleList = () => {
@@ -35,6 +36,7 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase }: ProblemTest
                 testcase={testcase}
                 onSelectTestcase={onSelectTestcase}
                 index={index}
+                selectedTestcaseId={selectedTestcaseId}
               />
             ))}
           </ul>
