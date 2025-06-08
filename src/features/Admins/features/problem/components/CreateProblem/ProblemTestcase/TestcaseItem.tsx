@@ -38,7 +38,7 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase, i
 
   return (
     <div
-      className={`flex items-center justify-between px-3 py-2 border rounded-lg hover:bg-muted cursor-pointer ${selectedTestcaseId === testcase.testcaseId ? "bg-purple-100 border-appFadedPrimary" : ""}`}
+      className={`flex items-center justify-between px-3 py-2 border rounded-lg cursor-pointer ${selectedTestcaseId === testcase.testcaseId ? "bg-purple-100 border-appFadedPrimary hover:bg-purple-200" : "hover:bg-muted"}`}
       onClick={(e) => {
         e.stopPropagation(); // Prevent overriding actions from dropdown menu
         onSelectTestcase?.({
@@ -47,7 +47,7 @@ export const TestcaseItem = ({ testcase, selectedTestcaseId, onSelectTestcase, i
         } as TestcaseAction);
       }}
     >
-      <span className="text-sm font-medium line-clamp-1">Test case {index}</span>
+      <span className="text-sm font-medium line-clamp-1">Test case {index + 1}</span>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <div onPointerDown={(e) => e.stopPropagation()}>
