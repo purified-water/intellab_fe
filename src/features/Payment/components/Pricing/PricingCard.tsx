@@ -7,8 +7,10 @@ import { showToastError } from "@/utils";
 import { motion } from "framer-motion";
 import { Sparkle } from "lucide-react";
 import { useSelector } from "react-redux";
+import { PriceDisplay } from "./PriceDisplay";
 
 interface Plan {
+  id: string;
   title: string;
   subtitle: string;
   description: string;
@@ -141,9 +143,8 @@ export const PricingCard = ({ plan }: { plan: Plan }) => {
           </div>
         </div>
         <div className="self-stretch py-[5px] inline-flex justify-between items-end">
-          <div className="flex justify-start items-end gap-[5px]">
-            <div className="justify-start text-xl font-bold text-black">{plan.price}</div>
-            <div className="justify-start text-xs font-light text-gray2">{plan.priceUnit}</div>
+          <div className="flex flex-col justify-start">
+            <PriceDisplay planId={plan.id} price={plan.price} priceUnit={plan.priceUnit} />
           </div>
           <div className="justify-start text-gray2 text-[10px] font-light">Prices are maked in Vietnamese Dong</div>
         </div>
