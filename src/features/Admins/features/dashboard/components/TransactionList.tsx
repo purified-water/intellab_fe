@@ -65,7 +65,7 @@ export function TransactionsList({
         const formattedTransactions = apiTransactions.map((transaction) => ({
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
           email: transaction.user.email,
-          amount: `$${transaction.amount.toLocaleString()}`,
+          amount: `${transaction.amount.toLocaleString()} VND`,
           date: new Date(transaction.date).toLocaleDateString(),
           status: transaction.status,
           type: transaction.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
@@ -105,8 +105,8 @@ export function TransactionsList({
 
   // Sort transactions by amount
   const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-    const amountA = parseFloat(a.amount.replace(/[$,]/g, ""));
-    const amountB = parseFloat(b.amount.replace(/[$,]/g, ""));
+    const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
+    const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
     return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
   });
 

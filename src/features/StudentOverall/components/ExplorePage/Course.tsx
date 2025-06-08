@@ -130,13 +130,9 @@ export function Course(props: CourseProps) {
         </div>
       </div>
 
-      <CardContent className="flex-grow px-4 pt-2 pb-0">
+      <CardContent className="flex-grow px-4 pt-2 pb-0 flex flex-col">
         <h3 className="text-lg font-bold line-clamp-1">{detailCourse?.courseName ?? DEFAULT_COURSE.courseName}</h3>
-        <p
-          className={`mt-2 text-sm text-muted-foreground ${
-            (detailCourse?.courseName ?? DEFAULT_COURSE.courseName).length > 40 ? "line-clamp-1" : "line-clamp-2"
-          }`}
-        >
+        <p className="mt-2 text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
           {detailCourse?.description ?? DEFAULT_COURSE.description}
         </p>
         <LevelCard level={detailCourse?.level ?? DEFAULT_COURSE.level} categories={detailCourse?.categories || []} />
@@ -145,11 +141,12 @@ export function Course(props: CourseProps) {
         <div className="mt-3 mb-3 ml-3 py-2 text-sm text-gray3 text-left flex items-center gap-1">
           <BookOpenText className="w-4 h-4" />
           {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount}
+          {" "}
           {(detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount) > 1 ? "lessons" : "lesson"}
         </div>
       </CardContent>
 
-      <CardFooter className="px-5 pt-0 pb-10 flex justify-between items-center">
+      <CardFooter className="px-5 pt-0 pb-4 flex justify-between items-center mt-auto">
         <Button
           className="h-10 px-6 pt-2 pb-[9px] bg-appPrimary rounded-lg text-white border border-appPrimary justify-center items-center inline-flex text-base hover:bg-appPrimary/80 hover:text-white transition-colors duration-200"
           onClick={(e) => {
