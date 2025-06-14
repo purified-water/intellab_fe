@@ -1,11 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn";
 import { Skeleton } from "@/components/ui/shadcn";
+import { NA_VALUE } from "@/constants";
 import { RootState } from "@/redux/rootReducer";
 import { Flame, Award, BookOpen } from "lucide-react";
 import { useSelector } from "react-redux";
 
 export const StatsCards = () => {
   const userRedux = useSelector((state: RootState) => state.user.user);
+  const userPoint = useSelector((state: RootState) => state.user.point);
   const isLoading = !userRedux; // Giả định: null khi chưa có data
 
   const statItems = [
@@ -19,7 +21,7 @@ export const StatsCards = () => {
     {
       title: "Your Points",
       icon: <Award className="w-4 h-4 text-gold" />,
-      value: "N/A",
+      value: userPoint ?? NA_VALUE,
       suffix: "Points",
       border: "border-l-gold"
     },

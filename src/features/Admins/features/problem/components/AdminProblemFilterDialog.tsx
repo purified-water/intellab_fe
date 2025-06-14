@@ -83,7 +83,7 @@ export function AdminProblemFilterDialog({
           </div>
 
           <div>
-            <h3 className="mb-2 text-lg font-semibold">Is Published</h3>
+            <h3 className="mb-2 text-lg font-semibold">Is Free</h3>
             <RadioGroup
               value={String(localFilter.isPublished)}
               onValueChange={(value) =>
