@@ -11,6 +11,7 @@ import {
 } from "@/features/Profile/types/apiType";
 import { TGetUsersForAdminResponse, TGetUsersForAdminParams } from "@/features/Admins/features/user/types/apiType";
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
+import { TPostLoginStreakResponse } from "@/features/StudentOverall/types";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -147,5 +148,13 @@ export const userAPI = {
         onEnd();
       }, 1000);
     }
+  },
+
+  postLoginStreak: async (): Promise<TPostLoginStreakResponse> => {
+    const response = await apiClient.post("/identity/profile/loginStreak");
+    if (response.status === HTTPS_STATUS_CODE.OK) {
+      return response.data;
+    }
+    throw new Error("Error posting login streak");
   }
 };

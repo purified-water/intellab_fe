@@ -39,6 +39,7 @@ import { RequiredInputLabel } from "@/features/Admins/components";
 import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 import { imageURLToFile } from "@/utils";
 import _ from "lodash";
+import { SEO } from "@/components/SEO";
 
 const courseGeneralSchema = createCourseSchema.pick({
   courseId: true,
@@ -155,6 +156,8 @@ export const CourseGeneralPage = () => {
 
   return (
     <Form {...form}>
+      <SEO title="Course General | Intellab" />
+
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => {
           console.error("Form submission errors:", errors);
@@ -248,7 +251,9 @@ export const CourseGeneralPage = () => {
           name="courseThumbnail"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Course Thumbnail</FormLabel>
+              <FormLabel>
+                <RequiredInputLabel label="Course Thumbnail" />
+              </FormLabel>
               <FormControl>
                 <ImageUploadForm value={field.value ?? null} onChange={field.onChange} />
               </FormControl>

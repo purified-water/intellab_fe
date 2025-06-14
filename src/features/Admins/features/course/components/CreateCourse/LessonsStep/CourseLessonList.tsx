@@ -98,7 +98,7 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
               items={lessons.map((lesson) => ({ id: lesson.lessonId }))}
               strategy={verticalListSortingStrategy}
             >
-              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[500px] scrollbar-default">
+              <div ref={listRef} className="space-y-3 overflow-y-scroll max-h-[500px] scrollbar-hide">
                 {lessons.map((lesson) => (
                   <LessonItem
                     onAction={(action) => {
@@ -114,17 +114,17 @@ export function CourseLessonList({ lessons, onSelect, onCreateLesson, setHasLess
               </div>
             </SortableContext>
           </DndContext>
-
-          <div className="mt-4">
-            <Button type="button" variant="outline" className="w-full" onClick={() => setModalOpen(true)}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add New Lesson
-            </Button>
-          </div>
-
-          <AddLessonModal onAddLesson={handleAction} open={modalOpen} onOpenChange={setModalOpen} />
         </>
       )}
+
+      <div className="mt-4">
+        <Button type="button" variant="default" className="w-full" onClick={() => setModalOpen(true)}>
+          <Plus className="w-4 h-4" />
+          Add New Lesson
+        </Button>
+      </div>
+
+      <AddLessonModal onAddLesson={handleAction} open={modalOpen} onOpenChange={setModalOpen} />
     </div>
   );
 }

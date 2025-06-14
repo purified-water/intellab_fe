@@ -22,12 +22,11 @@ export const createCourseSchema = z.object({
     }),
   courseLevel: z.enum(["Beginner", "Intermediate", "Advanced"]),
   courseThumbnail: z
-    .instanceof(File)
+    .instanceof(File, { message: "Course thumbnail is required" })
     .nullable()
     .refine((file) => file && file.size <= CREATE_COURSE_THUMBNAIL_MAX_SIZE, {
-      message: `Image size must be less than ${CREATE_COURSE_THUMBNAIL_MAX_SIZE / (1024 * 1024)}MB`
-    })
-    .optional(),
+      message: `Image is required and size must be less than ${CREATE_COURSE_THUMBNAIL_MAX_SIZE / (1024 * 1024)}MB`
+    }),
   courseLessons: z.array(createLessonSchema).refine((lessons) => lessons.length > 0, {
     message: "At least one lesson is required"
   }),

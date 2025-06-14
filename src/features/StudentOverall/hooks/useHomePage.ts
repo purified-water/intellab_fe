@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { courseAPI, leaderboardAPI, userAPI } from "@/lib/api";
 import { ICourse } from "@/types";
 import { TGetLeaderboardParamsTanstack } from "@/features/Leaderboard/types/apiType";
@@ -72,5 +72,15 @@ export const useGetLeaderboard = (query: TGetLeaderboardParamsTanstack) => {
     placeholderData: (previous) => previous,
     staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
     gcTime: 1000 * 60 * 10 // Garbage collect after 10 minutes
+  });
+};
+
+export const usePostLoginStreak = () => {
+  return useMutation({
+    mutationKey: ["loginStreak"],
+    mutationFn: async () => {
+      const response = await userAPI.postLoginStreak();
+      return response.result;
+    }
   });
 };

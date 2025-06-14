@@ -17,6 +17,7 @@ import { StepGuard } from "../../../course/components/StepGuard";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 import _ from "lodash";
+import { SEO } from "@/components/SEO";
 
 const problemSolutionSchema = createProblemSchema.pick({
   problemSolution: true
@@ -82,6 +83,8 @@ export const ProblemSolutionPage = () => {
 
   return (
     <StepGuard checkValid={actualCheckTestcasesStepValid} redirectTo={redirectUrl}>
+      <SEO title="Problem Solution | Intellab" />
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

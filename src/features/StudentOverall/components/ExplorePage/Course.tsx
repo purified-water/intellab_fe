@@ -140,8 +140,7 @@ export function Course(props: CourseProps) {
         {/* Lessons count above the button */}
         <div className="mt-3 mb-3 ml-3 py-2 text-sm text-gray3 text-left flex items-center gap-1">
           <BookOpenText className="w-4 h-4" />
-          {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount}
-          {" "}
+          {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount}{" "}
           {(detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount) > 1 ? "lessons" : "lesson"}
         </div>
       </CardContent>
