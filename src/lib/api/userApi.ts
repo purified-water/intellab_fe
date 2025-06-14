@@ -7,11 +7,15 @@ import {
   TGetProgressLanguageResponse,
   TGetProfileResponse,
   TGetProfileMeResponse,
-  TGetProfileMeParams
+  TGetProfileMeParams,
+  TGetMyPointResponse,
+  TGetMyPointParams
 } from "@/features/Profile/types/apiType";
 import { TGetUsersForAdminResponse, TGetUsersForAdminParams } from "@/features/Admins/features/user/types/apiType";
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
 import { TPostLoginStreakResponse } from "@/features/StudentOverall/types";
+import { AxiosError } from "axios";
+import { apiResponseCodeUtils } from "@/utils";
 
 const DEFAULT_PAGE_SIZE = 10;
 
@@ -156,5 +160,31 @@ export const userAPI = {
       return response.data;
     }
     throw new Error("Error posting login streak");
+  },
+  
+  getMyPoint: async ({ onStart, onSuccess, onFail, onEnd }: TGetMyPointParams) => {
+    const DEFAULT_ERROR = "Error getting user point";
+
+    const handleResponseData = async (data: TGetMyPointResponse) => {
+      await onSuccess(data);
+    };
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const response = await apiClient.get("/identity/leaderboard/myPoint");
+      await handleResponseData(response.data as TGetMyPointResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TGetMyPointResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
+    }
   }
 };

@@ -4,6 +4,8 @@ import { Sun, Moon, ReceiptText } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { IUser } from "@/types";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/rootReducer";
 
 interface ProfileMenuProps {
   user: IUser | null;
@@ -23,6 +25,7 @@ export const ProfileMenu = ({
   isDarkMode
 }: ProfileMenuProps) => {
   const menuRef = useRef<HTMLDivElement>(null);
+  const userPoint = useSelector((state: RootState) => state.user.point);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -58,7 +61,7 @@ export const ProfileMenu = ({
               />
               <div className="flex flex-col px-4 py-2">
                 <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
-                <div className="text-gray-500 ">DUMMY points</div>
+                <div className="text-gray-500 ">{userPoint} points</div>
               </div>
             </div>
 

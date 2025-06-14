@@ -5,7 +5,7 @@ import { authAPI, userAPI } from "@/lib/api";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
-import { setUser } from "@/redux/user/userSlice";
+import { setPoint, setUser } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { setPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
@@ -30,10 +30,20 @@ const GoogleLogin = (props: TLoginGoogleProps) => {
     });
   };
 
+  const getMyPointAPI = async () => {
+    await userAPI.getMyPoint({
+      onSuccess: async (point) => {
+        dispatch(setPoint(point));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
     await userAPI.getProfileMe({
       onSuccess: async (user) => {
         dispatch(setUser(user));
+        await getMyPointAPI();
         await getPremiumStatusAPI(user.userId!);
       },
       onFail: async (message) => showToastError({ toast: toast.toast, message })

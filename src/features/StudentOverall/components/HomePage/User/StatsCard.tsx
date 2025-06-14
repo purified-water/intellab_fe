@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/shadcn";
 import { Skeleton } from "@/components/ui/shadcn";
 import { LoginStreak } from "@/features/StudentOverall/types";
+import { NA_VALUE } from "@/constants";
 import { RootState } from "@/redux/rootReducer";
 import { Flame, Award, BookOpen } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -14,6 +15,7 @@ export const StatsCards = ({ loginStreak, isLoadingLoginStreak }: StatsCardsProp
   const userRedux = useSelector((state: RootState) => state.user.user);
   const isUserLoading = !userRedux;
   const isLoginStreakLoading = isLoadingLoginStreak || !loginStreak;
+  const userPoint = useSelector((state: RootState) => state.user.point);
 
   const statItems = [
     {
@@ -27,7 +29,7 @@ export const StatsCards = ({ loginStreak, isLoadingLoginStreak }: StatsCardsProp
     {
       title: "Your Points",
       icon: <Award className="w-4 h-4 text-gold" />,
-      value: "N/A",
+      value: userPoint ?? NA_VALUE,
       suffix: "Points",
       border: "border-l-gold",
       isLoading: isUserLoading

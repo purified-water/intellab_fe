@@ -103,7 +103,11 @@ export const ProblemSolutionPage = () => {
                   <RequiredInputLabel label="Problem Solution" />
                 </FormLabel>
                 <FormControl>
-                  <AddMarkdownContent value={field.value} onChange={field.onChange} />
+                  <AddMarkdownContent
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Write a detailed solution including the approach, source code, and complexity analysis. You can also add examples or test cases to clarify the solution."
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

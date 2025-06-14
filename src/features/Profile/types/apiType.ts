@@ -21,6 +21,10 @@ type TGetCompletedCourseListMeResponse = TApiResponse<ICompletedCourse[]>;
 
 type TGetProfileMeParams = TGetApiParams<undefined, IUser>;
 
+type TGetMyPointResponse = number;
+
+type TGetMyPointParams = TGetApiParams<undefined, number>;
+
 export type {
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
@@ -31,5 +35,7 @@ export type {
   TGetProfileMeResponse,
   TGetSubmissionListMeResponse,
   TGetCompletedCourseListMeResponse,
-  TGetProfileMeParams
+  TGetProfileMeParams,
+  TGetMyPointResponse,
+  TGetMyPointParams
 };
