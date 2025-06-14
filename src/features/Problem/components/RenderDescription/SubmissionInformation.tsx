@@ -201,10 +201,17 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
   });
   const [submissionResult, setSubmissionResult] = useState<SubmissionTypeNoProblem | null>(null);
   const [testCases, setTestCases] = useState<TestCaseAfterSubmit[]>([]);
-  const { problemId } = useParams<{ problemId: string }>(); // Get the problemId from the URL
+  const { problemId } = useParams<{ problemId: string }>();
+  const createProblemFromRedux = useSelector((state: RootState) => state.createProblem);
 
-  const savedCodeData = useSelector((state: { userCode: UserCodeState }) => selectCodeByProblemId(state, problemId!)); // Retrieve saved code
-  const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[problemId!]);
+  // problemId: submit in ProblemDetailPage
+  // createProblemFromRedux.problemId: submit in CreateProblemSolutionPage
+  const actualProblemId = problemId || createProblemFromRedux.problemId;
+
+  const savedCodeData = useSelector((state: { userCode: UserCodeState }) =>
+    selectCodeByProblemId(state, actualProblemId!)
+  ); // Retrieve saved code
+  const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[actualProblemId!]);
 
   useEffect(() => {
     // If theres no history, which is recently submitted code, get the code from the store
@@ -213,7 +220,7 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
         setSubmissionResult(historyInformation);
         setTestCases(historyInformation.testCasesOutput);
         setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
-      } else if (problemId) {
+      } else if (actualProblemId) {
         if (submissionResultFromRedux && savedCodeData) {
           setSubmissionResult(submissionResultFromRedux);
           setTestCases(submissionResultFromRedux.testCasesOutput);
@@ -223,7 +230,7 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
     };
 
     initializeData();
-  }, [historyInformation, problemId]);
+  }, [historyInformation, actualProblemId]);
 
   const handleViewAllTestCases = () => setCurrentPanel("allTestCases");
 

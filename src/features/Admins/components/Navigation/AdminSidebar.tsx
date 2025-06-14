@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import {
@@ -75,6 +75,8 @@ export function AdminSidebar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const userRedux = useSelector((state: RootState) => state.user.user);
+
+  const userFullName = useMemo(() => `${userRedux?.firstName} ${userRedux?.lastName}`.trim(), [userRedux]);
 
   const handleLogout = () => {
     dispatch(clearUser());
@@ -161,7 +163,9 @@ export function AdminSidebar() {
               <div className="flex items-center gap-3 group-data-[collapsible=icon]:gap-0">
                 <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
                 <div className="flex flex-col items-start text-sm group-data-[collapsible=icon]:hidden">
-                  <span className="text-base font-semibold">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
+                  <span className="text-base font-semibold max-w-[150px] truncate" title={userFullName}>
+                    {userFullName}
+                  </span>
                   <span className="text-xs text-gray3">{userRedux?.email}</span>
                 </div>
               </div>
@@ -172,7 +176,9 @@ export function AdminSidebar() {
             <div className="flex items-center gap-3 p-3 border-b">
               <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
               <div className="flex flex-col">
-                <span className="text-lg font-semibold">{`${userRedux?.firstName} ${userRedux?.lastName}`}</span>
+                <span className="text-lg font-semibold max-w-[150px] truncate" title={userFullName}>
+                  {userFullName}
+                </span>
                 <span className="text-xs text-gray3">{userRedux?.email}</span>
               </div>
             </div>

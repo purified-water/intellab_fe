@@ -2,7 +2,8 @@ import { createSlice } from "@reduxjs/toolkit";
 import { UserState } from "./userType";
 
 const initialState: UserState = {
-  user: null
+  user: null,
+  point: 0
 };
 
 const userSlice = createSlice({
@@ -24,11 +25,14 @@ const userSlice = createSlice({
       if (state.user) {
         state.user.isEmailVerified = true;
       }
+    },
+    setPoint(state, action) {
+      state.point = action.payload;
     }
   }
 });
 
-export const { setUser, clearUser, increaseCompletedCourseCount, setEmailVerified } = userSlice.actions;
+export const { setUser, clearUser, increaseCompletedCourseCount, setEmailVerified, setPoint } = userSlice.actions;
 export default userSlice.reducer;
 
 // Selector to get userId from Redux store

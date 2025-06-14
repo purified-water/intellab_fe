@@ -13,7 +13,12 @@ export const initialState: CreateProblemSchemaWithCurrentStep = {
   problemStructure: {
     functionName: "",
     inputStructure: [],
-    outputStructure: []
+    outputStructure: [
+      {
+        outputName: "result",
+        outputType: "int"
+      }
+    ]
   },
   problemTestcases: [],
   problemSolution: "",

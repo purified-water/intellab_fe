@@ -188,14 +188,14 @@ export const ProblemGeneralPage = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                <RequiredInputLabel label="Is Published" />
+                <RequiredInputLabel label="Is Free" />
               </FormLabel>
               <FormControl>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
               </FormControl>
               <FormMessage />
               <FormDescription>
-                Note: If NOT published then users need to buy premium plan to unlock the problem.
+                Note: If NOT free then users need to buy premium plan to unlock the problem.
               </FormDescription>
             </FormItem>
           )}
