@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui";
 import { useDispatch } from "react-redux";
 import { resetCreateCourse } from "@/redux/createCourse/createCourseSlice";
+import { SEO } from "@/components/SEO";
 
 const TABS = {
   CREATED: "created",
@@ -95,13 +96,17 @@ export function CourseListPage() {
   };
 
   return (
-    <div className="px-2 space-y-6">
-      <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
-      <div className="mx-auto space-y-3 justify-items-center">
-        {renderHeader()}
-        {renderFilterDialog()}
-        {renderCourseList()}
+    <>
+      <SEO title="Course Management | Intellab" />
+
+      <div className="px-2 space-y-6">
+        <h1 className="text-4xl font-bold text-appPrimary">Courses</h1>
+        <div className="mx-auto space-y-3 justify-items-center">
+          {renderHeader()}
+          {renderFilterDialog()}
+          {renderCourseList()}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

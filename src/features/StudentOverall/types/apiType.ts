@@ -92,3 +92,15 @@ export type TGetPremiumStatusParams = TGetApiParams<
   },
   TGetPremiumStatusResponse
 >;
+
+export type LoginStreak = {
+  streakLogin: number;
+  lastLogin: string;
+  userUid: string;
+  isLostStreak: boolean;
+  isUpStreak: boolean;
+};
+
+export type TPostLoginStreakResponse = APIResponseCode & {
+  result: LoginStreak;
+};

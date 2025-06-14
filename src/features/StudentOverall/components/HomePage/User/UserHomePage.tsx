@@ -1,5 +1,5 @@
 import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DateRange } from "react-day-picker";
 import { StatsCards } from "./StatsCard";
 import { YourCourses } from "./YourCourses";
@@ -11,11 +11,13 @@ import {
   useGetFreeCourses,
   useGetLeaderboard,
   useGetProgressLevel,
-  useGetYourCourses
+  useGetYourCourses,
+  usePostLoginStreak
 } from "@/features/StudentOverall/hooks/useHomePage";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { LoginStreak } from "@/features/StudentOverall/types";
 
 export const UserHomePage = () => {
   const userId = getUserIdFromLocalStorage();
@@ -35,8 +37,19 @@ export const UserHomePage = () => {
   const { data: freeCourses, isPending: isFetchingFreeCourses } = useGetFreeCourses();
   const { data: progressLevel, isPending: isFetchingProgressLevel } = useGetProgressLevel(userId || "");
   const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard(leaderboardQueryParams);
+  const { mutate: postLoginStreak } = usePostLoginStreak();
+  const [loginStreak, setLoginStreak] = useState<LoginStreak | null>(null);
   const leaderboardData = leaderboardDataRaw?.slice(0, 5) || [];
   const userRedux = useSelector((state: RootState) => state.user.user);
+
+  useEffect(() => {
+    postLoginStreak(undefined, {
+      onSuccess: (loginStreakResponse: LoginStreak) => {
+        console.log("Login streak response:", loginStreakResponse);
+        setLoginStreak(loginStreakResponse);
+      }
+    });
+  }, [postLoginStreak]);
 
   return (
     <main className="flex-1">
@@ -49,7 +62,7 @@ export const UserHomePage = () => {
             <DatePickerWithRange setDate={setDateRange} date={dateRange} />
           </div>
         </div>
-        <StatsCards />
+        <StatsCards loginStreak={loginStreak} />
 
         <div className="grid gap-4 mt-8 mb-24 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12">
           <YourCourses

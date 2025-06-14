@@ -31,6 +31,7 @@ import { useProblemWizardStep, useEditingProblem } from "../../hooks";
 import { RootState } from "@/redux/rootReducer";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 const problemGeneralSchema = createProblemSchema.pick({
   problemId: true,
@@ -101,6 +102,7 @@ export const ProblemGeneralPage = () => {
 
   return (
     <Form {...form}>
+      <SEO title="Problem General | Intellab" />
       <form
         onSubmit={form.handleSubmit(onSubmit, (errors) => handleSubmitError(errors))}
         className="flex flex-col mx-auto gap-8 max-w-[1000px]"
@@ -188,7 +190,7 @@ export const ProblemGeneralPage = () => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                <RequiredInputLabel label="Is Free" />
+                <RequiredInputLabel label="Free" />
               </FormLabel>
               <FormControl>
                 <Switch checked={field.value} onCheckedChange={field.onChange} />
