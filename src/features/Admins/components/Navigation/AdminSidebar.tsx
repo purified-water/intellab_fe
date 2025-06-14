@@ -11,7 +11,8 @@ import {
   Bell,
   LogOut,
   FileCode,
-  Gavel
+  Gavel,
+  Receipt
 } from "lucide-react";
 import {
   Sidebar,
@@ -40,6 +41,7 @@ const navItems = [
   { title: "Users", icon: Users, href: "/admin/users" },
   { title: "Courses", icon: GraduationCap, href: "/admin/courses" },
   { title: "Problems", icon: FileCode, href: "/admin/problems" },
+  { title: "Transactions", icon: Receipt, href: "/admin/transactions" },
   { title: "Online Judge", icon: Gavel, href: "/admin/judge-management" }
 ];
 
