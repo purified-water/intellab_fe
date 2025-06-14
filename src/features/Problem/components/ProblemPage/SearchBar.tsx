@@ -7,7 +7,7 @@ interface SearchProps {
   value: string;
   onSearch: (query: string) => void;
 }
-export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width = 1000 }) => {
+export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width }) => {
   const [query, setQuery] = useState(value);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width = 1000
 
   return (
     <div className="flex items-center justify-start p-2 bg-white">
-      <div className="relative" style={{ width: width }}>
+      <div className={`relative ${width ? '' : 'w-full'}`} style={width ? { width: width } : {}}>
         <Search className="absolute transform -translate-y-1/2 size-4 text-gray3 left-3 top-1/2" />
         <input
           value={query}
