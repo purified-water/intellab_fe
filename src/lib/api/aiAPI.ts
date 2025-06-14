@@ -60,6 +60,12 @@ export const aiAPI = {
         signal: controller.signal // Attach signal to fetch request
       });
 
+      // Check if response is ok before proceeding
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ""}`);
+      }
+
       if (!response.body) {
         throw new Error("Failed to establish connection for streaming.");
       }
@@ -217,6 +223,12 @@ export const aiAPI = {
         body: JSON.stringify(bodyParams),
         signal: controller.signal // Attach signal to fetch request
       });
+
+      // Check if response is ok before proceeding
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorText ? ` - ${errorText}` : ""}`);
+      }
 
       if (!response.body) {
         throw new Error("Failed to establish connection for streaming.");

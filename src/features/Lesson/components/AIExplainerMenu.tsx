@@ -44,7 +44,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
     const isProcessingRef = useRef<boolean>(false);
 
     // For streaming response
-    const [chatModel] = useState(CHATBOT_MODELS[3].value);
+    const [chatModel] = useState(CHATBOT_MODELS[0].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 
     // Handle component unmount and abort any in-progress requests
@@ -198,7 +198,8 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
         updateLastVisit();
 
         if (!responseStream) {
-          throw new Error("Failed to get response stream");
+          setExplainerResponse("Something went wrong. Please try again.");
+          throw new Error("Something went wrong. Please try again.");
         }
 
         let accumulatedContent = "";
@@ -240,7 +241,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
         // Only show error if not aborted
         if (error instanceof Error && error.name !== "AbortError") {
           setIsLoadingResponse(false);
-          const errorMsg = "Failed to process your request. Please try again.";
+          const errorMsg = error.message || "Failed to process your request. Please try again.";
           setErrorMessage(errorMsg);
           setExplainerResponse(errorMsg);
           dispatch(
@@ -281,15 +282,15 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
 
             <div className="relative mr-5">
               <div
-                className={`pr-1 overflow-y-auto transition-all duration-300 ${isLoadingResponse ? "h-8" : "h-[180px]"}`}
+                className={`pr-1 overflow-y-auto transition-all duration-300 ${isLoadingResponse || errorMessage ? "h-8" : "h-[180px]"}`}
               >
                 {isLoadingResponse ? (
                   <div className="flex items-center h-full space-x-2">
                     <Spinner loading={isLoadingResponse} className="text-black size-5" />
-                    <span className="text-sm text-gray-600">Explaining...</span>
+                    <span className="text-sm text-gray3">Explaining...</span>
                   </div>
                 ) : errorMessage ? (
-                  <div className="text-red-500">{errorMessage}</div>
+                  <div className="text-appHard">{errorMessage}</div>
                 ) : (
                   <Markdown className="prose">{explainerResponse || "Select text to explain"}</Markdown>
                 )}
