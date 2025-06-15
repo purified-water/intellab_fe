@@ -1,5 +1,5 @@
 import { adminJudgeAPI } from "@/features/Admins/api";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 export const useGetJudgeServices = () =>
   useQuery({
@@ -9,10 +9,13 @@ export const useGetJudgeServices = () =>
     staleTime: 60000 // Data is fresh for 1 minute
   });
 
-export const usePostJudgeScale = () =>
-  useMutation({
+export const usePostJudgeScale = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (replicas: number) => adminJudgeAPI.postJudgeScale(replicas),
     onSuccess: () => {
-      useGetJudgeServices().refetch();
+      queryClient.invalidateQueries({ queryKey: ["getJudgePods"] });
     }
   });
+};
