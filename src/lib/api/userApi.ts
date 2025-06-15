@@ -161,7 +161,7 @@ export const userAPI = {
     }
     throw new Error("Error posting login streak");
   },
-  
+
   getMyPoint: async ({ onStart, onSuccess, onFail, onEnd }: TGetMyPointParams) => {
     const DEFAULT_ERROR = "Error getting user point";
 

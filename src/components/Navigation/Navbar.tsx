@@ -4,7 +4,7 @@ import { intellabSideLogo, intellabSidePremiumLogo } from "@/assets";
 import { MdAccountCircle, MdClose, MdMenu } from "rocketicons/md";
 import { useDispatch } from "react-redux";
 import { logoutSuccess } from "@/redux/auth/authSlice";
-import { clearUser } from "@/redux/user/userSlice";
+import { clearUser, clearLoginStreak } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { userLocalStorageCleanUp } from "@/utils";
@@ -49,6 +49,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
   const handleLogout = () => {
     dispatch(clearPremiumStatus());
     dispatch(clearUser());
+    dispatch(clearLoginStreak()); // Clear cached login streak data
     dispatch(logoutSuccess());
 
     userLocalStorageCleanUp();

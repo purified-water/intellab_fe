@@ -18,6 +18,7 @@ export const StatsSection = (props: StatsSectionProps) => {
   const [progress, setProgress] = useState<TProgress | null>(null);
   const toast = useToast();
   const reduxUser = useSelector((state: RootState) => state.user.user);
+  const reduxLoginStreak = useSelector((state: RootState) => state.user.loginStreak);
   const isMe = userId === reduxUser?.userId;
 
   const getProgressProblemAPI = async (userId: string | null) => {
@@ -47,8 +48,8 @@ export const StatsSection = (props: StatsSectionProps) => {
 
     return skeletons.map((_, index) => (
       <div key={index} className="flex items-center justify-between pt-3">
-        <Skeleton className="h-6 w-2/3" />
-        <Skeleton className="h-6 w-1/4" />
+        <Skeleton className="w-2/3 h-6" />
+        <Skeleton className="w-1/4 h-6" />
       </div>
     ));
   };
@@ -60,12 +61,12 @@ export const StatsSection = (props: StatsSectionProps) => {
 
     const stats = [
       { label: "Problems Solved", value: easy.solved + medium.solved + hard.solved },
-      { label: "Completed Courses", value: "15" },
-      { label: "Login Streak", value: "15 days" }
+      { label: "Completed Courses", value: reduxUser?.courseCount || 0 },
+      { label: "Login Streak", value: reduxLoginStreak || 0 }
     ];
 
     return stats.map((stat, index) => (
-      <div key={index} className="flex items-center justify-between pt-3 text-black1 text-base">
+      <div key={index} className="flex items-center justify-between pt-3 text-base text-black1">
         <p>{stat.label}</p>
         <p>{stat.value}</p>
       </div>

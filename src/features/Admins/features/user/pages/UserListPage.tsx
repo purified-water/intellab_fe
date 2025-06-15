@@ -26,7 +26,7 @@ export function UserListPage() {
     <>
       <SEO title="User Management | Intellab" />
       <div className="px-2 space-y-4">
-        <h1 className="text-4xl font-bold text-appPrimary">Users</h1>
+        <h1 className="text-4xl font-bold text-appPrimary">User Management</h1>
         <div className="mx-auto space-y-3 justify-items-center">
           {renderHeader()}
           {renderUserList()}

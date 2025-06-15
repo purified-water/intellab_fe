@@ -3,7 +3,9 @@ import { UserState } from "./userType";
 
 const initialState: UserState = {
   user: null,
-  point: 0
+  point: 0,
+  loginStreak: 0,
+  loginStreakLastFetched: null
 };
 
 const userSlice = createSlice({
@@ -28,11 +30,27 @@ const userSlice = createSlice({
     },
     setPoint(state, action) {
       state.point = action.payload;
+    },
+    setLoginStreak(state, action) {
+      state.loginStreak = action.payload as number;
+      state.loginStreakLastFetched = new Date().toISOString();
+    },
+    clearLoginStreak(state) {
+      state.loginStreak = null;
+      state.loginStreakLastFetched = null;
     }
   }
 });
 
-export const { setUser, clearUser, increaseCompletedCourseCount, setEmailVerified, setPoint } = userSlice.actions;
+export const {
+  setUser,
+  clearUser,
+  increaseCompletedCourseCount,
+  setEmailVerified,
+  setPoint,
+  setLoginStreak,
+  clearLoginStreak
+} = userSlice.actions;
 export default userSlice.reducer;
 
 // Selector to get userId from Redux store

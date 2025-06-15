@@ -130,7 +130,7 @@ export function ProblemListPage() {
 
   return (
     <div className="px-2 space-y-6">
-      <h1 className="text-4xl font-bold text-appPrimary">Problems</h1>
+      <h1 className="text-4xl font-bold text-appPrimary">Problem Management</h1>
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
         {renderFilterDialog()}
