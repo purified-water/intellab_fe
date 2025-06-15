@@ -119,7 +119,7 @@ export const ExplorePage = () => {
   };
 
   const renderGridCourses = () => (
-    <div className="flex flex-wrap gap-7 sm:pl-10">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] w-full">
       {displayedCourses.map((course: ICourse) => (
         <Course key={course.courseId} course={course} skeletonLoading={loading} />
       ))}
@@ -137,7 +137,9 @@ export const ExplorePage = () => {
               setShowFilter(!showFilter);
             }}
           />
-          <SearchBar value={query} onSearch={handleSearch} />
+          <div className="flex-1">
+            <SearchBar value={query} onSearch={handleSearch} />
+          </div>
         </div>
         {
           <motion.div
@@ -181,7 +183,7 @@ export const ExplorePage = () => {
                       <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
                         <Button type="button" variant="ghost" size="sm" className="gap-1">
                           View all <ArrowRight className="w-4 h-4" />
-                        </Button>{" "}
+                        </Button>
                       </Link>
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}

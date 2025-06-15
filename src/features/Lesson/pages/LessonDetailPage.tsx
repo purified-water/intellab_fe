@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI, userAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/types";
-import { getUserIdFromLocalStorage } from "@/utils";
+import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 import {
@@ -16,9 +16,10 @@ import {
 import { AppFooter } from "@/components/AppFooter";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { setUser } from "@/redux/user/userSlice";
+import { setPoint } from "@/redux/user/userSlice";
 import { useAIExplainer } from "../hooks/useAIExplainer";
 import { useLessonProgress, useTableOfContents } from "../hooks";
+import { useToast } from "@/hooks";
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -34,6 +35,7 @@ export const LessonDetailPage = () => {
 
   const dispatch = useDispatch();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  const toast = useToast();
 
   // AI Explainer state
   const [isExplainerToggled, setIsExplainerToggled] = useState(false);
@@ -80,21 +82,21 @@ export const LessonDetailPage = () => {
     getLessonDetail();
   }, [id]);
 
-  // Update user profile when lesson is completed
-  useEffect(() => {
-    if (isAuthenticated && lesson && !lesson?.nextLessonId && isLessonDone) {
-      getProfileMeAPI();
-    }
-  }, [isLessonDone]);
-
-  const getProfileMeAPI = async () => {
-    await userAPI.getProfileMe({
-      onSuccess: async (user) => {
-        dispatch(setUser(user));
+  const getMyPointAPI = async () => {
+    await userAPI.getMyPoint({
+      onSuccess: async (point) => {
+        dispatch(setPoint(point));
       },
-      onFail: async (message) => console.log("Error get profile", message)
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
     });
   };
+
+  // Get user point after finishing a course (no next lesson)
+  useEffect(() => {
+    if (isAuthenticated && lesson && !lesson?.nextLessonId && isLessonDone) {
+      getMyPointAPI();
+    }
+  }, [isLessonDone]);
 
   const getCourseDetail = async () => {
     if (courseId) {

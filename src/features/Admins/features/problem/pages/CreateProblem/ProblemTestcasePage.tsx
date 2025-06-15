@@ -12,6 +12,7 @@ import { useToast } from "@/hooks";
 import { showToastError, showToastSuccess } from "@/utils";
 import { useEditingProblem } from "../../hooks";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 export const ProblemTestcasePage = () => {
   const [testcaseAction, setTestcaseAction] = useState<TestcaseAction>({
@@ -159,6 +160,8 @@ export const ProblemTestcasePage = () => {
 
   return (
     <StepGuard checkValid={isBoilerplateStepValid} redirectTo={redirectUrl}>
+      <SEO title="Problem Testcase | Intellab" />
+
       <div className="flex w-full">
         <ProblemTestcaseList
           testcases={createProblem.problemTestcases}

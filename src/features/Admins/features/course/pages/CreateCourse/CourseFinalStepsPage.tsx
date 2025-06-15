@@ -26,6 +26,7 @@ import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
 import { useEffect } from "react";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
+import { SEO } from "@/components/SEO";
 
 const courseFinalStepsSchema = createCourseSchema.pick({
   coursePrice: true,
@@ -104,6 +105,8 @@ export const CourseFinalStepsPage = () => {
 
   return (
     <StepGuard checkValid={handleCheckValid} redirectTo={redirectUrl}>
+      <SEO title="Course Final Steps | Intellab" />
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (error) => {

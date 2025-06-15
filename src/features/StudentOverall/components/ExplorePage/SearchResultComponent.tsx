@@ -1,5 +1,5 @@
 import React from "react";
-import { Spinner } from "@/components/ui";
+import { EmptyList, Spinner } from "@/components/ui";
 import { ICourse } from "@/types";
 import { Course } from "./Course";
 
@@ -22,10 +22,12 @@ export const SearchResultComponent: React.FC<CourseProps> = ({ loading, courses,
   return (
     <div className="flex flex-col items-center px-4">
       {query !== "" && (
-        <div className="self-start mb-4 text-lg text-black sm:text-xl sm:mb-6">
-          {query && courses.length === 0 ? "Course not found!" : "Search results"}
+        <div className="self-start mb-4 text-lg font-semibold text-black sm:text-xl sm:mb-6">
+          {query && courses.length !== 0 && "Search results"}
         </div>
       )}
+
+      {query && courses.length === 0 && <EmptyList message="No courses found" />}
 
       <div className="flex justify-center w-full">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-[1200px] w-full">

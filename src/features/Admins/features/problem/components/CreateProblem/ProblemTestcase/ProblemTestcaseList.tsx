@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button, EndOfListNotice } from "@/components/ui";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 import { TestcaseItem } from "./TestcaseItem";
@@ -39,17 +39,19 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase, selectedTestc
                 selectedTestcaseId={selectedTestcaseId}
               />
             ))}
+            {testcases && testcases.length !== 0 && <EndOfListNotice />}
           </ul>
         </div>
       )}
+
       <div className="mt-4">
         <Button
           type="button"
-          variant="outline"
+          variant="default"
           className="w-full"
           onClick={() => onSelectTestcase?.({ type: "create" })}
         >
-          <Plus className="w-4 h-4 mr-2" />
+          <Plus className="w-4 h-4" />
           Add Test Case
         </Button>
       </div>

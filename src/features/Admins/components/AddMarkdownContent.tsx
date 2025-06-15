@@ -8,13 +8,15 @@ interface AddMarkdownContentProps {
   onChange: (value: string) => void;
   readOnly?: boolean;
   allowImage?: boolean;
+  placeholder?: string;
 }
 
 export const AddMarkdownContent = ({
   value,
   onChange,
   readOnly = false,
-  allowImage = false
+  allowImage = false,
+  placeholder = "Start typing... You can also drag and drop images here!"
 }: AddMarkdownContentProps) => {
   const [isEditing, setIsEditing] = useState(true);
 
@@ -56,7 +58,7 @@ export const AddMarkdownContent = ({
             value={value}
             onChange={(e) => onChange(e.target.value)}
             disabled={readOnly}
-            placeholder="Start typing... You can also drag and drop images here!"
+            placeholder={placeholder}
           />
 
           {/* Drag overlay - only shown when dragging over the textarea */}

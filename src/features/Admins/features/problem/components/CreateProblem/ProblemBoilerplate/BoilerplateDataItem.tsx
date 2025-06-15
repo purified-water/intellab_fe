@@ -36,11 +36,20 @@ export const BoilerplateDataItem = ({
       </Select>
 
       <span className="inline-block ml-2 whitespace-nowrap">{mode === "input" ? "Input" : "Output"} name:</span>
-      <Input className="ml-2" value={dataName} onChange={(e) => onNameChange(e.target.value)} />
+      <Input
+        className="ml-2"
+        value={dataName}
+        onChange={(e) => onNameChange(e.target.value)}
+        disabled={mode == "output"}
+      />
 
-      <Button type="button" variant="ghost" onClick={onRemove} className="text-sm text-gray3">
-        ✕
-      </Button>
+      {mode == "input" ? (
+        <Button type="button" variant="ghost" onClick={onRemove} className="text-sm text-gray3">
+          ✕
+        </Button>
+      ) : (
+        <div className="w-7" />
+      )}
     </div>
   );
 };

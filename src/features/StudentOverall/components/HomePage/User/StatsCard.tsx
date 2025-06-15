@@ -4,31 +4,40 @@ import { RootState } from "@/redux/rootReducer";
 import { Flame, Award, BookOpen } from "lucide-react";
 import { useSelector } from "react-redux";
 
-export const StatsCards = () => {
+interface StatsCardsProps {
+  loginStreak: number | null;
+  isLoadingLoginStreak: boolean;
+}
+
+export const StatsCards = ({ loginStreak, isLoadingLoginStreak }: StatsCardsProps) => {
   const userRedux = useSelector((state: RootState) => state.user.user);
-  const isLoading = !userRedux; // Giả định: null khi chưa có data
+  const isUserLoading = !userRedux;
+  const userPoint = useSelector((state: RootState) => state.user.point);
 
   const statItems = [
     {
       title: "Login Streak",
       icon: <Flame className="w-4 h-4 text-bronze" />,
-      value: "N/A",
+      value: loginStreak ?? 0,
       suffix: "Days",
-      border: "border-l-bronze"
+      border: "border-l-bronze",
+      isLoading: isLoadingLoginStreak
     },
     {
       title: "Your Points",
       icon: <Award className="w-4 h-4 text-gold" />,
-      value: "N/A",
+      value: userPoint ?? 0,
       suffix: "Points",
-      border: "border-l-gold"
+      border: "border-l-gold",
+      isLoading: isUserLoading
     },
     {
       title: "Your Courses",
       icon: <BookOpen className="w-4 h-4 text-appPrimary" />,
       value: userRedux?.courseCount ?? 0,
       suffix: "Courses",
-      border: "border-l-appPrimary"
+      border: "border-l-appPrimary",
+      isLoading: isUserLoading
     }
   ];
 
@@ -41,7 +50,7 @@ export const StatsCards = () => {
             {item.icon}
           </CardHeader>
           <CardContent>
-            {isLoading ? (
+            {item.isLoading ? (
               <>
                 <Skeleton className="w-16 h-6 mb-1" />
                 <Skeleton className="w-10 h-4" />

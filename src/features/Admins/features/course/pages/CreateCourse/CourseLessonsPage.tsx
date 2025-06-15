@@ -16,6 +16,7 @@ import { Spinner } from "@/components/ui";
 import { StepGuard } from "../../components/StepGuard";
 import { isGeneralStepValid } from "../../utils/courseStepGuard";
 import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 export const CourseLessonsPage = () => {
   const [lessonAction, setLessonAction] = useState<LessonAction>({
@@ -183,6 +184,8 @@ export const CourseLessonsPage = () => {
 
   return (
     <StepGuard checkValid={isGeneralStepValid} redirectTo={redirectUrl}>
+      <SEO title="Course Lessons | Intellab" />
+
       <div className="flex w-full">
         {isLoading ? (
           <div className="flex items-center justify-center w-24">

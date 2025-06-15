@@ -12,4 +12,5 @@ export * from "./card";
 export * from "./alert-dialog";
 export * from "./skeleton";
 export * from "./progress";
-export * from "./";
+export * from "./badge";
+export * from "./dropdown-menu";
