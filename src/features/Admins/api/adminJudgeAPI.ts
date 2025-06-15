@@ -6,7 +6,7 @@ export const adminJudgeAPI = {
     return response.data;
   },
   postJudgeScale: async (replicas: number) => {
-    const response = await apiClient.post("problem/judge0/scale", { replicas });
+    const response = await apiClient.post(`problem/judge0/scale?replicas=${replicas}`);
     return response.data;
   }
 };
