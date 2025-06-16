@@ -50,14 +50,7 @@ export function PodiumItem(props: PodiumItemProps) {
   const renderContent = () => {
     return (
       <div
-        className={clsx(
-          `${color === "gold" ? "shadow-gold/50" : color === "bronze" ? "shadow-bronze/50" : "shadow-gray3/50"}`,
-          "w-[400px]",
-          "rounded-lg",
-          "space-y-8",
-          "cursor-pointer",
-          "shadow-md"
-        )}
+        className={clsx("w-[400px]", "rounded-lg", "space-y-8", "cursor-pointer", "shadow-md")}
         onClick={handleItemClick}
       >
         <div className="py-2 space-y-1 justify-items-center" style={{ height }}>

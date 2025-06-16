@@ -64,12 +64,20 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     location.pathname === path ? "text-appAccent font-semibold" : "text-muted-foreground";
 
   const renderUserPhoto = () => {
-    let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain border rounded-full size-8 border-gray4" />;
+      return (
+        <img
+          src={userPhoto}
+          alt="User"
+          className="object-contain border rounded-full size-8 border-gray4"
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = ""; // Reset src to trigger fallback
+          }}
+        />
+      );
     }
-    return content;
+    return <MdAccountCircle className="icon-xl" />;
   };
 
   return (

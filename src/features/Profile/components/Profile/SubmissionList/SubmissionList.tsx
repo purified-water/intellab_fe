@@ -83,7 +83,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
 
   const renderViewAllSubmissions = () => {
     return (
-      <p className="text-lg cursor-pointer text-gray3" onClick={handleViewAllSubmissionsClick}>
+      <p className="text-sm font-medium cursor-pointer" onClick={handleViewAllSubmissionsClick}>
         {"View all submissions >"}
       </p>
     );

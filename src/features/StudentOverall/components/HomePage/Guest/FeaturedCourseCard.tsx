@@ -1,6 +1,6 @@
 import { LevelCard } from "@/components/LevelCard";
 import { Card, CardContent, CardFooter } from "@/components/ui/shadcn";
-import { NA_VALUE, PREMIUM_PACKAGES } from "@/constants";
+import { PREMIUM_PACKAGES } from "@/constants";
 import { RootState } from "@/redux/rootReducer";
 import { ICourse } from "@/types";
 import { useSelector } from "react-redux";
@@ -33,13 +33,14 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
           alt={course.courseName}
           className="object-cover w-full h-full"
           loading="lazy"
+          onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
         />
         <div className="absolute top-2 right-2">
           <div className="flex items-center justify-end px-2 pt-2 mb-5 text-sm text-white">
             <div className="flex items-center px-2 justify-center bg-black/60 rounded-lg max-w-[120px] h-[25px] ml-2">
               <img className="w-3 h-3 mr-[6px]" src={rateIcon} alt="Rating" />
               <div className="text-white">
-                {course.averageRating != 0 && course.averageRating ? course.averageRating : NA_VALUE}
+                {course.averageRating != 0 && course.averageRating ? course.averageRating : 0}
               </div>
             </div>
           </div>

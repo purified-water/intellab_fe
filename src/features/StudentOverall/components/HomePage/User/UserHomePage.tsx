@@ -28,7 +28,7 @@ export const UserHomePage = () => {
       return to;
     })()
   });
-  const leaderboardQueryParams = useMemo(() => ({ filter: "all", page: 1, size: 10 }), []);
+  const leaderboardQueryParams = useMemo(() => ({ filter: "all", page: 0, size: 5 }), []);
 
   // Hooks
   const { data: yourCourseList, isPending: isFetchingYourCourses } = useGetYourCourses();
@@ -38,6 +38,7 @@ export const UserHomePage = () => {
   const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard(leaderboardQueryParams);
   const { loginStreak, isLoadingLoginStreak } = useLoginStreakWithCache();
   const leaderboardData = leaderboardDataRaw?.slice(0, 5) || [];
+  console.log("Leaderboard Data:", leaderboardDataRaw);
   const userRedux = useSelector((state: RootState) => state.user.user);
 
   return (

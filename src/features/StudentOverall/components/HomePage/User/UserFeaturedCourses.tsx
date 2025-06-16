@@ -40,7 +40,7 @@ export const UserFeaturedCourses = ({ courses, isLoading, type = "featured", cla
           <EmptyList message="No courses available" className="w-full h-[300px] flex items-center justify-center" />
         </div>
       ) : (
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto scrollbar-hide">
           <ScrollableList size="large">
             <div className="flex gap-6 px-1 snap-x snap-mandatory">
               {isLoading

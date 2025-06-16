@@ -6,9 +6,11 @@ import useWindowDimensions from "@/hooks/use-window-dimensions";
 import { userAPI } from "@/lib/api";
 import { IUser } from "@/types";
 import { useToast } from "@/hooks/use-toast";
-import { showToastError } from "@/utils/toastUtils";
+import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
+import { Switch } from "@/components/ui/shadcn/switch";
+import { Eye, EyeOff } from "lucide-react";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { VerificationStatus } from "./VerificationStatus";
 
@@ -23,9 +25,10 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   const navigate = useNavigate();
   const toast = useToast();
   const width = useWindowDimensions().width;
-
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(false);
+  const [isPublicProfile, setIsPublicProfile] = useState(true); // Default to public
+  const [isToggling, setIsToggling] = useState(false); // State to prevent spam clicks
 
   const getProfileSinglePublicAPI = async () => {
     setLoading(true);
@@ -53,6 +56,32 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   useEffect(() => {
     document.title = `${user?.displayName ?? "Loading"} | Intellab`;
   }, [user]);
+  const handleToggleProfileVisibility = () => {
+    // Prevent spam clicks
+    if (isToggling) return;
+
+    // Set toggling state to true to prevent multiple clicks
+    setIsToggling(true);
+
+    // Toggle the state
+    const newVisibility = !isPublicProfile;
+    setIsPublicProfile(newVisibility);
+
+    // Show success toast
+    showToastSuccess({
+      toast: toast.toast,
+      title: "Profile visibility updated (NO API CALL)",
+      message: `Your profile is now ${newVisibility ? "public" : "private"}`
+    });
+
+    // Reset toggling state after a delay to prevent spam
+    setTimeout(() => {
+      setIsToggling(false);
+    }, 1500); // 1.5 seconds cooldown
+
+    // Here you would typically call an API to update the visibility
+    // Example: await userAPI.updateProfileVisibility(userId, newVisibility);
+  };
 
   const renderProfilePhoto = () => {
     let avatar = DEFAULT_AVATAR;
@@ -104,20 +133,37 @@ export const ProfileSection = (props: ProfileSectionProps) => {
             <div className="mb-2 text-base font-normal truncate text-gray3" style={{ maxWidth: nameWidth }}>
               {fullName}
             </div>
-            <div>
-              <span className="text-base font-normal text-black1">Rank:</span>
-              <span className="text-base font-semibold text-black1"> EMPTY VALUE</span>
-            </div>
           </div>
         </div>
         {isMe && <VerificationStatus />}
         {isMe && (
-          <button
-            className="min-w-full py-2 font-semibold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary hover:bg-appPrimary hover:text-white transition-colors duration-200"
-            onClick={() => navigate("/profile/edit")}
-          >
-            Edit Profile
-          </button>
+          <>
+            <div className="flex items-center justify-between p-3 rounded-lg bg-gray6">
+              <div className="flex items-center gap-2">
+                {isPublicProfile ? <Eye className="w-4 h-4 text-gray1" /> : <EyeOff className="w-4 h-4 text-gray1" />}
+                <span className="text-sm font-medium text-gray1">
+                  {isPublicProfile ? "Public Profile" : "Private Profile"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-gray3">
+                  {isPublicProfile ? "Visible to everyone" : "Hidden from public"}
+                </span>
+                <Switch
+                  checked={isPublicProfile}
+                  onCheckedChange={handleToggleProfileVisibility}
+                  disabled={isToggling}
+                  className={isToggling ? "cursor-not-allowed opacity-70" : ""}
+                />
+              </div>
+            </div>
+            <button
+              className="min-w-full py-2 font-semibold bg-transparent rounded-lg border-appPrimary border-[1px] text-appPrimary hover:bg-appPrimary hover:text-white transition-colors duration-200"
+              onClick={() => navigate("/profile/edit")}
+            >
+              Edit Profile
+            </button>
+          </>
         )}
       </div>
     );
