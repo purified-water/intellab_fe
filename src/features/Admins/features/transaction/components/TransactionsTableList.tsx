@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/shadcn/table";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Button } from "@/components/ui/Button";
 import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
@@ -164,27 +163,12 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
 
   const renderHeader = () => {
     return (
-      <div className="space-y-4 mb-6">
-        {MOCK_CONFIG.USE_MOCK_DATA && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm">
-            <strong>Mock Mode:</strong> Using simulated data for testing
-          </div>
-        )}
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => loadTransactions(currentPage)} disabled={loading}>
-            Refresh
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderTableHeader = () => {
-    return (
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[35%]">{TABLE_HEADERS.USER}</TableHead>
-          <TableHead className="w-[20%]">
+      <thead className="text-left border-t border-b border-gray5">
+        <tr>
+          <th className="py-4">
+            <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.DATE}</span>
               <Button
@@ -196,8 +180,8 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                 {dateSortOrder === "asc" ? "↑" : "↓"}
               </Button>
             </div>
-          </TableHead>
-          <TableHead className="w-[15%]">
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.AMOUNT}</span>
               <Button
@@ -209,8 +193,8 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                 {sortOrder === "asc" ? "↑" : "↓"}
               </Button>
             </div>
-          </TableHead>
-          <TableHead className="w-[15%]">
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.STATUS}</span>
               <Select
@@ -227,8 +211,8 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                 </SelectContent>
               </Select>
             </div>
-          </TableHead>
-          <TableHead className="w-[15%]">
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.TYPE}</span>
               <Select
@@ -246,19 +230,19 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                 </SelectContent>
               </Select>
             </div>
-          </TableHead>
-        </TableRow>
-      </TableHeader>
+          </th>
+        </tr>
+      </thead>
     );
   };
 
-  const renderTableBody = () => {
+  const renderBody = () => {
     return (
-      <TableBody>
+      <tbody>
         {loading ? (
           Array.from({ length: itemsPerPage }).map((_, idx) => (
-            <TableRow key={idx}>
-              <TableCell>
+            <tr key={idx} className="text-base border-b border-gray5">
+              <td className="py-1">
                 <div className="flex items-center gap-2">
                   <Skeleton className="w-8 h-8 rounded-full" />
                   <div className="space-y-1">
@@ -266,31 +250,33 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                     <Skeleton className="w-40 h-3" />
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-20 h-4" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-16 h-4" />
-              </TableCell>
-              <TableCell>
-                <Skeleton className="w-20 h-6 rounded-full" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-16 h-6 rounded-full" />
-              </TableCell>
-            </TableRow>
+              </td>
+              <td className="py-1">
+                <Skeleton className="w-16 h-6 rounded-full" />
+              </td>
+            </tr>
           ))
         ) : transactions.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={5} className="py-8 text-center">
-              <EmptyList message={errorMessage || "No transactions found"} />
-            </TableCell>
-          </TableRow>
+          <tr>
+            <td colSpan={5}>
+              <div className="flex justify-center py-8">
+                <EmptyList message={errorMessage || "No transactions found"} />
+              </div>
+            </td>
+          </tr>
         ) : (
           transactions.map((transaction) => (
-            <TableRow key={transaction.id}>
-              <TableCell>
+            <tr key={transaction.id} className="text-base border-b border-gray5">
+              <td className="py-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
                     <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
@@ -300,10 +286,10 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                     <div className="text-sm text-muted-foreground">{transaction.email}</div>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>{transaction.date}</TableCell>
-              <TableCell className="font-semibold">{transaction.amount}</TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">{transaction.date}</td>
+              <td className="py-1 font-semibold">{transaction.amount}</td>
+              <td className="py-1">
                 <div
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     transaction.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
@@ -311,24 +297,24 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
                 >
                   {transaction.status}
                 </div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <div
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     transaction.type === "Course"
                       ? "bg-blue-100 text-blue-800"
                       : transaction.type === "Plan"
                         ? "bg-purple-100 text-purple-800"
-                        : "bg-red-100 text-red-800"
+                        : "bg-orange-100 text-orange-800"
                   }`}
                 >
                   {transaction.type}
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))
         )}
-      </TableBody>
+      </tbody>
     );
   };
 
@@ -343,14 +329,18 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
   };
 
   return (
-    <div className="space-y-6">
-      {renderHeader()}
-      <div className="border rounded-md">
-        <Table>
-          {renderTableHeader()}
-          {renderTableBody()}
-        </Table>
-      </div>
+    <div>
+      {/* {MOCK_CONFIG.USE_MOCK_DATA && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm mb-4">
+          <strong>Mock Mode:</strong> Using simulated data for testing
+        </div>
+      )} */}
+
+      <table className="w-full">
+        {renderHeader()}
+        {renderBody()}
+      </table>
+
       {renderPagination()}
     </div>
   );

@@ -1,18 +1,46 @@
 export const CHATBOT_MODELS = [
   {
-    value: "llama3.2",
-    label: "llama3.2"
-  },
-  {
-    value: "mistral",
-    label: "mistral"
-  },
-  {
-    value: "learnlm-1.5-pro",
-    label: "learnlm-1.5-pro"
-  },
-  {
     value: "groq-llama-3.3-70b",
     label: "groq-llama-3.3-70b"
+  },
+  {
+    value: "gemini-2.5-pro",
+    label: "gemini-2.5-pro"
+  },
+  {
+    value: "gemini-2.5-flash",
+    label: "gemini-2.5-flash"
+  },
+  {
+    value: "gemini-2.5-flash:thinking",
+    label: "gemini-2.5-flash:thinking"
+  },
+  {
+    value: "gpt-4o-mini",
+    label: "gpt-4o-mini"
+  },
+  {
+    value: "gpt-4o",
+    label: "gpt-4o"
+  },
+  {
+    value: "openai-o3-mini",
+    label: "openai-o3-mini"
+  },
+  {
+    value: "deepseek-r1:7b",
+    label: "deepseek-r1:7b"
+  },
+  {
+    value: "deepseek-r1:8b",
+    label: "deepseek-r1:8b"
+  },
+  {
+    value: "qwen3-14b",
+    label: "qwen3-14b"
+  },
+  {
+    value: "phi-4",
+    label: "phi-4"
   }
 ];
