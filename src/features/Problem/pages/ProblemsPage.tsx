@@ -108,9 +108,9 @@ export const ProblemsPage = () => {
                 </div>
               ) : (
                 <div className="flex flex-col w-full mb-4">
-                  <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
+                  <h2 className="text-4xl font-bold tracking-tight text-transparent bg-gradient-to-tr from-appPrimary to-appSecondary bg-clip-text">
                     Welcome to Intellab problems!
-                  </div>
+                  </h2>
                   <span className="mt-2 text-xl font-light text-gray3">Improve your problem solving skills here!</span>
                 </div>
               )}

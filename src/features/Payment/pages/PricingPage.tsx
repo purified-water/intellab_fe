@@ -23,9 +23,8 @@ export function PricingPage() {
           transition={{ duration: 1 }}
           className="flex flex-col lg:flex-row items-center justify-center mt-8 space-y-8 lg:space-y-0 lg:space-x-[40px] px-4 lg:px-96"
         >
-          <div className="flex flex-col flex-1 mb-5">
+          <div className="flex flex-col flex-1">
             <PricingCard plan={PRICING_PLANS[0]}></PricingCard>
-            {/* <div className="mt-5"></div> */}
             {width > 1024 && <PerksList perks={PLAN_FEATURES.slice(0, 4)}></PerksList>}
           </div>
           <div className="flex flex-col flex-1">

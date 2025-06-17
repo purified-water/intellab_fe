@@ -6,18 +6,7 @@ import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
 import { ChatBubble } from "../../../components/ui/AIChatBubble";
 import { AIBackground, aiOrbLogo } from "@/assets";
-import {
-  PanelLeft,
-  PanelLeftClose,
-  X,
-  Minus,
-  Maximize2,
-  // SquareArrowOutUpRight,
-  SquarePen,
-  ArrowUp,
-  ChevronDown,
-  Check
-} from "lucide-react";
+import { PanelLeft, PanelLeftClose, X, Minus, Maximize2, SquarePen, ArrowUp, ChevronDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ChatbotHistoryItemType, ChatbotMessageContentType } from "../types/ChatbotHistoryType";
 import { ChatbotMessageResponseType } from "../types/ChatbotMessageType";

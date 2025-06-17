@@ -19,7 +19,7 @@ export const AppFooter = () => {
         <div className="flex justify-between gap-8">
           <div>
             <p className="mb-3 text-lg font-semibold">Services</p>
-            <ul className="space-y-2 text-sm font-medium opacity-90">
+            <ul className="space-y-2 text-sm opacity-90">
               <li>
                 <a href="/explore" className="hover:underline hover:text-appAccent">
                   Courses

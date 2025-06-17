@@ -84,19 +84,21 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   };
 
   const renderProfilePhoto = () => {
-    let avatar = DEFAULT_AVATAR;
-    const userPhoto = user?.photoUrl;
-    if (userPhoto) {
-      avatar = userPhoto;
-    }
-    return <img src={avatar} alt="profile" className="object-contain w-20 h-20 rounded-full" />;
+    return (
+      <img
+        src={user?.photoUrl || DEFAULT_AVATAR}
+        alt="profile"
+        className="object-contain w-20 h-20 rounded-full"
+        onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+      />
+    );
   };
 
   let nameWidth = width / 9;
   if (width < 1025) {
     nameWidth = width / 2.5;
   }
-  const fullName = `${user?.firstName} ${user?.lastName}`;
+  const fullName = `${user?.firstName} ${user?.lastName.slice(0, 10)}`;
 
   const renderSkeleton = () => {
     return (

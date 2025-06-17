@@ -76,12 +76,11 @@ export function Course(props: CourseProps) {
       navigate(`/course/${id}`);
     }
   };
-
   useEffect(() => {
-    if (course) {
+    if (course && !detailCourse) {
       getCourseDetail();
     }
-  }, []);
+  }, [course?.courseId]); // Only re-run if courseId changes
 
   const priceText = (price: number, unitPrice: string) => {
     let result;

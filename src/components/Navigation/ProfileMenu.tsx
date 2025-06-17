@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IUser } from "@/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 interface ProfileMenuProps {
   user: IUser | null;
@@ -55,9 +56,10 @@ export const ProfileMenu = ({
           >
             <div className="flex flex-row items-center px-3">
               <img
-                src={user?.photoUrl || ""}
+                src={user?.photoUrl || DEFAULT_AVATAR}
                 alt="User"
                 className="object-contain w-8 h-8 border rounded-full border-gray4"
+                onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
               />
               <div className="flex flex-col px-4 py-2">
                 <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>

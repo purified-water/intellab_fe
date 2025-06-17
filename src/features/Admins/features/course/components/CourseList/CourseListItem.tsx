@@ -179,7 +179,9 @@ export function CourseListItem(props: CourseListItemProps) {
               </div>
             </td>
           )}
-          {course.isCompletedCreation && <td className="py-1 text-right">{course.numberOfEnrolledStudents ?? 0}</td>}
+          {course.isCompletedCreation && (
+            <td className="py-1 pr-3 text-right">{course.numberOfEnrolledStudents ?? 0}</td>
+          )}
           {course.isCompletedCreation && (
             <td className="py-1 justify-items-center">
               <div className="flex items-center gap-1">

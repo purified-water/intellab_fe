@@ -18,6 +18,8 @@ import { PremiumStatus } from "./PremiumStatus";
 import { Button } from "@/components/ui";
 import { Bell } from "lucide-react";
 import { selectHasUnread } from "@/redux/notifications/notificationsSlice";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+
 interface NavbarProps {
   isDarkMode: boolean;
   toggleDarkMode?: () => void;
@@ -71,9 +73,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
           src={userPhoto}
           alt="User"
           className="object-contain border rounded-full size-8 border-gray4"
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = ""; // Reset src to trigger fallback
-          }}
+          onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
         />
       );
     }

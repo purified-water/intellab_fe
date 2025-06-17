@@ -14,11 +14,11 @@ const FILTER_ITEMS: ISortByItem[] = [
   {
     value: "problem",
     label: "Solved problems"
-  },
-  {
-    value: "course",
-    label: "Completed courses"
   }
+  // {
+  //   value: "course",
+  //   label: "Completed courses"
+  // }
 ];
 
 export function LeaderboardList() {
@@ -139,11 +139,11 @@ export function LeaderboardList() {
   return (
     <div className="w-full space-y-4">
       {renderSortingButton()}
-      <table className="text-gray2 font-normal w-full">
+      <table className="w-full font-normal text-gray2">
         <thead>
           <tr className="border-b border-gray5">
             <th className="w-[80px] py-3">#</th>
-            <th className="text-left pl-12">User</th>
+            <th className="pl-12 text-left">User</th>
             <th className="w-[100px] text-left">Points</th>
             {renderAdditionalColumns()}
           </tr>
