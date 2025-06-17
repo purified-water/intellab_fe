@@ -38,7 +38,7 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
       const formattedCourseName = courseData.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
       // Call AI API to generate course summary
-      const response = await aiAPI.getCourseSummary(formattedCourseName, courseData.courseId, "false");
+      const response = await aiAPI.getCourseSummary(formattedCourseName, courseData.courseId, "true");
       const { content } = response;
 
       // Update the textarea with the generated content

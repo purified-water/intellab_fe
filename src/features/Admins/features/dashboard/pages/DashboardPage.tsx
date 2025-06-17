@@ -10,10 +10,8 @@ import { DatePickerWithRange } from "@/components/ui/DatePickerWithRange"; // Im
 import { MonthYearPicker } from "@/components/ui/MonthYearPicker"; // Import MonthYear picker component
 import { RevenueLargeBarChart, RevenueMiniBarChart } from "../components/RevenueChart";
 import { CompletionRateLargeChart, CompletionRateMiniChart } from "../components/CompletionChart";
-import { TransactionsList } from "../components/TransactionList";
 import { adminDashboardAPI } from "@/lib/api/adminDashboardAPI";
 import { OverviewStatItem } from "@/features/Admins/types/apiType";
-import { TopPurchasedList } from "../components/TopPurchasedList";
 
 export const DashboardPage = () => {
   const [rangeType, setRangeType] = useState<"Month" | "Year" | "Custom">("Month");
@@ -365,17 +363,6 @@ export const DashboardPage = () => {
               selectedYear={selectedYear}
             />
           </ZoomableChartCard>
-        </div>
-      </div>
-
-      {/* Divider and Purchases Section */}
-      <div className="border-t border-gray-200 pt-6">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Purchases</h2>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-          {/* Recent Transactions */}
-          <TransactionsList title="Recent Transactions" limit={3} />
-          {/* Top Subscribers */}
-          <TopPurchasedList title="Top Purchases" limit={3} />
         </div>
       </div>
     </div>
