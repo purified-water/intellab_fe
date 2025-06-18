@@ -12,6 +12,7 @@ import { useCourseCategories } from "../../course/hooks";
 import { useDispatch } from "react-redux";
 import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { AdminProblemFilterDialog } from "../components/AdminProblemFilterDialog";
+import { SEO } from "@/components/SEO";
 
 const TABS = {
   CREATED: "created",
@@ -44,10 +45,6 @@ export function ProblemListPage() {
     }
   }, [meta]);
 
-  useEffect(() => {
-    document.title = "Problem List | Intellab";
-  }, [filter]);
-
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
       setTemporarySearchKey(query);
@@ -60,19 +57,22 @@ export function ProblemListPage() {
     };
 
     return (
-      <div className="flex items-center">
-        <FilterButton onClick={() => setShowFilter(!showFilter)} />
-        <SearchBar value={temporarySearchKey} onSearch={handleKeywordSearch} width={800} />
-        <div className="pl-4 ml-2 border-l border-gray4">
-          <Button
-            onClick={handleCreateProblem}
-            className="px-4 py-5 text-base font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
-          >
-            <Plus className="w-4 h-4" />
-            New Problem
-          </Button>
+      <>
+        <SEO title="Problem Management | Intellab" />
+        <div className="flex items-center">
+          <FilterButton onClick={() => setShowFilter(!showFilter)} />
+          <SearchBar value={temporarySearchKey} onSearch={handleKeywordSearch} width={800} />
+          <div className="pl-4 ml-2 border-l border-gray4">
+            <Button
+              onClick={handleCreateProblem}
+              className="px-4 py-5 text-base font-semibold rounded-lg bg-appPrimary hover:bg-appPrimary hover:opacity-80"
+            >
+              <Plus className="w-4 h-4" />
+              New Problem
+            </Button>
+          </div>
         </div>
-      </div>
+      </>
     );
   };
 
@@ -130,7 +130,7 @@ export function ProblemListPage() {
 
   return (
     <div className="px-2 space-y-6">
-      <h1 className="text-4xl font-bold text-appPrimary">Problems</h1>
+      <h1 className="text-4xl font-bold text-appPrimary">Problem Management</h1>
       <div className="mx-auto space-y-3 justify-items-center">
         {renderHeader()}
         {renderFilterDialog()}

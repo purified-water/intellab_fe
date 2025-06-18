@@ -2,64 +2,46 @@ import { Button } from "@/components/ui";
 import { Cpu, MemoryStick, RefreshCw } from "lucide-react";
 import { JudgeAdjustmentCard, JudgeServiceOverview } from "../components";
 import { Skeleton } from "@/components/ui/shadcn";
+import { WorkerPod } from "../types/judgeTypes";
+import { formatUptime } from "@/utils";
+import { SEO } from "@/components/SEO";
+import { useGetJudgeServices } from "../hooks/useAdminJudge";
 
-// Update the WorkerPod interface to include uptime
-interface WorkerPod {
-  podName: string;
-  cpu: string;
-  memory: string;
-  status: string;
-  isRunning: boolean;
-  uptime: string; // New field for uptime
-}
+export const JudgeManagementPage = () => {
+  const {
+    data: workerData = [],
+    isLoading: workerLoading,
+    refetch: refetchGetWorker,
+    isRefetching
+  } = useGetJudgeServices();
+  const workerServices: WorkerPod[] = workerData.map((worker: WorkerPod) => {
+    return {
+      ...worker,
+      uptime: formatUptime(worker.uptime),
+      containers: worker.containers.map((container) => ({
+        ...container,
+        usage: {
+          cpu: (parseInt(container.usage.cpu, 10) / 1_000_000_000).toFixed(2),
+          memory: (parseInt(container.usage.memory, 10) * 0.001024).toFixed(2)
+        }
+      }))
+    };
+  });
 
-// Mock data for worker pods
-const defaultWorkerPods: WorkerPod[] = [
-  {
-    podName: "Judge Pod 1",
-    cpu: "40m",
-    memory: "512Mi",
-    status: "Running",
-    isRunning: true,
-    uptime: "24h"
-  },
-  {
-    podName: "Judge Pod 2",
-    cpu: "50m",
-    memory: "1Gi",
-    status: "Running",
-    isRunning: true,
-    uptime: "12h"
-  },
-  {
-    podName: "Judge Pod 3",
-    cpu: "30m",
-    memory: "256Mi",
-    status: "Stopped",
-    isRunning: false,
-    uptime: "0h"
-  }
-];
-
-interface JudgeManagementPageProps {
-  workerPods?: WorkerPod[];
-}
-
-export const JudgeManagementPage = ({ workerPods = defaultWorkerPods }: JudgeManagementPageProps) => {
   const renderTableHeader = () => (
     <thead className="text-left border-t border-b border-gray5">
       <tr className="font-normal text-left border-t border-b border-gray5">
-        <th className="w-1/5 py-4">
-          <div className="flex items-center">Pod Name</div>
+        <th className="w-2/5 py-4">
+          <div className="flex items-center">Service Name</div>
+        </th>
+        <th className="w-1/5">
+          <div className="flex items-center">Status</div>
         </th>
         <th className="w-1/5">
           <div className="flex items-center">CPU Usage</div>
         </th>
         <th className="w-1/5">
           <div className="flex items-center">Memory Usage</div>
-        </th>
-        <th className="w-1/5">
-          <div className="flex items-center">Status</div>
         </th>
         <th className="w-1/5">
           <div className="flex items-center">Uptime</div>
@@ -70,7 +52,7 @@ export const JudgeManagementPage = ({ workerPods = defaultWorkerPods }: JudgeMan
 
   const renderTableBody = () => (
     <tbody>
-      {workerPods.length === 0
+      {workerLoading || isRefetching
         ? Array.from({ length: 3 }).map((_, index) => (
             <tr key={index} className="text-base border-b border-gray5">
               <td className="w-1/5 py-4">
@@ -90,50 +72,58 @@ export const JudgeManagementPage = ({ workerPods = defaultWorkerPods }: JudgeMan
               </td>
             </tr>
           ))
-        : workerPods.map((pod) => (
-            <tr key={pod.podName} className="text-base border-b border-gray5">
-              <td className="w-1/5 py-4">{pod.podName}</td>
+        : workerServices.map((worker) => (
+            <tr key={worker.metadata.name} className="text-base border-b border-gray5">
+              <td className="w-1/5 py-4 pr-2 truncate max-w-1/5">{worker.metadata.name}</td>
+              <td className={`w-1/5 py-4 font-medium ${worker.status == "Running" ? "text-appEasy" : "text-appHard"}`}>
+                {worker.status}
+              </td>
               <td className="w-1/5 py-4">
                 <div className="flex items-center">
                   <Cpu className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {pod.cpu}
+                  {worker.containers[0]?.usage.cpu}{" "}
+                  {parseFloat(worker.containers[0]?.usage.cpu) === 1 ? "Core" : "Cores"}
                 </div>
               </td>
               <td className="w-1/5 py-4">
                 <div className="flex items-center">
                   <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {pod.memory}
+                  {worker.containers[0]?.usage.memory} MB
                 </div>
               </td>
-              <td className={`w-1/5 py-4 font-medium ${pod.isRunning ? "text-appEasy" : "text-appHard"}`}>
-                {pod.status}
-              </td>
-              <td className="w-1/5 py-4">{pod.uptime}</td>
+              <td className="w-1/5 py-4">{worker.uptime}</td>
             </tr>
           ))}
     </tbody>
   );
 
   return (
-    <div className="container max-w-[1200px] mx-auto p-6 space-y-8 mb-24">
-      <div className="flex items-center justify-between">
-        <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Judge Management</h1>
-        <Button variant="outline" className="gap-2">
-          <RefreshCw className="w-4 h-4" />
-          Refresh
-        </Button>
-      </div>
+    <>
+      <SEO title="Judge Management | Intellab" />
+      <div className="container max-w-[1200px] mx-auto p-6 space-y-8 mb-12">
+        <div className="flex items-center justify-between">
+          <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Judge Management</h1>
+          <Button variant="outline" className="gap-2" onClick={() => refetchGetWorker()}>
+            <RefreshCw className="w-4 h-4" />
+            Refresh
+          </Button>
+        </div>
 
-      <JudgeServiceOverview />
-      <JudgeAdjustmentCard />
+        <JudgeServiceOverview
+          serviceCount={workerServices.length}
+          isLoadingServices={workerLoading || isRefetching}
+          isLoadingTodaySubmissions={false}
+        />
+        <JudgeAdjustmentCard serviceCount={workerServices.length} />
 
-      <div className="text-xl font-semibold">Judge Services (Pods)</div>
-      <div className="flex justify-center">
-        <table className="border-collapse w-[1100px] table-fixed inline-table">
-          {renderTableHeader()}
-          {renderTableBody()}
-        </table>
+        <div className="text-xl font-semibold">Judge Services</div>
+        <div className="flex justify-center">
+          <table className="border-collapse w-[1100px] table-fixed inline-table">
+            {renderTableHeader()}
+            {renderTableBody()}
+          </table>
+        </div>
       </div>
-    </div>
+    </>
   );
 };

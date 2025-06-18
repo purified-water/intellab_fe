@@ -7,7 +7,7 @@ import LoginGoogle from "@/features/Auth/components/LoginGoogle";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "@/redux/auth/authSlice";
-import { setUser } from "@/redux/user/userSlice";
+import { setUser, setPoint } from "@/redux/user/userSlice";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { navigateWithPreviousPagePassed, navigateToPreviousPage } from "@/utils";
@@ -67,10 +67,20 @@ export const LoginPage = () => {
     });
   };
 
+  const getMyPointAPI = async () => {
+    await userAPI.getMyPoint({
+      onSuccess: async (point) => {
+        dispatch(setPoint(point));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
   const getProfileMeAPI = async () => {
     await userAPI.getProfileMe({
       onSuccess: async (user) => {
         dispatch(setUser(user));
+        await getMyPointAPI();
         await getPremiumStatusAPI(user.userId!);
         dispatch(loginSuccess());
         setIsLoggingIn(false);

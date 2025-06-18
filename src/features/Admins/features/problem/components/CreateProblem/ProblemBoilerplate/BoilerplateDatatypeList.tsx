@@ -29,14 +29,16 @@ export const BoilerplateDataItemList = ({ namePrefix, mode }: BoilerplateDataIte
         </div>
       ))}
 
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => append({ [`${mode}Name`]: "", [`${mode}Type`]: BoilerplateDataTypes[0] })}
-        className="mt-2"
-      >
-        + Add
-      </Button>
+      {mode == "input" && (
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => append({ [`${mode}Name`]: "", [`${mode}Type`]: BoilerplateDataTypes[0] })}
+          className="mt-2"
+        >
+          + Add
+        </Button>
+      )}
     </div>
   );
 };

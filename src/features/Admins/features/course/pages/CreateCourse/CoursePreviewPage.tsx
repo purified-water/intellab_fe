@@ -25,6 +25,7 @@ import { isFinalStepValid } from "../../utils/courseStepGuard";
 import { useEffect } from "react";
 import { RequiredInputLabel } from "@/features/Admins/components";
 import { CREATE_COURSE_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 const coursePreviewSchema = createCourseSchema.pick({
   courseMakeAvailable: true
@@ -78,6 +79,8 @@ export const CoursePreviewPage = () => {
 
   return (
     <StepGuard checkValid={isFinalStepValid} redirectTo={redirectUrl}>
+      <SEO title="Course Preview | Intellab" />
+
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col mx-auto gap-8 max-w-[1000px]">
           <FormField

@@ -77,3 +77,24 @@ export const formatDateInProblem = (
     day: options.dayFormat
   });
 };
+
+export const formatUptime = (seconds: number): string => {
+  if (seconds < 60) {
+    return `${seconds}s`;
+  }
+
+  const totalMinutes = Math.floor(seconds / 60);
+  if (totalMinutes < 60) {
+    return `${totalMinutes}m`;
+  }
+
+  const totalHours = Math.floor(seconds / 3600);
+  const days = Math.floor(totalHours / 24);
+  const hours = totalHours % 24;
+
+  if (days >= 1) {
+    return `${days}d ${hours}h`;
+  } else {
+    return `${totalHours}h`;
+  }
+};

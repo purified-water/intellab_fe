@@ -78,7 +78,9 @@ export const ProblemsPage = () => {
               setShowFilter(!showFilter);
             }}
           />
-          <SearchBar value={query} onSearch={handleSearch} />
+          <div className="flex-1">
+            <SearchBar value={query} onSearch={handleSearch} />
+          </div>
         </div>
         {
           <motion.div

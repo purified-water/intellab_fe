@@ -26,6 +26,7 @@ import { isDescriptionStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
 import { useEffect } from "react";
+import { SEO } from "@/components/SEO";
 
 const problemBoilerplateSchema = createProblemSchema.pick({
   problemStructure: true
@@ -93,6 +94,8 @@ export const ProblemBoilerplatePage = () => {
 
   return (
     <StepGuard checkValid={isDescriptionStepValid} redirectTo={redirectUrl}>
+      <SEO title="Problem Boilerplate | Intellab" />
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

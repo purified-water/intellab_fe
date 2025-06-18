@@ -16,6 +16,7 @@ import { StepGuard } from "../../../course/components/StepGuard";
 import { isGeneralStepValid } from "../../utils";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 const problemDescriptionSchema = createProblemSchema.pick({
   problemDescription: true
@@ -70,6 +71,8 @@ export const ProblemDescriptionPage = () => {
 
   return (
     <StepGuard checkValid={isGeneralStepValid} redirectTo={redirectUtl}>
+      <SEO title="Problem Description | Intellab" />
+
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit, (errors) => {

@@ -1,9 +1,9 @@
-import { Separator } from "@/components/ui/Separator";
 import { TLeaderboardRank } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { useNavigate } from "react-router-dom";
 import { Card, CardTitle } from "@/components/ui/shadcn";
-import { EmptyMessage } from "@/components/ui";
+import { Button, EmptyMessage } from "@/components/ui";
+import { ArrowRight } from "lucide-react";
 
 interface LeaderboardProps {
   leaderboardData: TLeaderboardRank[];
@@ -19,10 +19,31 @@ export const Leaderboard = ({ leaderboardData, isLoading }: LeaderboardProps) =>
     };
 
     return (
-      <div className="grid grid-cols-[1fr_3fr_1fr] gap-2 cursor-pointer hover:opacity-80" onClick={handleItemClick}>
-        <div className="text-base font-normal line-clamp-1">#{rank}</div>
-        <div className="col-auto text-base font-normal text-left truncate">{item.displayName}</div>
-        <div className="text-base font-normal text-right line-clamp-1">{item.point}</div>
+      <div
+        className="my-[3px] text-[15px] font-medium grid grid-cols-[1fr_3fr_2fr] gap-2 cursor-pointer hover:opacity-80"
+        onClick={handleItemClick}
+      >
+        <div
+          className={`line-clamp-1 ${
+            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
+          }`}
+        >
+          {rank}
+        </div>
+        <div
+          className={`col-auto text-left truncate ${
+            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
+          }`}
+        >
+          {item.displayName}
+        </div>
+        <div
+          className={` text-right line-clamp-1 ${
+            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
+          }`}
+        >
+          {item.point}
+        </div>
       </div>
     );
   };
@@ -40,16 +61,16 @@ export const Leaderboard = ({ leaderboardData, isLoading }: LeaderboardProps) =>
   };
 
   return (
-    <Card className="p-4 max-h-[300px] overflow-auto border rounded-lg border-gray5">
-      <CardTitle className="text-xl font-bold">Leaderboard</CardTitle>
-      <Separator className="my-2" />
+    <Card className="p-6 max-h-[300px] overflow-auto border rounded-lg border-gray5">
+      <div className="flex items-center justify-between mb-6">
+        <CardTitle className="text-xl font-bold">Leaderboard</CardTitle>
+        <Button type="button" variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/leaderboard")}>
+          View all <ArrowRight className="w-4 h-4" />
+        </Button>
+      </div>
+
       <div>{isLoading ? renderSkeletonLoading() : renderRanks()}</div>
       {leaderboardData.length === 0 && !isLoading && <EmptyMessage message="No leaderboard data available" />}
-      <div className="flex justify-center mt-3">
-        <a href="/leaderboard" className="self-center font-bold text-appPrimary">
-          View more...
-        </a>
-      </div>
     </Card>
   );
 };

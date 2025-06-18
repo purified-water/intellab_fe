@@ -16,6 +16,7 @@ import {
 import { getUserIdFromLocalStorage } from "@/utils";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { useLoginStreakWithCache } from "@/hooks";
 
 export const UserHomePage = () => {
   const userId = getUserIdFromLocalStorage();
@@ -35,6 +36,7 @@ export const UserHomePage = () => {
   const { data: freeCourses, isPending: isFetchingFreeCourses } = useGetFreeCourses();
   const { data: progressLevel, isPending: isFetchingProgressLevel } = useGetProgressLevel(userId || "");
   const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard(leaderboardQueryParams);
+  const { loginStreak, isLoadingLoginStreak } = useLoginStreakWithCache();
   const leaderboardData = leaderboardDataRaw?.slice(0, 5) || [];
   const userRedux = useSelector((state: RootState) => state.user.user);
 
@@ -49,7 +51,7 @@ export const UserHomePage = () => {
             <DatePickerWithRange setDate={setDateRange} date={dateRange} />
           </div>
         </div>
-        <StatsCards />
+        <StatsCards loginStreak={loginStreak} isLoadingLoginStreak={isLoadingLoginStreak} />
 
         <div className="grid gap-4 mt-8 mb-24 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-12">
           <YourCourses

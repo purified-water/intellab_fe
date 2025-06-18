@@ -24,20 +24,8 @@ export const CHATBOT_MODELS = [
     label: "gpt-4o"
   },
   {
-    value: "chatgpt-4o",
-    label: "chatgpt-4o"
-  },
-  {
     value: "openai-o3-mini",
     label: "openai-o3-mini"
-  },
-  {
-    value: "llama-guard-4-12b",
-    label: "llama-guard-4-12b"
-  },
-  {
-    value: "llama-guard-3-8b",
-    label: "llama-guard-3-8b"
   },
   {
     value: "deepseek-r1:7b",

@@ -12,6 +12,7 @@ import { useToast } from "@/hooks";
 import { showToastError } from "@/utils";
 import { adminProblemAPI } from "@/features/Admins/api";
 import { CREATE_PROBLEM_STEP_NUMBERS } from "../../constants";
+import { SEO } from "@/components/SEO";
 
 export const ProblemPreviewPage = () => {
   const problemData = useSelector((state: RootState) => state.createProblem);
@@ -68,6 +69,8 @@ export const ProblemPreviewPage = () => {
 
   return (
     <StepGuard checkValid={isSolutionStepValid} redirectTo={redirectUrl}>
+      <SEO title="Problem Preview | Intellab" />
+
       <form onSubmit={onSubmit}>
         <ProblemPreview problemDetail={mappedProblemData} />
         <ProblemWizardButtons />

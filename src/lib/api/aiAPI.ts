@@ -11,7 +11,7 @@ export const aiAPI = {
   getCourseSummary: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
-      model: "llama3.2"
+      model: "qwen3-14b"
     };
     const response = await apiClient.post(`/ai/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
@@ -27,7 +27,7 @@ export const aiAPI = {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenerate}`,
       user_id: userId,
-      model: "llama3.2"
+      model: "qwen3-14b"
     };
 
     try {

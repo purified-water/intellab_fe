@@ -133,7 +133,7 @@ export function FilterDialog(props: FilterDialogProps) {
               className="hidden peer"
             />
             <div
-              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500`}
+              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary`}
             >
               {selectedLevels.includes(level) && (
                 <svg
@@ -169,7 +169,7 @@ export function FilterDialog(props: FilterDialogProps) {
               className="hidden peer"
             />
             <div
-              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-purple-500 peer-checked:border-purple-500`}
+              className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary peer-checked:border-appPrimary`}
             >
               {selectedPrices.includes(price) && (
                 <svg
