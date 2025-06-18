@@ -38,7 +38,6 @@ export const UserHomePage = () => {
   const { data: leaderboardDataRaw, isPending: isFetchingLeaderboard } = useGetLeaderboard(leaderboardQueryParams);
   const { loginStreak, isLoadingLoginStreak } = useLoginStreakWithCache();
   const leaderboardData = leaderboardDataRaw?.slice(0, 5) || [];
-  console.log("Leaderboard Data:", leaderboardDataRaw);
   const userRedux = useSelector((state: RootState) => state.user.user);
 
   return (

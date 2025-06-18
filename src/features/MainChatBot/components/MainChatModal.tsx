@@ -380,7 +380,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         >
           {/* Background Layer - Moved to the top level container */}
           <div
-            className="absolute inset-0 bg-center bg-no-repeat opacity-70 bg-fit"
+            className="absolute inset-0 bg-center bg-no-repeat opacity-50 bg-fit"
             style={{ backgroundImage: `url(${AIBackground})` }}
           />
 

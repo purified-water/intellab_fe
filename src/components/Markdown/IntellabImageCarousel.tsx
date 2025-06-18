@@ -30,7 +30,7 @@ export const ImageCarousel = React.memo(({ images }: ImageCarouselProps) => {
           key={images[currentIndex]?.src || "fallback"}
           src={images[currentIndex]?.src || unavailableImage}
           alt={images[currentIndex]?.alt || "Image"}
-          className="object-contain w-full h-full max-h-[360px] transition-opacity duration-500 ease-in-out opacity-0 animate-fadeIn"
+          className="object-contain w-full h-full max-h-[360px] max-w-[800px] transition-opacity duration-500 ease-in-out opacity-0 animate-fadeIn"
           loading="lazy"
         />
       </div>

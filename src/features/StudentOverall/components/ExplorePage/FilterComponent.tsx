@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchExploreCourses, filterCourses, resetFilters } from "@/redux/course/courseSlice";
+import { fetchExploreCourses, filterCourses } from "@/redux/course/courseSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { courseAPI } from "@/lib/api/courseApi";
 import { PriceRange, TCategory } from "@/types";
@@ -211,7 +211,8 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           variant="outline"
           className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
-            dispatch(resetFilters());
+            setSelectedLevels([]);
+            setSelectedPrices([]);
             setSelectedCategories([]);
             setSelectedRating("0");
           }}

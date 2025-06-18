@@ -138,7 +138,9 @@ export const LessonDetailPage = () => {
   const renderSkeleton = () => {
     return (
       <div className="space-y-8">
-        <Skeleton className="h-20 bg-gray5" />
+        <Skeleton className="h-56 bg-gray5" />
+        <Skeleton className="h-6 bg-gray5" />
+        <Skeleton className="h-6 bg-gray5" />
         <Skeleton className="h-6 bg-gray5" />
         <Skeleton className="h-6 bg-gray5" />
         <Skeleton className="w-24 h-8 bg-gray5" />

@@ -54,21 +54,11 @@ const problemSlice = createSlice({
     },
 
     setExploreProblems: (state, action: PayloadAction<Problem[]>) => {
+      state.originalExploreProblems = action.payload; // Store the original data
       state.exploreProblems = action.payload; // Display the same data initially
     },
 
-    filterProblems: (
-      state
-      // action: PayloadAction<{
-      //   // select edLevel: string;
-      // }>
-    ) => {
-      // const { selectedLevel } = action.payload;
-
-      // state.problems = state.problems.filter((problem) => {
-      //   const matchLevels = selectedLevel == problem.level;
-      //   return matchLevels;
-      // });
+    filterProblems: (state) => {
       if (state.problems.length === state.originalExploreProblems.length) {
         state.hasFilter = false;
       } else {
@@ -115,7 +105,7 @@ const userCodeSlice = createSlice({
 export const selectCodeByProblemId = (state: { userCode: UserCodeState }, problemId: string) =>
   state.userCode.codeByProblemId[problemId] || { code: "", language: "" };
 
-export const { setPage, filterProblems } = problemSlice.actions;
+export const { setPage, filterProblems, resetFilters } = problemSlice.actions;
 export const { saveCode } = userCodeSlice.actions;
 export const userCodeReducer = userCodeSlice.reducer;
 

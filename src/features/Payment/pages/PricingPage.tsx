@@ -4,12 +4,15 @@ import { AppFooter } from "@/components/AppFooter";
 import { PricingCard } from "../components/Pricing/PricingCard";
 import { PerksList } from "../components/Pricing/PerkList";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
 
 export function PricingPage() {
   const { width } = useWindowDimensions();
 
   return (
     <>
+      <SEO title="Pricing Plans | Intellab" />
+
       <div className="container px-4 py-12 mx-auto">
         <h1 className="text-[64px] font-extrabold text-center bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text text-transparent">
           Intellab Premium

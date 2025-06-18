@@ -290,7 +290,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
           </Button>
         </div>
       </div>
-      <div id="chat-messages" className="flex flex-col flex-grow max-h-screen overflow-scroll">
+      <div id="chat-messages" className="flex flex-col flex-grow max-h-screen overflow-hidden">
         {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
       </div>
 

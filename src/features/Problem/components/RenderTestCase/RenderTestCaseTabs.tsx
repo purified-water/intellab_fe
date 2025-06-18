@@ -53,7 +53,7 @@ export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) =>
     switch (testCaseActive) {
       case "Testcase":
         return (
-          <div className="flex-grow overflow-hidden">
+          <div className="flex-grow">
             <TestCases testCases={testCases} />
           </div>
         );

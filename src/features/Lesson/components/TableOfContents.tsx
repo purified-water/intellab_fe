@@ -42,8 +42,8 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items, activeI
           {items.map((item, index) => (
             <li
               key={index}
-              style={{ paddingLeft: `${(item.level - 1) * 1}rem` }}
-              className={`py-1 border-l-2 pl-2 transition-colors duration-200 ${
+              style={{ paddingLeft: `${(item.level - 1) * 1 + 0.2}rem` }}
+              className={`py-1 border-l-2 transition-colors duration-200 ${
                 activeId === item.id
                   ? "border-l-appPrimary text-appPrimary font-semibold"
                   : "border-l-transparent hover:border-l-gray-300 text-gray2 hover:text-appPrimary"

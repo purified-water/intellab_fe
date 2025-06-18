@@ -135,7 +135,7 @@ export default function LessonListItem(props: LessonListItemProps) {
             {lesson.lessonName}{" "}
             <span className="ml-2 text-base font-normal">
               {lastViewedLessonId === lesson.lessonId && (
-                <span className="text-sm font-medium text-appPrimary">• Last viewed</span>
+                <span className="mr-2 text-sm font-medium text-appPrimary">• Last viewed</span>
               )}
             </span>
             {(hasOnceRequirement || hasBothRequirements) && <div>{FINISHED_ICON}</div>}

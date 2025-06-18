@@ -68,7 +68,7 @@ export function PodiumItem(props: PodiumItemProps) {
           <p
             className="text-sm text-gray-500 truncate"
             style={{ maxWidth: width / 6 }}
-          >{`${item?.firstName} ${item?.lastName.slice(0, 10)}`}</p>
+          >{`${item?.firstName} ${item?.lastName.slice(0, 20)}`}</p>
         </div>
         <div
           className={clsx(

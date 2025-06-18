@@ -173,7 +173,7 @@ export const ExplorePage = () => {
           ) : (
             <div>
               {/* Welcome message */}
-              <div className="flex flex-col w-full">
+              <div className="flex flex-col w-full mb-4">
                 <h2 className="text-4xl font-bold tracking-tight text-transparent bg-gradient-to-tr from-appPrimary to-appSecondary bg-clip-text">
                   Welcome to Intellab explore!
                 </h2>
