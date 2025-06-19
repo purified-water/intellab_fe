@@ -59,6 +59,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
       console.log("Loading transactions for page:", page);
 
       let formattedTransactions: Transaction[] = [];
+      let totalPagesCount = 0;
 
       if (MOCK_CONFIG.USE_MOCK_DATA) {
         // Use mock data
@@ -89,57 +90,56 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
           }
         });
 
-        formattedTransactions = sortedTransactions;
+        // Pagination for mock data
+        totalPagesCount = Math.ceil(sortedTransactions.length / itemsPerPage);
+        const startIndex = page * itemsPerPage;
+        formattedTransactions = sortedTransactions.slice(startIndex, startIndex + itemsPerPage);
       } else {
-        // Use real API
-        const apiTransactions = await transactionAPI.getTransactions(page, itemsPerPage);
+        // Use real API with pagination metadata
+        const filters = {
+          search: searchQuery || undefined,
+          status: selectedStatus !== "All" ? selectedStatus.toLowerCase() : undefined,
+          type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
+          sortBy: dateSortOrder !== "desc" ? "date" : "amount",
+          order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
+        };
 
-        if (apiTransactions.length === 0) {
+        console.log("Calling transactions API with filters:", filters);
+        const apiResponse = await transactionAPI.getTransactionsWithMetadata(page, itemsPerPage, filters);
+
+        if (!apiResponse || !apiResponse.content) {
           setErrorMessage("No transactions found.");
           setTransactions([]);
           setTotalPages(0);
+          setCurrentPage(0);
           return;
         }
 
-        formattedTransactions = apiTransactions.map((transaction, index) => ({
-          id: `${transaction.user.userId}-${index}`,
+        // Map API response to local format
+        formattedTransactions = apiResponse.content.map((transaction, index) => ({
+          id: `${transaction.user.userId}-${index}-${page}`,
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
           email: transaction.user.email,
           amount: `${(transaction.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status,
-          type: transaction.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
+          status: transaction.status?.toUpperCase() === "SUCCESS" || transaction.status === "Success" ? "Success" : 
+                  transaction.status?.toUpperCase() === "FAILED" || transaction.status === "Failed" ? "Failed" : 
+                  transaction.status || "Success",
+          type: (transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course") ? "Course" : 
+                (transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan") ? "Plan" : 
+                (transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem") ? "Problem" : 
+                "Course" as "Course" | "Plan" | "Problem"
         }));
 
-        // Apply filters
-        const filteredTransactions = formattedTransactions.filter(
-          (transaction) =>
-            (transaction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              transaction.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (selectedType === "All" || transaction.type === selectedType) &&
-            (selectedStatus === "All" || transaction.status === selectedStatus)
-        );
-
-        // Sort transactions
-        const sortedTransactions = [...filteredTransactions].sort((a, b) => {
-          const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
-          const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
-          return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
-        });
-
-        formattedTransactions = sortedTransactions;
+        // Use server-side pagination metadata
+        totalPagesCount = apiResponse.totalPages;
       }
 
-      // Pagination
-      const totalPages = Math.ceil(formattedTransactions.length / itemsPerPage);
-      const startIndex = page * itemsPerPage;
-      const paginatedTransactions = formattedTransactions.slice(startIndex, startIndex + itemsPerPage);
-
-      setTransactions(paginatedTransactions);
-      setTotalPages(totalPages);
+      setTransactions(formattedTransactions);
+      setTotalPages(totalPagesCount);
       setCurrentPage(page);
 
-      if (formattedTransactions.length === 0) {
+      if (formattedTransactions.length === 0 && !searchQuery && selectedType === "All" && selectedStatus === "All") {
         setErrorMessage("No transactions found.");
       }
     } catch (error) {
@@ -154,7 +154,12 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
   };
 
   useEffect(() => {
-    loadTransactions(0);
+    // Add a small delay to prevent multiple rapid API calls
+    const timeoutId = setTimeout(() => {
+      loadTransactions(0);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, selectedType, selectedStatus, sortOrder, dateSortOrder]);
 
   const handlePageChange = (page: number) => {

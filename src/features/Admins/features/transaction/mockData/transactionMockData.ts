@@ -292,7 +292,7 @@ export const mockTransactions = [
 
 // Configuration for mock mode
 export const MOCK_CONFIG = {
-  USE_MOCK_DATA: true, // Set to false to use real API calls
+  USE_MOCK_DATA: false, // Set to false to use real API calls
   MOCK_DELAY: 1000 // Simulate API delay in milliseconds
 };
 

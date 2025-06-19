@@ -6,8 +6,9 @@ import { useEffect, useState } from "react";
 interface SearchProps {
   value: string;
   onSearch: (query: string) => void;
+  width?: string; // Add optional width prop
 }
-export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
+export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width = "w-full" }) => {
   const [query, setQuery] = useState(value);
 
   useEffect(() => {
@@ -22,7 +23,7 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
 
   return (
     <div className="flex items-center justify-start w-full p-2 bg-white">
-      <div className="relative pr-10 w-[1140px]">
+      <div className={`relative ${width} max-w-none`}>
         <FontAwesomeIcon icon={faSearch} className="absolute text-gray-500 transform -translate-y-1/2 left-3 top-1/2" />
         <input
           value={query}
@@ -39,5 +40,6 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch }) => {
 
 SearchBar.propTypes = {
   value: PropTypes.string.isRequired,
-  onSearch: PropTypes.func.isRequired
+  onSearch: PropTypes.func.isRequired,
+  width: PropTypes.string
 };

@@ -43,7 +43,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
   const toast = useToast();
   const itemsPerPage = 10;
 
-  // Update internal search query when external prop changes
+  // Update internal search query when external prop changes and load data
   useEffect(() => {
     setSearchQuery(externalSearchQuery);
   }, [externalSearchQuery]);
@@ -55,6 +55,10 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
       console.log("Loading purchased items for page:", page);
 
       let formattedItems: PurchasedItem[] = [];
+      let paginationInfo = {
+        totalPages: 0,
+        totalElements: 0
+      };
 
       if (MOCK_CONFIG.USE_MOCK_DATA) {
         // Use mock data
@@ -84,59 +88,51 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
           }
         });
 
-        formattedItems = sortedItems;
+        // Pagination for mock data
+        const totalPages = Math.ceil(sortedItems.length / itemsPerPage);
+        const startIndex = page * itemsPerPage;
+        const paginatedItems = sortedItems.slice(startIndex, startIndex + itemsPerPage);
+
+        formattedItems = paginatedItems;
+        paginationInfo = {
+          totalPages,
+          totalElements: sortedItems.length
+        };
       } else {
         // Use real API
-        const apiItems = await transactionAPI.getTopPurchased();
+        const filters = {
+          search: searchQuery || undefined,
+          type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
+          sortBy: dateSortOrder !== "desc" ? "date" : "amount",
+          order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
+        };
 
-        if (apiItems.length === 0) {
+        console.log("Calling API with filters:", filters);
+        const apiResponse = await transactionAPI.getPurchasedItemsWithMetadata(page, itemsPerPage, filters);
+
+        if (!apiResponse || apiResponse.content.length === 0) {
           setErrorMessage("No purchased items found.");
           setItems([]);
           setTotalPages(0);
           return;
         }
 
-        formattedItems = apiItems.map((item) => ({
+        formattedItems = apiResponse.content.map((item) => ({
           name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
           email: item.user.email,
           amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(item.date).toLocaleDateString(),
-          type: item.type === "COURSE" ? "Free" : ("Plan" as "Free" | "Plan")
+          type: (item.type?.toUpperCase() === "FREE" || item.type === "Free") ? "Free" : "Plan" as "Free" | "Plan"
         }));
 
-        // Apply filters
-        const filteredItems = formattedItems.filter(
-          (item) =>
-            (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              item.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (selectedType === "All" || item.type === selectedType)
-        );
-
-        // Sort items
-        const sortedItems = [...filteredItems].sort((a, b) => {
-          if (dateSortOrder !== "desc") {
-            // Sort by date
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateSortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
-          } else {
-            // Sort by amount
-            const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
-            const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
-            return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
-          }
-        });
-
-        formattedItems = sortedItems;
+        paginationInfo = {
+          totalPages: apiResponse.totalPages,
+          totalElements: apiResponse.totalElements
+        };
       }
 
-      // Pagination
-      const totalPages = Math.ceil(formattedItems.length / itemsPerPage);
-      const startIndex = page * itemsPerPage;
-      const paginatedItems = formattedItems.slice(startIndex, startIndex + itemsPerPage);
-
-      setItems(paginatedItems);
-      setTotalPages(totalPages);
+      setItems(formattedItems);
+      setTotalPages(paginationInfo.totalPages);
       setCurrentPage(page);
 
       if (formattedItems.length === 0) {
@@ -154,7 +150,12 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
   };
 
   useEffect(() => {
-    loadPurchasedItems(0);
+    // Add a small delay to prevent multiple rapid API calls
+    const timeoutId = setTimeout(() => {
+      loadPurchasedItems(0);
+    }, 300);
+
+    return () => clearTimeout(timeoutId);
   }, [searchQuery, selectedType, sortOrder, dateSortOrder]);
 
   const handlePageChange = (page: number) => {

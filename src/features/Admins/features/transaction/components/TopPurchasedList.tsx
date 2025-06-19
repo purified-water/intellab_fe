@@ -63,10 +63,10 @@ export function TopPurchasedList({
         const formattedItems = apiItems.map((item) => ({
           name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
           email: item.user.email,
-          amount: `$${item.amount.toLocaleString()}`,
+          amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND
           date: new Date(item.date).toLocaleDateString(),
-          status: item.status,
-          type: item.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
+          status: "status" in item ? item.status as string : "Completed", // Provide default value if status doesn't exist
+          type: (item.type?.toUpperCase() === "FREE" ? "Course" : "Plan") as "Course" | "Plan"
         }));
         setItems(formattedItems);
       }
@@ -98,8 +98,8 @@ export function TopPurchasedList({
 
   // Sort items by amount
   const sortedItems = [...filteredItems].sort((a, b) => {
-    const amountA = parseFloat(a.amount.replace(/[$,]/g, ""));
-    const amountB = parseFloat(b.amount.replace(/[$,]/g, ""));
+    const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
+    const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
     return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
   });
 

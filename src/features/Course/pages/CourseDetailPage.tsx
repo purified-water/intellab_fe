@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 import { useState, useEffect, lazy, Suspense } from "react";
+=======
+import { useState, useEffect, useCallback } from "react";
+>>>>>>> Stashed changes
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
@@ -47,7 +51,6 @@ export const CourseDetailPage = () => {
   const userId = getUserIdFromLocalStorage();
   const userRedux = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const courses = useSelector((state: RootState) => state.course.courses);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -165,11 +168,14 @@ export const CourseDetailPage = () => {
     if (redirectedCommentId) {
       setActiveTab(TAB_BUTTONS.COMMENTS);
     }
+  }, [id]); // Only depend on course ID to prevent infinite re-renders
 
-    if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
+  // Separate effect for review prompt to avoid circular dependencies
+  useEffect(() => {
+    if (course?.progressPercent === 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
-  }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
+  }, [course?.progressPercent, course?.courseId, userId]); // Only run when course completion changes
 
   const handleEnrollClick = () => {
     if (!isAuthenticated) {
@@ -253,17 +259,18 @@ export const CourseDetailPage = () => {
     }
   };
 
-  const handleCertificateReady = (updatedCourse: ICourse) => {
+  const handleCertificateReady = useCallback((updatedCourse: ICourse) => {
     // Update course with new certificate info
     setCourse(updatedCourse);
-    // Re-fetch course lessons to refresh the UI
-    getCourseLessons(currentPage);
+    // Don't re-fetch lessons here as it causes unnecessary API calls and re-renders
+    // getCourseLessons(currentPage); // Removed to prevent re-renders
+    
     // Show a toast indicating the course data has been updated
     showToastSuccess({
       toast: toast.toast,
       message: "Certificate is ready! Course information has been updated."
     });
-  };
+  }, [toast]); // Memoize the callback to prevent recreation on every render
 
   const renderHeader = () => {
     return (

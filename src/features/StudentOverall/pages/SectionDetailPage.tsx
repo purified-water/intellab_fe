@@ -4,11 +4,11 @@ import { ICourse } from "@/types";
 import { courseAPI } from "@/lib/api";
 import { Pagination } from "@/components/ui";
 import { motion } from "framer-motion";
-import { FilterComponent, SearchResultComponent } from "../components";
+import { FilterComponent, SearchResultComponent, SearchBar } from "../components";
 import { useDispatch, useSelector } from "react-redux";
 import { getExploreCourse } from "@/redux/course/courseSlice";
 import { RootState } from "@/redux/rootReducer";
-import { FilterButton, SearchBar } from "@/features/Problem/components";
+import { FilterButton } from "@/features/Problem/components";
 
 export const SectionDetailPage: React.FC = () => {
   const [searchedCourses, setSearchedCourses] = useState<ICourse[]>([]);
@@ -88,12 +88,23 @@ export const SectionDetailPage: React.FC = () => {
     <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
       <div className="flex-grow pt-10">
         {/* Header section with filter button and search bar */}
+<<<<<<< Updated upstream
         <div className="flex items-center">
           <FilterButton
             onClick={() => {
               setShowFilter(!showFilter);
             }}
           />
+=======
+        <div className="flex items-center w-full">
+          <div className="flex-shrink-0">
+            <FilterButton
+              onClick={() => {
+                setShowFilter(!showFilter);
+              }}
+            />
+          </div>
+>>>>>>> Stashed changes
           <div className="flex-1">
             <SearchBar value={query} onSearch={handleSearch} />
           </div>

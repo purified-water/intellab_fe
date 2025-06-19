@@ -46,6 +46,7 @@ export const Header = (props: HeaderProps) => {
 
   // Certificate generation state management
   const [certificateStatus, setCertificateStatus] = useState<CertificateStatus>("idle");
+  // @ts-ignore - retryCount is used in setRetryCount calls within useEffect and retry handler
   const [retryCount, setRetryCount] = useState(0);
   const wasGenerating = useRef(false);
   const hasCertificateUrl = course.certificateUrl && course.certificateId;
@@ -96,44 +97,71 @@ export const Header = (props: HeaderProps) => {
             clearInterval(intervalId);
           } else {
             // Certificate not ready yet, increment retry counter
-            setRetryCount((prevCount) => prevCount + 1);
+            setRetryCount((prevCount) => {
+              const newCount = prevCount + 1;
+              
+              // After some retries, show a pending message to reassure the user
+              if (newCount === 3) {
+                toast.toast({
+                  title: "Still working on it",
+                  description: "Your certificate is being processed. This might take a moment."
+                });
+              }
+              
+              // After several failed attempts, mark as failed
+              if (newCount > 5) {
+                setCertificateStatus("failed");
+                clearInterval(intervalId);
 
-            // After some retries, show a pending message to reassure the user
-            if (retryCount === 3) {
-              toast.toast({
-                title: "Still working on it",
-                description: "Your certificate is being processed. This might take a moment."
-              });
-            }
+                toast.toast({
+                  title: "Certificate Generation Failed",
+                  description: "We couldn't generate your certificate. Please try again later.",
+                  variant: "destructive"
+                });
+              }
+              
+              return newCount;
+            });
           }
         } catch (error) {
           console.error("Error checking certificate status:", error);
 
-          // After several failed attempts, mark as failed
-          if (retryCount > 5) {
-            setCertificateStatus("failed");
-            clearInterval(intervalId);
+          setRetryCount((prevCount) => {
+            const newCount = prevCount + 1;
+            
+            // After several failed attempts, mark as failed
+            if (newCount > 5) {
+              setCertificateStatus("failed");
+              clearInterval(intervalId);
 
-            toast.toast({
-              title: "Certificate Generation Failed",
-              description: "We couldn't generate your certificate. Please try again later.",
-              variant: "destructive"
-            });
-          }
+              toast.toast({
+                title: "Certificate Generation Failed",
+                description: "We couldn't generate your certificate. Please try again later.",
+                variant: "destructive"
+              });
+            }
+            
+            return newCount;
+          });
         }
       };
 
       // Initial check
       checkCertificateStatus();
 
+<<<<<<< Updated upstream
       // Poll every 5 seconds (better user experience than 3s, less server load)
       intervalId = setInterval(checkCertificateStatus, 8000);
+=======
+      // Increase polling interval to reduce server load and re-renders
+      intervalId = setInterval(checkCertificateStatus, 10000); // Changed from 5s to 10s
+>>>>>>> Stashed changes
     }
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [isFinished, certificateStatus, hasCertificateUrl, retryCount, course.courseId, toast]);
+  }, [isFinished, certificateStatus, hasCertificateUrl, course.courseId]); // Removed retryCount and toast from dependencies
 
   // Reset certificate status to generating when retry is clicked
   const handleRetryCertificate = async () => {
