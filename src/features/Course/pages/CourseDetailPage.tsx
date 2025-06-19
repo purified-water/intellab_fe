@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
@@ -14,9 +14,14 @@ import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
-import { AppFooter } from "@/components/AppFooter";
 import { useSearchParams } from "react-router-dom";
 import { CommentContext } from "../../../hooks/useCommentContext";
+import { SEO } from "@/components/SEO";
+const AppFooter = lazy(() =>
+  import("@/components/AppFooter").then((module) => ({
+    default: module.AppFooter
+  }))
+);
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -37,14 +42,11 @@ export const CourseDetailPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
-  // Add a refresh trigger state to force re-renders when needed
-  // const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
   const userRedux = useSelector((state: RootState) => state.user.user);
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const courses = useSelector((state: RootState) => state.course.courses);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -69,8 +71,7 @@ export const CourseDetailPage = () => {
     }
 
     setCourse(result);
-    // Set document title
-    document.title = `${result.courseName} | Intellab`;
+
     setLoading(false);
   };
 
@@ -163,11 +164,14 @@ export const CourseDetailPage = () => {
     if (redirectedCommentId) {
       setActiveTab(TAB_BUTTONS.COMMENTS);
     }
+  }, [id]); // Only depend on course ID to prevent infinite re-renders
 
-    if (course?.progressPercent == 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
+  // Separate effect for review prompt to avoid circular dependencies
+  useEffect(() => {
+    if (course?.progressPercent === 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
-  }, [isAuthenticated, courses, isEnrolled]); // Re-fetch when `userEnrolled` changes or `courses` changes
+  }, [course?.progressPercent, course?.courseId, userId]); // Only run when course completion changes
 
   const handleEnrollClick = () => {
     if (!isAuthenticated) {
@@ -251,17 +255,21 @@ export const CourseDetailPage = () => {
     }
   };
 
-  const handleCertificateReady = (updatedCourse: ICourse) => {
-    // Update course with new certificate info
-    setCourse(updatedCourse);
-    // Re-fetch course lessons to refresh the UI
-    getCourseLessons(currentPage);
-    // Show a toast indicating the course data has been updated
-    showToastSuccess({
-      toast: toast.toast,
-      message: "Certificate is ready! Course information has been updated."
-    });
-  };
+  const handleCertificateReady = useCallback(
+    (updatedCourse: ICourse) => {
+      // Update course with new certificate info
+      setCourse(updatedCourse);
+      // Don't re-fetch lessons here as it causes unnecessary API calls and re-renders
+      // getCourseLessons(currentPage); // Removed to prevent re-renders
+
+      // Show a toast indicating the course data has been updated
+      showToastSuccess({
+        toast: toast.toast,
+        message: "Certificate is ready! Course information has been updated."
+      });
+    },
+    [toast]
+  ); // Memoize the callback to prevent recreation on every render
 
   const renderHeader = () => {
     return (
@@ -362,13 +370,17 @@ export const CourseDetailPage = () => {
 
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
+      <SEO title={`${course?.courseName ? course.courseName : "Course"} | Intellab`} />
+
       <div className="flex flex-col min-h-screen overflow-x-hidden">
         <div className="w-full">{renderHeader()}</div>
         <div className="flex-grow w-full max-w-6xl p-10 pb-8 mx-auto">
           {renderBody()}
           {renderSpinner()}
         </div>
-        <AppFooter />
+        <Suspense fallback={<Spinner className="size-6" loading />}>
+          <AppFooter />
+        </Suspense>
       </div>
     </CommentContext.Provider>
   );

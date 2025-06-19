@@ -57,7 +57,7 @@ export function DatePickerWithRange({ className, date, setDate }: DatePickerWith
           <Button
             id="date"
             variant="outline"
-            className="w-[300px] justify-start text-left font-normal"
+            className="justify-start font-normal text-left"
           >
             <CalendarIcon className="w-4 h-4 mr-2" />
             {date?.from ? (
@@ -76,7 +76,7 @@ export function DatePickerWithRange({ className, date, setDate }: DatePickerWith
         <PopoverContent className="w-auto p-0" align="end">
           <div className="p-3">
             {warning && (
-              <div className="mb-2 p-2 text-sm text-orange-600 bg-orange-50 border border-orange-200 rounded">
+              <div className="p-2 mb-2 text-sm text-orange-600 border border-orange-200 rounded bg-orange-50">
                 {warning}
               </div>
             )}

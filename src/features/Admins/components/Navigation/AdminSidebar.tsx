@@ -176,7 +176,7 @@ export function AdminSidebar() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 p-0">
             <div className="flex items-center gap-3 p-3 border-b">
-              <AvatarIcon src={userRedux?.photoUrl ?? ""} alt="Avatar" />
+              <AvatarIcon src={userRedux?.photoUrl || ""} alt="Avatar" />
               <div className="flex flex-col">
                 <span className="text-lg font-semibold max-w-[150px] truncate" title={userFullName}>
                   {userFullName}

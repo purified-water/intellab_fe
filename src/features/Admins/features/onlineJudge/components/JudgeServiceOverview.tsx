@@ -1,5 +1,5 @@
 import { Card, CardHeader, CardTitle, CardContent, Skeleton } from "@/components/ui/shadcn";
-import { MAX_SERVICE_COUNT, NA_VALUE } from "@/constants";
+import { MAX_SERVICE_COUNT } from "@/constants";
 import { Server, Zap } from "lucide-react";
 
 interface StatCardProps {
@@ -8,28 +8,21 @@ interface StatCardProps {
   value?: number | string;
   description?: string;
   isLoading?: boolean;
+  isUpdating?: boolean;
 }
 
-const StatCard = ({ title, icon, value, description, isLoading }: StatCardProps) => (
-  <Card>
+const StatCard = ({ title, icon, value, description, isLoading, isUpdating }: StatCardProps) => (
+  <Card className={isUpdating ? "ring-2 ring-appPrimary transition-all duration-300" : ""}>
     <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-      {isLoading ? (
-        <>
-          <Skeleton className="w-1/2 h-4" />
-          <Skeleton className="w-6 h-6" />
-        </>
-      ) : (
-        <>
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          {icon}
-        </>
-      )}
+      <>
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <div className={`flex items-center gap-2 ${isUpdating ? "animate-pulse text-appPrimary" : ""}`}>{icon}</div>
+      </>
     </CardHeader>
     <CardContent>
       {isLoading ? (
         <>
-          <Skeleton className="w-1/3 h-8" />
-          <Skeleton className="w-2/3 h-4 mt-2" />
+          <Skeleton className="w-1/5 h-12" />
         </>
       ) : (
         <>
@@ -44,13 +37,19 @@ const StatCard = ({ title, icon, value, description, isLoading }: StatCardProps)
 interface JudgeServiceOverviewProps {
   isLoadingServices: boolean;
   serviceCount: number;
-  isLoadingTodaySubmissions: boolean;
+  pendingSubmissions: number;
+  isLoadingPendingSubmissions: boolean;
+  isUpdatingServices?: boolean;
+  isUpdatingPendingSubmissions?: boolean;
 }
 
 export const JudgeServiceOverview = ({
   isLoadingServices,
   serviceCount,
-  isLoadingTodaySubmissions
+  pendingSubmissions,
+  isLoadingPendingSubmissions,
+  isUpdatingServices = false,
+  isUpdatingPendingSubmissions = false
 }: JudgeServiceOverviewProps) => {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -60,13 +59,14 @@ export const JudgeServiceOverview = ({
         value={serviceCount}
         description={`Maximum ${MAX_SERVICE_COUNT} services`}
         isLoading={isLoadingServices}
+        isUpdating={isUpdatingServices}
       />
       <StatCard
-        title="Today Submissions"
+        title="Submissions In-queue"
         icon={<Zap className="w-4 h-4" />}
-        value={NA_VALUE}
-        description="+12% compared to yesterday"
-        isLoading={isLoadingTodaySubmissions}
+        value={pendingSubmissions || 0}
+        isLoading={isLoadingPendingSubmissions}
+        isUpdating={isUpdatingPendingSubmissions}
       />
     </div>
   );

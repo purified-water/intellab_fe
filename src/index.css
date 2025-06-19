@@ -140,9 +140,6 @@ h1 {
   --tw-prose-quotes: #111827;
   --tw-prose-quote-borders: #e5e7eb;
   --tw-prose-captions: #6b7280;
-  --tw-prose-code: #111827;
-  --tw-prose-pre-code: #e5e7eb;
-  --tw-prose-pre-bg: #1f2937;
   --tw-prose-th-borders: #d1d5db;
   --tw-prose-td-borders: #e5e7eb;
 }
@@ -338,4 +335,30 @@ h1 {
 
 .katex-display::-webkit-scrollbar-track {
   background-color: #f1f1f1;
+}
+
+/* Override Tailwind Typography prose styling for code blocks */
+.prose pre {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+}
+
+.prose pre code {
+  background-color: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+/* Specifically target SyntaxHighlighter within prose */
+.prose .react-syntax-highlighter-line-number,
+.prose pre[class*="language-"],
+.prose code[class*="language-"] {
+  background: transparent !important;
+  padding: 0 !important;
+  border: none !important;
+  margin: 0 !important;
 }

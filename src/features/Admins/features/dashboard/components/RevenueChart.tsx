@@ -64,15 +64,10 @@ interface ChartData {
 const mapDataToReadableLabels = (data: RevenueItem[], rangeType: "Month" | "Year" | "Custom"): ChartData[] => {
   if (rangeType === "Month") {
     // For Month view, use API response labels (e.g., "W22 2025", "W23 2025")
-    return data.map(
-      (item) => (
-        console.log("Revenue chart response month", item),
-        {
-          label: item.label,
-          value: item.value
-        }
-      )
-    );
+    return data.map((item) => ({
+      label: item.label,
+      value: item.value
+    }));
   } else if (rangeType === "Year") {
     // For Year view, map to month names
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -82,15 +77,10 @@ const mapDataToReadableLabels = (data: RevenueItem[], rangeType: "Month" | "Year
     }));
   } else {
     // For Custom range, format labels to show only date numbers (e.g., "Apr 1" -> "1")
-    return data.map(
-      (item) => (
-        console.log("Revenue chart response", item),
-        {
-          label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
-          value: item.value
-        }
-      )
-    );
+    return data.map((item) => ({
+      label: item.label.split("-")[0] || item.label, // Extract the last part (day number)
+      value: item.value
+    }));
   }
 };
 
@@ -148,16 +138,12 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
     adminDashboardAPI.getRevenue({
       query,
       onStart: async () => {
-        console.log("Fetching revenue data with query:", query);
         setIsLoading(true);
         setError(null);
       },
       onSuccess: async (responseData) => {
-        console.log("Revenue API Response:", responseData);
-
         // Check if result has data property (for newer API structure)
         const dataArray = responseData.result?.data || responseData.result;
-        console.log("Data array:", dataArray);
 
         // Transform API data to chart format with readable labels
         if (Array.isArray(dataArray)) {
@@ -176,7 +162,6 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
       },
       onEnd: async () => {
         setIsLoading(false);
-        console.log("Revenue data fetch completed");
       }
     });
   }, [rangeType, dateRange, selectedMonth, selectedYear]);

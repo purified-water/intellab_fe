@@ -116,7 +116,7 @@ export const LessonQuiz = () => {
 
   const handleRetryOrFinish = () => {
     if (isCorrect) {
-      navigate(`/course/${courseId}`);
+      navigate(`/course/${courseId}`, { replace: true });
     } else {
       setIsSubmitted(false);
       setSubmittedAnswers({});

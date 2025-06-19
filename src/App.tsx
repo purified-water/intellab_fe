@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import "./App.css";
 import { createBrowserRouter, RouterProvider, Outlet, useLocation } from "react-router-dom";
 import Navbar from "@/components/Navigation/Navbar";
@@ -27,6 +27,7 @@ import { useState, useEffect } from "react";
 import { VerifyAccountBanner } from "./components/VerifyAccountBanner";
 import { ScrollToTop } from "./hooks/useScrollToTop";
 import { NotFoundPage, ServerErrorPage } from "./features/ErrorPages/pages";
+import { Spinner } from "./components/ui";
 
 const queryClient = new QueryClient(); // Define outside of the component to avoid re-creating it on every render
 
@@ -63,24 +64,45 @@ const router = createBrowserRouter([
     element: <Layout />,
     errorElement: <ServerErrorPage />,
     children: [
-      ...StudentOverallRoute, // The index page "HomePage" is included in here
-      ...AuthRoute,
-      ...CertificateRoute,
-      ...CourseRoute,
-      ...LeaderboardRoute,
-      ...LessonRoute,
-      ...PaymentRoute,
-      ...ProfileRoute,
-      ...QuizRoute,
-      ...ProblemRoute,
-      ...NotificationRoute,
-      { path: "*", element: <NotFoundPage /> }
+      // Wrap all routes in a Suspense component to handle lazy loading
+      {
+        path: "*",
+        element: (
+          <Suspense fallback={<Spinner className="w-10 h-10 mx-auto mt-20" loading overlay />}>
+            <Outlet />
+          </Suspense>
+        ),
+        children: [
+          ...StudentOverallRoute,
+          ...AuthRoute,
+          ...CertificateRoute,
+          ...CourseRoute,
+          ...LeaderboardRoute,
+          ...LessonRoute,
+          ...PaymentRoute,
+          ...ProfileRoute,
+          ...QuizRoute,
+          ...ProblemRoute,
+          ...NotificationRoute,
+          { path: "*", element: <NotFoundPage /> }
+        ]
+      }
     ]
   },
   {
     path: "/admin",
     element: <AdminLayout />,
-    children: [...AdminRoute, { path: "*", element: <NotFoundPage /> }]
+    children: [
+      {
+        path: "*",
+        element: (
+          <Suspense fallback={<Spinner className="w-10 h-10 mx-auto mt-20" overlay loading />}>
+            <Outlet />
+          </Suspense>
+        ),
+        children: [...AdminRoute, { path: "*", element: <NotFoundPage /> }]
+      }
+    ]
   }
 ]);
 

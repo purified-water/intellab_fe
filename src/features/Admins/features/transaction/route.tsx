@@ -1,9 +1,13 @@
+import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
-import { TransactionManagementPage } from "./pages";
+
+const TransactionManagementPage = lazy(() =>
+  import("./pages").then((module) => ({ default: module.TransactionManagementPage }))
+);
 
 const TransactionRoute: RouteObject[] = [
   {
-    path: "/admin/transactions",
+    path: "transactions",
     element: <TransactionManagementPage />
   }
 ];

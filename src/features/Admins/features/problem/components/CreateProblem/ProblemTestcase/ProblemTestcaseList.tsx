@@ -1,9 +1,11 @@
 import { Button, EndOfListNotice } from "@/components/ui";
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { ChevronLeft, ChevronRight, Plus, Upload } from "lucide-react";
 import { useState } from "react";
 import { TestcaseItem } from "./TestcaseItem";
 import { CreateTestcaseSchema } from "../../../schemas";
 import { TestcaseAction } from "../../../types";
+import { TestcaseUploadGuideModal } from "./TestcaseUploadGuideModal";
+import { TestcaseUploadFileModal } from "./TestcaseUploadFileModal";
 
 interface ProblemTestcaseListProps {
   testcases: CreateTestcaseSchema[];
@@ -12,10 +14,36 @@ interface ProblemTestcaseListProps {
 }
 
 export const ProblemTestcaseList = ({ testcases, onSelectTestcase, selectedTestcaseId }: ProblemTestcaseListProps) => {
+  const dontShowUploadGuideModal = localStorage.getItem("dontShowUploadGuideModal") === "true";
+
   const [showList, setShowList] = useState(true);
+  const [openUploadGuideModal, setOpenUploadGuideModal] = useState(false);
+  const [openUploadFileModal, setOpenUploadFileModal] = useState(false);
 
   const toggleList = () => {
     setShowList(!showList);
+  };
+
+  const handleCloseUploadGuideModal = () => {
+    setOpenUploadGuideModal(false);
+    setOpenUploadFileModal(true);
+  };
+
+  const handleUploadFileModalHeaderIconClick = () => {
+    setOpenUploadFileModal(false);
+    setOpenUploadGuideModal(true);
+  };
+
+  const handleDontShowUploadGuideModalAgain = (dontShow: boolean) => {
+    localStorage.setItem("dontShowUploadGuideModal", dontShow ? "true" : "false");
+  };
+
+  const handleUploadFileClick = () => {
+    if (dontShowUploadGuideModal != undefined && dontShowUploadGuideModal) {
+      setOpenUploadFileModal(true);
+    } else {
+      setOpenUploadGuideModal(true);
+    }
   };
 
   return (
@@ -44,17 +72,32 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase, selectedTestc
         </div>
       )}
 
-      <div className="mt-4">
+      <div className="mt-4 space-y-4 ">
         <Button
           type="button"
-          variant="default"
-          className="w-full"
+          variant="outline"
+          className="w-full rounded-lg"
           onClick={() => onSelectTestcase?.({ type: "create" })}
         >
           <Plus className="w-4 h-4" />
-          Add Test Case
+          Add New
+        </Button>
+        <Button type="button" className="w-full rounded-lg" onClick={handleUploadFileClick}>
+          <Upload className="w-4 h-4" />
+          Upload Files
         </Button>
       </div>
+      <TestcaseUploadGuideModal
+        isOpen={openUploadGuideModal}
+        onDontShowAgain={handleDontShowUploadGuideModalAgain}
+        onClose={handleCloseUploadGuideModal}
+        dontShowUploadFileModalAgain={dontShowUploadGuideModal}
+      />
+      <TestcaseUploadFileModal
+        open={openUploadFileModal}
+        onClose={() => setOpenUploadFileModal(false)}
+        onHeaderIconClick={handleUploadFileModalHeaderIconClick}
+      />
     </div>
   );
 };

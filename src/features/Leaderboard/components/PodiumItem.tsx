@@ -44,20 +44,20 @@ export function PodiumItem(props: PodiumItemProps) {
     if (item?.photoUrl) {
       image = item?.photoUrl;
     }
-    return <img className="w-12 h-12 rounded-full" src={image} alt="avatar" />;
+    return (
+      <img
+        className="object-cover w-12 h-12 border rounded-full border-muted"
+        src={image || DEFAULT_AVATAR}
+        alt="avatar"
+        onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+      />
+    );
   };
 
   const renderContent = () => {
     return (
       <div
-        className={clsx(
-          `${color === "gold" ? "shadow-gold/50" : color === "bronze" ? "shadow-bronze/50" : "shadow-gray3/50"}`,
-          "w-[400px]",
-          "rounded-lg",
-          "space-y-8",
-          "cursor-pointer",
-          "shadow-md"
-        )}
+        className={clsx("w-[400px]", "rounded-lg", "space-y-8", "cursor-pointer", "shadow-md")}
         onClick={handleItemClick}
       >
         <div className="py-2 space-y-1 justify-items-center" style={{ height }}>
@@ -68,7 +68,7 @@ export function PodiumItem(props: PodiumItemProps) {
           <p
             className="text-sm text-gray-500 truncate"
             style={{ maxWidth: width / 6 }}
-          >{`${item?.firstName} ${item?.lastName}`}</p>
+          >{`${item?.firstName} ${item?.lastName.slice(0, 20)}`}</p>
         </div>
         <div
           className={clsx(

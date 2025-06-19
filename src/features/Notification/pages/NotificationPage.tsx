@@ -56,7 +56,7 @@ export const NotificationPage = () => {
       <div className="container px-8 py-8 mx-auto sm:px-24">
         <h1 className="flex items-center mb-8 text-2xl font-bold cursor-pointer w-fit hover:text-appPrimary">
           <ChevronLeft className="mr-1" />
-          Notification
+          Notifications
         </h1>
         <div className="flex flex-col space-y-4 w-min-[200px] mx-auto overflow-y-auto sm:justify-normal">
           {/* Skeleton Loader */}

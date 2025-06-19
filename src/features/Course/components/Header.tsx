@@ -1,144 +1,3 @@
-// import { useRef, useState } from "react";
-// import { ProgressBar, Spinner, AnimatedButton } from "@/components/ui";
-// import { amountTransformer } from "@/utils";
-// import { ICourse } from "@/types";
-// import CourseSummaryDialog from "@/components/ui/CourseSummaryDialog";
-// import { aiAPI } from "@/lib/api";
-// import { useToast } from "@/hooks/use-toast";
-// import { NA_VALUE } from "@/constants";
-// import { showToastError } from "@/utils/toastUtils";
-// import { useSelector } from "react-redux";
-// import { RootState } from "@/redux/rootReducer";
-// import { PREMIUM_PACKAGES, PREMIUM_STATUS } from "@/constants";
-
-// interface HeaderProps {
-//   course: ICourse;
-//   onEnroll: () => void;
-//   onContinue: () => void;
-//   onViewCertificate: () => void;
-//   onPurchase: () => Promise<void>;
-// }
-
-// export const Header = (props: HeaderProps) => {
-//   const { course, onEnroll, onContinue, onViewCertificate, onPurchase } = props;
-//   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
-//   const [summaryContent, setSummaryContent] = useState("");
-//   const toast = useToast();
-//   const [loading, setLoading] = useState(false);
-//   const abortControllerRef = useRef<AbortController | null>(null);
-//   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
-
-//   const isFinished = course.progressPercent == 100;
-
-//   const reduxPremiumStatus = useSelector((state: RootState) => state.premiumStatus.premiumStatus);
-//   const isCurrentPlanActive = reduxPremiumStatus?.status == PREMIUM_STATUS.ACTIVE;
-//   const includedInPremiumPlan =
-//     reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.COURSE ||
-//     reduxPremiumStatus?.planType == PREMIUM_PACKAGES.RESPONSE.PREMIUM;
-
-//   const renderReview = () => {
-//     return (
-//       <div className="mt-2 text-xs">
-//         <span className="px-2 py-1 text-white bg-black rounded-full">
-//           ⭐ {course.averageRating && course.averageRating != 0 ? course.averageRating.toFixed(1) : NA_VALUE}
-//         </span>
-//         <span> • {course.reviewCount ? amountTransformer(course.reviewCount) : 0} reviews</span>
-//       </div>
-//     );
-//   };
-
-//   const renderLeftButton = () => {
-//     let buttonText;
-//     let onClick;
-//     let disable = false;
-
-//     if (course.userEnrolled) {
-//       if (isFinished) {
-//         buttonText = "View Certificate";
-//         onClick = onViewCertificate;
-//         if (!course.certificateId || !course.certificateUrl) {
-//           disable = true;
-//         }
-//       } else {
-//         buttonText = "Continue";
-//         onClick = onContinue;
-//       }
-//     } else {
-//       if (course.price == 0 || (includedInPremiumPlan && isCurrentPlanActive)) {
-//         buttonText = "Enroll";
-//         onClick = onEnroll;
-//       } else {
-//         buttonText = "Purchase";
-//         onClick = onPurchase;
-//       }
-//     }
-
-//     return (
-//       <button
-//         disabled={disable}
-//         className="px-6 py-2 text-base font-bold text-white transition rounded-lg shadow bg-appPrimary hover:bg-appSecondary"
-//         onClick={onClick}
-//       >
-//         {buttonText}
-//       </button>
-//     );
-//   };
-
-//   const handleSummaryClick = async () => {
-//     setLoading(true);
-//     try {
-//       // remove the special characters and the space at start and end from the course name
-//       const response = await aiAPI.getCourseSummary(formattedCourseName, course.courseId, "false");
-//       const { content } = response;
-//       setSummaryContent(content);
-//       setShowSummaryDialog(true);
-//     } catch (error: unknown) {
-//       if (error instanceof Error) {
-//         showToastError({ toast: toast.toast, title: "Error", message: error.message ?? "Failed to get AI summary" });
-//       }
-//     }
-//     setLoading(false);
-//   };
-
-//   const handleCancelClick = () => {
-//     if (abortControllerRef.current) {
-//       abortControllerRef.current.abort();
-//     }
-//   };
-
-//   const renderRightButton = () => {
-//     return <AnimatedButton label="AI Summary" onClick={handleSummaryClick} />;
-//   };
-
-//   const renderButtons = () => {
-//     return (
-//       <div className="flex gap-4 mt-4">
-//         {renderLeftButton()}
-//         {isFinished && renderRightButton()}
-//       </div>
-//     );
-//   };
-
-//   return (
-//     <div className="flex flex-col gap-3 p-4 mx-24 my-6 text-white rounded-lg bg-gradient-to-r from-appPrimary to-appSecondary px-7 min-w-[500px]">
-//       <h1 className="text-4xl font-bold">{course.courseName}</h1>
-//       <p className="mt-2 text-justify">{course.description}</p>
-//       {course.userEnrolled ? <ProgressBar progress={course.progressPercent} /> : renderReview()}
-//       {renderButtons()}
-//       <CourseSummaryDialog
-//         courseName={formattedCourseName}
-//         isOpen={showSummaryDialog}
-//         summaryContent={summaryContent}
-//         onClose={() => {
-//           setShowSummaryDialog(false);
-//           handleCancelClick();
-//         }}
-//       />
-//       {loading && <Spinner overlay loading={loading} />}
-//     </div>
-//   );
-// };
-
 import { useRef, useState, useEffect } from "react";
 import { ProgressBar, AnimatedButton, Spinner } from "@/components/ui";
 import { ICourse } from "@/types";
@@ -187,7 +46,7 @@ export const Header = (props: HeaderProps) => {
 
   // Certificate generation state management
   const [certificateStatus, setCertificateStatus] = useState<CertificateStatus>("idle");
-  const [retryCount, setRetryCount] = useState(0);
+  const [_retryCount, setRetryCount] = useState(0);
   const wasGenerating = useRef(false);
   const hasCertificateUrl = course.certificateUrl && course.certificateId;
 
@@ -237,44 +96,66 @@ export const Header = (props: HeaderProps) => {
             clearInterval(intervalId);
           } else {
             // Certificate not ready yet, increment retry counter
-            setRetryCount((prevCount) => prevCount + 1);
+            setRetryCount((prevCount) => {
+              const newCount = prevCount + 1;
 
-            // After some retries, show a pending message to reassure the user
-            if (retryCount === 3) {
-              toast.toast({
-                title: "Still working on it",
-                description: "Your certificate is being processed. This might take a moment."
-              });
-            }
+              // After some retries, show a pending message to reassure the user
+              if (newCount === 3) {
+                toast.toast({
+                  title: "Still working on it",
+                  description: "Your certificate is being processed. This might take a moment."
+                });
+              }
+
+              // After several failed attempts, mark as failed
+              if (newCount > 5) {
+                setCertificateStatus("failed");
+                clearInterval(intervalId);
+
+                toast.toast({
+                  title: "Certificate Generation Failed",
+                  description: "We couldn't generate your certificate. Please try again later.",
+                  variant: "destructive"
+                });
+              }
+
+              return newCount;
+            });
           }
         } catch (error) {
           console.error("Error checking certificate status:", error);
 
-          // After several failed attempts, mark as failed
-          if (retryCount > 5) {
-            setCertificateStatus("failed");
-            clearInterval(intervalId);
+          setRetryCount((prevCount) => {
+            const newCount = prevCount + 1;
 
-            toast.toast({
-              title: "Certificate Generation Failed",
-              description: "We couldn't generate your certificate. Please try again later.",
-              variant: "destructive"
-            });
-          }
+            // After several failed attempts, mark as failed
+            if (newCount > 5) {
+              setCertificateStatus("failed");
+              clearInterval(intervalId);
+
+              toast.toast({
+                title: "Certificate Generation Failed",
+                description: "We couldn't generate your certificate. Please try again later.",
+                variant: "destructive"
+              });
+            }
+
+            return newCount;
+          });
         }
       };
 
       // Initial check
       checkCertificateStatus();
 
-      // Poll every 5 seconds (better user experience than 3s, less server load)
-      intervalId = setInterval(checkCertificateStatus, 5000);
+      // Increase polling interval to reduce server load and re-renders
+      intervalId = setInterval(checkCertificateStatus, 10000); // Changed from 5s to 10s
     }
 
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [isFinished, certificateStatus, hasCertificateUrl, retryCount, course.courseId, toast]);
+  }, [isFinished, certificateStatus, hasCertificateUrl, course.courseId]); // Removed retryCount and toast from dependencies
 
   // Reset certificate status to generating when retry is clicked
   const handleRetryCertificate = async () => {
@@ -484,7 +365,7 @@ export const Header = (props: HeaderProps) => {
                   {course.level}
                 </span>
                 {course.categories.map((category, index) => (
-                  <span key={index} className="bg-gray5 text-black1 text-xs font-semibold px-2 py-1 rounded-lg">
+                  <span key={index} className="px-2 py-1 text-xs font-semibold rounded-lg bg-gray5 text-black1">
                     {category.name}
                   </span>
                 ))}

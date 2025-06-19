@@ -1,10 +1,14 @@
 import { RouteObject } from "react-router-dom";
-import { JudgeManagementPage } from "./pages/JudgeManagementPage";
+import { lazy } from "react";
+
+const JudgeManagementPage = lazy(() =>
+  import("./pages/JudgeManagementPage").then((module) => ({ default: module.JudgeManagementPage }))
+);
 
 const JudgeManagementRoute: RouteObject[] = [
   {
     index: true,
-    path: "/admin/judge-management",
+    path: "judge-management",
     element: <JudgeManagementPage />
   }
 ];

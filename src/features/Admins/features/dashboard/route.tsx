@@ -1,14 +1,16 @@
 import { Navigate, RouteObject } from "react-router-dom";
-import { DashboardPage } from "./pages";
+import { lazy } from "react";
+
+const DashboardPage = lazy(() => import("./pages").then((module) => ({ default: module.DashboardPage })));
 
 const DashboardRoute: RouteObject[] = [
   {
     index: true,
-    path: "/admin/dashboard",
+    path: "dashboard",
     element: <DashboardPage />
   },
   {
-    path: "/admin",
+    path: "",
     element: <Navigate to="/admin/dashboard" replace />
   }
 ];

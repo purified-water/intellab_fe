@@ -5,15 +5,28 @@ import { Skeleton } from "@/components/ui/shadcn";
 import { WorkerPod } from "../types/judgeTypes";
 import { formatUptime } from "@/utils";
 import { SEO } from "@/components/SEO";
-import { useGetJudgeServices } from "../hooks/useAdminJudge";
+import { useGetJudgeServices, useGetPendingSubmissions } from "../hooks/useAdminJudge";
 
 export const JudgeManagementPage = () => {
   const {
     data: workerData = [],
     isLoading: workerLoading,
     refetch: refetchGetWorker,
-    isRefetching
+    isRefetching: isWorkerRefetching
   } = useGetJudgeServices();
+
+  const {
+    data: pendingSubmissionsData = 0,
+    isLoading: pendingSubmissionsLoading,
+    refetch: refetchPendingSubmissions,
+    isRefetching: isPendingSubmissionsRefetching
+  } = useGetPendingSubmissions();
+
+  const handleRefresh = () => {
+    refetchGetWorker();
+    refetchPendingSubmissions();
+  };
+
   const workerServices: WorkerPod[] = workerData.map((worker: WorkerPod) => {
     return {
       ...worker,
@@ -52,7 +65,7 @@ export const JudgeManagementPage = () => {
 
   const renderTableBody = () => (
     <tbody>
-      {workerLoading || isRefetching
+      {workerLoading || isWorkerRefetching
         ? Array.from({ length: 3 }).map((_, index) => (
             <tr key={index} className="text-base border-b border-gray5">
               <td className="w-1/5 py-4">
@@ -103,16 +116,28 @@ export const JudgeManagementPage = () => {
       <div className="container max-w-[1200px] mx-auto p-6 space-y-8 mb-12">
         <div className="flex items-center justify-between">
           <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Judge Management</h1>
-          <Button variant="outline" className="gap-2" onClick={() => refetchGetWorker()}>
-            <RefreshCw className="w-4 h-4" />
+          <Button
+            variant="outline"
+            className="gap-2"
+            onClick={handleRefresh}
+            disabled={
+              workerLoading || isWorkerRefetching || pendingSubmissionsLoading || isPendingSubmissionsRefetching
+            }
+          >
+            <RefreshCw
+              className={`size-4 ${workerLoading || isWorkerRefetching || pendingSubmissionsLoading || isPendingSubmissionsRefetching ? "animate-spin" : ""}`}
+            />
             Refresh
           </Button>
         </div>
 
         <JudgeServiceOverview
           serviceCount={workerServices.length}
-          isLoadingServices={workerLoading || isRefetching}
-          isLoadingTodaySubmissions={false}
+          isLoadingServices={workerLoading}
+          pendingSubmissions={pendingSubmissionsData ? pendingSubmissionsData : 0}
+          isLoadingPendingSubmissions={pendingSubmissionsLoading}
+          isUpdatingServices={isWorkerRefetching}
+          isUpdatingPendingSubmissions={isPendingSubmissionsRefetching}
         />
         <JudgeAdjustmentCard serviceCount={workerServices.length} />
 

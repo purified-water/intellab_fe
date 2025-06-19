@@ -212,6 +212,8 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
             dispatch(resetFilters());
+            setSelectedLevels([]);
+            setSelectedPrices([]);
             setSelectedCategories([]);
             setSelectedRating("0");
           }}

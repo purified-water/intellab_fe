@@ -147,9 +147,10 @@ export function EditProfileSection() {
       <div className="relative space-y-4 justify-items-center">
         <div className="relative group">
           <img
-            src={user?.photoUrl ?? DEFAULT_AVATAR}
+            src={user?.photoUrl || DEFAULT_AVATAR}
             alt="User Avatar"
             className="object-contain w-24 h-24 border rounded-full cursor-pointer border-gray4"
+            onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
           />
           <div
             className="absolute inset-0 flex items-center justify-center transition-opacity duration-300 bg-black bg-opacity-50 rounded-full opacity-0 cursor-pointer group-hover:opacity-100"

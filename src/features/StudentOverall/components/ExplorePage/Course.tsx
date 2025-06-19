@@ -14,6 +14,8 @@ import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils";
 import { Button } from "@/components/ui/Button";
 import { BookOpenText } from "lucide-react";
+import { rateIcon } from "@/assets";
+
 interface CourseProps {
   course: ICourse | null;
   skeletonLoading?: boolean;
@@ -74,12 +76,11 @@ export function Course(props: CourseProps) {
       navigate(`/course/${id}`);
     }
   };
-
   useEffect(() => {
-    if (course) {
+    if (course && !detailCourse) {
       getCourseDetail();
     }
-  }, []);
+  }, [course?.courseId]); // Only re-run if courseId changes
 
   const priceText = (price: number, unitPrice: string) => {
     let result;
@@ -118,19 +119,20 @@ export function Course(props: CourseProps) {
         <img
           src={detailCourse?.courseImage || "/placeholder.svg"}
           alt={detailCourse?.courseName || DEFAULT_COURSE.courseName}
+          onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
           className="object-cover w-full h-full"
           loading="lazy"
         />
         <div className="absolute top-2 right-2 max-w-[330px]">
-          <div className="px-2 py-1 mb-5 text-xs bg-black/40 backdrop-blur-md rounded-lg text-white whitespace-nowrap overflow-hidden text-ellipsis">
+          <div className="flex items-center px-2 py-1 mb-5 overflow-hidden text-xs text-white rounded-lg bg-black/40 backdrop-blur-md whitespace-nowrap text-ellipsis">
             {`${amountTransformer(detailCourse?.reviewCount ?? 0)} review${(detailCourse?.reviewCount ?? 0) !== 1 ? "s" : ""}`}{" "}
-            • ⭐{" "}
-            {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : NA_VALUE}
+            • <img className="w-3 h-3 mx-[6px]" src={rateIcon} alt="Rating" />
+            {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : 0}
           </div>
         </div>
       </div>
 
-      <CardContent className="flex-grow px-4 pt-2 pb-0 flex flex-col">
+      <CardContent className="flex flex-col flex-grow px-4 pt-2 pb-0">
         <h3 className="text-lg font-bold line-clamp-1">{detailCourse?.courseName ?? DEFAULT_COURSE.courseName}</h3>
         <p className="mt-2 text-sm text-muted-foreground line-clamp-2 min-h-[2.5rem]">
           {detailCourse?.description ?? DEFAULT_COURSE.description}
@@ -138,14 +140,14 @@ export function Course(props: CourseProps) {
         <LevelCard level={detailCourse?.level ?? DEFAULT_COURSE.level} categories={detailCourse?.categories || []} />
 
         {/* Lessons count above the button */}
-        <div className="mt-3 mb-3 ml-3 py-2 text-sm text-gray3 text-left flex items-center gap-1">
+        <div className="flex items-center gap-1 py-2 mt-3 mb-3 ml-3 text-sm text-left text-gray3">
           <BookOpenText className="w-4 h-4" />
           {detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount}{" "}
           {(detailCourse?.lessonCount ?? DEFAULT_COURSE.lessonCount) > 1 ? "lessons" : "lesson"}
         </div>
       </CardContent>
 
-      <CardFooter className="px-5 pt-0 pb-4 flex justify-between items-center mt-auto">
+      <CardFooter className="flex items-center justify-between px-5 pt-0 pb-4 mt-auto">
         <Button
           className="h-10 px-6 pt-2 pb-[9px] bg-appPrimary rounded-lg text-white border border-appPrimary justify-center items-center inline-flex text-base hover:bg-appPrimary/80 hover:text-white transition-colors duration-200"
           onClick={(e) => {
@@ -172,15 +174,15 @@ export function Course(props: CourseProps) {
       </div>
 
       <CardContent className="flex-grow px-4 pt-2 pb-0">
-        <Skeleton className="h-6 mb-2 w-3/4" />
-        <Skeleton className="h-4 mb-2 w-full" />
-        <Skeleton className="h-4 mb-4 w-2/3" />
-        <Skeleton className="h-6 mb-2 w-1/2" />
-        <Skeleton className="h-4 mb-2 w-1/3" />
-        <Skeleton className="h-4 w-1/4" />
+        <Skeleton className="w-3/4 h-6 mb-2" />
+        <Skeleton className="w-full h-4 mb-2" />
+        <Skeleton className="w-2/3 h-4 mb-4" />
+        <Skeleton className="w-1/2 h-6 mb-2" />
+        <Skeleton className="w-1/3 h-4 mb-2" />
+        <Skeleton className="w-1/4 h-4" />
       </CardContent>
 
-      <CardFooter className="px-4 pt-0 pb-10 flex justify-between items-center">
+      <CardFooter className="flex items-center justify-between px-4 pt-0 pb-10">
         <Skeleton className="w-24 h-8" />
         <Skeleton className="w-16 h-6" />
       </CardFooter>

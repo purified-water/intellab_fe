@@ -70,8 +70,7 @@ export const useGetLeaderboard = (query: TGetLeaderboardParamsTanstack) => {
       return response.content;
     },
     placeholderData: (previous) => previous,
-    staleTime: 1000 * 60 * 5, // Keep data fresh for 5 minutes
-    gcTime: 1000 * 60 * 10 // Garbage collect after 10 minutes
+    refetchOnWindowFocus: true
   });
 };
 
