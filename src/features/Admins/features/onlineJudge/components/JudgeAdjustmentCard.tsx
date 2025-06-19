@@ -64,7 +64,6 @@ export const JudgeAdjustmentCard = ({ serviceCount }: JudgeAdjustmentCardProps) 
 
   return (
     <>
-      {" "}
       <Card>
         {isLoading ? (
           <CardContent>
@@ -86,7 +85,7 @@ export const JudgeAdjustmentCard = ({ serviceCount }: JudgeAdjustmentCardProps) 
             <CardContent>
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
-                  <Label htmlFor="replicas">Target Service Count:</Label>
+                  <Label htmlFor="replicas">Service Count:</Label>
                   <Input
                     id="replicas"
                     type="number"
@@ -98,7 +97,7 @@ export const JudgeAdjustmentCard = ({ serviceCount }: JudgeAdjustmentCardProps) 
                   />
                 </div>
                 <div>
-                  <Button type="button" variant="outline" onClick={() => setOpenScaleDialog(true)} disabled={isScaling}>
+                  <Button variant="outline" onClick={() => handleScale()} disabled={isScaling}>
                     Confirm
                   </Button>
                 </div>
