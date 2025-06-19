@@ -6,7 +6,19 @@ export const useGetJudgeServices = () =>
     queryKey: ["getJudgePods"],
     queryFn: () => adminJudgeAPI.getJudgePods(),
     refetchOnWindowFocus: true,
-    staleTime: 60000 // Data is fresh for 1 minute
+    staleTime: 10000,
+    refetchInterval: 10000,
+    placeholderData: (previousData) => previousData
+  });
+
+export const useGetPendingSubmissions = () =>
+  useQuery({
+    queryKey: ["getPendingSubmissions"],
+    queryFn: () => adminJudgeAPI.getPendingSubmissions(),
+    refetchOnWindowFocus: true,
+    staleTime: 10000,
+    refetchInterval: 10000,
+    placeholderData: (previousData) => previousData
   });
 
 export const usePostJudgeScale = () => {
@@ -16,6 +28,7 @@ export const usePostJudgeScale = () => {
     mutationFn: (replicas: number) => adminJudgeAPI.postJudgeScale(replicas),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["getJudgePods"] });
+      queryClient.invalidateQueries({ queryKey: ["getPendingSubmissions"] });
     }
   });
 };
