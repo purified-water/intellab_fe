@@ -31,7 +31,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items, activeI
   };
 
   return (
-    <div className="w-full max-w-xs p-4">
+    <div className="w-full max-w-xs p-4 overflow-y-scroll max-h-[500px] scrollbar-hide">
       <div className="flex items-center mb-2 space-x-2 cursor-pointer" onClick={toggleTOC}>
         <h3 className="text-sm font-bold text-gray1">Table of Contents</h3>
         {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}

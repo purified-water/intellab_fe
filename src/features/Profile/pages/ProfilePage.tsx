@@ -9,8 +9,9 @@ import {
   SubmissionList,
   SubscriptionCard
 } from "@/features/Profile/components";
-import { AppFooter } from "@/components/AppFooter";
-
+import { Spinner } from "@/components/ui";
+import React, { Suspense } from "react";
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
 
@@ -33,7 +34,10 @@ export const ProfilePage = () => {
           <CompletedCourseList userId={id!} />
         </div>
       </div>
-      <AppFooter />
+
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
     </div>
   );
 };

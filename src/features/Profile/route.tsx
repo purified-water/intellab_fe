@@ -1,31 +1,37 @@
-import { ProtectedRoute } from "@/components/Navigation";
-import { ProfilePage, EditProfilePage, ViewAllSubmissionPage, EmailVerifiedPage } from "./pages";
+import { lazy } from "react";
 import { RouteObject } from "react-router-dom";
+import { ProtectedRoute } from "@/components/Navigation";
+import { NotFoundPage } from "../ErrorPages/pages";
+
+const ProfilePage = lazy(() => import("./pages").then((m) => ({ default: m.ProfilePage })));
+const EditProfilePage = lazy(() => import("./pages").then((m) => ({ default: m.EditProfilePage })));
+const ViewAllSubmissionPage = lazy(() => import("./pages").then((m) => ({ default: m.ViewAllSubmissionPage })));
+const EmailVerifiedPage = lazy(() => import("./pages").then((m) => ({ default: m.EmailVerifiedPage })));
 
 const ProfileRoute: RouteObject[] = [
   {
-    path: "/profile/:id",
-    element: <ProfilePage />
-  },
-  {
-    path: "/profile/edit",
-    element: (
-      <ProtectedRoute>
-        <EditProfilePage />
-      </ProtectedRoute>
-    )
-  },
-  {
-    path: "/profile/submissions",
-    element: <ViewAllSubmissionPage />
-  },
-  {
-    path: "/profile/update-access-token",
-    element: (
-      <ProtectedRoute>
-        <EmailVerifiedPage />
-      </ProtectedRoute>
-    )
+    path: "profile",
+    children: [
+      { path: ":id", element: <ProfilePage /> },
+      {
+        path: "edit",
+        element: (
+          <ProtectedRoute>
+            <EditProfilePage />
+          </ProtectedRoute>
+        )
+      },
+      { path: "submissions", element: <ViewAllSubmissionPage /> },
+      {
+        path: "update-access-token",
+        element: (
+          <ProtectedRoute>
+            <EmailVerifiedPage />
+          </ProtectedRoute>
+        )
+      },
+      { path: "*", element: <NotFoundPage /> }
+    ]
   }
 ];
 

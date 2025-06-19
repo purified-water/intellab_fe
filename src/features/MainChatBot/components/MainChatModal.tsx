@@ -1,5 +1,5 @@
 "use strict";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
@@ -105,10 +105,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     }
   };
 
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     dispatch(clearChatDetail());
     setInput("");
-  };
+  }, [dispatch]);
 
   const handleSendMessageStream = async () => {
     if (!input.trim() || !userId) return;

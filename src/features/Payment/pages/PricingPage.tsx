@@ -1,10 +1,12 @@
 import { PLAN_FEATURES, PRICING_PLANS } from "../constants";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
-import { AppFooter } from "@/components/AppFooter";
 import { PricingCard } from "../components/Pricing/PricingCard";
 import { PerksList } from "../components/Pricing/PerkList";
 import { motion } from "framer-motion";
 import { SEO } from "@/components/SEO";
+import React, { Suspense } from "react";
+import { Spinner } from "@/components/ui";
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
 export function PricingPage() {
   const { width } = useWindowDimensions();
@@ -37,7 +39,9 @@ export function PricingPage() {
           </div>
         </motion.div>
       </div>
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
     </>
   );
 }

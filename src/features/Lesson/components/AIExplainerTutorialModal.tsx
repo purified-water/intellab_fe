@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui";
 import { AIExplainer1, AIExplainer2 } from "@/assets";
+import React from "react";
 
-export const AIExplainerTutorialModal = ({ onClose }: { onClose: () => void }) => {
+export const AIExplainerTutorialModal = React.memo(({ onClose }: { onClose: () => void }) => {
   return (
     <div className="fixed top-0 left-0 w-full h-full bg-gray1/50 backdrop-blur-sm z-[100] flex items-center justify-center px-4">
       <div className="w-full max-w-2xl p-8 space-y-8 bg-white shadow-xl rounded-2xl">
@@ -44,4 +45,6 @@ export const AIExplainerTutorialModal = ({ onClose }: { onClose: () => void }) =
       </div>
     </div>
   );
-};
+});
+
+AIExplainerTutorialModal.displayName = "AIExplainerTutorialModal";

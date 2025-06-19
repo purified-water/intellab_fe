@@ -10,7 +10,7 @@ import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import { TOCItem } from "./TableOfContents";
 import remarkGfm from "remark-gfm";
 import { ImageCarousel } from "@/components/Markdown";
-import { CarouselImage, isImageMarkdown, extractImageInfo } from "@/utils";
+import { CarouselImage, isImageMarkdown, extractImageInfo, capitalizeFirstLetter } from "@/utils";
 import remarkMath from "remark-math";
 import rehypeKatex from "rehype-katex";
 import "katex/dist/katex.min.css";
@@ -34,7 +34,7 @@ const getHighlighterLanguage = (language: string): string => {
 // Output block component
 const OutputBlock = React.memo(({ content }: { content: string }) => {
   return (
-    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-md">
+    <div className="mb-8 overflow-y-scroll border rounded-lg min-h-fit max-h-[500px] shadow-md scrollbar-hide">
       <div className="px-4 py-3 text-sm font-semibold border-b text-appPrimary">Output</div>
       {/*  */}
       <div className="p-4 text-white bg-appOutputBG">
@@ -73,7 +73,7 @@ const CodeTabs = React.memo(({ codeBlocks }: { codeBlocks: CodeBlock[] }) => {
             }`}
             onClick={() => setActiveTab(block.language)}
           >
-            {block.language}
+            {capitalizeFirstLetter(block.language)}
           </button>
         ))}
       </div>

@@ -15,7 +15,7 @@ import { RootState } from "@/redux/rootReducer";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
 import { Plus, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { HiOutlineSparkles } from "rocketicons/hi2";
 import { renderWelcomeChat, ProblemChatInput } from "./index";
@@ -110,10 +110,10 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
     }
   };
 
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     dispatch(clearChatDetail());
     setInput("");
-  };
+  }, [dispatch]);
 
   const handleStopStreaming = () => {
     if (abortController) {

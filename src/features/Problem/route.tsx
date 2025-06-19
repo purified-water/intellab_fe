@@ -3,11 +3,11 @@ import { RouteObject } from "react-router-dom";
 
 const ProblemRoute: RouteObject[] = [
   {
-    path: "/problems",
+    path: "problems",
     element: <ProblemsPage />
   },
   {
-    path: "/problems/:problemId",
+    path: "problems/:problemId",
     element: <ProblemDetail />
   }
 ];

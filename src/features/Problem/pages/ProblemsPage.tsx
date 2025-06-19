@@ -1,15 +1,16 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import { fetchPaginatedProblems } from "@/redux/problem/problemSlice";
 import { RootState } from "@/redux/rootReducer";
 import { useAppDispatch } from "@/redux/hooks";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Pagination } from "@/components/ui";
+import { Pagination, Spinner } from "@/components/ui";
 import { FilterButton, FilterComponent, ProblemListItem, SearchBar } from "../components";
 import { motion } from "framer-motion";
-import { AppFooter } from "@/components/AppFooter";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { SEO } from "@/components/SEO";
+import React from "react";
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
 export const ProblemsPage = () => {
   const dispatch = useAppDispatch();
@@ -140,7 +141,9 @@ export const ProblemsPage = () => {
         </motion.div>
       </div>
 
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
 
       <AIOrb />
     </>

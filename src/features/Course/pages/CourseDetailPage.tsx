@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
@@ -14,10 +14,14 @@ import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
-import { AppFooter } from "@/components/AppFooter";
 import { useSearchParams } from "react-router-dom";
 import { CommentContext } from "../../../hooks/useCommentContext";
 import { SEO } from "@/components/SEO";
+const AppFooter = lazy(() =>
+  import("@/components/AppFooter").then((module) => ({
+    default: module.AppFooter
+  }))
+);
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -368,7 +372,9 @@ export const CourseDetailPage = () => {
           {renderBody()}
           {renderSpinner()}
         </div>
-        <AppFooter />
+        <Suspense fallback={<Spinner className="size-6" loading />}>
+          <AppFooter />
+        </Suspense>
       </div>
     </CommentContext.Provider>
   );

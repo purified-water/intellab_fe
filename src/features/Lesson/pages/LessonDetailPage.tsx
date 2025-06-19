@@ -1,25 +1,39 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { courseAPI, userAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/types";
 import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { RenderLessonMarkdown } from "../components/RenderLessonContent";
-import {
-  AIExplainerMenu,
-  AIExplainerTutorialModal,
-  LessonAiOrb,
-  LessonNavigation,
-  TOCItem,
-  TableOfContents
-} from "../components";
-import { AppFooter } from "@/components/AppFooter";
+import { LessonNavigation, TOCItem, TableOfContents } from "../components";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { setPoint } from "@/redux/user/userSlice";
 import { useAIExplainer } from "../hooks/useAIExplainer";
 import { useLessonProgress, useTableOfContents } from "../hooks";
 import { useToast } from "@/hooks";
+import React from "react";
+import { Spinner } from "@/components/ui";
+
+// Dynamic imports for conditionally rendered components
+const AIExplainerMenu = React.lazy(() =>
+  import("../components").then((module) => ({ default: module.AIExplainerMenu }))
+);
+const AIExplainerTutorialModal = lazy(() =>
+  import("../components").then((module) => ({
+    default: module.AIExplainerTutorialModal
+  }))
+);
+const LessonAiOrb = lazy(() =>
+  import("../components").then((module) => ({
+    default: module.LessonAiOrb
+  }))
+);
+const AppFooter = lazy(() =>
+  import("@/components/AppFooter").then((module) => ({
+    default: module.AppFooter
+  }))
+);
 
 export const LessonDetailPage = () => {
   const navigate = useNavigate();
@@ -163,7 +177,6 @@ export const LessonDetailPage = () => {
     }
     return null;
   };
-
   return (
     <>
       <div className="grid grid-cols-1 gap-2 p-6 sm:pl-24 lg:grid-cols-5 md:pl-40 md:pr-24">
@@ -187,7 +200,6 @@ export const LessonDetailPage = () => {
       {menuPosition && (
         <>
           {isAIExplainerOpen && <div className="fixed inset-0 bg-transparent"></div>}
-
           <div
             style={{
               position: "absolute",
@@ -196,37 +208,43 @@ export const LessonDetailPage = () => {
               right: menuPosition.align === "right" ? window.innerWidth - menuPosition.x : undefined
             }}
           >
-            <AIExplainerMenu
-              key={`explainer-${selectedText?.substring(0, 20)}`} // Add a more reliable key
-              ref={menuRef}
-              isOpen={isAIExplainerOpen}
-              setIsOpen={setIsAIExplainerOpen}
-              input={selectedText}
-              setInput={setSelectedText}
-              lesson={lesson}
-              setOpenChatbox={setIsOpenChatbox}
-              resetExplainer={resetExplainer} // Pass the reset function
-            />
+            <Suspense fallback={<Spinner className="size-6" loading />}>
+              <AIExplainerMenu
+                key={`explainer-${selectedText?.substring(0, 20)}`} // Add a more reliable key
+                ref={menuRef}
+                isOpen={isAIExplainerOpen}
+                setIsOpen={setIsAIExplainerOpen}
+                input={selectedText}
+                setInput={setSelectedText}
+                lesson={lesson}
+                setOpenChatbox={setIsOpenChatbox}
+                resetExplainer={resetExplainer} // Pass the reset function
+              />
+            </Suspense>
           </div>
         </>
       )}
       {isTutorialOpen && (
-        <AIExplainerTutorialModal
-          onClose={() => {
-            localStorage.setItem("hasViewedExplainerTutorial", "true");
-            setIsTutorialOpen(false);
-          }}
-        />
+        <Suspense fallback={<Spinner className="size-6" loading />}>
+          <AIExplainerTutorialModal
+            onClose={() => {
+              localStorage.setItem("hasViewedExplainerTutorial", "true");
+              setIsTutorialOpen(false);
+            }}
+          />
+        </Suspense>
       )}
-
-      <LessonAiOrb
-        isExplainerEnabled={isExplainerToggled}
-        setIsExplainerToggled={setIsExplainerToggled}
-        lesson={lesson}
-        askFollowUp={isOpenChatbox}
-      />
-
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <LessonAiOrb
+          isExplainerEnabled={isExplainerToggled}
+          setIsExplainerToggled={setIsExplainerToggled}
+          lesson={lesson}
+          askFollowUp={isOpenChatbox}
+        />
+      </Suspense>
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
     </>
   );
 };

@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { courseAPI } from "@/lib/api"; // Adjust the import path as necessary
 import { ICourse } from "@/types";
@@ -7,14 +7,16 @@ import { RootState } from "@/redux/rootReducer";
 import { getExploreCourse } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
-import { AppFooter } from "@/components/AppFooter";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 import { Course, FilterComponent, SearchResultComponent } from "../components";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { Button } from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 import { ArrowRight } from "lucide-react";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { SEO } from "@/components/SEO";
+import React from "react";
+
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
 export const ExplorePage = () => {
   const [query, setQuery] = useState<string>("");
@@ -219,7 +221,9 @@ export const ExplorePage = () => {
         </motion.div>
       </div>
 
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
 
       <AIOrb />
     </>

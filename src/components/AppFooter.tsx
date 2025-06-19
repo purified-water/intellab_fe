@@ -1,6 +1,7 @@
 import { facebookLogo, intellabDefaultLogo, linkedinLogo } from "@/assets";
+import React from "react";
 
-export const AppFooter = () => {
+export const AppFooter = React.memo(() => {
   return (
     <footer className="w-full px-6 py-12 mt-32 border-t bg-gray6/30 text-gray1 border-gray6/50">
       <div className="grid gap-12 mx-auto max-w-7xl md:grid-cols-3">
@@ -90,8 +91,10 @@ export const AppFooter = () => {
 
       {/* Divider & Copyright */}
       <div className="pt-6 mt-4 text-xs text-center border-t border-white/20 md:text-sm opacity-70">
-        © Intellab 2024. All rights reserved.
+        © Intellab 2025. All rights reserved.
       </div>
     </footer>
   );
-};
+});
+
+AppFooter.displayName = "AppFooter";
