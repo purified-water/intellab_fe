@@ -8,8 +8,8 @@ export default {
       center: true,
       padding: "2rem",
       screens: {
-        "2xl": "1400px",
-      },
+        "2xl": "1400px"
+      }
     },
     extend: {
       borderRadius: {
@@ -38,12 +38,17 @@ export default {
         gray5: "#E0E0E0",
         gray6: "#EBEBEB",
         gray7: "#DEDEDE",
+        gray8: "#F5F5F5",
         black1: "#01000f",
         gold: "#FFC13F",
+        lightGold: "#FCFFA0",
+        darkGold: "#B8860B",
         bronze: "#EB8657",
         appOutputBG: "#2a2a2a",
         appLightThemeText: "#FFFFFF",
         appHyperlink: "#0d66f5",
+        appWarning: "#E2B93B",
+        greenBackground: "#27AE60",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {
@@ -105,16 +110,16 @@ export default {
           },
           "100%": {
             transform: "translateY(-50%) rotate(360deg)"
-          },
+          }
         },
         fadeIn: {
           from: { opacity: "0" },
-          to: { opacity: "1" },
-        },
+          to: { opacity: "1" }
+        }
       },
       animation: {
         disco: "disco 1.5s linear infinite",
-        fadeIn: "fadeIn 0.5s ease-in-out forwards",
+        fadeIn: "fadeIn 0.5s ease-in-out forwards"
       },
       boxShadow: {
         gold: "0 4px 6px 0 rgba(255, 215, 0, 0.025), 0 2px 4px 0 rgba(255, 215, 0, 0.015)",
@@ -123,7 +128,12 @@ export default {
       }
     }
   },
-  plugins: [require("@tailwindcss/typography"), require("tailwindcss-animate"), require("tailwind-scrollbar-hide"), icons],
+  plugins: [
+    require("@tailwindcss/typography"),
+    require("tailwindcss-animate"),
+    require("tailwind-scrollbar-hide"),
+    icons
+  ],
   components: {
     icon: {
       default: "gray-500-base",

@@ -40,7 +40,7 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
       return null;
     }
     return (
-      <div className="flex mb-4 gap-x-2 hover:cursor-pointer">
+      <div className="flex mb-4 gap-x-2 hover:cursor-pointer overflow-auto">
         {runCodeResult.testcases.map((tc, idx) => {
           const isAccepted = tc.status === "Accepted";
           const textColor = isAccepted ? "text-appEasy" : "text-appHard";
