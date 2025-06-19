@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { IUser } from "@/types";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
+import { NA_VALUE } from "@/constants";
 
 interface ProfileMenuProps {
   user: IUser | null;
@@ -61,7 +62,7 @@ export const ProfileMenu = ({
               />
               <div className="flex flex-col px-4 py-2">
                 <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
-                <div className="text-gray-500 ">{userPoint} points</div>
+                <div className="text-gray-500 ">{userPoint ?? NA_VALUE} points</div>
               </div>
             </div>
 
