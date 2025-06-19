@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/shadcn/table";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Button } from "@/components/ui/Button";
 import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
@@ -72,9 +71,17 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
 
         // Sort items
         const sortedItems = [...filteredMockItems].sort((a, b) => {
-          const amountA = parseFloat(a.amount.replace(/[$,]/g, ""));
-          const amountB = parseFloat(b.amount.replace(/[$,]/g, ""));
-          return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
+          if (dateSortOrder !== "desc") {
+            // Sort by date
+            const dateA = new Date(a.date);
+            const dateB = new Date(b.date);
+            return dateSortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
+          } else {
+            // Sort by amount
+            const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
+            const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
+            return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
+          }
         });
 
         formattedItems = sortedItems;
@@ -156,27 +163,12 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
 
   const renderHeader = () => {
     return (
-      <div className="space-y-4 mb-6">
-        {MOCK_CONFIG.USE_MOCK_DATA && (
-          <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm">
-            <strong>Mock Mode:</strong> Using simulated data for testing
-          </div>
-        )}
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="sm" onClick={() => loadPurchasedItems(currentPage)} disabled={loading}>
-            Refresh
-          </Button>
-        </div>
-      </div>
-    );
-  };
-
-  const renderTableHeader = () => {
-    return (
-      <TableHeader>
-        <TableRow>
-          <TableHead className="w-[35%]">{TABLE_HEADERS.USER}</TableHead>
-          <TableHead className="w-[20%]">
+      <thead className="text-left border-t border-b border-gray5">
+        <tr>
+          <th className="py-4">
+            <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.DATE}</span>
               <Button
@@ -188,8 +180,8 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                 {dateSortOrder === "asc" ? "↑" : "↓"}
               </Button>
             </div>
-          </TableHead>
-          <TableHead className="w-[20%]">
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.AMOUNT}</span>
               <Button
@@ -201,8 +193,8 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                 {sortOrder === "asc" ? "↑" : "↓"}
               </Button>
             </div>
-          </TableHead>
-          <TableHead className="w-[25%]">
+          </th>
+          <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.TYPE}</span>
               <Select value={selectedType} onValueChange={(value) => setSelectedType(value as "Free" | "Plan" | "All")}>
@@ -216,19 +208,19 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                 </SelectContent>
               </Select>
             </div>
-          </TableHead>
-        </TableRow>
-      </TableHeader>
+          </th>
+        </tr>
+      </thead>
     );
   };
 
-  const renderTableBody = () => {
+  const renderBody = () => {
     return (
-      <TableBody>
+      <tbody>
         {loading ? (
           Array.from({ length: itemsPerPage }).map((_, idx) => (
-            <TableRow key={idx}>
-              <TableCell>
+            <tr key={idx} className="text-base border-b border-gray5">
+              <td className="py-1">
                 <div className="flex items-center gap-2">
                   <Skeleton className="w-8 h-8 rounded-full" />
                   <div className="space-y-1">
@@ -236,28 +228,30 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                     <Skeleton className="w-40 h-3" />
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-20 h-4" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-16 h-4" />
-              </TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">
                 <Skeleton className="w-16 h-6 rounded-full" />
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))
         ) : items.length === 0 ? (
-          <TableRow>
-            <TableCell colSpan={4} className="py-8 text-center">
-              <EmptyList message={errorMessage || "No purchased items found"} />
-            </TableCell>
-          </TableRow>
+          <tr>
+            <td colSpan={4}>
+              <div className="flex justify-center py-8">
+                <EmptyList message={errorMessage || "No purchased items found"} />
+              </div>
+            </td>
+          </tr>
         ) : (
           items.map((item, idx) => (
-            <TableRow key={idx}>
-              <TableCell>
+            <tr key={idx} className="text-base border-b border-gray5">
+              <td className="py-1">
                 <div className="flex items-center gap-2">
                   <Avatar className="w-8 h-8">
                     <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
@@ -267,10 +261,10 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                     <div className="text-sm text-muted-foreground">{item.email}</div>
                   </div>
                 </div>
-              </TableCell>
-              <TableCell>{item.date}</TableCell>
-              <TableCell className="font-semibold">{item.amount}</TableCell>
-              <TableCell>
+              </td>
+              <td className="py-1">{item.date}</td>
+              <td className="py-1 font-semibold">{item.amount}</td>
+              <td className="py-1">
                 <div
                   className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                     item.type === "Free" ? "bg-green-100 text-green-800" : "bg-purple-100 text-purple-800"
@@ -278,11 +272,11 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                 >
                   {item.type}
                 </div>
-              </TableCell>
-            </TableRow>
+              </td>
+            </tr>
           ))
         )}
-      </TableBody>
+      </tbody>
     );
   };
 
@@ -297,14 +291,18 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
   };
 
   return (
-    <div className="space-y-6">
-      {renderHeader()}
-      <div className="border rounded-md">
-        <Table>
-          {renderTableHeader()}
-          {renderTableBody()}
-        </Table>
-      </div>
+    <div>
+      {/* {MOCK_CONFIG.USE_MOCK_DATA && (
+        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm mb-4">
+          <strong>Mock Mode:</strong> Using simulated data for testing
+        </div>
+      )} */}
+
+      <table className="w-full">
+        {renderHeader()}
+        {renderBody()}
+      </table>
+
       {renderPagination()}
     </div>
   );

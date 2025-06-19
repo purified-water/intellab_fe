@@ -63,7 +63,7 @@ export const ProfileMenu = ({
               />
               <div className="flex flex-col px-4 py-2">
                 <p className="text-lg font-semibold truncate max-w-[150px]">{user?.displayName ?? "User_name"}</p>
-                <div className="text-gray-500 ">{userPoint} points</div>
+                <div className="text-gray-500 ">{userPoint ?? 0} points</div>
               </div>
             </div>
 
