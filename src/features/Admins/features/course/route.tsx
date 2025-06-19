@@ -1,7 +1,20 @@
 import { Navigate, RouteObject } from "react-router-dom";
+import { lazy } from "react";
 import { CourseWizardLayout } from "./components/CreateCourse";
-import { CourseFinalStepsPage, CourseGeneralPage, CourseLessonsPage, CoursePreviewPage } from "./pages/CreateCourse";
-import { CourseListPage } from "./pages";
+
+const CourseListPage = lazy(() => import("./pages").then((module) => ({ default: module.CourseListPage })));
+const CourseGeneralPage = lazy(() =>
+  import("./pages/CreateCourse").then((module) => ({ default: module.CourseGeneralPage }))
+);
+const CourseLessonsPage = lazy(() =>
+  import("./pages/CreateCourse").then((module) => ({ default: module.CourseLessonsPage }))
+);
+const CourseFinalStepsPage = lazy(() =>
+  import("./pages/CreateCourse").then((module) => ({ default: module.CourseFinalStepsPage }))
+);
+const CoursePreviewPage = lazy(() =>
+  import("./pages/CreateCourse").then((module) => ({ default: module.CoursePreviewPage }))
+);
 
 const CourseRoute: RouteObject[] = [
   {

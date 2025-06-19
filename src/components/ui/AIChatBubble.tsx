@@ -47,7 +47,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
         )}
       >
         {message.type === "user" ? (
-          <p className="">{message.content}</p>
+          <p className="prose-sm prose md:prose-base">{message.content}</p>
         ) : (
           <ReactMarkdown
             className="prose-sm prose md:prose-base markdown"
@@ -60,7 +60,7 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
                     language={match[1]}
                     style={xonokai}
                     PreTag="div"
-                    className="overflow-hidden rounded-md "
+                    className="overflow-hidden rounded-md"
                   >
                     {String(children).replace(/\n$/, "")}
                   </SyntaxHighlighter>

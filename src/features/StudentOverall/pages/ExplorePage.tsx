@@ -1,23 +1,22 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { courseAPI } from "@/lib/api"; // Adjust the import path as necessary
 import { ICourse } from "@/types";
-// import _ from "lodash";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { getExploreCourse, resetFilters } from "@/redux/course/courseSlice";
+import { getExploreCourse } from "@/redux/course/courseSlice";
 import { motion } from "framer-motion";
 import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
-import { AppFooter } from "@/components/AppFooter";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 import { Course, FilterComponent, SearchResultComponent } from "../components";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { Button } from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 import { ArrowRight } from "lucide-react";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { SEO } from "@/components/SEO";
+import React from "react";
 
-// const SEARCH_WAIT_TIME = 3000;
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
 export const ExplorePage = () => {
   const [query, setQuery] = useState<string>("");
@@ -25,45 +24,54 @@ export const ExplorePage = () => {
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const navigate = useNavigate();
   const location = useLocation();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const exploreCourses = useSelector((state: RootState) => state.course.exploreCourses);
   const hasFilter = useSelector((state: RootState) => state.course.hasFilter);
 
+  // Add a ref to track if initial fetch is done
+  const hasInitiallyFetched = useRef(false);
+
   const fetchCourses = async () => {
+    // Prevent multiple initial fetches
+    if (hasInitiallyFetched.current) return;
+
     setLoading(true);
+    hasInitiallyFetched.current = true;
+
     const userUid = getUserIdFromLocalStorage();
     const response = userUid ? await courseAPI.getUnEnrollCourses(userUid) : await courseAPI.getCourses();
     // const response = await courseAPI.getCourses();
     if (response) {
       dispatch(getExploreCourse(response.result.content));
-      dispatch(resetFilters());
+      // Don't reset filters here as it causes flickering
+      // dispatch(resetFilters());
     }
     setLoading(false);
   };
-
-  // Fetch courses when the component mounts
+  // Fetch courses when the component mounts - only run once
   useEffect(() => {
-    fetchCourses();
-  }, [isAuthenticated]);
+    if (!hasInitiallyFetched.current) {
+      fetchCourses();
+    }
+  }, []); // Remove isAuthenticated dependency to prevent multiple calls
 
   // Fetch search results based on query parameter in URL
   useEffect(() => {
+    // Only run search if courses have been initially loaded
+    if (!hasInitiallyFetched.current) return;
+
     const params = new URLSearchParams(location.search);
     const keyword = params.get("keyword");
-    if (keyword) {
-      handleSearch(keyword);
+    if (keyword && keyword !== query) {
+      setQuery(keyword);
+      setLoading(true);
+      debouncedSearch(keyword);
+      navigate(`/explore?keyword=${keyword}`);
     }
   }, [location.search]);
 
   // Debounced search function
   const debouncedSearch = useRef(async (query: string) => {
-    // if (query === "") {
-    //   setSearchedCourses([]);
-    //   dispatch(getExploreCourse());
-    //   setLoading(false);
-    //   return;
-    // }
     try {
       const response = await courseAPI.search(query, 0);
 
@@ -167,10 +175,10 @@ export const ExplorePage = () => {
           ) : (
             <div>
               {/* Welcome message */}
-              <div className="flex flex-col w-full">
-                <div className="mb-2 text-5xl font-bold tracking-wide text-appPrimary">
+              <div className="flex flex-col w-full mb-4">
+                <h2 className="text-4xl font-bold tracking-tight text-transparent bg-gradient-to-tr from-appPrimary to-appSecondary bg-clip-text">
                   Welcome to Intellab explore!
-                </div>
+                </h2>
                 <span className="mt-2 text-xl font-light text-gray3">Find new and exciting courses here!</span>
               </div>
               {!hasFilter ? (
@@ -178,7 +186,7 @@ export const ExplorePage = () => {
                   {/* Section for Fundamentals For Beginner */}
                   <div className="flex flex-col mb-8 sm:mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
-                      <div className="text-2xl font-bold text-black sm:text-4xl">Fundamental For Beginner</div>
+                      <div className="text-2xl font-bold text-black sm:text-3xl">Fundamental For Beginner</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
                       <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
                         <Button type="button" variant="ghost" size="sm" className="gap-1">
@@ -187,20 +195,20 @@ export const ExplorePage = () => {
                       </Link>
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
-                    {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+                    {loading && displayedCourses.length === 0 ? renderSkeletonList() : renderCourses(displayedCourses)}
                   </div>
 
                   {/* Section for Popular Courses */}
                   <div className="flex flex-col mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
-                      <div className="text-2xl font-bold text-black sm:text-4xl">Popular Courses</div>
+                      <div className="text-2xl font-bold text-black sm:text-3xl">Popular Courses</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
                       {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
                 <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
               </Link> */}
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
-                    {loading || !displayedCourses ? renderSkeletonList() : renderCourses(displayedCourses)}
+                    {loading && displayedCourses.length === 0 ? renderSkeletonList() : renderCourses(displayedCourses)}
                   </div>
                 </div>
               ) : displayedCourses.length !== 0 ? (
@@ -213,7 +221,9 @@ export const ExplorePage = () => {
         </motion.div>
       </div>
 
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
 
       <AIOrb />
     </>

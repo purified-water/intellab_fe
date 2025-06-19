@@ -28,7 +28,12 @@ export const SubmissionList = (props: SubmissionListProps) => {
     setLoading(true);
     try {
       const response = await problemAPI.getSubmissionListMe(userId);
-      setSubmissions(response);
+      let submissionList: SendSubmissionType[] = [];
+      if (response) {
+        submissionList = response.slice(0, 30);
+      }
+
+      setSubmissions(submissionList);
     } catch (error: unknown) {
       if (error instanceof Error) {
         showToastError({ toast: toast.toast, message: error.message ?? "Error getting submission list" });
@@ -83,7 +88,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
 
   const renderViewAllSubmissions = () => {
     return (
-      <p className="text-lg cursor-pointer text-gray3" onClick={handleViewAllSubmissionsClick}>
+      <p className="text-sm font-medium cursor-pointer" onClick={handleViewAllSubmissionsClick}>
         {"View all submissions >"}
       </p>
     );

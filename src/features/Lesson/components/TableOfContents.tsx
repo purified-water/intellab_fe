@@ -31,7 +31,7 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items, activeI
   };
 
   return (
-    <div className="w-full max-w-xs p-4">
+    <div className="w-full max-w-xs p-4 overflow-y-scroll max-h-[500px] scrollbar-hide">
       <div className="flex items-center mb-2 space-x-2 cursor-pointer" onClick={toggleTOC}>
         <h3 className="text-sm font-bold text-gray1">Table of Contents</h3>
         {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
@@ -42,8 +42,8 @@ export const TableOfContents: React.FC<TableOfContentsProps> = ({ items, activeI
           {items.map((item, index) => (
             <li
               key={index}
-              style={{ paddingLeft: `${(item.level - 1) * 1}rem` }}
-              className={`py-1 border-l-2 pl-2 transition-colors duration-200 ${
+              style={{ paddingLeft: `${(item.level - 1) * 1 + 0.2}rem` }}
+              className={`py-1 border-l-2 transition-colors duration-200 ${
                 activeId === item.id
                   ? "border-l-appPrimary text-appPrimary font-semibold"
                   : "border-l-transparent hover:border-l-gray-300 text-gray2 hover:text-appPrimary"

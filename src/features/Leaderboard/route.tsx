@@ -3,7 +3,7 @@ import { RouteObject } from "react-router-dom";
 
 const LeaderboardRoute: RouteObject[] = [
   {
-    path: "/leaderboard",
+    path: "leaderboard",
     element: <LeaderboardPage />
   }
 ];

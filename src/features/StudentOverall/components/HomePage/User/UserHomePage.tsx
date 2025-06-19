@@ -28,7 +28,7 @@ export const UserHomePage = () => {
       return to;
     })()
   });
-  const leaderboardQueryParams = useMemo(() => ({ filter: "all", page: 1, size: 10 }), []);
+  const leaderboardQueryParams = useMemo(() => ({ filter: "all", page: 0, size: 5 }), []);
 
   // Hooks
   const { data: yourCourseList, isPending: isFetchingYourCourses } = useGetYourCourses();

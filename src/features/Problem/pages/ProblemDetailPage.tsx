@@ -27,6 +27,7 @@ import { showToastError } from "@/utils";
 import { userAPI } from "@/lib/api";
 import { setPoint } from "@/redux/user/userSlice";
 import { useDispatch } from "react-redux";
+import { SEO } from "@/components/SEO";
 
 export const ProblemDetail = () => {
   // #region State
@@ -77,7 +78,6 @@ export const ProblemDetail = () => {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
       if (problemDetail) {
         setProblemDetail(problemDetail);
-        document.title = `${problemDetail.problemName} | Intellab`;
         setTestCases(problemDetail.testCases.slice(0, 3));
       }
     } catch (error) {
@@ -122,6 +122,8 @@ export const ProblemDetail = () => {
   // #region Render
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId || "" }}>
+      <SEO title={`${problemDetail?.problemName ? problemDetail?.problemName : "Problem"} | Intellab`} />
+
       <div className="flex flex-col h-[calc(100vh-60px)] p-2 bg-gray6/50">
         <div className="flex-grow overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
@@ -162,7 +164,7 @@ export const ProblemDetail = () => {
                   />
                 </ResizablePanel>
 
-                <ResizableHandle withHandle className="h-[10px] bg-gray5" />
+                <ResizableHandle withHandle className="h-[10px] bg-gray6/50" />
 
                 <ResizablePanel
                   order={4}
@@ -176,7 +178,7 @@ export const ProblemDetail = () => {
               </ResizablePanelGroup>
             </ResizablePanel>
 
-            {isAIAssistantOpen && <ResizableHandle withHandle className="w-2 bg-gray5" />}
+            {isAIAssistantOpen && <ResizableHandle withHandle className="w-2 bg-gray6/50" />}
 
             {/* Right Panel: AI Assistant */}
             {isAIAssistantOpen && (

@@ -23,7 +23,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
 
     return (
       <div
-        className={`flex items-center justify-between py-4 px-7 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer`}
+        className={`flex items-center justify-between py-4 px-7 rounded-xl ${isEven ? "bg-gray6/50" : "bg-white"} cursor-pointer`}
       >
         <div className="space-y-3">
           <Skeleton className="w-48 h-6" />
@@ -78,7 +78,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
 
     return (
       <div
-        className={`flex items-center justify-between py-3 px-6 rounded-xl ${isEven ? "bg-gray6" : "bg-white"} cursor-pointer hover:opacity-80`}
+        className={`flex items-center justify-between py-3 px-6 rounded-xl ${isEven ? "bg-gray6/50" : "bg-white"} cursor-pointer hover:opacity-80`}
         onClick={handleClick}
       >
         {renderSubmissionInformation()}

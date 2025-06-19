@@ -35,10 +35,11 @@ const SkeletonProgress = () => {
 };
 
 export const UserOverview = ({ progress, isLoading }: UserOverviewProps) => {
-  if (!progress) return null;
-  if (isLoading || !progress) {
-    SkeletonProgress();
+  if (isLoading) {
+    return <SkeletonProgress />;
   }
+
+  if (!progress) return null;
 
   const { easy, medium, hard, totalProblems } = progress;
   const totalSolved = easy.solved + medium.solved + hard.solved;

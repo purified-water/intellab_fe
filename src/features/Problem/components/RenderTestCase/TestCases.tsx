@@ -47,7 +47,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
   };
 
   return (
-    <div className="h-full m-4 overflow-y-auto">
+    <div className="h-full m-4 mb-8">
       {renderTabs()}
       {renderTestCaseContent()}
     </div>

@@ -78,7 +78,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
 
       <div className="flex items-center justify-between px-4 py-3 border-t">
         <p className="text-xs text-gray-600">Renew on {shortenDate(planEndDate!)}</p>
-        <button type="button" onClick={() => navigate("/pricing")} className="text-sm text-appPrimary hover:underline">
+        <button type="button" onClick={() => navigate("/pricing")} className="text-xs font-medium">
           View all plans &gt;
         </button>
       </div>

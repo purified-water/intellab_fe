@@ -18,6 +18,8 @@ import { PremiumStatus } from "./PremiumStatus";
 import { Button } from "@/components/ui";
 import { Bell } from "lucide-react";
 import { selectHasUnread } from "@/redux/notifications/notificationsSlice";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
+
 interface NavbarProps {
   isDarkMode: boolean;
   toggleDarkMode?: () => void;
@@ -64,12 +66,18 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     location.pathname === path ? "text-appAccent font-semibold" : "text-muted-foreground";
 
   const renderUserPhoto = () => {
-    let content = <MdAccountCircle className="icon-xl" />;
     const userPhoto = user?.photoUrl;
     if (userPhoto) {
-      content = <img src={userPhoto} alt="User" className="object-contain border rounded-full size-8 border-gray4" />;
+      return (
+        <img
+          src={userPhoto}
+          alt="User"
+          className="object-contain border rounded-full size-8 border-gray4"
+          onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+        />
+      );
     }
-    return content;
+    return <MdAccountCircle className="icon-xl" />;
   };
 
   return (
