@@ -160,30 +160,34 @@ export const transactionAPI = {
    * @param filters Search and filter parameters
    * @returns Full paginated response with metadata
    */
-  getPurchasedItemsWithMetadata: async (page: number = 0, size: number = DEFAULT_PAGE_SIZE, filters?: PurchasedItemFilters) => {
+  getPurchasedItemsWithMetadata: async (
+    page: number = 0,
+    size: number = DEFAULT_PAGE_SIZE,
+    filters?: PurchasedItemFilters
+  ) => {
     try {
       console.log("Fetching purchased items with metadata:", { page, size, filters });
-      
+
       // Prepare parameters for the top-purchased endpoint
-      const params: any = {
+      const params: Record<string, string | number> = {
         page: page,
         size: size
       };
-      
+
       if (filters?.search) {
         params.search = filters.search;
       }
-      
+
       if (filters?.type) {
         params.type = filters.type;
       }
-      
+
       if (filters?.sortBy) {
         params.sortBy = filters.sortBy;
       } else {
         params.sortBy = "amount"; // Default sortBy
       }
-      
+
       if (filters?.order) {
         params.order = filters.order;
       } else {
@@ -215,12 +219,16 @@ export const transactionAPI = {
    * @param filters Search and filter parameters
    * @returns Full paginated response with metadata
    */
-  getTransactionsWithMetadata: async (page: number = 0, size: number = DEFAULT_PAGE_SIZE, filters?: TransactionFilters) => {
+  getTransactionsWithMetadata: async (
+    page: number = 0,
+    size: number = DEFAULT_PAGE_SIZE,
+    filters?: TransactionFilters
+  ) => {
     try {
       console.log("Fetching transactions with metadata:", { page, size, filters });
-      
+
       // Build parameters object similar to purchased items
-      const params: any = {
+      const params: Record<string, string | number> = {
         page,
         size
       };
@@ -235,7 +243,7 @@ export const transactionAPI = {
         params.type = filters.type;
       }
 
-      // Add status filter  
+      // Add status filter
       if (filters?.status) {
         params.status = filters.status;
       }
@@ -246,7 +254,7 @@ export const transactionAPI = {
       } else {
         params.sortBy = "date"; // Default sortBy for transactions
       }
-      
+
       // Add order parameter
       if (filters?.order) {
         params.order = filters.order;

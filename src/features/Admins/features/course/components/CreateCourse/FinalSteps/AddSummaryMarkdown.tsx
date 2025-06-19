@@ -134,10 +134,10 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
           </FormLabel>
         </div>
 
-        <AnimatedButton 
-          className="[&_svg]:size-4" 
-          label={loading ? "Generating..." : "Summarize with AI"} 
-          onClick={handleSummaryClick} 
+        <AnimatedButton
+          className="[&_svg]:size-4"
+          label={loading ? "Generating..." : "Summarize with AI"}
+          onClick={handleSummaryClick}
           disabled={loading}
         />
       </div>

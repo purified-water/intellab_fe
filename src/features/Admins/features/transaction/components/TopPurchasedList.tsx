@@ -65,7 +65,7 @@ export function TopPurchasedList({
           email: item.user.email,
           amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND
           date: new Date(item.date).toLocaleDateString(),
-          status: "status" in item ? item.status as string : "Completed", // Provide default value if status doesn't exist
+          status: "status" in item ? (item.status as string) : "Completed", // Provide default value if status doesn't exist
           type: (item.type?.toUpperCase() === "FREE" ? "Course" : "Plan") as "Course" | "Plan"
         }));
         setItems(formattedItems);

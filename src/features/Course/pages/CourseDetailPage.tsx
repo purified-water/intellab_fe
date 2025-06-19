@@ -1,8 +1,4 @@
-<<<<<<< Updated upstream
-import { useState, useEffect, lazy, Suspense } from "react";
-=======
-import { useState, useEffect, useCallback } from "react";
->>>>>>> Stashed changes
+import { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
@@ -259,18 +255,21 @@ export const CourseDetailPage = () => {
     }
   };
 
-  const handleCertificateReady = useCallback((updatedCourse: ICourse) => {
-    // Update course with new certificate info
-    setCourse(updatedCourse);
-    // Don't re-fetch lessons here as it causes unnecessary API calls and re-renders
-    // getCourseLessons(currentPage); // Removed to prevent re-renders
-    
-    // Show a toast indicating the course data has been updated
-    showToastSuccess({
-      toast: toast.toast,
-      message: "Certificate is ready! Course information has been updated."
-    });
-  }, [toast]); // Memoize the callback to prevent recreation on every render
+  const handleCertificateReady = useCallback(
+    (updatedCourse: ICourse) => {
+      // Update course with new certificate info
+      setCourse(updatedCourse);
+      // Don't re-fetch lessons here as it causes unnecessary API calls and re-renders
+      // getCourseLessons(currentPage); // Removed to prevent re-renders
+
+      // Show a toast indicating the course data has been updated
+      showToastSuccess({
+        toast: toast.toast,
+        message: "Certificate is ready! Course information has been updated."
+      });
+    },
+    [toast]
+  ); // Memoize the callback to prevent recreation on every render
 
   const renderHeader = () => {
     return (

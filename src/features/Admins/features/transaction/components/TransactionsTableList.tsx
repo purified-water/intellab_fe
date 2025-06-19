@@ -122,13 +122,20 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
           email: transaction.user.email,
           amount: `${(transaction.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status?.toUpperCase() === "SUCCESS" || transaction.status === "Success" ? "Success" : 
-                  transaction.status?.toUpperCase() === "FAILED" || transaction.status === "Failed" ? "Failed" : 
-                  transaction.status || "Success",
-          type: (transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course") ? "Course" : 
-                (transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan") ? "Plan" : 
-                (transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem") ? "Problem" : 
-                "Course" as "Course" | "Plan" | "Problem"
+          status:
+            transaction.status?.toUpperCase() === "SUCCESS" || transaction.status === "Success"
+              ? "Success"
+              : transaction.status?.toUpperCase() === "FAILED" || transaction.status === "Failed"
+                ? "Failed"
+                : transaction.status || "Success",
+          type:
+            transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
+              ? "Course"
+              : transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan"
+                ? "Plan"
+                : transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem"
+                  ? "Problem"
+                  : ("Course" as "Course" | "Plan" | "Problem")
         }));
 
         // Use server-side pagination metadata

@@ -88,14 +88,6 @@ export const SectionDetailPage: React.FC = () => {
     <div className="flex flex-col w-full pt-3 mx-auto md:max-w-5xl lg:max-w-[90rem] px-4 md:px-28">
       <div className="flex-grow pt-10">
         {/* Header section with filter button and search bar */}
-<<<<<<< Updated upstream
-        <div className="flex items-center">
-          <FilterButton
-            onClick={() => {
-              setShowFilter(!showFilter);
-            }}
-          />
-=======
         <div className="flex items-center w-full">
           <div className="flex-shrink-0">
             <FilterButton
@@ -104,7 +96,6 @@ export const SectionDetailPage: React.FC = () => {
               }}
             />
           </div>
->>>>>>> Stashed changes
           <div className="flex-1">
             <SearchBar value={query} onSearch={handleSearch} />
           </div>

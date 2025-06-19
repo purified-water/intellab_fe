@@ -122,7 +122,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
           email: item.user.email,
           amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(item.date).toLocaleDateString(),
-          type: (item.type?.toUpperCase() === "FREE" || item.type === "Free") ? "Free" : "Plan" as "Free" | "Plan"
+          type: item.type?.toUpperCase() === "FREE" || item.type === "Free" ? "Free" : ("Plan" as "Free" | "Plan")
         }));
 
         paginationInfo = {

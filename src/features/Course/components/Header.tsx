@@ -46,8 +46,7 @@ export const Header = (props: HeaderProps) => {
 
   // Certificate generation state management
   const [certificateStatus, setCertificateStatus] = useState<CertificateStatus>("idle");
-  // @ts-ignore - retryCount is used in setRetryCount calls within useEffect and retry handler
-  const [retryCount, setRetryCount] = useState(0);
+  const [_retryCount, setRetryCount] = useState(0);
   const wasGenerating = useRef(false);
   const hasCertificateUrl = course.certificateUrl && course.certificateId;
 
@@ -99,7 +98,7 @@ export const Header = (props: HeaderProps) => {
             // Certificate not ready yet, increment retry counter
             setRetryCount((prevCount) => {
               const newCount = prevCount + 1;
-              
+
               // After some retries, show a pending message to reassure the user
               if (newCount === 3) {
                 toast.toast({
@@ -107,7 +106,7 @@ export const Header = (props: HeaderProps) => {
                   description: "Your certificate is being processed. This might take a moment."
                 });
               }
-              
+
               // After several failed attempts, mark as failed
               if (newCount > 5) {
                 setCertificateStatus("failed");
@@ -119,7 +118,7 @@ export const Header = (props: HeaderProps) => {
                   variant: "destructive"
                 });
               }
-              
+
               return newCount;
             });
           }
@@ -128,7 +127,7 @@ export const Header = (props: HeaderProps) => {
 
           setRetryCount((prevCount) => {
             const newCount = prevCount + 1;
-            
+
             // After several failed attempts, mark as failed
             if (newCount > 5) {
               setCertificateStatus("failed");
@@ -140,7 +139,7 @@ export const Header = (props: HeaderProps) => {
                 variant: "destructive"
               });
             }
-            
+
             return newCount;
           });
         }
@@ -149,13 +148,8 @@ export const Header = (props: HeaderProps) => {
       // Initial check
       checkCertificateStatus();
 
-<<<<<<< Updated upstream
-      // Poll every 5 seconds (better user experience than 3s, less server load)
-      intervalId = setInterval(checkCertificateStatus, 8000);
-=======
       // Increase polling interval to reduce server load and re-renders
       intervalId = setInterval(checkCertificateStatus, 10000); // Changed from 5s to 10s
->>>>>>> Stashed changes
     }
 
     return () => {
