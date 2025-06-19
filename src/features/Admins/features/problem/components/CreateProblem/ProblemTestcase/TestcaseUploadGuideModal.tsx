@@ -164,7 +164,11 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
         </label>
       </div>
       <div className="flex gap-4">
-        <Button variant="outline" onClick={onClose}>
+        <Button
+          variant="outline"
+          className="hover:bg-appPrimary hover:text-white border-appPrimary text-appPrimary"
+          onClick={onClose}
+        >
           Cancel
         </Button>
         <Button

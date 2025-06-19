@@ -220,7 +220,12 @@ export const TestcaseUploadFileModal = (props: TestcaseUploadFileModalProps) => 
 
   const renderFooter = () => (
     <div className="flex px-4 py-3 justify-end border-t gap-5">
-      <Button variant="outline" onClick={handleCancel} disabled={uploading}>
+      <Button
+        variant="outline"
+        className="hover:bg-appPrimary hover:text-white border-appPrimary text-appPrimary"
+        onClick={handleCancel}
+        disabled={uploading}
+      >
         Cancel
       </Button>
       <Button onClick={handleUpload} disabled={uploading}>
