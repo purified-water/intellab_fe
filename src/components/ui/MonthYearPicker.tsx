@@ -74,7 +74,7 @@ export function MonthYearPicker({
         <PopoverTrigger asChild>
           <Button
             variant="outline"
-            className={`justify-start text-left font-normal ${isYearOnly ? "w-[120px]" : "w-[200px]"}`}
+            className={`justify-start text-left font-normal`}
           >
             <CalendarIcon className="w-4 h-4 mr-2" />
             {isYearOnly ? selectedYear : `${months[selectedMonth]} ${selectedYear}`}

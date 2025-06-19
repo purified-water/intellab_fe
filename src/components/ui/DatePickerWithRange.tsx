@@ -57,7 +57,7 @@ export function DatePickerWithRange({ className, date, setDate }: DatePickerWith
           <Button
             id="date"
             variant="outline"
-            className="justify-start font-normal text-left "
+            className="justify-start font-normal text-left"
           >
             <CalendarIcon className="w-4 h-4 mr-2" />
             {date?.from ? (
