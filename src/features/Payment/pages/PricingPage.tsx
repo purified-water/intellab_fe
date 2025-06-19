@@ -1,15 +1,20 @@
 import { PLAN_FEATURES, PRICING_PLANS } from "../constants";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
-import { AppFooter } from "@/components/AppFooter";
 import { PricingCard } from "../components/Pricing/PricingCard";
 import { PerksList } from "../components/Pricing/PerkList";
 import { motion } from "framer-motion";
+import { SEO } from "@/components/SEO";
+import React, { Suspense } from "react";
+import { Spinner } from "@/components/ui";
+const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
 export function PricingPage() {
   const { width } = useWindowDimensions();
 
   return (
     <>
+      <SEO title="Pricing Plans | Intellab" />
+
       <div className="container px-4 py-12 mx-auto">
         <h1 className="text-[64px] font-extrabold text-center bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text text-transparent">
           Intellab Premium
@@ -23,9 +28,8 @@ export function PricingPage() {
           transition={{ duration: 1 }}
           className="flex flex-col lg:flex-row items-center justify-center mt-8 space-y-8 lg:space-y-0 lg:space-x-[40px] px-4 lg:px-96"
         >
-          <div className="flex flex-col flex-1 mb-5">
+          <div className="flex flex-col flex-1">
             <PricingCard plan={PRICING_PLANS[0]}></PricingCard>
-            {/* <div className="mt-5"></div> */}
             {width > 1024 && <PerksList perks={PLAN_FEATURES.slice(0, 4)}></PerksList>}
           </div>
           <div className="flex flex-col flex-1">
@@ -35,7 +39,9 @@ export function PricingPage() {
           </div>
         </motion.div>
       </div>
-      <AppFooter />
+      <Suspense fallback={<Spinner className="size-6" loading />}>
+        <AppFooter />
+      </Suspense>
     </>
   );
 }

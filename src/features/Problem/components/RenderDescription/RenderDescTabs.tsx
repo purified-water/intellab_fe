@@ -102,7 +102,7 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
         {renderDescriptionTabButton("Description")}
         {renderDescriptionTabButton("Comments")}
         {renderDescriptionTabButton("Submissions")}
-        {renderDescriptionTabButton("Solutions")}
+        {problemDetail?.solution && renderDescriptionTabButton("Solutions")}
         {isPassed !== null && (isPassed ? renderDescriptionTabButton("Passed") : renderDescriptionTabButton("Failed"))}
       </div>
       {renderDescriptionTabContent()}

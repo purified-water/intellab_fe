@@ -4,11 +4,11 @@ import { ProtectedRoute } from "@/components/Navigation";
 
 const PaymentRoute: RouteObject[] = [
   {
-    path: "/pricing",
+    path: "pricing",
     element: <PricingPage />
   },
   {
-    path: "/payment-result",
+    path: "payment-result",
     element: (
       <ProtectedRoute>
         <PaymentResultPage />
@@ -16,11 +16,11 @@ const PaymentRoute: RouteObject[] = [
     )
   },
   {
-    path: "/my-purchases",
+    path: "my-purchases",
     element: <MyPurchasesPage />
   },
   {
-    path: "/my-purchases/receipt/:id",
+    path: "my-purchases/receipt/:id",
     element: <ReceiptPage />
   }
 ];

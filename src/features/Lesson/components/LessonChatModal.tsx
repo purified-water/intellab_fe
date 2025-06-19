@@ -242,7 +242,10 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
   };
 
   return (
-    <div id="overlay" className={`fixed z-50 bottom-28 right-8 max-w-[520px] max-h-[1200px] w-[380px] h-[80vh]`}>
+    <div
+      id="overlay"
+      className={`fixed z-50 bottom-28 right-8 max-w-[520px] max-h-[1200px] lg:w-[380px] xl:w-[450px] h-[80vh]`}
+    >
       <div
         id="chat-container"
         className="relative bg-white flex flex-col border-[1px] rounded-lg shadow-md transition-all duration-300 ease-in-out w-full h-full overflow-hidden"
@@ -255,7 +258,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
           className={`relative flex flex-col flex-grow px-2 pb-4 sm:px-4 sm:pb-2 pt-2 h-full transition-all duration-300 ml-0`}
         >
           {/* Chat Messages (Ensure content stays above the background) */}
-          <div className="relative z-10 flex flex-col flex-grow max-h-screen overflow-scroll">
+          <div className="relative z-10 flex flex-col flex-grow max-h-screen overflow-y-scroll">
             {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
           </div>
 
@@ -300,7 +303,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
             </div>
             <div className="flex items-center text-xs text-gray3">
               {remainingMessageCount > 1000 ? (
-                <span className="">&infin; messages left</span>
+                <span className="">&infin; messages</span>
               ) : (
                 <span>{remainingMessageCount} messages left</span>
               )}

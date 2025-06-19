@@ -1,5 +1,7 @@
 import { RouteObject } from "react-router-dom";
-import { UserListPage } from "./pages";
+import { lazy } from "react";
+
+const UserListPage = lazy(() => import("./pages").then((module) => ({ default: module.UserListPage })));
 
 const UserRoute: RouteObject[] = [
   {

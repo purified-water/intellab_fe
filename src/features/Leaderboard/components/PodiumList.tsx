@@ -37,9 +37,9 @@ export function PodiumList() {
   const renderContent = () => {
     return (
       <>
-        <PodiumItem item={data[1]} height={110} loading={loading} />
+        <PodiumItem item={data[1]} height={130} loading={loading} />
         <PodiumItem item={data[0]} color="gold" height={130} loading={loading} />
-        <PodiumItem item={data[2]} color="bronze" loading={loading} />
+        <PodiumItem item={data[2]} color="bronze" height={130} loading={loading} />
       </>
     );
   };

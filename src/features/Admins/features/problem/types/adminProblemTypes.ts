@@ -45,4 +45,9 @@ type TAdminProblemSolution = {
   authorId: string;
 };
 
-export type { TAdminProblem, TAdminTestCase, TAdminProblemSolution, TAdminProblemStructure };
+type TTestCaseFileContent = {
+  input: string;
+  output: string;
+};
+
+export type { TAdminProblem, TAdminTestCase, TAdminProblemSolution, TAdminProblemStructure, TTestCaseFileContent };

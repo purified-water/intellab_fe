@@ -3,7 +3,7 @@ import { RouteObject } from "react-router-dom";
 
 const NotificationRoute: RouteObject[] = [
   {
-    path: "/notification",
+    path: "notification",
     element: <NotificationPage />
   }
 ];

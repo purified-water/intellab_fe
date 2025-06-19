@@ -2,8 +2,8 @@ import { TLeaderboardRank } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { useNavigate } from "react-router-dom";
 import { Card, CardTitle } from "@/components/ui/shadcn";
-import { Button, EmptyMessage } from "@/components/ui";
-import { ArrowRight } from "lucide-react";
+import { EmptyMessage } from "@/components/ui";
+import { ArrowRight, Crown } from "lucide-react";
 
 interface LeaderboardProps {
   leaderboardData: TLeaderboardRank[];
@@ -14,36 +14,39 @@ export const Leaderboard = ({ leaderboardData, isLoading }: LeaderboardProps) =>
   const navigate = useNavigate();
 
   const LeaderboardItem = ({ rank, item }: { rank: number; item: TLeaderboardRank }) => {
-    const handleItemClick = () => {
-      navigate(`/profile/${item.userUid}`);
+    const handleItemClick = () => navigate(`/profile/${item.userUid}`);
+
+    const getRankClass = () => {
+      switch (rank) {
+        case 1:
+          return "text-gold font-bold";
+        case 2:
+          return "text-gray2 font-bold";
+        case 3:
+          return "text-bronze font-bold";
+        default:
+          return "text-gray3";
+      }
+    };
+
+    const renderCrownIcon = () => {
+      if (rank === 1) return <Crown className="w-4 h-4 text-gold" />;
+      if (rank === 2) return <Crown className="w-4 h-4 text-gray2" />;
+      if (rank === 3) return <Crown className="w-4 h-4 text-bronze" />;
+      return null;
     };
 
     return (
       <div
-        className="my-[3px] text-[15px] font-medium grid grid-cols-[1fr_3fr_2fr] gap-2 cursor-pointer hover:opacity-80"
+        className="my-[3px] text-[15px] font-medium grid grid-cols-[1fr_3fr_2fr] gap-2 cursor-pointer hover:opacity-80 items-center"
         onClick={handleItemClick}
       >
-        <div
-          className={`line-clamp-1 ${
-            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
-          }`}
-        >
-          {rank}
+        <div className="flex items-center gap-1">
+          <span className={`line-clamp-1 ${getRankClass()}`}>{rank}</span>
+          {renderCrownIcon()}
         </div>
-        <div
-          className={`col-auto text-left truncate ${
-            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
-          }`}
-        >
-          {item.displayName}
-        </div>
-        <div
-          className={` text-right line-clamp-1 ${
-            rank === 1 ? "text-gold" : rank === 2 ? "text-gray2" : rank === 3 ? "text-bronze" : "text-muted-foreground"
-          }`}
-        >
-          {item.point}
-        </div>
+        <div className={`col-auto text-left truncate ${getRankClass()}`}>{item.displayName}</div>
+        <div className={`text-right line-clamp-1 ${getRankClass()}`}>{item.point}</div>
       </div>
     );
   };
@@ -64,9 +67,9 @@ export const Leaderboard = ({ leaderboardData, isLoading }: LeaderboardProps) =>
     <Card className="p-6 max-h-[300px] overflow-auto border rounded-lg border-gray5">
       <div className="flex items-center justify-between mb-6">
         <CardTitle className="text-xl font-bold">Leaderboard</CardTitle>
-        <Button type="button" variant="ghost" size="sm" className="gap-1" onClick={() => navigate("/leaderboard")}>
+        <button type="button" className="flex gap-1 text-xs font-medium" onClick={() => navigate("/leaderboard")}>
           View all <ArrowRight className="w-4 h-4" />
-        </Button>
+        </button>
       </div>
 
       <div>{isLoading ? renderSkeletonLoading() : renderRanks()}</div>

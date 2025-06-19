@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { Header, LessonList, Reviews, CourseCommentSection } from "@/features/Course/components";
 import { useParams } from "react-router-dom";
 import { courseAPI, paymentAPI } from "@/lib/api";
@@ -14,9 +14,14 @@ import RatingModal from "../components/RatingModal";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
 import { API_RESPONSE_CODE } from "@/constants";
-import { AppFooter } from "@/components/AppFooter";
 import { useSearchParams } from "react-router-dom";
 import { CommentContext } from "../../../hooks/useCommentContext";
+import { SEO } from "@/components/SEO";
+const AppFooter = lazy(() =>
+  import("@/components/AppFooter").then((module) => ({
+    default: module.AppFooter
+  }))
+);
 
 const TAB_BUTTONS = {
   LESSONS: "Lessons",
@@ -37,8 +42,6 @@ export const CourseDetailPage = () => {
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
-  // Add a refresh trigger state to force re-renders when needed
-  // const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -69,8 +72,7 @@ export const CourseDetailPage = () => {
     }
 
     setCourse(result);
-    // Set document title
-    document.title = `${result.courseName} | Intellab`;
+
     setLoading(false);
   };
 
@@ -362,13 +364,17 @@ export const CourseDetailPage = () => {
 
   return (
     <CommentContext.Provider value={{ commentId: redirectedCommentId ?? "" }}>
+      <SEO title={`${course?.courseName ? course.courseName : "Course"} | Intellab`} />
+
       <div className="flex flex-col min-h-screen overflow-x-hidden">
         <div className="w-full">{renderHeader()}</div>
         <div className="flex-grow w-full max-w-6xl p-10 pb-8 mx-auto">
           {renderBody()}
           {renderSpinner()}
         </div>
-        <AppFooter />
+        <Suspense fallback={<Spinner className="size-6" loading />}>
+          <AppFooter />
+        </Suspense>
       </div>
     </CommentContext.Provider>
   );

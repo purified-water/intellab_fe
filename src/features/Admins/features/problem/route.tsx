@@ -1,15 +1,27 @@
 import { Navigate, RouteObject } from "react-router-dom";
-import { ProblemListPage } from "./pages";
 import { ProblemWizardLayout } from "./components/CreateProblem";
-import {
-  ProblemBoilerplatePage,
-  ProblemDescriptionPage,
-  ProblemGeneralPage,
-  ProblemPreviewPage,
-  ProblemSolutionPage,
-  ProblemTestcasePage
-} from "./pages/CreateProblem";
+import { lazy } from "react";
 import { steps } from "./constants";
+
+const ProblemListPage = lazy(() => import("./pages").then((module) => ({ default: module.ProblemListPage })));
+const ProblemGeneralPage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemGeneralPage }))
+);
+const ProblemDescriptionPage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemDescriptionPage }))
+);
+const ProblemBoilerplatePage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemBoilerplatePage }))
+);
+const ProblemTestcasePage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemTestcasePage }))
+);
+const ProblemSolutionPage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemSolutionPage }))
+);
+const ProblemPreviewPage = lazy(() =>
+  import("./pages/CreateProblem").then((module) => ({ default: module.ProblemPreviewPage }))
+);
 
 const ProblemRoute: RouteObject[] = [
   {

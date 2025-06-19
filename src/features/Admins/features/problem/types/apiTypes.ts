@@ -71,6 +71,7 @@ type TCreateProblemTestCaseStepMultipleParams = TPostApiParams<
   undefined,
   {
     problemId: string;
+    orders: number[];
     inputs: string[];
     outputs: string[];
   },

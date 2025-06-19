@@ -1,7 +1,7 @@
 import { courseAPI } from "@/lib/api/courseApi";
 import { TCategory } from "@/types";
 import { useAppDispatch } from "@/redux/hooks";
-import { fetchPaginatedProblems, filterProblems } from "@/redux/problem/problemSlice";
+import { fetchPaginatedProblems, filterProblems, resetFilters } from "@/redux/problem/problemSlice";
 import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/shadcn";
@@ -146,6 +146,7 @@ export const FilterComponent: React.FC = () => {
           variant="outline"
           className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
           onClick={() => {
+            dispatch(resetFilters());
             setSelectedCategories([]);
             setSelectedLevel("All");
             setSelectedStatus("All");

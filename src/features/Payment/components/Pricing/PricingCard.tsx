@@ -93,12 +93,9 @@ export const PricingCard = ({ plan }: { plan: Plan }) => {
 
     if (isCurrentPlan) {
       return (
-        // <div className="w-full h-[45px] font-bold text-white text-base bg-gray-400 rounded-[10px] flex items-center justify-center">
-        //   Current Plan
-        // </div>
         <button
           type="button"
-          className="self-stretch px-12 py-2.5 bg-gray-400 rounded-lg inline-flex justify-center items-center gap-2.5 mt-4"
+          className="self-stretch px-12 py-2.5 bg-gray3 rounded-lg inline-flex justify-center items-center gap-2.5 mt-4"
         >
           <div className="justify-center w-40 h-5 text-sm font-semibold text-center text-white">Current Plan</div>
         </button>

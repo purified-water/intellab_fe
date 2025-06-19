@@ -1,23 +1,12 @@
 "use strict";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { ChatSidebar } from "./ChatSidebar";
 import { SidebarProvider } from "@/components/ui/shadcn/sidebar";
 import { Command, CommandEmpty, CommandGroup, CommandItem, CommandList } from "@/components/ui/shadcn/command";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/shadcn/popover";
 import { ChatBubble } from "../../../components/ui/AIChatBubble";
 import { AIBackground, aiOrbLogo } from "@/assets";
-import {
-  PanelLeft,
-  PanelLeftClose,
-  X,
-  Minus,
-  Maximize2,
-  // SquareArrowOutUpRight,
-  SquarePen,
-  ArrowUp,
-  ChevronDown,
-  Check
-} from "lucide-react";
+import { PanelLeft, PanelLeftClose, X, Minus, Maximize2, SquarePen, ArrowUp, ChevronDown, Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { ChatbotHistoryItemType, ChatbotMessageContentType } from "../types/ChatbotHistoryType";
 import { ChatbotMessageResponseType } from "../types/ChatbotMessageType";
@@ -116,10 +105,10 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
     }
   };
 
-  const handleNewChat = () => {
+  const handleNewChat = useCallback(() => {
     dispatch(clearChatDetail());
     setInput("");
-  };
+  }, [dispatch]);
 
   const handleSendMessageStream = async () => {
     if (!input.trim() || !userId) return;
@@ -391,7 +380,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
         >
           {/* Background Layer - Moved to the top level container */}
           <div
-            className="absolute inset-0 bg-center bg-no-repeat opacity-70 bg-fit"
+            className="absolute inset-0 bg-center bg-no-repeat opacity-50 bg-fit"
             style={{ backgroundImage: `url(${AIBackground})` }}
           />
 

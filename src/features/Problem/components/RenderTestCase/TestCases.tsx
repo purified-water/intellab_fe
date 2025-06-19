@@ -10,7 +10,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
 
   const renderTabs = () => {
     return (
-      <div className="flex mb-4 gap-x-2 text-gray3">
+      <div className="flex mb-4 gap-x-2 text-gray3 overflow-auto">
         {testCases.map((_tc, idx) => (
           <div
             key={idx}
@@ -47,7 +47,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
   };
 
   return (
-    <div className="h-full m-4 overflow-y-auto">
+    <div className="h-full m-4 mb-8">
       {renderTabs()}
       {renderTestCaseContent()}
     </div>

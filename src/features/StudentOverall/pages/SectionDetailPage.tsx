@@ -94,7 +94,9 @@ export const SectionDetailPage: React.FC = () => {
               setShowFilter(!showFilter);
             }}
           />
-          <SearchBar value={query} onSearch={handleSearch} />
+          <div className="flex-1">
+            <SearchBar value={query} onSearch={handleSearch} />
+          </div>
         </div>
         <motion.div
           initial={{ height: 0, opacity: 0 }}

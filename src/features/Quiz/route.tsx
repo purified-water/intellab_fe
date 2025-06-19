@@ -3,7 +3,7 @@ import { RouteObject } from "react-router-dom";
 
 const QuizRoute: RouteObject[] = [
   {
-    path: "/lesson/:lessonId/quiz/:quizId",
+    path: "lesson/:lessonId/quiz/:quizId",
     element: <LessonQuiz />
   }
 ];

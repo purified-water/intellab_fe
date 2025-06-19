@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { AlertDialog, Button } from "@/components/ui";
 import {
   Card,
   CardHeader,
@@ -22,6 +22,7 @@ interface JudgeAdjustmentCardProps {
 
 export const JudgeAdjustmentCard = ({ serviceCount }: JudgeAdjustmentCardProps) => {
   const [replicas, setReplicas] = useState(serviceCount);
+  const [isOpenScaleDialog, setOpenScaleDialog] = useState(false);
   const isLoading = false; // Replace with actual loading state
   const { toast } = useToast();
 
@@ -41,58 +42,77 @@ export const JudgeAdjustmentCard = ({ serviceCount }: JudgeAdjustmentCardProps) 
           toast: toast,
           message: "Failed to adjust judge service. Please try again later."
         });
+      },
+      onSettled: () => {
+        setOpenScaleDialog(false);
       }
     });
   };
 
+  const renderDeleteDialog = () => {
+    return (
+      <AlertDialog
+        open={isOpenScaleDialog}
+        title="You are about to manually update the judge services"
+        message="This action is irreversible. Once a service is affected, it may take some time to recover."
+        onConfirm={() => handleScale()}
+        onCancel={() => setOpenScaleDialog(false)}
+        processing={isScaling}
+      />
+    );
+  };
+
   return (
-    <Card>
-      {isLoading ? (
-        <CardContent>
-          <Skeleton className="w-1/2 h-6 mb-4" />
-          <Skeleton className="w-3/4 h-4 mb-2" />
-          <Skeleton className="w-full h-4 mb-2" />
-        </CardContent>
-      ) : (
-        <>
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              Adjust Judge Services Count
-              <Settings className="size-4" />
-            </CardTitle>
-            <CardDescription>
-              Scale service up or down based on current load (Maximum {MAX_SERVICE_COUNT} services)
-            </CardDescription>
-          </CardHeader>
+    <>
+      <Card>
+        {isLoading ? (
           <CardContent>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <Label htmlFor="replicas">Service Count:</Label>
-                <Input
-                  id="replicas"
-                  type="number"
-                  value={replicas}
-                  onChange={(e) => setReplicas(Number(e.target.value))}
-                  className="w-20"
-                  min="1"
-                  max={MAX_SERVICE_COUNT}
-                />
-              </div>
-              <div>
-                <Button variant="outline" onClick={() => handleScale()} disabled={isScaling}>
-                  Confirm
-                </Button>
-              </div>
-              {isScaling && (
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <RefreshCw className="w-4 h-4 animate-spin" />
-                  Scaling in progress...
-                </div>
-              )}
-            </div>
+            <Skeleton className="w-1/2 h-6 mb-4" />
+            <Skeleton className="w-3/4 h-4 mb-2" />
+            <Skeleton className="w-full h-4 mb-2" />
           </CardContent>
-        </>
-      )}
-    </Card>
+        ) : (
+          <>
+            <CardHeader>
+              <CardTitle className="flex items-center justify-between">
+                Adjust Judge Services Count
+                <Settings className="size-4" />
+              </CardTitle>
+              <CardDescription>
+                Scale service up or down based on current load (Maximum {MAX_SERVICE_COUNT} services)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <Label htmlFor="replicas">Service Count:</Label>
+                  <Input
+                    id="replicas"
+                    type="number"
+                    value={replicas}
+                    onChange={(e) => setReplicas(Number(e.target.value))}
+                    className="w-20"
+                    min="1"
+                    max={MAX_SERVICE_COUNT}
+                  />
+                </div>
+                <div>
+                  <Button variant="outline" onClick={() => handleScale()} disabled={isScaling}>
+                    Confirm
+                  </Button>
+                </div>
+                {isScaling && (
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    Scaling in progress...
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </>
+        )}
+      </Card>
+      {renderDeleteDialog()}
+    </>
   );
 };
