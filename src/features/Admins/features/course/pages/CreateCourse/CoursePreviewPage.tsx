@@ -104,7 +104,7 @@ export const CoursePreviewPage = () => {
             )}
           />
 
-          <Card className="p-4 border rounded-lg border-gray4">
+          <Card className="p-4 border rounded-lg border-muted">
             <PreviewCourse />
           </Card>
 
