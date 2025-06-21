@@ -122,12 +122,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
           email: transaction.user.email,
           amount: `${(transaction.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(transaction.date).toLocaleDateString(),
-          status:
-            transaction.status?.toUpperCase() === "SUCCESS" || transaction.status === "Success"
-              ? "Success"
-              : transaction.status?.toUpperCase() === "FAILED" || transaction.status === "Failed"
-                ? "Failed"
-                : transaction.status || "Success",
+          status: transaction.status === "00" ? "Success" : "Failed",
           type:
             transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
               ? "Course"

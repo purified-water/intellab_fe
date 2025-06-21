@@ -196,7 +196,7 @@ export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, s
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" fontSize={10} />
           <YAxis domain={[0, 100]} fontSize={10} width={25} tickMargin={4} />
-          <Tooltip formatter={(value) => `${value}%`} />
+          <Tooltip formatter={(value) => [`${value}%`, "Rate"]} labelFormatter={(label) => `${label}`} />
           <defs>
             <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />
@@ -327,7 +327,7 @@ export function CompletionRateLargeChart({ rangeType, dateRange, selectedMonth, 
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
         <YAxis domain={[0, 100]} />
-        <Tooltip formatter={(value) => `${value}%`} />
+        <Tooltip formatter={(value) => [`${value}%`, "Rate"]} labelFormatter={(label) => `${label}`} />
         <defs>
           <linearGradient id="completionGradientLarge" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />

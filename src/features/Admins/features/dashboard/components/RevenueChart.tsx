@@ -207,7 +207,10 @@ export function RevenueMiniBarChart({ rangeType, dateRange, selectedMonth, selec
             tickMargin={4}
             tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`}
           />
-          <Tooltip formatter={(value) => `${value.toLocaleString()}₫`} />
+          <Tooltip
+            formatter={(value) => [`${value.toLocaleString()} VND`, "Value"]}
+            labelFormatter={(label) => `${label}`}
+          />
           <Bar dataKey="value" fill="#5a3295" radius={[4, 4, 0, 0]} />
         </BarChart>
       </ResponsiveContainer>
@@ -331,7 +334,10 @@ export function RevenueLargeBarChart({ rangeType, dateRange, selectedMonth, sele
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" />
         <YAxis tickFormatter={(value) => `${(value / 1000000).toFixed(0)}M`} />
-        <Tooltip formatter={(value) => `${value.toLocaleString()}₫`} />
+        <Tooltip
+          formatter={(value) => [`${value.toLocaleString()} VND`, "Value"]}
+          labelFormatter={(label) => `${label}`}
+        />
         <Bar dataKey="value" fill="#5a3295" radius={[4, 4, 0, 0]} />
       </BarChart>
     </ResponsiveContainer>
