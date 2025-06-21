@@ -166,7 +166,17 @@ export function CourseListItem(props: CourseListItemProps) {
       <>
         <tr key={course.courseId} className="text-base border-b border-gray5">
           <td className="py-1 truncate max-w-[300px]">{course.courseName}</td>
-          <td className="py-1">{course.level}</td>
+          <td
+            className={`py-1 font-medium ${
+              course.level === "Beginner"
+                ? "text-appEasy"
+                : course.level === "Intermediate"
+                  ? "text-appMedium"
+                  : "text-appHard"
+            }`}
+          >
+            {course.level}
+          </td>
           <td className="py-1">{disPlayPrice}</td>
           {course.isCompletedCreation && (
             <td className="py-1">
@@ -186,7 +196,7 @@ export function CourseListItem(props: CourseListItemProps) {
             <td className="py-1 justify-items-center">
               <div className="flex items-center gap-1">
                 <span className="">
-                  {course.averageRating && course.averageRating > 0 ? course.averageRating.toFixed(1) : NA_VALUE}
+                  {course.averageRating && course.averageRating > 0 ? course.averageRating.toFixed(1) : 0}
                 </span>
                 <Star className="w-4 h-4 fill-appMedium text-appMedium" />
               </div>

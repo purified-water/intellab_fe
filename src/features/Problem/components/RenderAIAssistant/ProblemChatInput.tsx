@@ -68,7 +68,7 @@ export const ProblemChatInput = ({
                 className="flex items-center px-1 space-x-1 text-xs rounded-lg cursor-pointer hover:bg-accent"
               >
                 <span className="font-semibold ">
-                  {CHATBOT_MODELS.find((modelItem) => modelItem.value === chatModel)?.label}
+                  {Object.values(CHATBOT_MODELS).find((modelItem) => modelItem.value === chatModel)?.label}
                 </span>
                 <ChevronDown className="w-4 opacity-50" />
               </div>
@@ -79,7 +79,7 @@ export const ProblemChatInput = ({
                 <CommandList>
                   <CommandEmpty>No model found.</CommandEmpty>
                   <CommandGroup>
-                    {CHATBOT_MODELS.map((modelItem) => (
+                    {Object.values(CHATBOT_MODELS).map((modelItem) => (
                       <CommandItem
                         key={modelItem.value}
                         value={modelItem.value}

@@ -68,7 +68,7 @@ const router = createBrowserRouter([
       {
         path: "*",
         element: (
-          <Suspense fallback={<Spinner className="w-10 h-10 mx-auto mt-20" loading overlay />}>
+          <Suspense fallback={<Spinner className="size-10" loading overlay />}>
             <Outlet />
           </Suspense>
         ),
@@ -96,7 +96,7 @@ const router = createBrowserRouter([
       {
         path: "*",
         element: (
-          <Suspense fallback={<Spinner className="w-10 h-10 mx-auto mt-20" overlay loading />}>
+          <Suspense fallback={<Spinner className="size-10" overlay loading />}>
             <Outlet />
           </Suspense>
         ),

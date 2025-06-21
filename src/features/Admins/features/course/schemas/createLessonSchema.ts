@@ -9,8 +9,8 @@ function countWords(text: string): number {
 export const createLessonSchema = z
   .object({
     lessonId: z.string(),
-    lessonName: z.string().min(1, { message: "Lesson name is required" }).max(200, {
-      message: "Lesson name must be less than 200 characters"
+    lessonName: z.string().min(1, { message: "Lesson name is required" }).max(300, {
+      message: "Lesson name must be less than 300 characters"
     }),
     lessonDescription: z.string().min(1, { message: "Lesson description is required" }).max(800, {
       message: "Lesson description must be less than 800 characters"

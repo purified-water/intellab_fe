@@ -16,10 +16,10 @@ export function PricingPage() {
       <SEO title="Pricing Plans | Intellab" />
 
       <div className="container px-4 py-12 mx-auto">
-        <h1 className="text-[64px] font-extrabold text-center bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text text-transparent">
+        <h1 className="text-[64px] font-bold text-center tracking-tight bg-gradient-to-r from-appPrimary to-appAccent bg-clip-text text-transparent">
           Intellab Premium
         </h1>
-        <p className="text-center text-[18px] text-gray-600 mt-4">
+        <p className="text-center text-[18px] text-muted-foreground mt-4">
           Get started with an Intellab subscription that works for you
         </p>
         <motion.div

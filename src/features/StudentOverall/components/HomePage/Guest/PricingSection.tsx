@@ -44,7 +44,9 @@ export function PricingSection() {
                 </div>
               )}
               <div>
-                <h3 className="text-2xl font-bold text-gray2">{plan.name}</h3>
+                <h3 className={`text-2xl font-bold ${plan.name === "Premium" ? "text-appPrimary" : "text-gray2"}`}>
+                  {plan.name}
+                </h3>
                 {plan.name !== "Free" && <span className="text-sm text-gray3">From </span>}
 
                 <div className="mb-4">

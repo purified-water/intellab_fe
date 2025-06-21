@@ -44,7 +44,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
     const isProcessingRef = useRef<boolean>(false);
 
     // For streaming response
-    const [chatModel] = useState(CHATBOT_MODELS[0].value);
+    const [chatModel] = useState(CHATBOT_MODELS["qwen3-14b"].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 
     // Handle component unmount and abort any in-progress requests
@@ -282,7 +282,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
 
             <div className="relative mr-5">
               <div
-                className={`pr-1 overflow-y-auto transition-all duration-300 ${isLoadingResponse || errorMessage ? "h-8" : "h-[180px]"}`}
+                className={`pr-1 overflow-y-auto scrollbar-hide transition-all duration-300 ${isLoadingResponse || errorMessage ? "h-8" : "h-[180px]"}`}
               >
                 {isLoadingResponse ? (
                   <div className="flex items-center h-full space-x-2">

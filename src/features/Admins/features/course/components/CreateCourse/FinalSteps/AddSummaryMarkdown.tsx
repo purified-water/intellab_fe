@@ -98,17 +98,17 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
       return (
         <div className="relative">
           <Textarea
-            className="w-full h-[300px] p-2 border rounded-lg max-h-[700px]"
+            className="w-full h-[300px] min-h-[400px] p-2 border rounded-lg max-h-[700px]"
             value={value}
             onChange={(e) => onChange(e.target.value)}
             disabled={loading}
             placeholder={loading ? "Generating AI summary..." : "Enter your course summary here..."}
           />
           {loading && (
-            <div className="absolute inset-0 flex items-center justify-center bg-white/80 rounded-lg">
+            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-white/80">
               <div className="flex flex-col items-center gap-2">
                 <Spinner loading={true} />
-                <span className="text-sm font-medium bg-gradient-to-r from-purple-600 via-blue-600 to-purple-600 bg-clip-text text-transparent animate-pulse">
+                <span className="text-sm font-medium text-transparent bg-gradient-to-r from-appAIFrom to-appAITo bg-clip-text animate-pulse">
                   Generating AI summary...
                 </span>
               </div>
@@ -130,7 +130,7 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
       <div className="flex items-center justify-between mb-4 space-x-4">
         <div className="flex flex-col gap-2">
           <FormLabel>
-            <RequiredInputLabel className="mb-2" label="Summary Content" />
+            <RequiredInputLabel className="mb-2" label="Course Summary" />
           </FormLabel>
         </div>
 

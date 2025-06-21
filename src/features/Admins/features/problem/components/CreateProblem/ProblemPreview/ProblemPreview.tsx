@@ -29,7 +29,7 @@ export const ProblemPreview = ({ problemDetail }: ProblemPreviewProps) => {
   });
 
   return (
-    <div className="flex flex-col h-[calc(100vh-20px)] p-2">
+    <div className="flex flex-col h-[calc(100vh-20px)] p-4 border rounded-lg border-muted">
       <div className="flex-grow overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
           <ResizablePanel order={1} defaultSize={40} minSize={10} id="description" className="bg-white rounded-t-lg">
@@ -72,7 +72,7 @@ export const ProblemPreview = ({ problemDetail }: ProblemPreviewProps) => {
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
-      <div className="flex items-center justify-end w-full p-6 bg-white border-t h-14">
+      <div className="flex items-center justify-end w-full p-6 bg-white h-14">
         <div className="flex space-x-2">
           <Button
             type="button"
