@@ -70,7 +70,7 @@ export const ProblemGeneralPage = () => {
       (isEditingProblem && formData.currentCreationStep >= CREATE_PROBLEM_STEP_NUMBERS.GENERAL) ||
       formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.GENERAL;
 
-    console.log("--> Editing in Problem General Page:", editingProblem);
+    // console.log("--> Editing in Problem General Page:", editingProblem);
 
     await adminProblemAPI.createProblemGeneralStep({
       body: {

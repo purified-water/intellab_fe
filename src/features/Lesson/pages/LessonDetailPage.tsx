@@ -14,6 +14,7 @@ import { useLessonProgress, useTableOfContents } from "../hooks";
 import { useToast } from "@/hooks";
 import React from "react";
 import { Spinner } from "@/components/ui";
+import { DELAY_TIMES } from "@/constants";
 
 // Dynamic imports for conditionally rendered components
 const AIExplainerMenu = React.lazy(() =>
@@ -107,10 +108,12 @@ export const LessonDetailPage = () => {
 
   // Get user point after finishing a course (no next lesson)
   useEffect(() => {
-    if (isAuthenticated && lesson && !lesson?.nextLessonId && isLessonDone) {
-      getMyPointAPI();
+    if (isAuthenticated && lesson && lesson?.nextLessonId == undefined && isLessonDone) {
+      setTimeout(() => {
+        getMyPointAPI();
+      }, DELAY_TIMES.SLOW);
     }
-  }, [isLessonDone]);
+  }, [isLessonDone, isAuthenticated, lesson]);
 
   const getCourseDetail = async () => {
     if (courseId) {

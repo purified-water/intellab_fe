@@ -41,7 +41,7 @@ export const CourseDetailPage = () => {
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPages, setTotalPages] = useState<number>(1);
-  const [isEnrolled, setIsEnrolled] = useState<boolean>(false);
+  const [isEnrolled, setIsEnrolled] = useState<boolean | undefined>(undefined);
 
   // Fetch userId and isEnrolled from Redux and local storage
   const userId = getUserIdFromLocalStorage();
@@ -158,8 +158,13 @@ export const CourseDetailPage = () => {
   };
 
   useEffect(() => {
+    if (isEnrolled !== undefined) {
+      getCourseLessons(currentPage);
+    }
+  }, [isEnrolled]);
+
+  useEffect(() => {
     getCourseDetail();
-    getCourseLessons(0);
 
     if (redirectedCommentId) {
       setActiveTab(TAB_BUTTONS.COMMENTS);
@@ -204,6 +209,10 @@ export const CourseDetailPage = () => {
       if (response.code === 0) {
         // dispatch(updateUserEnrolled({ courseId: id!, isEnrolled: true }));
         setIsEnrolled(true);
+        setCourse((prevCourse) => ({
+          ...prevCourse!,
+          userEnrolled: true
+        }));
         showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {
         setIsEnrolled(false);
