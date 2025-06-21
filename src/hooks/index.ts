@@ -5,3 +5,5 @@ export * from "./use-window-dimensions";
 export * from "./useCommentContext";
 export * from "./useFilePreview";
 export * from "./useLoginStreakWithCache";
+export * from "./useCodeStorage";
+export * from "./useCatchError";

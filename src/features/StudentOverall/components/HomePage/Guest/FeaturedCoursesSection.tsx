@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { FeaturedCourseCard } from "./FeaturedCourseCard";
 import { ICourse } from "@/types";
 import { Skeleton } from "@/components/ui/shadcn";
+import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 
 interface FeaturedCoursesSectionProps {
   featuredCourses: ICourse[];
@@ -42,21 +43,23 @@ export function FeaturedCoursesSection({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <div className="flex gap-6 px-1 py-16 snap-x snap-mandatory">
-            {isFetchingFeatured ? (
-              <SkeletonCourses />
-            ) : featuredCourses.length === 0 && !isFetchingFeatured ? (
-              <EmptyList message="No featured courses available" />
-            ) : (
-              featuredCourses.length > 0 &&
-              featuredCourses.map((course) => (
-                <div key={course.courseId} className="snap-start">
-                  <FeaturedCourseCard course={course} />
-                </div>
-              ))
-            )}
-          </div>
+        <div className="overflow-x-auto scrollbar-hide">
+          <ScrollableList size="large">
+            <div className="flex gap-6 py-16 pl-4 pr-1 snap-x snap-mandatory">
+              {isFetchingFeatured ? (
+                <SkeletonCourses />
+              ) : featuredCourses.length === 0 && !isFetchingFeatured ? (
+                <EmptyList message="No featured courses available" />
+              ) : (
+                featuredCourses.length > 0 &&
+                featuredCourses.map((course) => (
+                  <div key={course.courseId} className="snap-start">
+                    <FeaturedCourseCard course={course} />
+                  </div>
+                ))
+              )}
+            </div>
+          </ScrollableList>
         </div>
 
         <div className="flex justify-center">
@@ -74,21 +77,23 @@ export function FeaturedCoursesSection({
           </div>
         </div>
 
-        <div className="overflow-x-auto">
-          <div className="flex gap-6 px-1 py-16 snap-x snap-mandatory">
-            {isFetchingFree ? (
-              <SkeletonCourses />
-            ) : freeCourses.length === 0 && !isFetchingFree ? (
-              <EmptyList message="No free courses available" />
-            ) : (
-              freeCourses.length > 0 &&
-              freeCourses.map((course) => (
-                <div key={course.courseId} className="snap-start">
-                  <FeaturedCourseCard course={course} />
-                </div>
-              ))
-            )}
-          </div>
+        <div className="overflow-x-auto scrollbar-hide">
+          <ScrollableList size="large">
+            <div className="flex gap-6 py-16 pl-4 pr-1 snap-x snap-mandatory">
+              {isFetchingFree ? (
+                <SkeletonCourses />
+              ) : freeCourses.length === 0 && !isFetchingFree ? (
+                <EmptyList message="No free courses available" />
+              ) : (
+                freeCourses.length > 0 &&
+                freeCourses.map((course) => (
+                  <div key={course.courseId} className="snap-start">
+                    <FeaturedCourseCard course={course} />
+                  </div>
+                ))
+              )}
+            </div>
+          </ScrollableList>
         </div>
 
         <div className="flex justify-center mt-4">

@@ -1,6 +1,6 @@
 import { apiClient } from "./apiClient";
 import { ChatbotMessageInputType } from "@/features/MainChatBot/types/ChatbotMessageType";
-import { AI_AGENT } from "@/constants";
+import { AI_AGENT, CHATBOT_MODELS } from "@/constants";
 import { ChatbotHistoryItemType, ChatTitleGeneratorPayload } from "@/features/MainChatBot/types";
 import { removeChatTitleQuotes } from "@/utils";
 
@@ -11,7 +11,7 @@ export const aiAPI = {
   getCourseSummary: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
-      model: "qwen3-14b"
+      model: CHATBOT_MODELS["qwen3-14b"].value
     };
     const response = await apiClient.post(`/ai/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
@@ -27,18 +27,13 @@ export const aiAPI = {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenerate}`,
       user_id: userId,
-      model: "qwen3-14b"
+      model: CHATBOT_MODELS["qwen3-14b"].value
     };
 
     try {
       // Use apiClient to prepare the request URL and headers
       const url = `${apiClient.defaults.baseURL}/ai/stream/${AI_AGENT.SUMMARIZE_ASSISTANT}`;
-      // const headers = Object.fromEntries(
-      //   Object.entries(apiClient.defaults.headers.common)
-      //     .filter(([, value]) => value != null) // Remove null or undefined values
-      //     .map(([key, value]) => [key, String(value)]) // Ensure all values are strings
-      // );
-      // headers["Content-Type"] = "application/json";
+
       const headers = {
         ...apiClient.defaults.headers.common, // Include common headers from apiClient
         "Content-Type": "application/json"
@@ -131,7 +126,7 @@ export const aiAPI = {
   postChatbotMessage: async (
     agent: "global_chatbot" | "problem_chatbot",
     message: string,
-    model: string = "llama3.2",
+    model: string = CHATBOT_MODELS["qwen3-14b"].value,
     userId: string,
     threadId?: string | null
   ) => {
@@ -186,7 +181,7 @@ export const aiAPI = {
   postChatbotMessageStream: async (
     agent: "global_chatbot" | "problem_chatbot" | "lesson_chatbot",
     message: string,
-    model: string = "llama3.2",
+    model: string = CHATBOT_MODELS["qwen3-14b"].value,
     userId: string,
     controller: AbortController, // Added controller parameter
     thread_id?: string | null

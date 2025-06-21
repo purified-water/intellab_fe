@@ -78,7 +78,7 @@ export const ProblemDetail = () => {
       const problemDetail = await problemAPI.getProblemDetail(problemId!);
       if (problemDetail) {
         setProblemDetail(problemDetail);
-        setTestCases(problemDetail.testCases.slice(0, 3));
+        setTestCases(problemDetail.testCases);
       }
     } catch (error) {
       if (error instanceof AxiosError && error.response?.status === 403) {

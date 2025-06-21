@@ -99,9 +99,9 @@ export function CourseListPage() {
     <>
       <SEO title="Course Management | Intellab" />
 
-      <div className="px-2 space-y-6">
-        <h1 className="text-4xl font-bold text-appPrimary">Course Management</h1>
-        <div className="mx-auto space-y-3 justify-items-center">
+      <div className="container max-w-[1200px] mx-auto space-y-8 mb-12">
+        <h1 className="mx-4 text-4xl font-bold text-appPrimary">Course Management</h1>
+        <div className="space-y-3 justify-items-center">
           {renderHeader()}
           {renderFilterDialog()}
           {renderCourseList()}

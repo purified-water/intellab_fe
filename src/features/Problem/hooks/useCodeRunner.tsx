@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { RunCodeResponseType, RunCodeTestCase } from "../types";
 import { LanguageCodes } from "../constants/LanguageCodes";
+import { useCatchError } from "@/hooks";
 
 interface UseCodeRunnerProps {
   code: string;
@@ -39,10 +40,10 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
 
   const pollRunCode = async (runCodeId: string) => {
     let elapsedTime = 0;
-    const maxTimeout = 12000; // 12s
+    const maxTimeout = 30000; // 30s
 
     const interval = setInterval(async () => {
-      elapsedTime += 4000;
+      elapsedTime += 5000;
 
       try {
         const response = await problemAPI.getRunCodeUpdate(runCodeId);
@@ -72,7 +73,6 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
 
               // Handle final results
               setRunCodeResult(updateResponse);
-              setIsRunningCode(false);
             }
           }
         } else {
@@ -82,6 +82,8 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
       } catch (error) {
         console.error("Failed to fetch submission update:", error);
         clearInterval(interval);
+      } finally {
+        setIsRunningCode(false);
       }
     }, 4000);
   };
@@ -102,12 +104,12 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
         }
       }
     } catch (error) {
-      console.error("Failed to run code", error);
+      const errorMessage = useCatchError(error, "Failed to run code. Please try again later.");
       toast({
         variant: "destructive",
-        description: "Failed to run code"
+        description: errorMessage
       });
-
+    } finally {
       setIsRunningCode(false);
     }
   };

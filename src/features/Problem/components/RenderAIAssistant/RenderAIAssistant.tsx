@@ -37,7 +37,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
-  const [chatModel, setChatModel] = useState(CHATBOT_MODELS[0].value);
+  const [chatModel, setChatModel] = useState(CHATBOT_MODELS["groq-llama-3.3-70b"].value);
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
   const dispatch = useDispatch();

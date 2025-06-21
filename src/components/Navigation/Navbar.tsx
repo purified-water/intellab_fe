@@ -7,7 +7,7 @@ import { logoutSuccess } from "@/redux/auth/authSlice";
 import { clearUser, clearLoginStreak } from "@/redux/user/userSlice";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
-import { userLocalStorageCleanUp } from "@/utils";
+import { clearProblemCodeStorage, userLocalStorageCleanUp } from "@/utils";
 import { navigateWithPreviousPagePassed } from "@/utils";
 import { TNavigationState } from "@/types";
 import { clearPremiumStatus } from "@/redux/premiumStatus/premiumStatusSlice";
@@ -55,6 +55,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     dispatch(logoutSuccess());
 
     userLocalStorageCleanUp();
+    clearProblemCodeStorage(); // Clear problem-related code storage
   };
 
   const handleLogin = () => {

@@ -40,7 +40,7 @@ export const createProblemSchema = z.object({
   problemDescription: z
     .string()
     .min(1, { message: "Problem description is required" })
-    .max(3000, { message: "Problem description must be less than 3000 characters" }),
+    .max(5000, { message: "Problem description must be less than 5000 characters" }),
   problemStructure: z.object({
     functionName: z
       .string()
@@ -59,7 +59,7 @@ export const createProblemSchema = z.object({
   problemSolution: z
     .string()
     .min(1, { message: "Problem solution is required" })
-    .max(3000, { message: "Problem solution must be less than 3000 characters" }),
+    .max(15000, { message: "Problem solution must be less than 15000 characters" }),
   isCompletedCreation: z.boolean().optional()
 });
 

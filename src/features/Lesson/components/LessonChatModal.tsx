@@ -35,7 +35,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
   const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   // const [modelChangeOpen, setModelChangeOpen] = useState(false);
-  const [chatModel] = useState(CHATBOT_MODELS[0].value);
+  const [chatModel] = useState(CHATBOT_MODELS["qwen3-14b"].value);
   // Handle data stream signals
   const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
   const [abortController, setAbortController] = useState<AbortController | null>(null);
@@ -199,7 +199,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
     return (
       <div
         id="action-buttons"
-        className={`sticky px-2 py-2 top-0 z-10 flex items-center border-b border-appAIFrom justify-between bg-white transition-all [&_svg]:size-4`}
+        className={`sticky px-2 py-2 top-0 z-20 flex items-center border-b border-appAIFrom justify-between bg-white transition-all [&_svg]:size-4`}
       >
         <Tooltip>
           <TooltipTrigger asChild>
@@ -258,13 +258,13 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
           className={`relative flex flex-col flex-grow px-2 pb-4 sm:px-4 sm:pb-2 pt-2 h-full transition-all duration-300 ml-0`}
         >
           {/* Chat Messages (Ensure content stays above the background) */}
-          <div className="relative z-10 flex flex-col flex-grow max-h-screen overflow-y-scroll">
+          <div className="relative z-10 flex flex-col max-h-[80%] overflow-y-scroll scrollbar-hide">
             {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
           </div>
 
           {/* Input Field */}
-          <div className="flex flex-col px-2 gap-y-1">
-            <div id="chat-input" className="sticky z-10 flex items-end mt-6 bottom-8">
+          <div className="sticky z-10 flex flex-col px-2 gap-y-1 bottom-8">
+            <div id="chat-input" className="flex items-end mt-6 ">
               <textarea
                 ref={textAreaRef}
                 rows={1}
@@ -296,6 +296,12 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
                 <button
                   className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
                   onClick={handleSendMessageStream}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" && !e.shiftKey) {
+                      e.preventDefault();
+                      handleSendMessageStream();
+                    }
+                  }}
                 >
                   <ArrowUp className="w-11 h-11" />
                 </button>
