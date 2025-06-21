@@ -255,9 +255,7 @@ export function TransactionsList({
                           <span>Status</span>
                           <Select
                             value={selectedStatus}
-                            onValueChange={(value) =>
-                              setSelectedStatus(value as "Success" | "Failed" | "all")
-                            }
+                            onValueChange={(value) => setSelectedStatus(value as "Success" | "Failed" | "all")}
                           >
                             <SelectTrigger className="w-auto h-auto p-0 border-none shadow-none">
                               <Funnel className="w-4 h-4 cursor-pointer" />

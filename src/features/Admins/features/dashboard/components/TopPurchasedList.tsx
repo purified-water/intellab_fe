@@ -60,14 +60,16 @@ export function TopPurchasedList({
       if (apiItems.length === 0) {
         setErrorMessage("No purchased items found.");
       } else {
-        const formattedItems = apiItems.map((item): TopPurchasedItem => ({
-          name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
-          email: item.user.email,
-          amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND
-          date: new Date(item.date).toLocaleDateString(),
-          status: "Completed", // Default status since PurchasedItem doesn't have status
-          type: (item.type?.toUpperCase() === "FREE" || item.type === "Free") ? "Course" : "Plan" as "Course" | "Plan"
-        }));
+        const formattedItems = apiItems.map(
+          (item): TopPurchasedItem => ({
+            name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
+            email: item.user.email,
+            amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND
+            date: new Date(item.date).toLocaleDateString(),
+            status: "Completed", // Default status since PurchasedItem doesn't have status
+            type: item.type?.toUpperCase() === "FREE" || item.type === "Free" ? "Course" : ("Plan" as "Course" | "Plan")
+          })
+        );
         setItems(formattedItems);
       }
     } catch (error) {
