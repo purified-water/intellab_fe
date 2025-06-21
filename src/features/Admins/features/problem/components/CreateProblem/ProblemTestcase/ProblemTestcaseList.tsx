@@ -90,7 +90,8 @@ export const ProblemTestcaseList = ({ testcases, onSelectTestcase, selectedTestc
       <TestcaseUploadGuideModal
         isOpen={openUploadGuideModal}
         onDontShowAgain={handleDontShowUploadGuideModalAgain}
-        onClose={handleCloseUploadGuideModal}
+        onOkay={handleCloseUploadGuideModal}
+        onCancel={() => setOpenUploadGuideModal(false)}
         dontShowUploadFileModalAgain={dontShowUploadGuideModal}
       />
       <TestcaseUploadFileModal

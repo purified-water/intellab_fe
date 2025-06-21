@@ -10,7 +10,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
 
   const renderTabs = () => {
     return (
-      <div className="flex mb-4 gap-x-2 text-gray3 overflow-auto">
+      <div className="flex mb-4 gap-x-2 text-gray3 overflow-x-auto pb-2">
         {testCases.map((_tc, idx) => (
           <div
             key={idx}
