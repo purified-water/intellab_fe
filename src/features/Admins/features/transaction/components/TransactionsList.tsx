@@ -43,7 +43,7 @@ export function TransactionsList({
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedType, setSelectedType] = useState<"Course" | "Plan" | "All">("All");
-  const [selectedStatus, setSelectedStatus] = useState<"Completed" | "Pending" | "Failed" | "all">("all");
+  const [selectedStatus, setSelectedStatus] = useState<"Success" | "Failed" | "all">("all");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("asc");
   const [transactions, setTransactions] = useState<Transaction[]>(initialTransactions || []);
   const [isLoading, setIsLoading] = useState(false);
@@ -67,7 +67,7 @@ export function TransactionsList({
           email: transaction.user.email,
           amount: `${transaction.amount.toLocaleString()} VND`,
           date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status,
+          status: transaction.status === "00" ? "Success" : "Failed",
           type: transaction.type === "COURSE" ? "Course" : ("Plan" as "Course" | "Plan")
         }));
         setTransactions(formattedTransactions);
@@ -256,7 +256,7 @@ export function TransactionsList({
                           <Select
                             value={selectedStatus}
                             onValueChange={(value) =>
-                              setSelectedStatus(value as "Completed" | "Pending" | "Failed" | "all")
+                              setSelectedStatus(value as "Success" | "Failed" | "all")
                             }
                           >
                             <SelectTrigger className="w-auto h-auto p-0 border-none shadow-none">
@@ -264,8 +264,7 @@ export function TransactionsList({
                             </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="all">All</SelectItem>
-                              <SelectItem value="Completed">Completed</SelectItem>
-                              <SelectItem value="Pending">Pending</SelectItem>
+                              <SelectItem value="Success">Success</SelectItem>
                               <SelectItem value="Failed">Failed</SelectItem>
                             </SelectContent>
                           </Select>
@@ -313,11 +312,9 @@ export function TransactionsList({
                           <TableCell>
                             <div
                               className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                transaction.status === "Completed"
+                                transaction.status === "Success"
                                   ? "bg-green-100 text-green-800"
-                                  : transaction.status === "Pending"
-                                    ? "bg-yellow-100 text-yellow-800"
-                                    : "bg-red-100 text-red-800"
+                                  : "bg-red-100 text-red-800"
                               }`}
                             >
                               {transaction.status}

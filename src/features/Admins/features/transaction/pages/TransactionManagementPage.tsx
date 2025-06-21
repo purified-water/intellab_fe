@@ -48,7 +48,7 @@ export function TransactionManagementPage() {
       <div className="mx-auto space-y-3 justify-items-center">
         {/* Global Search Bar */}
         <div className="w-full max-w-[1100px] flex items-center justify-start">
-          <SearchBar value={searchQuery} onSearch={setSearchQuery} width={800} />
+          <SearchBar value={searchQuery} onSearch={setSearchQuery} width={1100} />
         </div>
         <div className="py-2"></div>
         <div className="min-w-[1100px]">
