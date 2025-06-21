@@ -13,28 +13,18 @@ export const LanguageCodes: LanguageCodeType[] = [
     is_archived: false
   },
   {
-    id: 54,
-    name: "C++ (GCC 9.2.0)",
-    is_archived: false
-  },
-  {
     id: 51,
     name: "C# (Mono 6.6.0.161)",
     is_archived: false
   },
   {
-    id: 91,
-    name: "Java (JDK 17.0.6)",
+    id: 54,
+    name: "C++ (GCC 9.2.0)",
     is_archived: false
   },
   {
-    id: 97,
-    name: "JavaScript (Node.js 20.17.0)",
-    is_archived: false
-  },
-  {
-    id: 78,
-    name: "Kotlin (1.3.70)",
+    id: 63,
+    name: "JavaScript (Node.js 12.14.0)",
     is_archived: false
   },
   {
@@ -43,8 +33,13 @@ export const LanguageCodes: LanguageCodeType[] = [
     is_archived: false
   },
   {
-    id: 101,
-    name: "TypeScript (5.6.2)",
+    id: 74,
+    name: "TypeScript (3.7.4)",
+    is_archived: false
+  },
+  {
+    id: 91,
+    name: "Java (OpenJDK 17.0.6)",
     is_archived: false
   }
 ];
