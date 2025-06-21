@@ -128,6 +128,14 @@ export const ProblemTestcasePage = () => {
     setTestcaseAction({ type: "default" });
   };
 
+  const renderDefaultAction = () => {
+    return (
+      <div className="flex items-center justify-center w-full h-56">
+        <h2 className="text-base">Select a test case to view or edit.</h2>
+      </div>
+    );
+  };
+
   const renderPageContent = () => {
     switch (testcaseAction.type) {
       case "create":
@@ -150,6 +158,8 @@ export const ProblemTestcasePage = () => {
             onCancel={handleCancelTestcaseForm}
           />
         );
+      default:
+        return renderDefaultAction();
     }
   };
 

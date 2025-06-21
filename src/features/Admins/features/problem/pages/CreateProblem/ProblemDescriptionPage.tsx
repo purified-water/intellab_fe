@@ -91,7 +91,11 @@ export const ProblemDescriptionPage = () => {
                   <RequiredInputLabel label="Problem Description" />
                 </FormLabel>
                 <FormControl>
-                  <AddMarkdownContent value={field.value} onChange={field.onChange} />
+                  <AddMarkdownContent
+                    value={field.value}
+                    onChange={field.onChange}
+                    placeholder="Describe the problem with example inputs and outputs. You must include the constraints of the problem."
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

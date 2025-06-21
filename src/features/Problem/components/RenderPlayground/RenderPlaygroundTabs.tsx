@@ -17,9 +17,10 @@ import { LanguageCodeType } from "../../types/LanguageCodeType";
 import { BoilerplateType } from "../../types/LanguageCodeType";
 import { problemAPI } from "@/lib/api";
 import { useParams } from "react-router-dom";
-import { AlertDialog, Button } from "@/components/ui";
+import { AlertDialog, Button, EmptyMessage } from "@/components/ui";
 import { AlignLeft, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
+import { useCodeStorage } from "@/hooks";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
   mode?: "user" | "admin";
@@ -40,11 +41,16 @@ export const RenderPGTabs = ({
   const [boilerplateCode, setBoilerplateCode] = useState("");
   const paramsProblemId = useParams<{ problemId: string }>().problemId;
   const [boilerplateList, setBoilerplateList] = useState<BoilerplateType[]>([]);
+  const [isSavingCode, setIsSavingCode] = useState(false);
 
   const problemId = passingProblemId || paramsProblemId;
 
+  // Code storage hook for saving/loading user code
+  const codeStorage = useCodeStorage(problemId, language);
+
   // For function buttons
   const playgroundRef = useRef<{ codeFormat: () => void }>(null);
+  const saveTimeoutRef = useRef<NodeJS.Timeout>();
 
   useEffect(() => {
     if (mode === "user") {
@@ -62,17 +68,27 @@ export const RenderPGTabs = ({
 
     setBoilerplateList(boilerplateList);
 
-    const matchingBoilerplate = boilerplateList.find(
-      // Find the matching with the start name, if 2 languages have the same start name, it will return the first one
-      (boilerplate) => boilerplate.longName.toLowerCase().startsWith(language.toLowerCase())
-    );
+    // First, try to load stored code from localStorage
+    const storedCode = codeStorage.loadCode();
 
-    if (matchingBoilerplate) {
-      setBoilerplateCode(matchingBoilerplate.code);
-      setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+    if (storedCode) {
+      // Use stored code if available
+      setCode(storedCode);
+      setBoilerplateCode(storedCode);
     } else {
-      setBoilerplateCode("");
-      setCode(""); // Set the code to empty if no match is found
+      // Fall back to boilerplate code
+      const matchingBoilerplate = boilerplateList.find(
+        // Find the matching with the start name, if 2 languages have the same start name, it will return the first one
+        (boilerplate) => boilerplate.longName.toLowerCase().startsWith(language.toLowerCase())
+      );
+
+      if (matchingBoilerplate) {
+        setBoilerplateCode(matchingBoilerplate.code);
+        setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+      } else {
+        setBoilerplateCode("");
+        setCode(""); // Set the code to empty if no match is found
+      }
     }
   };
 
@@ -94,19 +110,58 @@ export const RenderPGTabs = ({
     setCode(newCode);
     matchLanguage(language);
     setLanguagePackage(matchingLanguage, newCode);
+
+    // Set saving status to true when code changes
+    setIsSavingCode(true);
+
+    // Clear any previous timeout
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    // Save code to localStorage with debouncing
+    codeStorage.saveCode(newCode);
+
+    // Set a timeout to change the status to "Saved" after 2 seconds
+    saveTimeoutRef.current = setTimeout(() => {
+      setIsSavingCode(false);
+    }, 2000);
   };
 
   const handleLanguageChange = (newLanguage: SupportedLanguages) => {
     setLanguage(newLanguage);
-    // Update the code with the new language
-    const matchingBoilerplate = boilerplateList.find(
-      (boilerplate) => newLanguage.toLowerCase() === boilerplate.shortName.toLowerCase()
-    );
+    setIsSavingCode(true);
 
-    if (matchingBoilerplate) {
-      setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+    // Create a temporary code storage instance for the new language to check for stored code
+    const newLanguageStorageKey = `problem_code_${problemId}_${newLanguage.toLowerCase()}`;
+    let storedCodeForNewLanguage: string | null = null;
+
+    try {
+      const storedData = localStorage.getItem(newLanguageStorageKey);
+      if (storedData) {
+        const data = JSON.parse(storedData);
+        storedCodeForNewLanguage = data.code;
+      }
+    } catch (error) {
+      console.warn("Failed to load stored code for new language:", error);
+    } finally {
+      setIsSavingCode(false);
+    }
+
+    if (storedCodeForNewLanguage) {
+      // Use stored code if available for the new language
+      setCode(storedCodeForNewLanguage);
     } else {
-      setCode(""); // Set the code to empty if no match is found
+      // Fall back to boilerplate code for the new language
+      const matchingBoilerplate = boilerplateList.find(
+        (boilerplate) => newLanguage.toLowerCase() === boilerplate.shortName.toLowerCase()
+      );
+
+      if (matchingBoilerplate) {
+        setCode(matchingBoilerplate.code); // Set the boilerplate code if a match is found
+      } else {
+        setCode(""); // Set the code to empty if no match is found
+      }
     }
   };
 
@@ -142,13 +197,22 @@ export const RenderPGTabs = ({
             <Playground ref={playgroundRef} language={language} code={code} onCodeChange={handleCodeChange} />
           </div>
         );
-      case "Chatbot":
-        return <div>Chatbot</div>;
+      default:
+        return <EmptyMessage message="This tab is not implemented yet." />;
     }
   };
 
+  // Clear timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (saveTimeoutRef.current) {
+        clearTimeout(saveTimeoutRef.current);
+      }
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col h-full">
+    <div className="relative flex flex-col h-full">
       {/* Tab Buttons */}
       <div
         id="tab-buttons"
@@ -162,7 +226,10 @@ export const RenderPGTabs = ({
               <AlertDialog
                 title="Reset Code"
                 message="Are you sure you want to reset the code?"
-                onConfirm={() => setCode(boilerplateCode)}
+                onConfirm={() => {
+                  setCode(boilerplateCode);
+                  codeStorage.clearCode(); // Clear stored code when resetting
+                }}
               >
                 <TooltipTrigger asChild>
                   <div className="inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 hover:bg-accent hover:text-accent-foreground h-8 rounded-md px-3 text-xs">
@@ -218,9 +285,19 @@ export const RenderPGTabs = ({
         {/* Language Selector */}
       </div>
 
-      {/* Playground Content */}
-      <div id="playground-content" className="overflow-y-scroll scrollbar-hide">
-        {renderPlaygroundTabContent()}
+      {/* Main content area */}
+      <div className="flex flex-col h-[calc(100%-44px)]">
+        {/* Playground Content */}
+        <div id="playground-content" className="flex-grow overflow-y-auto scrollbar-hide">
+          {renderPlaygroundTabContent()}
+        </div>
+
+        {/* Simple Save Status Indicator - Sticky at bottom */}
+        {mode === "user" && (
+          <div className="sticky bottom-0 px-4 py-2 text-xs text-muted-foreground">
+            {isSavingCode ? "Saving..." : "Saved"}
+          </div>
+        )}
       </div>
     </div>
   );

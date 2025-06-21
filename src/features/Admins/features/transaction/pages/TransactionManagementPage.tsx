@@ -42,15 +42,15 @@ export function TransactionManagementPage() {
   };
 
   return (
-    <div className="px-2 space-y-6">
-      <h1 className="text-4xl font-bold text-appPrimary">Transaction Management</h1>
+    <div className="container max-w-[1200px] mx-auto space-y-8 mb-12">
+      <h1 className="mx-4 text-4xl font-bold text-appPrimary">Transaction Management</h1>
 
-      <div className="mx-auto space-y-3 justify-items-center">
+      <div className="space-y-3 justify-items-center">
         {/* Global Search Bar */}
         <div className="w-full max-w-[1100px] flex items-center justify-start">
           <SearchBar value={searchQuery} onSearch={setSearchQuery} width={1100} />
         </div>
-        <div className="py-2"></div>
+
         <div className="min-w-[1100px]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 max-w-[400px] bg-transparent h-auto p-0 rounded-none">
@@ -58,7 +58,7 @@ export function TransactionManagementPage() {
                 value={TABS.PURCHASED}
                 className="rounded-none data-[state=active]:shadow-none data-[state=active]:text-appAccent data-[state=active]:border-b-2 data-[state=active]:border-appAccent py-2 px-3 font-semibold text-xl"
               >
-                Purchased
+                Purchases
               </TabsTrigger>
               <TabsTrigger
                 value={TABS.TRANSACTION_LIST}

@@ -45,7 +45,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const chatDetail = useSelector((state: RootState) => state.mainChatbot.chatDetail);
 
   const [modelChangeOpen, setModelChangeOpen] = useState(false);
-  const [chatModel, setChatModel] = useState(CHATBOT_MODELS[0].value);
+  const [chatModel, setChatModel] = useState(CHATBOT_MODELS["groq-llama-3.3-70b"].value); // Default model
   // Handle data stream signals
   const [isLoadingResponse, setIsLoadingResponse] = useState(false); // When waiting for response
   const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
@@ -275,7 +275,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
               className="flex items-center px-4 py-[5px] space-x-1 text-sm rounded-lg cursor-pointer hover:bg-accent"
             >
               <span className="font-semibold ">
-                {CHATBOT_MODELS.find((modelItem) => modelItem.value === chatModel)?.label}
+                {Object.values(CHATBOT_MODELS).find((modelItem) => modelItem.value === chatModel)?.label}
               </span>
               <ChevronDown className="w-4 opacity-50" />
             </div>
@@ -286,7 +286,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
               <CommandList>
                 <CommandEmpty>No model found.</CommandEmpty>
                 <CommandGroup>
-                  {CHATBOT_MODELS.map((modelItem) => (
+                  {Object.values(CHATBOT_MODELS).map((modelItem) => (
                     <CommandItem
                       key={modelItem.value}
                       value={modelItem.value}
@@ -331,7 +331,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       <div
         ref={chatContentRef}
         style={{ scrollBehavior: "smooth" }} // Add this style for smooth scrolling
-        className="flex flex-col flex-grow max-h-full px-2 py-12 space-y-4 overflow-y-auto"
+        className="flex flex-col flex-grow max-h-full px-2 py-12 space-y-4 overflow-y-scroll"
       >
         {chatDetail?.messages.map((message, index) => <ChatBubble key={index} message={message} />)}
         {isLoadingResponse && <ChatBubble isLoadingResponse />}
@@ -370,7 +370,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       >
         <div
           id="chat-container"
-          className={`relative flex overflow-x-hidden flex-col border-[0.5px] bg-white/80 overflow-y-hidden backdrop-blur-lg rounded-lg shadow-md shadow-appAITo/30 transition-all duration-300 ease-in-out ${
+          className={`relative flex overflow-hidden flex-col border-[0.5px] bg-white/80 backdrop-blur-lg rounded-lg shadow-md shadow-appAITo/30 transition-all duration-300 ease-in-out ${
             isMinimized ? "w-[520px] h-[650px] scale-75" : "w-[90%] h-[90%] scale-100"
           }`}
           style={{
@@ -398,7 +398,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
             className={`relative flex flex-col flex-grow ${isMinimized ? "px-2 pb-6 sm:px-4 sm:pb-8" : "px-2 pb-6 sm:px-16 sm:pb-12"} pt-2 h-full transition-all duration-300 ${isSidebarOpen ? "sm:ml-64" : "ml-0"}`}
           >
             {/* Chat Messages (Ensure content stays above the background) */}
-            <div className="relative z-10 flex flex-col flex-grow max-h-screen overflow-y-scroll scrollbar-default">
+            <div className="relative z-10 flex flex-col flex-grow max-h-screen mb-10 overflow-hidden">
               {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
             </div>
 

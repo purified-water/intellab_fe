@@ -6,6 +6,8 @@ import { CreateCourseSchema } from "../../../schemas";
 import { useFilePreview } from "@/hooks";
 import clsx from "clsx";
 import { CourseLevels, ProblemLevels } from "@/constants/enums/appLevels";
+import { PreviewCertificate } from "./PreviewCertificate";
+import { useCreateFinalStep } from "../../../hooks";
 
 interface PreviewCourseHeaderProps {
   course: CreateCourseSchema;
@@ -14,7 +16,11 @@ interface PreviewCourseHeaderProps {
 export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   const [showSummaryDialog, setShowSummaryDialog] = useState(false);
   const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showCertificateModal, setShowCertificateModal] = useState(false);
 
+  const createCourseFinalStep = useCreateFinalStep(course.courseId, Number(course.courseCertificate));
+  const { data: templateCertificate, isLoading: isLoadingCertificate } = createCourseFinalStep.getCertificateTemplates;
+  console.log("templateCertificate", templateCertificate);
   // Use our custom hook to generate the thumbnail preview
   const thumbnailPreview = useFilePreview(course.courseThumbnail ? course.courseThumbnail : null);
 
@@ -24,7 +30,11 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
   const renderButtons = () => {
     return (
       <div className="flex gap-8 mt-6">
-        <button type="button" className="px-6 py-1 font-semibold text-white transition rounded-lg shadow bg-appPrimary">
+        <button
+          type="button"
+          className="px-6 py-1 font-semibold text-white transition rounded-lg shadow bg-appPrimary"
+          onClick={() => setShowCertificateModal(true)}
+        >
           View Certificate
         </button>
 
@@ -139,11 +149,20 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
       <CourseSummaryDialog
         courseName={course.courseName}
         isOpen={showSummaryDialog}
-        summaryContent={"Description"}
+        summaryContent={course.courseSummary}
         onClose={() => {
           setShowSummaryDialog(false);
         }}
       />
+
+      {/* Certificate Modal */}
+      {showCertificateModal && (
+        <PreviewCertificate
+          certificateUrl={templateCertificate}
+          onClose={() => setShowCertificateModal(false)}
+          isLoading={isLoadingCertificate}
+        />
+      )}
     </div>
   );
 };

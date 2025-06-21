@@ -9,6 +9,7 @@ import { saveSubmission } from "@/redux/problem/submissionSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { showToastError } from "@/utils";
+import { useCatchError } from "@/hooks";
 
 interface UseCodeSubmissionProps {
   code: string;
@@ -71,7 +72,7 @@ export const useCodeSubmission = ({ code, language, problemId, learningId, cours
 
   const pollSubmissionStatus = async (submissionId: string) => {
     let elapsedTime = 0;
-    const maxTimeout = 60000; // 60 seconds
+    const maxTimeout = 80000; // 80 seconds
     const interval = setInterval(async () => {
       elapsedTime += 5000; // Increment elapsed time by 5 seconds
 
@@ -101,7 +102,8 @@ export const useCodeSubmission = ({ code, language, problemId, learningId, cours
               toast({
                 description: "Submission completed! Check the results."
               });
-
+              // Commented out because it is not needed as it has already been handled
+              // await problemAPI.getSubmissionIsSolved(submissionId);
               // Handle final results
               handleSubmissionResult(updateResponse);
               // Update learning progress if the problem is in a lesson
@@ -151,10 +153,11 @@ export const useCodeSubmission = ({ code, language, problemId, learningId, cours
         }
       }
     } catch (error) {
-      console.log("Failed to run code", error);
+      const errorMessage = useCatchError(error, "Failed to run code. Please try again later.");
+
       toast({
         variant: "destructive",
-        description: "Failed to run code"
+        description: errorMessage
       });
 
       setIsSubmitting(false);
