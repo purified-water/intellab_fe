@@ -10,4 +10,12 @@ const userLocalStorageCleanUp = () => {
   localStorage.removeItem("dontShowUploadGuideModal");
 };
 
-export { getUserIdFromLocalStorage, userLocalStorageCleanUp };
+const clearProblemCodeStorage = () => {
+  Object.keys(localStorage).forEach((key) => {
+    if (key.startsWith("problem_code_")) {
+      localStorage.removeItem(key);
+    }
+  });
+};
+
+export { getUserIdFromLocalStorage, userLocalStorageCleanUp, clearProblemCodeStorage };

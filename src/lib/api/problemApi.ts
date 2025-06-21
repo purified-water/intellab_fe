@@ -194,5 +194,10 @@ export const problemAPI = {
   postViewSolutionBeforePassed: async (problemId: string) => {
     const response = await apiClient.post(`problem/problems/viewSolution?problemId=${problemId}`);
     return response.data;
+  },
+  // Call this after polling submit code to set isSolved true if accepted
+  // Because calling get /submitList alone doesnt update the isSolved field for the test case
+  getSubmissionIsSolved: async (submissionId: string) => {
+    await apiClient.get(`problem/problem-submissions/${submissionId}`);
   }
 };

@@ -57,7 +57,7 @@ export const Playground = forwardRef<PlaygroundRef, PlaygroundProps>(({ language
     }
   ]);
 
-  const indentationExtension = indentUnit.of("  ");
+  const indentationExtension = indentUnit.of("    ");
   const extensions = [Prec.highest(formatKeymap), indentationExtension];
 
   if (extension) extensions.push(extension);

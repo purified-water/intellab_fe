@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { RunCodeResponseType } from "../../types/RunCodeType";
+import { EmptyList } from "@/components/ui";
 
 interface TestCaseResultProps {
   runCodeResult: RunCodeResponseType | null;
@@ -7,11 +8,7 @@ interface TestCaseResultProps {
 
 export const Output = ({ runCodeResult }: TestCaseResultProps) => {
   if (!runCodeResult) {
-    return (
-      <div className="flex items-center justify-center h-full pt-8 text-gray3">
-        <div>You must run your code first</div>
-      </div>
-    );
+    return <EmptyList message="You must run the code first to see the output." size="sm" />;
   }
 
   const allPassed = runCodeResult.testcases.every((tc) => tc.status === "Accepted");
@@ -40,7 +37,7 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
       return null;
     }
     return (
-      <div className="flex mb-4 gap-x-2 hover:cursor-pointer overflow-auto">
+      <div className="flex mb-4 overflow-auto gap-x-2 hover:cursor-pointer">
         {runCodeResult.testcases.map((tc, idx) => {
           const isAccepted = tc.status === "Accepted";
           const textColor = isAccepted ? "text-appEasy" : "text-appHard";
