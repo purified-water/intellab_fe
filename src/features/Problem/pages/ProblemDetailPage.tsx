@@ -28,6 +28,7 @@ import { userAPI } from "@/lib/api";
 import { setPoint } from "@/redux/user/userSlice";
 import { useDispatch } from "react-redux";
 import { SEO } from "@/components/SEO";
+import { DELAY_TIMES } from "@/constants";
 
 export const ProblemDetail = () => {
   // #region State
@@ -108,7 +109,9 @@ export const ProblemDetail = () => {
 
   useEffect(() => {
     if (isSubmissionPassed) {
-      getMyPointAPI();
+      setTimeout(() => {
+        getMyPointAPI();
+      }, DELAY_TIMES.SLOW);
     }
   }, [isSubmissionPassed]);
 

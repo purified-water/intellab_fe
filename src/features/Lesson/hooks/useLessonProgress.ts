@@ -57,8 +57,7 @@ export const useLessonProgress = ({ lesson, userId }: UseLessonProgressProps) =>
           theoryUpdateAttempted.current = true; // Mark as attempted
 
           const response = await courseAPI.updateTheoryDone(lesson.learningId, lesson.courseId);
-
-          if (response && response.success) {
+          if (response && response.result) {
             if (userId && lesson.lessonId) {
               clearBookmark(userId, lesson.lessonId);
             }

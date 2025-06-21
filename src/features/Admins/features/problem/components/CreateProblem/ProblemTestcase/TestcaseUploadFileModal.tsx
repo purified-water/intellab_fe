@@ -36,15 +36,47 @@ export const TestcaseUploadFileModal = (props: TestcaseUploadFileModalProps) => 
     setIsDragging(isOver);
   };
 
+  const showDuplicatedChoosenFilesError = (duplicateFiles: File[]) => {
+    const errorMessage = (
+      <div>
+        <p>These files have already been chosen:</p>
+        <ul>
+          {duplicateFiles.map((file) => (
+            <li key={file.name}>- {file.name}</li>
+          ))}
+        </ul>
+      </div>
+    );
+    showToastError({ toast: toast.toast, message: errorMessage });
+  };
+
   const handleFileDrop = (event: React.DragEvent<HTMLDivElement>) => {
     handleDragEvents(event, false);
     const droppedFiles = Array.from(event.dataTransfer.files);
-    setFiles((prevFiles) => [...prevFiles, ...droppedFiles]);
+    const duplicateFiles = droppedFiles.filter((file) => files.some((existingFile) => existingFile.name === file.name));
+    const uniqueFiles = droppedFiles.filter((file) => !files.some((existingFile) => existingFile.name === file.name));
+
+    if (duplicateFiles.length > 0) {
+      showDuplicatedChoosenFilesError(duplicateFiles);
+    }
+
+    const sortedFiles = [...files, ...uniqueFiles].sort((a, b) => a.name.localeCompare(b.name));
+    setFiles(sortedFiles);
   };
 
   const handleFileInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    const duplicateFiles = selectedFiles.filter((file) =>
+      files.some((existingFile) => existingFile.name === file.name)
+    );
+    const uniqueFiles = selectedFiles.filter((file) => !files.some((existingFile) => existingFile.name === file.name));
+
+    if (duplicateFiles.length > 0) {
+      showDuplicatedChoosenFilesError(duplicateFiles);
+    }
+
+    const sortedFiles = [...files, ...uniqueFiles].sort((a, b) => a.name.localeCompare(b.name));
+    setFiles(sortedFiles);
     event.target.value = ""; // Reset the input value to allow re-uploading the same files
   };
 

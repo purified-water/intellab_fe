@@ -4,13 +4,14 @@ import { Button } from "@/components/ui";
 
 interface TestcaseUploadGuideModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onOkay: () => void;
+  onCancel: () => void;
   onDontShowAgain: (dontShow: boolean) => void;
   dontShowUploadFileModalAgain: boolean;
 }
 
 export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) => {
-  const { isOpen, onClose, onDontShowAgain, dontShowUploadFileModalAgain } = props;
+  const { isOpen, onOkay, onCancel, onDontShowAgain, dontShowUploadFileModalAgain } = props;
 
   const [dontShowAgain, setDontShowAgain] = useState(dontShowUploadFileModalAgain);
   const [selectedTab, setSelectedTab] = useState("format-guide");
@@ -158,26 +159,21 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
             setDontShowAgain(e.target.checked);
             onDontShowAgain(e.target.checked);
           }}
+          className="accent-appPrimary"
         />
         <label htmlFor="dont-show-again" className="text-sm text-gray-500">
-          Don&apos;t show it again
+          Don't show this again
         </label>
       </div>
       <div className="flex gap-4">
         <Button
           variant="outline"
           className="hover:bg-appPrimary hover:text-white border-appPrimary text-appPrimary"
-          onClick={onClose}
+          onClick={onCancel}
         >
           Cancel
         </Button>
-        <Button
-          onClick={() => {
-            onClose();
-          }}
-        >
-          Okay
-        </Button>
+        <Button onClick={onOkay}>Okay</Button>
       </div>
     </div>
   );
