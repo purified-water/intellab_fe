@@ -8,6 +8,7 @@ Sitemap: https://www.intellab.site/sitemap.xml
 Disallow: /admin/
 Disallow: /api/
 Disallow: /private/
+Disallow: /site.webmanifest
 
 # Allow specific bots
 User-agent: Googlebot
@@ -17,4 +18,4 @@ User-agent: Bingbot
 Allow: /
 
 # Crawl delay (optional, in seconds)
-Crawl-delay: 1
+Crawl-delay: 60
