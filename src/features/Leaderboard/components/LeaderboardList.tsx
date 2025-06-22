@@ -14,11 +14,11 @@ const FILTER_ITEMS: ISortByItem[] = [
   {
     value: "problem",
     label: "Solved problems"
+  },
+  {
+    value: "course",
+    label: "Completed courses"
   }
-  // {
-  //   value: "course",
-  //   label: "Completed courses"
-  // }
 ];
 
 export function LeaderboardList() {
