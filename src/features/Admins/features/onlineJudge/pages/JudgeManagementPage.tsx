@@ -6,6 +6,8 @@ import { WorkerPod } from "../types/judgeTypes";
 import { formatUptime } from "@/utils";
 import { SEO } from "@/components/SEO";
 import { useGetJudgeServices, useGetPendingSubmissions } from "../hooks/useAdminJudge";
+import { WORKER_STATUS } from "../constants/workerService";
+import { NA_VALUE } from "@/constants";
 
 export const JudgeManagementPage = () => {
   const {
@@ -27,17 +29,22 @@ export const JudgeManagementPage = () => {
     refetchPendingSubmissions();
   };
 
+  console.log("Worker Data:", workerData);
+
   const workerServices: WorkerPod[] = workerData.map((worker: WorkerPod) => {
     return {
       ...worker,
-      uptime: formatUptime(worker.uptime),
-      containers: worker.containers.map((container) => ({
-        ...container,
-        usage: {
-          cpu: (parseInt(container.usage.cpu, 10) / 1_000_000_000).toFixed(2),
-          memory: (parseInt(container.usage.memory, 10) * 0.001024).toFixed(2)
-        }
-      }))
+      uptime: worker.containers.length > 0 ? formatUptime(worker.uptime) : "0s",
+      containers:
+        worker.containers.length > 0
+          ? worker.containers.map((container) => ({
+              ...container,
+              usage: {
+                cpu: (parseInt(container.usage.cpu, 10) / 1_000_000_000).toFixed(2),
+                memory: (parseInt(container.usage.memory, 10) * 0.001024).toFixed(2)
+              }
+            }))
+          : [{ usage: { cpu: NA_VALUE, memory: NA_VALUE } }]
     };
   });
 
@@ -51,10 +58,10 @@ export const JudgeManagementPage = () => {
           <div className="flex items-center">Status</div>
         </th>
         <th className="w-1/5">
-          <div className="flex items-center">CPU Usage</div>
+          <div className="flex items-center">CPU Usage (Core)</div>
         </th>
         <th className="w-1/5">
-          <div className="flex items-center">Memory Usage</div>
+          <div className="flex items-center">Memory Usage (MB)</div>
         </th>
         <th className="w-1/5">
           <div className="flex items-center">Uptime</div>
@@ -88,23 +95,27 @@ export const JudgeManagementPage = () => {
         : workerServices.map((worker) => (
             <tr key={worker.metadata.name} className="text-base border-b border-gray5">
               <td className="w-1/5 py-4 pr-2 truncate max-w-1/5">{worker.metadata.name}</td>
-              <td className={`w-1/5 py-4 font-medium ${worker.status == "Running" ? "text-appEasy" : "text-appHard"}`}>
+              <td
+                className={`w-1/5 py-4 font-medium ${worker.status == WORKER_STATUS.RUNNING ? "text-appEasy" : worker.status === WORKER_STATUS.CREATING ? "text-appMedium" : "text-appHard"}`}
+              >
                 {worker.status}
               </td>
               <td className="w-1/5 py-4">
-                <div className="flex items-center">
+                <div className="flex items-right">
                   <Cpu className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {worker.containers[0]?.usage.cpu}{" "}
-                  {parseFloat(worker.containers[0]?.usage.cpu) === 1 ? "Core" : "Cores"}
+                  {worker.containers[0]?.usage.cpu}
                 </div>
               </td>
               <td className="w-1/5 py-4">
-                <div className="flex items-center">
+                <div className="flex items-right">
                   <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {worker.containers[0]?.usage.memory} MB
+                  {worker.containers[0]?.usage.memory}
                 </div>
               </td>
-              <td className="w-1/5 py-4">{worker.uptime}</td>
+              <td className="w-1/5 py-4">
+                {worker.uptime}
+                {worker.containers.length > 0 ? " ago" : ""}
+              </td>
             </tr>
           ))}
     </tbody>
