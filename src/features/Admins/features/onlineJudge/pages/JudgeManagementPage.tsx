@@ -1,15 +1,20 @@
 import { Button } from "@/components/ui";
-import { Cpu, MemoryStick, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { JudgeAdjustmentCard, JudgeServiceOverview } from "../components";
 import { Skeleton } from "@/components/ui/shadcn";
 import { WorkerPod } from "../types/judgeTypes";
-import { formatUptime } from "@/utils";
+import { formatUptime, showToastDefault } from "@/utils";
 import { SEO } from "@/components/SEO";
 import { useGetJudgeServices, useGetPendingSubmissions } from "../hooks/useAdminJudge";
 import { WORKER_STATUS } from "../constants/workerService";
 import { NA_VALUE } from "@/constants";
+import { useEffect, useRef } from "react";
+import { useToast } from "@/hooks";
 
 export const JudgeManagementPage = () => {
+  const { toast } = useToast();
+  const previousWorkerCountRef = useRef<number | null>(null);
+
   const {
     data: workerData = [],
     isLoading: workerLoading,
@@ -29,8 +34,6 @@ export const JudgeManagementPage = () => {
     refetchPendingSubmissions();
   };
 
-  console.log("Worker Data:", workerData);
-
   const workerServices: WorkerPod[] = workerData.map((worker: WorkerPod) => {
     return {
       ...worker,
@@ -47,6 +50,35 @@ export const JudgeManagementPage = () => {
           : [{ usage: { cpu: NA_VALUE, memory: NA_VALUE } }]
     };
   });
+
+  useEffect(() => {
+    // Only show toast if this is not the initial load and worker data has actually changed
+    if (!workerLoading && !isWorkerRefetching && previousWorkerCountRef.current !== null) {
+      const currentWorkerCount = workerData.length;
+      const previousWorkerCount = previousWorkerCountRef.current;
+
+      if (currentWorkerCount > previousWorkerCount) {
+        const newWorkersCount = currentWorkerCount - previousWorkerCount;
+        showToastDefault({
+          toast: toast,
+          title: "Worker Created",
+          message: `${newWorkersCount} new worker${newWorkersCount > 1 ? "s" : ""} ${newWorkersCount > 1 ? "have" : "has"} been created`
+        });
+      } else if (currentWorkerCount < previousWorkerCount) {
+        const terminatedWorkersCount = previousWorkerCount - currentWorkerCount;
+        showToastDefault({
+          toast: toast,
+          title: "Worker Terminated",
+          message: `${terminatedWorkersCount} worker${terminatedWorkersCount > 1 ? "s" : ""} ${terminatedWorkersCount > 1 ? "have" : "has"} been terminated`
+        });
+      }
+    }
+
+    // Update the previous worker count after processing
+    if (!workerLoading && !isWorkerRefetching) {
+      previousWorkerCountRef.current = workerData.length;
+    }
+  }, [workerData, workerLoading, isWorkerRefetching, toast]);
 
   const renderTableHeader = () => (
     <thead className="text-left border-t border-b border-gray5">
@@ -96,19 +128,25 @@ export const JudgeManagementPage = () => {
             <tr key={worker.metadata.name} className="text-base border-b border-gray5">
               <td className="w-1/5 py-4 pr-2 truncate max-w-1/5">{worker.metadata.name}</td>
               <td
-                className={`w-1/5 py-4 font-medium ${worker.status == WORKER_STATUS.RUNNING ? "text-appEasy" : worker.status === WORKER_STATUS.CREATING ? "text-appMedium" : "text-appHard"}`}
+                className={`w-1/5 py-4 font-medium ${
+                  worker.status == WORKER_STATUS.RUNNING
+                    ? "text-appEasy"
+                    : worker.status === WORKER_STATUS.CREATING
+                      ? "text-appMedium"
+                      : "text-appHard"
+                }`}
               >
                 {worker.status}
               </td>
-              <td className="w-1/5 py-4">
-                <div className="flex items-right">
-                  <Cpu className="w-4 h-4 mr-2 text-muted-foreground" />
+              <td className="w-1/5 px-12 py-4">
+                <div className="flex items-center justify-end">
+                  {/* <Cpu className="w-4 h-4 mr-2 text-muted-foreground" /> */}
                   {worker.containers[0]?.usage.cpu}
                 </div>
               </td>
-              <td className="w-1/5 py-4">
-                <div className="flex items-right">
-                  <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" />
+              <td className="w-1/5 py-4 px-7">
+                <div className="flex items-center justify-end">
+                  {/* <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" /> */}
                   {worker.containers[0]?.usage.memory}
                 </div>
               </td>

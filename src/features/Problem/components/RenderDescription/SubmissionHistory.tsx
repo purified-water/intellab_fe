@@ -7,6 +7,7 @@ import { SubmissionHistoryType } from "../../types/SubmissionHistoryType";
 import { shortenDate } from "@/utils/dateUtils";
 import { SubmissionInformation } from "./SubmissionInformation";
 import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
+import { Spinner } from "@/components/ui";
 
 export const SubmissionHistory = () => {
   const { problemId } = useParams<{ problemId: string }>();
@@ -63,11 +64,7 @@ export const SubmissionHistory = () => {
   };
 
   if (isLoading) {
-    return (
-      <div className="mt-4 text-center text-gray3">
-        <span>Loading...</span>
-      </div>
-    );
+    return <Spinner loading={isLoading} overlay />;
   }
 
   return (

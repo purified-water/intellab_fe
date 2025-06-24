@@ -15,7 +15,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/problems/${submission?.problem.problemId}`);
+    navigate(`/submissions/${submission?.submissionId}`);
   };
 
   const renderSkeleton = () => {
