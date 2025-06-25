@@ -16,6 +16,7 @@ interface ProblemChatInputProps {
   isSubmitting: boolean;
   isLoading: boolean;
   handleCancel: () => void;
+  isUnlimited?: boolean;
   messageCount: number;
 }
 
@@ -29,12 +30,10 @@ export const ProblemChatInput = ({
   isSubmitting,
   isLoading,
   handleCancel,
+  isUnlimited = false,
   messageCount
 }: ProblemChatInputProps) => {
   const [modelChangeOpen, setModelChangeOpen] = useState(false);
-  let isUnlimited = false;
-
-  if (messageCount > 1000) isUnlimited = true;
 
   return (
     <div className="sticky z-10 flex-col items-end px-2 mx-2 mt-4 border rounded-lg bottom-4">

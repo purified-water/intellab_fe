@@ -34,7 +34,9 @@ export const Header = (props: HeaderProps) => {
   const toast = useToast();
   const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
 
-  const coverImageUrl = course.courseImage ? course.courseImage : "/src/assets/unavailable_image.jpg";
+  const coverImageUrl = course.courseImage
+    ? `${course.courseImage}?timestamp=${new Date().getTime()}`
+    : "/src/assets/unavailable_image.jpg";
 
   const isFinished = course.progressPercent == 100;
 
@@ -322,7 +324,7 @@ export const Header = (props: HeaderProps) => {
       <div className="relative flex flex-col items-center w-full px-4 pt-10 pb-5 z-8">
         <div className="flex flex-row items-start w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
           {/* Left: Cover Image */}
-          <div className="w-96 h-72 rounded-[10px] overflow-hidden shadow-md">
+          <div className="w-[500px] h-[280px] rounded-[10px] overflow-hidden shadow-md">
             <img
               src={coverImageUrl}
               alt={course.courseName}
