@@ -7,16 +7,19 @@ import {
   TUpdatePasswordResponse
 } from "@/features/Auth/types/apiType";
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
+import { ENVIRONMENT } from "@/constants";
+
+const CALLBACK_URL = ENVIRONMENT.CALLBACK_URL;
 
 export const authAPI = {
   login: async (email: string, password: string) => {
     return apiClient.post("identity/auth/login", { email, password });
   },
   signUp: async (displayName: string, email: string, password: string) => {
-    return apiClient.post("identity/auth/register", { displayName, email, password });
+    return apiClient.post("identity/auth/register", { displayName, email, password, callbackDomain: CALLBACK_URL });
   },
   continueWithGoogle: async (idToken: string) => {
-    return apiClient.post("identity/auth/login/google", { idToken });
+    return apiClient.post("identity/auth/login/google", { idToken, callbackDomain: CALLBACK_URL });
   },
 
   getPremiumStatus: async ({ query, onStart, onSuccess, onFail, onEnd }: TGetPremiumStatusParams) => {
@@ -52,11 +55,15 @@ export const authAPI = {
     }
     try {
       const email = body!.email;
-      const response = await apiClient.post("identity/auth/reset-password", email, {
-        headers: {
-          "Content-Type": "text/plain"
+      const response = await apiClient.post(
+        "identity/auth/reset-password",
+        { email: email, callbackDomain: CALLBACK_URL },
+        {
+          headers: {
+            "Content-Type": "text/plain"
+          }
         }
-      });
+      );
 
       if (response.status === HTTPS_STATUS_CODE.OK) {
         await onSuccess(true);
@@ -82,11 +89,15 @@ export const authAPI = {
     }
     try {
       const email = body!.email;
-      const response = await apiClient.post("identity/auth/resend-verification-email", email, {
-        headers: {
-          "Content-Type": "text/plain"
+      const response = await apiClient.post(
+        "identity/auth/resend-verification-email",
+        { email: email, callbackDomain: CALLBACK_URL },
+        {
+          headers: {
+            "Content-Type": "text/plain"
+          }
         }
-      });
+      );
 
       if (response.status === HTTPS_STATUS_CODE.OK) {
         await onSuccess(true);

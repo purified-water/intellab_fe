@@ -13,9 +13,10 @@ import {
   TGetDiscountResponse,
   TGetDiscountParams
 } from "@/features/Payment/types";
-import { API_RESPONSE_CODE } from "@/constants";
+import { API_RESPONSE_CODE, ENVIRONMENT } from "@/constants";
 import { LANGUAGE, VNPAY_BANK_CODE, VNPAY_CURRENCY_CODE } from "@/features/Payment/constants";
 
+const CALLBACK_DOMAIN = ENVIRONMENT.CALLBACK_URL;
 const DEFAULT_PAGE_SIZE = 10;
 const DEFAULT_LANGUAGE = LANGUAGE.VIETNAMESE;
 const DEFAULT_CURRENCY = VNPAY_CURRENCY_CODE.VND;
@@ -36,7 +37,8 @@ export const paymentAPI = {
       language: DEFAULT_LANGUAGE,
       courseId,
       vnpayBankCode: DEFAULT_BANK_CODE,
-      vnpayCurrencyCode: DEFAULT_CURRENCY
+      vnpayCurrencyCode: DEFAULT_CURRENCY,
+      callbackDomain: CALLBACK_DOMAIN
     };
     const response = await apiClient.post("identity/payment/vnpay/checkout/single-course", bodyData);
     const data: TCreateCoursePaymentResponse = response.data;
@@ -100,7 +102,8 @@ export const paymentAPI = {
         vnpayCurrencyCode: DEFAULT_CURRENCY,
         premiumPackage: body!.premiumPackage,
         premiumDuration: body!.premiumDuration,
-        isChangePlan: body!.isChangePlan
+        isChangePlan: body!.isChangePlan,
+        callbackDomain: CALLBACK_DOMAIN
       };
       const response = await apiClient.post("identity/payment/vnpay/checkout/premium-package", bodyData);
       const data: TCreatePremiumPaymentResponse = response.data;

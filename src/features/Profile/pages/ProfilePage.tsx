@@ -11,9 +11,14 @@ import {
 } from "@/features/Profile/components";
 import { Spinner } from "@/components/ui";
 import React, { Suspense } from "react";
+import { useGetBadges } from "../hooks/useProfile";
 const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
+
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
+  const { data: badges = [], isPending: isLoadingBadges } = useGetBadges();
+
+  console.log("Badges data:", badges);
 
   return (
     <div className="bg-gray6/50">
@@ -29,7 +34,7 @@ export const ProfilePage = () => {
         </div>
 
         <div className="flex flex-col w-full min-h-screen ml-0 space-y-2 sm:ml-2 lg:space-y-4 lg:ml-4">
-          <Badges />
+          <Badges badges={badges} isLoading={isLoadingBadges} />
           <SubmissionList userId={id!} />
           <CompletedCourseList userId={id!} />
         </div>

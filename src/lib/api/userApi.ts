@@ -186,5 +186,10 @@ export const userAPI = {
         onEnd();
       }
     }
+  },
+
+  getProfileBadges: async () => {
+    const response = await apiClient.get(`/identity/profile/myBadges`);
+    return response.data;
   }
 };

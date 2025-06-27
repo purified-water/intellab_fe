@@ -88,7 +88,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
       <img
         src={user?.photoUrl || DEFAULT_AVATAR}
         alt="profile"
-        className="object-contain w-20 h-20 rounded-full"
+        className="object-contain w-20 h-20 border rounded-full"
         onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
       />
     );
