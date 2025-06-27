@@ -30,7 +30,6 @@ export const CourseLessonsPage = () => {
 
   const createCourseLesson = useCreateLesson(courseId);
   const { data: lessonsFromServer = [], isLoading } = createCourseLesson.getLessonList;
-
   const createCourse = useSelector((state: RootState) => state.createCourse);
   const { isEditingCourse } = useEditingCourse();
 
@@ -109,18 +108,16 @@ export const CourseLessonsPage = () => {
       try {
         // Update lesson content first
         await createCourseLesson.updateLesson.mutateAsync(updateLessonPayload);
-
-        // Only update quiz if hasQuiz is true
-        if (data.hasQuiz) {
-          // Update quiz second
-          await createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload);
-        }
+        // Update quiz second
+        await createCourseLesson.updateQuiz.mutateAsync(updateQuizPayload);
 
         // Update the lesson in the course lessons list
         let updatedLessonList;
         if (lessonAction.type === "edit") {
           // For edit, find and update the existing lesson
-          updatedLessonList = courseLessons.map((lesson) => (lesson.lessonId === data.lessonId ? data : lesson));
+          updatedLessonList = courseLessons.map((lesson: CreateLessonSchema) =>
+            lesson.lessonId === data.lessonId ? data : lesson
+          );
         } else {
           // For add (blank or clone), append the new lesson
           updatedLessonList = [...courseLessons, data];

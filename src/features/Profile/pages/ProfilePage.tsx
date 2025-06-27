@@ -16,9 +16,7 @@ const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
-  const { data: badges = [], isPending: isLoadingBadges } = useGetBadges();
-
-  console.log("Badges data:", badges);
+  const { data: badges = [], isPending: isLoadingBadges } = useGetBadges(id!);
 
   return (
     <div className="bg-gray6/50">

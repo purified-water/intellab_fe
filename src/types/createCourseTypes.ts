@@ -119,4 +119,5 @@ export interface CreateLessonQuizResponse {
   questionsPerExercise: number;
   passingQuestions: number;
   questionList: QuestionResponse[];
+  isQuizVisible: boolean;
 }

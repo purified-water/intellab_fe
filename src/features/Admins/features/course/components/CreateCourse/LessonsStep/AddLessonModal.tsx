@@ -39,12 +39,15 @@ export function AddLessonModal({ open, onOpenChange, onAddLesson }: AddLessonMod
           </Button>
 
           <Button
+            disabled
             onClick={() => handleCreateLesson("add-clone")}
             variant="outline"
-            className="flex flex-col border-dashed opacity-50 size-56 hover:opacity-100"
+            className="flex flex-col text-center border-dashed opacity-50 size-56 hover:opacity-100"
           >
             <Files className="mr-2 size-4" />
             Create From Existing Lesson
+            <br />
+            (Coming Soon)
           </Button>
         </div>
       </DialogContent>

@@ -22,6 +22,7 @@ interface AddQuizProps {
 
 const EMPTY_QUIZ: CreateQuizSchema = {
   quizQuestions: [],
+  isQuizVisible: true,
   totalQuestions: 0,
   displayedQuestions: 0,
   requiredCorrectQuestions: 0
@@ -44,6 +45,14 @@ export const AddQuiz = ({ readOnly }: AddQuizProps) => {
       setValue("lessonQuiz.totalQuestions", value.quizQuestions.length);
     }
   }, [value.quizQuestions?.length]);
+
+  // Update individual form fields when quiz data changes
+  useEffect(() => {
+    if (value && value !== EMPTY_QUIZ) {
+      setValue("lessonQuiz.displayedQuestions", value.displayedQuestions);
+      setValue("lessonQuiz.requiredCorrectQuestions", value.requiredCorrectQuestions);
+    }
+  }, [value.displayedQuestions, value.requiredCorrectQuestions, setValue]);
 
   const handleChange = (partial: Partial<CreateQuizSchema>) => {
     setValue("lessonQuiz", { ...value, ...partial }, { shouldValidate: true });

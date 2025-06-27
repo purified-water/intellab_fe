@@ -188,8 +188,8 @@ export const userAPI = {
     }
   },
 
-  getProfileBadges: async () => {
-    const response = await apiClient.get(`/identity/profile/myBadges`);
+  getProfileBadges: async (userId: string) => {
+    const response = await apiClient.get(`/identity/profile/badges?uid=${userId}`);
     return response.data;
   }
 };
