@@ -41,7 +41,7 @@ const navItems = [
   { title: "Users", icon: Users, href: "/admin/users" },
   { title: "Courses", icon: GraduationCap, href: "/admin/courses" },
   { title: "Problems", icon: FileCode, href: "/admin/problems" },
-  { title: "Transactions", icon: Receipt, href: "/admin/transactions" },
+  { title: "Payments", icon: Receipt, href: "/admin/payments" },
   { title: "Online Judge", icon: Gavel, href: "/admin/judge-management" }
 ];
 

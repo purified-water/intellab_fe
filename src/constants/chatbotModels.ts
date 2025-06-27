@@ -42,5 +42,9 @@ export const CHATBOT_MODELS = {
   "phi-4": {
     value: "phi-4",
     label: "phi-4"
+  },
+  "llama3.2": {
+    value: "llama3.2",
+    label: "llama3.2"
   }
 };

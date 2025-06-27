@@ -32,7 +32,7 @@ export const Header = (props: HeaderProps) => {
   const [loading, setLoading] = useState(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const toast = useToast();
-  const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
+  const formattedCourseName = course.courseName.replace(/[^a-zA-Z0-9&:]/g, " ").trim();
 
   const coverImageUrl = course.courseImage ? course.courseImage : "/src/assets/unavailable_image.jpg";
 
