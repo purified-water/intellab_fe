@@ -117,7 +117,11 @@ export function Course(props: CourseProps) {
     >
       <div className="relative h-48">
         <img
-          src={detailCourse?.courseImage || "/placeholder.svg"}
+          src={
+            detailCourse?.courseImage
+              ? `${detailCourse.courseImage}?timestamp=${new Date().getTime()}`
+              : "/src/assets/unavailable_image.jpg"
+          }
           alt={detailCourse?.courseName || DEFAULT_COURSE.courseName}
           onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
           className="object-cover w-full h-full"

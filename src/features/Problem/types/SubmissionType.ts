@@ -42,6 +42,29 @@ export interface SendSubmissionType {
   runTime: number;
 }
 
+// MOSS plagiarism detection types
+export interface MOSSResult {
+  analysisId: string;
+  similarityScore: number;
+  status: "pending" | "analyzed" | "flagged" | "failed";
+  reportUrl?: string;
+  analyzedAt?: string;
+  matches?: MOSSMatch[];
+  threshold: number;
+}
+
+export interface MOSSMatch {
+  matchId: string;
+  submissionId: string;
+  studentName: string;
+  studentId: string;
+  similarityPercentage: number;
+  matchedLines: number;
+  totalLines: number;
+  fileUrl?: string;
+  codeSnippet?: string;
+}
+
 export interface SubmissionTypeNoProblem {
   submissionId: string;
   submitOrder: number;
@@ -50,4 +73,6 @@ export interface SubmissionTypeNoProblem {
   scoreAchieved: number;
   userUid: string;
   testCasesOutput: TestCaseAfterSubmit[];
+  mossResult?: MOSSResult;
+  isSolved: boolean;
 }

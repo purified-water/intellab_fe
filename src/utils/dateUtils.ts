@@ -78,7 +78,11 @@ export const formatDateInProblem = (
   });
 };
 
-export const formatUptime = (seconds: number): string => {
+export const formatUptime = (seconds: number | null): string => {
+  if (!seconds || seconds < 0) {
+    return "0s";
+  }
+
   if (seconds < 60) {
     return `${seconds}s`;
   }
