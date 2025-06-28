@@ -15,6 +15,8 @@ import {
 } from "@/features/Payment/types";
 import { API_RESPONSE_CODE, ENVIRONMENT } from "@/constants";
 import { LANGUAGE, VNPAY_BANK_CODE, VNPAY_CURRENCY_CODE } from "@/features/Payment/constants";
+import { apiResponseCodeUtils } from "@/utils";
+import { AxiosError } from "axios";
 
 const CALLBACK_DOMAIN = ENVIRONMENT.CALLBACK_URL;
 const DEFAULT_PAGE_SIZE = 10;
@@ -92,6 +94,15 @@ export const paymentAPI = {
   createPremiumPayment: async ({ body, onStart, onSuccess, onFail, onEnd }: TCreatePremiumPaymentParams) => {
     const DEFAULT_ERROR = "Error creating premium payment";
 
+    const handleResponseData = async (data: TCreatePremiumPaymentResponse) => {
+      const { code, message, result } = data;
+      if (code == API_RESPONSE_CODE.SUCCESS) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
     if (onStart) {
       await onStart();
     }
@@ -106,15 +117,11 @@ export const paymentAPI = {
         callbackDomain: CALLBACK_DOMAIN
       };
       const response = await apiClient.post("identity/payment/vnpay/checkout/premium-package", bodyData);
-      const data: TCreatePremiumPaymentResponse = response.data;
-      const { code, message, result } = data;
-      if (code == API_RESPONSE_CODE.SUCCESS) {
-        await onSuccess(result);
-      } else {
-        await onFail(message ?? DEFAULT_ERROR);
-      }
+      await handleResponseData(response.data as TCreatePremiumPaymentResponse);
     } catch (error: unknown) {
-      if (error instanceof Error) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TCreatePremiumPaymentResponse);
+      } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
     } finally {

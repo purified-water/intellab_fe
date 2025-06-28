@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { TProgress } from "@/types";
 import { userAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -9,10 +10,11 @@ import { RootState } from "@/redux/rootReducer";
 
 type StatsSectionProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const StatsSection = (props: StatsSectionProps) => {
-  const { userId } = props;
+export const StatsSection = memo(function StatsSection(props: StatsSectionProps) {
+  const { userId, isPublic } = props;
 
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState<TProgress | null>(null);
@@ -40,8 +42,10 @@ export const StatsSection = (props: StatsSectionProps) => {
   };
 
   useEffect(() => {
-    getProgressProblemAPI(userId);
-  }, [userId]);
+    if (isPublic) {
+      getProgressProblemAPI(userId);
+    }
+  }, [userId, isPublic]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
@@ -54,10 +58,12 @@ export const StatsSection = (props: StatsSectionProps) => {
     ));
   };
 
-  const renderStats = () => {
-    if (!progress) return null;
+  const renderEmpty = () => {
+    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
+  };
 
-    const { easy, medium, hard } = progress;
+  const renderStats = () => {
+    const { easy, medium, hard } = progress!;
 
     const stats = [
       { label: "Problems Solved", value: easy.solved + medium.solved + hard.solved },
@@ -73,13 +79,24 @@ export const StatsSection = (props: StatsSectionProps) => {
     ));
   };
 
+  let content = null;
+  if (loading) {
+    content = renderSkeleton();
+  } else {
+    if (isPublic && progress && Object.keys(progress).length > 0) {
+      content = renderStats();
+    } else {
+      content = renderEmpty();
+    }
+  }
+
   return (
     <>
       <div className="w-full my-4 border-t-2 border-gray5"></div>
       <div className="flex flex-col min-w-full">
         <div className="text-xl font-semibold text-black1">{isMe ? "My Stats" : "Stats"}</div>
-        {loading ? renderSkeleton() : renderStats()}
+        {content}
       </div>
     </>
   );
-};
+});

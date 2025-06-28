@@ -19,7 +19,8 @@ const apiResponseCodeUtils = {
       API_RESPONSE_CODE.BAD_REQUEST,
       API_RESPONSE_CODE.UNAUTHORIZED,
       API_RESPONSE_CODE.NOT_FOUND,
-      API_RESPONSE_CODE.CONFLICT
+      API_RESPONSE_CODE.CONFLICT,
+      API_RESPONSE_CODE.INTERNAL_SERVER_ERROR
     ];
     return acceptedCodes.includes(code);
   }

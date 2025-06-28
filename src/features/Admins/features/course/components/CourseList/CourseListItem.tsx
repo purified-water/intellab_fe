@@ -2,7 +2,7 @@ import { ICourse } from "@/types";
 import { MoreHorizontal, Star } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton, Switch } from "@/components/ui/shadcn";
-import { showToastError, shortenDate } from "@/utils";
+import { showToastError, shortenDate, showToastDefault } from "@/utils";
 import { useToast } from "@/hooks";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -47,6 +47,7 @@ export function CourseListItem(props: CourseListItemProps) {
   };
 
   const handleEdit = async () => {
+    showToastDefault({ toast: toast.toast, title: "Loading", message: "Loading course data, please wait a bit." });
     let thumbnailFile = null;
     if (course.courseImage) {
       thumbnailFile = await imageURLToFile(course.courseImage, course.courseName);

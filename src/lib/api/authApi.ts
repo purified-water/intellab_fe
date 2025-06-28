@@ -55,15 +55,10 @@ export const authAPI = {
     }
     try {
       const email = body!.email;
-      const response = await apiClient.post(
-        "identity/auth/reset-password",
-        { email: email, callbackDomain: CALLBACK_URL },
-        {
-          headers: {
-            "Content-Type": "text/plain"
-          }
-        }
-      );
+      const response = await apiClient.post("identity/auth/reset-password", {
+        email: email,
+        callbackDomain: CALLBACK_URL
+      });
 
       if (response.status === HTTPS_STATUS_CODE.OK) {
         await onSuccess(true);
@@ -89,15 +84,10 @@ export const authAPI = {
     }
     try {
       const email = body!.email;
-      const response = await apiClient.post(
-        "identity/auth/resend-verification-email",
-        { email: email, callbackDomain: CALLBACK_URL },
-        {
-          headers: {
-            "Content-Type": "text/plain"
-          }
-        }
-      );
+      const response = await apiClient.post("identity/auth/resend-verification-email", {
+        email: email,
+        callbackDomain: CALLBACK_URL
+      });
 
       if (response.status === HTTPS_STATUS_CODE.OK) {
         await onSuccess(true);
