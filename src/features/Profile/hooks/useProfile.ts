@@ -8,6 +8,7 @@ export const useGetBadges = (userId: string, isPublic: boolean = true) => {
       const response = await userAPI.getProfileBadges(userId);
       return response.result;
     },
+    refetchOnWindowFocus: true,
     enabled: !!userId && isPublic
   });
 };
