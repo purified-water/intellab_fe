@@ -13,8 +13,10 @@ export const Badges = ({ badges, isLoading }: BadgesProps) => {
 
   const renderSkeleton = () => {
     return (
-      <div className="flex flex-row flex-wrap items-center justify-start">
-        <Skeleton className="h-20 lg:h-[80px] xl:h-24 rounded-full" />
+      <div className="flex flex-row flex-wrap items-center justify-start gap-y-4 gap-x-8">
+        {Array.from({ length: 3 }).map((_, index) => (
+          <Skeleton key={index} className="h-20 w-20 lg:h-[80px] lg:w-[80px] xl:h-24 xl:w-24 rounded-full shrink-0" />
+        ))}
       </div>
     );
   };

@@ -8,6 +8,7 @@ export const useGetBadges = (userId: string) => {
       const response = await userAPI.getProfileBadges(userId);
       return response.result;
     },
-    enabled: !!userId
+    enabled: !!userId,
+    refetchOnWindowFocus: true
   });
 };
