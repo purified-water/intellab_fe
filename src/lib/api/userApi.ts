@@ -9,7 +9,9 @@ import {
   TGetProfileMeResponse,
   TGetProfileMeParams,
   TGetMyPointResponse,
-  TGetMyPointParams
+  TGetMyPointParams,
+  TSetPublicProfileParams,
+  TSetPublicProfileResponse
 } from "@/features/Profile/types/apiType";
 import { TGetUsersForAdminResponse, TGetUsersForAdminParams } from "@/features/Admins/features/user/types/apiType";
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
@@ -178,6 +180,47 @@ export const userAPI = {
     } catch (error: unknown) {
       if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
         await handleResponseData(error.response?.data as TGetMyPointResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
+    }
+  },
+
+  getProfileBadges: async (userId: string) => {
+    const response = await apiClient.get(`/identity/profile/badges?uid=${userId}`);
+    return response.data;
+  },
+
+  setPublicProfile: async ({ body, onStart, onSuccess, onFail, onEnd }: TSetPublicProfileParams) => {
+    const DEFAULT_ERROR = "Error setting public profile";
+
+    const handleResponseData = async (data: TSetPublicProfileResponse) => {
+      const { code, message, result } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const { isPublic } = body!;
+      const response = await apiClient.post("/identity/profile/public", null, {
+        params: {
+          isPublic
+        }
+      });
+      await handleResponseData(response.data as TSetPublicProfileResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TSetPublicProfileResponse);
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }

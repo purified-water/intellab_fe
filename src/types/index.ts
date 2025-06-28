@@ -11,3 +11,4 @@ export * from "./category";
 export * from "./navigation";
 export * from "./premiumStatus";
 export * from "./createCourseTypes";
+export * from "./badge";

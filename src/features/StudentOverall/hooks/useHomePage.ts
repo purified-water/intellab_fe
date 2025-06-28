@@ -10,7 +10,6 @@ export const useGetFeaturedCourses = () => {
       const response = await courseAPI.getFeaturedCourses();
       return response.result;
     },
-    staleTime: 1000 * 60 * 60,
     placeholderData: (previous) => previous
   });
 };
@@ -22,7 +21,6 @@ export const useGetFreeCourses = () => {
       const response = await courseAPI.getFreeCourses();
       return response.result.content;
     },
-    staleTime: 1000 * 60 * 60,
     placeholderData: (previous) => previous
   });
 };

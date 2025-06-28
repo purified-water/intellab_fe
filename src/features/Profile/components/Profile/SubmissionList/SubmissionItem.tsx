@@ -15,7 +15,7 @@ export function SubmissionItem(props: SubmissionItemProps) {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate(`/problems/${submission?.problem.problemId}`);
+    navigate(`/submissions/${submission?.submissionId}`);
   };
 
   const renderSkeleton = () => {
@@ -63,10 +63,10 @@ export function SubmissionItem(props: SubmissionItemProps) {
 
       if (submission?.isSolved) {
         status = "Solved";
-        textColor = "text-green-500";
+        textColor = "text-appEasy text-right";
       } else {
         status = "Wrong Answer";
-        textColor = "text-red-500";
+        textColor = "text-appHard text-right";
       }
 
       return (

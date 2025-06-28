@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useEffect, useState, memo } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { useNavigate } from "react-router-dom";
 import useWindowDimensions from "@/hooks/use-window-dimensions";
@@ -7,19 +7,23 @@ import { userAPI } from "@/lib/api";
 import { IUser } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError, showToastSuccess } from "@/utils/toastUtils";
-import { API_RESPONSE_CODE } from "@/constants";
+import { API_RESPONSE_CODE, DELAY_TIMES } from "@/constants";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Switch } from "@/components/ui/shadcn/switch";
 import { Eye, EyeOff } from "lucide-react";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 import { VerificationStatus } from "./VerificationStatus";
+import { setUser as setReduxUser } from "@/redux/user/userSlice";
 
 type ProfileSectionProps = {
   userId: string;
+  onProfileFetched: (isPublic: boolean) => void;
 };
 
-export const ProfileSection = (props: ProfileSectionProps) => {
-  const { userId } = props;
+export const ProfileSection = memo(function ProfileSection(props: ProfileSectionProps) {
+  const { userId, onProfileFetched } = props;
+
+  const dispatch = useDispatch();
   const reduxUser = useSelector((state: RootState) => state.user.user);
   const isMe = userId === reduxUser?.userId;
   const navigate = useNavigate();
@@ -27,7 +31,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   const width = useWindowDimensions().width;
   const [user, setUser] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(false);
-  const [isPublicProfile, setIsPublicProfile] = useState(true); // Default to public
+  const isPublicProfile = user?.public || false;
   const [isToggling, setIsToggling] = useState(false); // State to prevent spam clicks
 
   const getProfileSinglePublicAPI = async () => {
@@ -37,6 +41,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
       const { code, message, result } = response;
       if (code == API_RESPONSE_CODE.SUCCESS) {
         setUser(result);
+        onProfileFetched(result.public || isMe);
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error getting user profile" });
       }
@@ -50,37 +55,40 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   };
 
   useEffect(() => {
-    getProfileSinglePublicAPI();
-  }, [userId]);
+    if (!isToggling) {
+      getProfileSinglePublicAPI();
+    }
+  }, [userId, reduxUser]);
 
   useEffect(() => {
     document.title = `${user?.displayName ?? "Loading"} | Intellab`;
   }, [user]);
-  const handleToggleProfileVisibility = () => {
+
+  const handleToggleProfileVisibility = async () => {
     // Prevent spam clicks
     if (isToggling) return;
 
-    // Set toggling state to true to prevent multiple clicks
-    setIsToggling(true);
-
-    // Toggle the state
-    const newVisibility = !isPublicProfile;
-    setIsPublicProfile(newVisibility);
-
-    // Show success toast
-    showToastSuccess({
-      toast: toast.toast,
-      title: "Profile visibility updated (NO API CALL)",
-      message: `Your profile is now ${newVisibility ? "public" : "private"}`
+    await userAPI.setPublicProfile({
+      body: { isPublic: !isPublicProfile },
+      onStart: async () => setIsToggling(true), // Set toggling state to true to prevent multiple clicks
+      onSuccess: async () => {
+        setUser((prevUser) => (prevUser ? { ...prevUser, public: !isPublicProfile } : null));
+        dispatch(setReduxUser({ ...reduxUser, public: !isPublicProfile }));
+        showToastSuccess({
+          toast: toast.toast,
+          title: "Profile visibility updated",
+          message: `Your profile is now ${!isPublicProfile ? "public" : "private"}`
+        });
+      },
+      onFail: async (message) =>
+        showToastError({ toast: toast.toast, message: message ?? "Error updating profile visibility" }),
+      onEnd: async () => {
+        // Reset toggling state after a delay to prevent spam
+        setTimeout(() => {
+          setIsToggling(false);
+        }, DELAY_TIMES.MEDIUM);
+      }
     });
-
-    // Reset toggling state after a delay to prevent spam
-    setTimeout(() => {
-      setIsToggling(false);
-    }, 1500); // 1.5 seconds cooldown
-
-    // Here you would typically call an API to update the visibility
-    // Example: await userAPI.updateProfileVisibility(userId, newVisibility);
   };
 
   const renderProfilePhoto = () => {
@@ -88,7 +96,7 @@ export const ProfileSection = (props: ProfileSectionProps) => {
       <img
         src={user?.photoUrl || DEFAULT_AVATAR}
         alt="profile"
-        className="object-contain w-20 h-20 rounded-full"
+        className="object-contain w-20 h-20 border rounded-full"
         onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
       />
     );
@@ -148,9 +156,6 @@ export const ProfileSection = (props: ProfileSectionProps) => {
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray3">
-                  {isPublicProfile ? "Visible to everyone" : "Hidden from public"}
-                </span>
                 <Switch
                   checked={isPublicProfile}
                   onCheckedChange={handleToggleProfileVisibility}
@@ -172,4 +177,4 @@ export const ProfileSection = (props: ProfileSectionProps) => {
   };
 
   return loading ? renderSkeleton() : renderProfile();
-};
+});

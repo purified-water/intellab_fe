@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FileText, CircleAlert } from "lucide-react";
 import { Button } from "@/components/ui";
+import { QuickReferenceGuide } from "./QuickReferenceGuide";
 
 interface TestcaseUploadGuideModalProps {
   isOpen: boolean;
@@ -67,6 +68,7 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
               <div>
                 <p className="font-medium text-base text-black1">{guide.title}</p>
                 <p className="font-light text-xs text-gray3">{guide.description}</p>
+                {index === 1 && <QuickReferenceGuide />}
               </div>
             </div>
           ))}

@@ -29,7 +29,11 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
     >
       <div className="relative h-44">
         <img
-          src={course.courseImage || "/placeholder.svg"}
+          src={
+            course.courseImage
+              ? `${course.courseImage}?timestamp=${new Date().getTime()}`
+              : "/src/assets/unavailable_image.jpg"
+          }
           alt={course.courseName}
           className="object-cover w-full h-full"
           loading="lazy"

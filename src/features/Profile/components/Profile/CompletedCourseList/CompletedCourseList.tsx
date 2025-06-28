@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { courseAPI } from "@/lib/api";
@@ -9,10 +9,11 @@ import { EmptyList, Separator } from "@/components/ui";
 
 type CompletedCourseListProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const CompletedCourseList = (props: CompletedCourseListProps) => {
-  const { userId } = props;
+export const CompletedCourseList = memo(function CompletedCourseList(props: CompletedCourseListProps) {
+  const { userId, isPublic } = props;
 
   const toast = useToast();
 
@@ -40,8 +41,10 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   };
 
   useEffect(() => {
-    getCompletedCourseListMeAPI();
-  }, [userId]);
+    if (isPublic) {
+      getCompletedCourseListMeAPI();
+    }
+  }, [userId, isPublic]);
 
   const renderSkeleton = () => {
     const placeholder = [1, 2, 3];
@@ -65,17 +68,19 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
     );
   };
 
-  const renderEmpty = () => {
-    return <EmptyList message="Finish your course to see your accomplishments here!" size="sm" />;
+  const renderEmpty = (message: string) => {
+    return <EmptyList message={message} size="sm" />;
   };
 
   let content = null;
   if (loading) {
     content = renderSkeleton();
-  } else if (courses.length > 0) {
+  } else if (!isPublic && !loading) {
+    content = renderEmpty("This is a private profile. Completed courses are only visible to the user.");
+  } else if (isPublic && courses.length > 0) {
     content = renderList();
   } else {
-    content = renderEmpty();
+    content = renderEmpty("Finish courses to see them here!");
   }
 
   return (
@@ -85,4 +90,4 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
       {content}
     </div>
   );
-};
+});

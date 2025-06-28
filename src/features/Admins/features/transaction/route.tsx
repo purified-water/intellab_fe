@@ -7,7 +7,7 @@ const TransactionManagementPage = lazy(() =>
 
 const TransactionRoute: RouteObject[] = [
   {
-    path: "transactions",
+    path: "payments",
     element: <TransactionManagementPage />
   }
 ];

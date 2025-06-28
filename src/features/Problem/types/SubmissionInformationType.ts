@@ -14,6 +14,7 @@ export interface ViewAllTestCaseResultListProps {
 
 export interface SubmissionResultsProps {
   isPassed: boolean;
+  viewingPage: boolean;
   onViewAllTestCases: () => void;
   submittedCode: string;
   language: string;
@@ -24,4 +25,5 @@ export interface SubmissionInformationProps {
   isPassed: boolean;
   historyInformation?: SubmissionTypeNoProblem | null;
   onBack?: () => void;
+  viewingPage?: boolean;
 }

@@ -99,8 +99,11 @@ export const problemAPI = {
     const response = await apiClient.get(`problem/test-case/${testCaseId}`);
     return response.data;
   },
-  getSubmissionHistory: async (problemId: string) => {
-    const response = await apiClient.get(`problem/problem-submissions/submitList/${problemId}`);
+  getSubmissionHistory: async (problemId: string, page: number) => {
+    const params = {
+      page: page
+    };
+    const response = await apiClient.get(`problem/problem-submissions/submitList/${problemId}`, { params });
     return response.data;
   },
   // COMMENTS
@@ -182,9 +185,11 @@ export const problemAPI = {
     return response.data;
   },
 
-  getSubmissionListMe: async (UserUid: string | null) => {
+  getSubmissionListMe: async (UserUid: string | null, page: number, size = DEFAULT_PAGE_SIZE) => {
     const queryParams = {
-      UserUid
+      UserUid,
+      page,
+      size
     };
     const response = await apiClient.get(`problem/problem-submissions/submitList/me`, { params: queryParams });
     const data: TGetSubmissionListMeResponse = response.data;

@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from "react";
-import { ChatBubble } from "@/components/ui";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { ChatBubble, Spinner } from "@/components/ui";
 import { aiOrbLogo } from "@/assets";
 import { Minus, SquarePen, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { RootState } from "@/redux/rootReducer";
 import { CHATBOT_MODELS } from "@/constants/chatbotModels";
-import { FaSpinner, FaSquare } from "rocketicons/fa6";
+import { FaSquare } from "rocketicons/fa6";
 import { useDispatch, useSelector } from "react-redux";
 import { TooltipContent, Tooltip, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 import { useToast } from "@/hooks";
@@ -13,6 +13,7 @@ import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { ChatbotMessageContentType, ChatbotMessageResponseType } from "@/features/MainChatBot/types";
 import {
   addMessage,
+  clearChatDetail,
   updateLastMessage,
   updateLastMessageContent,
   updateThreadId
@@ -28,6 +29,9 @@ interface LessonChatbotModalProps {
 }
 
 export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotModalProps) => {
+  // Early return before any hooks to avoid hook order issues
+  if (!isOpen) return null;
+
   const [input, setInput] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
@@ -43,6 +47,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
   const dispatch = useDispatch();
   const userId = getUserIdFromLocalStorage();
   const [remainingMessageCount, setRemainingMessageCount] = useState(0);
+  const [isChatbotUnlimited, setIsChatbotUnlimited] = useState(false);
 
   useEffect(() => {
     if (textAreaRef.current) {
@@ -56,14 +61,11 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
       chatContentRef.current.scrollTop = chatContentRef.current.scrollHeight;
     }
   }, [chatDetail?.messages]);
-
   useEffect(() => {
     if (isOpen) {
       getChabotUsage();
     }
   }, [isOpen]);
-
-  if (!isOpen) return null;
 
   const handleStopStreaming = () => {
     if (abortController) {
@@ -77,11 +79,17 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
     try {
       const data = await aiAPI.getLessonChatbotUsage();
 
+      setIsChatbotUnlimited(data.unlimited);
       setRemainingMessageCount(data.remaining_usage);
     } catch (error) {
       console.error("Error fetching chatbot usage:", error);
     }
   };
+
+  const handleNewChat = useCallback(() => {
+    dispatch(clearChatDetail());
+    setInput("");
+  }, [dispatch]);
 
   const formatAIMessageInputContent = (lessonDescription: string, lessonId: string, userInput: string) => {
     return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${userInput}`;
@@ -203,7 +211,12 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
       >
         <Tooltip>
           <TooltipTrigger asChild>
-            <Button type="button" variant="ghost" className="flex items-center space-x-2 hover:text-gray1">
+            <Button
+              type="button"
+              onClick={handleNewChat}
+              variant="ghost"
+              className="flex items-center space-x-2 hover:text-gray1"
+            >
               <SquarePen />
             </Button>
           </TooltipTrigger>
@@ -253,67 +266,63 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
         {/* Top Bar */}
         {renderChatTopBar()}
 
-        <div
-          id="chat-content"
-          className={`relative flex flex-col flex-grow px-2 pb-4 sm:px-4 sm:pb-2 pt-2 h-full transition-all duration-300 ml-0`}
-        >
-          {/* Chat Messages (Ensure content stays above the background) */}
-          <div className="relative z-10 flex flex-col max-h-[80%] overflow-y-scroll scrollbar-hide">
+        {/* Chat Messages Section */}
+        <div id="chat-content" className="flex flex-col flex-grow px-2 pt-2 overflow-hidden sm:px-4">
+          <div
+            className={`flex flex-col flex-1 overflow-y-auto scrollbar-hide ${
+              chatDetail?.messages.length === 0 ? "justify-center" : ""
+            }`}
+          >
             {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
           </div>
+        </div>
 
-          {/* Input Field */}
-          <div className="sticky z-10 flex flex-col px-2 gap-y-1 bottom-8">
-            <div id="chat-input" className="flex items-end mt-6 ">
-              <textarea
-                ref={textAreaRef}
-                rows={1}
-                placeholder="How can I help you?"
-                className={`flex-grow border shadow-sm max-h-[100px] min-h-11 px-4 py-2 overflow-y-auto bg-white rounded-lg focus:outline-none leading-relaxed`}
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" && !e.shiftKey) {
-                    e.preventDefault();
-                  }
-                }}
-                disabled={isLoadingResponse || isStreaming}
-              />
+        {/* Input Field Section */}
+        <div className="flex flex-col px-2 py-3 bg-white sm:px-4 gap-y-1">
+          <div id="chat-input" className="flex items-end ">
+            <textarea
+              ref={textAreaRef}
+              rows={1}
+              placeholder="How can I help you?"
+              className={`flex-grow border shadow-sm max-h-[100px] min-h-11 px-4 py-2 overflow-y-auto  rounded-lg focus:outline-none leading-relaxed`}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendMessageStream();
+                }
+              }}
+              disabled={isLoadingResponse || isStreaming}
+            />
 
-              {/* Button logic remains the same */}
-              {isLoadingResponse ? (
-                <div className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm cursor-not-allowed h-11 w-11 bg-gradient-to-tr from-appAIFrom/80 to-appAITo/80">
-                  <FaSpinner className="inline-block cursor-not-allowed icon-sm animate-spin icon-white" />
-                </div>
-              ) : isStreaming ? (
-                <button
-                  onClick={handleStopStreaming}
-                  className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
-                >
-                  <FaSquare className="w-4 h-4 icon-white" />
-                </button>
-              ) : (
-                <button
-                  className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
-                  onClick={handleSendMessageStream}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && !e.shiftKey) {
-                      e.preventDefault();
-                      handleSendMessageStream();
-                    }
-                  }}
-                >
-                  <ArrowUp className="w-11 h-11" />
-                </button>
-              )}
-            </div>
-            <div className="flex items-center text-xs text-gray3">
-              {remainingMessageCount > 1000 ? (
-                <span className="">&infin; messages</span>
-              ) : (
-                <span>{remainingMessageCount} messages left</span>
-              )}
-            </div>
+            {/* Button logic remains the same */}
+            {isLoadingResponse ? (
+              <div className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm cursor-not-allowed h-11 w-11 bg-gradient-to-tr from-appAIFrom/80 to-appAITo/80">
+                <Spinner className="w-4 h-4 text-white" loading={isLoadingResponse} />
+              </div>
+            ) : isStreaming ? (
+              <button
+                onClick={handleStopStreaming}
+                className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
+              >
+                <FaSquare className="w-4 h-4 icon-white" />
+              </button>
+            ) : (
+              <button
+                className="flex items-center justify-center p-3 ml-2 text-white rounded-lg shadow-sm h-11 w-11 bg-gradient-to-tr from-appAIFrom to-appAITo hover:opacity-80"
+                onClick={handleSendMessageStream}
+              >
+                <ArrowUp className="w-11 h-11" />
+              </button>
+            )}
+          </div>
+          <div className="flex items-center text-xs text-gray3">
+            {isChatbotUnlimited ? (
+              <span className="">&infin; messages</span>
+            ) : (
+              <span>{remainingMessageCount} messages left</span>
+            )}
           </div>
         </div>
       </div>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Button } from "@/components/ui/Button";
-import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
+// import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
@@ -98,7 +98,8 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
         // Use real API with pagination metadata
         const filters = {
           search: searchQuery || undefined,
-          status: selectedStatus !== "All" ? selectedStatus.toLowerCase() : undefined,
+          status:
+            selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
           type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
           sortBy: dateSortOrder !== "desc" ? "date" : "amount",
           order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
@@ -120,7 +121,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
           id: `${transaction.user.userId}-${index}-${page}`,
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
           email: transaction.user.email,
-          amount: `${(transaction.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
+          amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(transaction.date).toLocaleDateString(),
           status: transaction.status === "00" ? "Success" : "Failed",
           type:
@@ -251,7 +252,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
             <tr key={idx} className="text-base border-b border-gray5">
               <td className="py-1">
                 <div className="flex items-center gap-2">
-                  <Skeleton className="w-8 h-8 rounded-full" />
+                  {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
                   <div className="space-y-1">
                     <Skeleton className="w-32 h-4" />
                     <Skeleton className="w-40 h-3" />
@@ -285,16 +286,22 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
             <tr key={transaction.id} className="text-base border-b border-gray5">
               <td className="py-1">
                 <div className="flex items-center gap-2">
-                  <Avatar className="w-8 h-8">
+                  {/* <Avatar className="w-8 h-8">
                     <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  </Avatar> */}
                   <div>
                     <div className="font-medium">{transaction.name}</div>
                     <div className="text-sm text-muted-foreground">{transaction.email}</div>
                   </div>
                 </div>
               </td>
-              <td className="py-1">{transaction.date}</td>
+              <td className="py-1">
+                {new Date(transaction.date).toLocaleDateString("en-GB", {
+                  day: "2-digit",
+                  month: "2-digit",
+                  year: "numeric"
+                })}
+              </td>
               <td className="py-1 font-semibold">{transaction.amount}</td>
               <td className="py-1">
                 <div

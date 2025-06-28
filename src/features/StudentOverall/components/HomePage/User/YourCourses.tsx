@@ -22,7 +22,11 @@ export const YourCourseCard = (courseDetail: ICourse) => {
       {/* Left: Image */}
       <div className="w-2/5 max-w-[300px] h-full overflow-hidden border-r border-muted">
         <img
-          src={courseDetail?.courseImage}
+          src={
+            courseDetail.courseImage
+              ? `${courseDetail.courseImage}?timestamp=${new Date().getTime()}`
+              : "/src/assets/unavailable_image.jpg"
+          }
           alt={courseDetail?.courseName}
           className="object-cover w-full h-full"
           onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}

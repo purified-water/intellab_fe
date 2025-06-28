@@ -1,13 +1,20 @@
 import { Button } from "@/components/ui";
-import { Cpu, MemoryStick, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { JudgeAdjustmentCard, JudgeServiceOverview } from "../components";
 import { Skeleton } from "@/components/ui/shadcn";
 import { WorkerPod } from "../types/judgeTypes";
-import { formatUptime } from "@/utils";
+import { formatUptime, showToastDefault } from "@/utils";
 import { SEO } from "@/components/SEO";
 import { useGetJudgeServices, useGetPendingSubmissions } from "../hooks/useAdminJudge";
+import { WORKER_STATUS } from "../constants/workerService";
+import { NA_VALUE } from "@/constants";
+import { useEffect, useRef } from "react";
+import { useToast } from "@/hooks";
 
 export const JudgeManagementPage = () => {
+  const { toast } = useToast();
+  const previousWorkerCountRef = useRef<number | null>(null);
+
   const {
     data: workerData = [],
     isLoading: workerLoading,
@@ -30,16 +37,48 @@ export const JudgeManagementPage = () => {
   const workerServices: WorkerPod[] = workerData.map((worker: WorkerPod) => {
     return {
       ...worker,
-      uptime: formatUptime(worker.uptime),
-      containers: worker.containers.map((container) => ({
-        ...container,
-        usage: {
-          cpu: (parseInt(container.usage.cpu, 10) / 1_000_000_000).toFixed(2),
-          memory: (parseInt(container.usage.memory, 10) * 0.001024).toFixed(2)
-        }
-      }))
+      uptime: worker.containers.length > 0 ? formatUptime(worker.uptime) : "0s",
+      containers:
+        worker.containers.length > 0
+          ? worker.containers.map((container) => ({
+              ...container,
+              usage: {
+                cpu: (parseInt(container.usage.cpu, 10) / 1_000_000_000).toFixed(2),
+                memory: (parseInt(container.usage.memory, 10) * 0.001024).toFixed(2)
+              }
+            }))
+          : [{ usage: { cpu: NA_VALUE, memory: NA_VALUE } }]
     };
   });
+
+  useEffect(() => {
+    // Only show toast if this is not the initial load and worker data has actually changed
+    if (!workerLoading && !isWorkerRefetching && previousWorkerCountRef.current !== null) {
+      const currentWorkerCount = workerData.length;
+      const previousWorkerCount = previousWorkerCountRef.current;
+
+      if (currentWorkerCount > previousWorkerCount) {
+        const newWorkersCount = currentWorkerCount - previousWorkerCount;
+        showToastDefault({
+          toast: toast,
+          title: "Worker Created",
+          message: `${newWorkersCount} new worker${newWorkersCount > 1 ? "s" : ""} ${newWorkersCount > 1 ? "have" : "has"} been created`
+        });
+      } else if (currentWorkerCount < previousWorkerCount) {
+        const terminatedWorkersCount = previousWorkerCount - currentWorkerCount;
+        showToastDefault({
+          toast: toast,
+          title: "Worker Terminated",
+          message: `${terminatedWorkersCount} worker${terminatedWorkersCount > 1 ? "s" : ""} ${terminatedWorkersCount > 1 ? "have" : "has"} been terminated`
+        });
+      }
+    }
+
+    // Update the previous worker count after processing
+    if (!workerLoading && !isWorkerRefetching) {
+      previousWorkerCountRef.current = workerData.length;
+    }
+  }, [workerData, workerLoading, isWorkerRefetching, toast]);
 
   const renderTableHeader = () => (
     <thead className="text-left border-t border-b border-gray5">
@@ -51,10 +90,10 @@ export const JudgeManagementPage = () => {
           <div className="flex items-center">Status</div>
         </th>
         <th className="w-1/5">
-          <div className="flex items-center">CPU Usage</div>
+          <div className="flex items-center">CPU Usage (Core)</div>
         </th>
         <th className="w-1/5">
-          <div className="flex items-center">Memory Usage</div>
+          <div className="flex items-center">Memory Usage (MB)</div>
         </th>
         <th className="w-1/5">
           <div className="flex items-center">Uptime</div>
@@ -88,23 +127,33 @@ export const JudgeManagementPage = () => {
         : workerServices.map((worker) => (
             <tr key={worker.metadata.name} className="text-base border-b border-gray5">
               <td className="w-1/5 py-4 pr-2 truncate max-w-1/5">{worker.metadata.name}</td>
-              <td className={`w-1/5 py-4 font-medium ${worker.status == "Running" ? "text-appEasy" : "text-appHard"}`}>
+              <td
+                className={`w-1/5 py-4 font-medium ${
+                  worker.status == WORKER_STATUS.RUNNING
+                    ? "text-appEasy"
+                    : worker.status === WORKER_STATUS.CREATING
+                      ? "text-appMedium"
+                      : "text-appHard"
+                }`}
+              >
                 {worker.status}
               </td>
-              <td className="w-1/5 py-4">
-                <div className="flex items-center">
-                  <Cpu className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {worker.containers[0]?.usage.cpu}{" "}
-                  {parseFloat(worker.containers[0]?.usage.cpu) === 1 ? "Core" : "Cores"}
+              <td className="w-1/5 px-12 py-4">
+                <div className="flex items-center justify-end">
+                  {/* <Cpu className="w-4 h-4 mr-2 text-muted-foreground" /> */}
+                  {worker.containers[0]?.usage.cpu}
+                </div>
+              </td>
+              <td className="w-1/5 py-4 px-7">
+                <div className="flex items-center justify-end">
+                  {/* <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" /> */}
+                  {worker.containers[0]?.usage.memory}
                 </div>
               </td>
               <td className="w-1/5 py-4">
-                <div className="flex items-center">
-                  <MemoryStick className="w-4 h-4 mr-2 text-muted-foreground" />
-                  {worker.containers[0]?.usage.memory} MB
-                </div>
+                {worker.uptime}
+                {worker.containers.length > 0 ? " ago" : ""}
               </td>
-              <td className="w-1/5 py-4">{worker.uptime}</td>
             </tr>
           ))}
     </tbody>

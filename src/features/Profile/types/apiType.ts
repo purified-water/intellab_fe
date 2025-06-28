@@ -1,4 +1,12 @@
-import { TApiResponse, TGetApiParams, IUser, TProgress, TRankLanguages, ICompletedCourse } from "@/types";
+import {
+  TApiResponse,
+  TGetApiParams,
+  IUser,
+  TProgress,
+  TRankLanguages,
+  ICompletedCourse,
+  TPostApiParams
+} from "@/types";
 import { SendSubmissionType } from "@/features/Problem/types/SubmissionType";
 
 type TGetProfilePublicResponse = TApiResponse<IUser>;
@@ -15,7 +23,11 @@ type TGetProfileResponse = TApiResponse<IUser>;
 
 type TGetProfileMeResponse = IUser;
 
-type TGetSubmissionListMeResponse = SendSubmissionType[];
+type TGetSubmissionListMeResponse = {
+  number: number;
+  totalPages: number;
+  content: SendSubmissionType[];
+};
 
 type TGetCompletedCourseListMeResponse = TApiResponse<ICompletedCourse[]>;
 
@@ -24,6 +36,10 @@ type TGetProfileMeParams = TGetApiParams<undefined, IUser>;
 type TGetMyPointResponse = number;
 
 type TGetMyPointParams = TGetApiParams<undefined, number>;
+
+type TSetPublicProfileParams = TPostApiParams<null, { isPublic: boolean }, IUser>;
+
+type TSetPublicProfileResponse = TApiResponse<IUser>;
 
 export type {
   TGetProfilePublicResponse,
@@ -37,5 +53,7 @@ export type {
   TGetCompletedCourseListMeResponse,
   TGetProfileMeParams,
   TGetMyPointResponse,
-  TGetMyPointParams
+  TGetMyPointParams,
+  TSetPublicProfileParams,
+  TSetPublicProfileResponse
 };

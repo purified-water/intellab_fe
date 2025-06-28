@@ -35,7 +35,7 @@ export const AddSummaryMarkdown = ({ value, onChange }: AddSummaryMarkdownProps)
     setLoading(true);
     try {
       // Format course name to remove special characters
-      const formattedCourseName = courseData.courseName.replace(/[^a-zA-Z0-9]/g, " ").trim();
+      const formattedCourseName = courseData.courseName.replace(/[^a-zA-Z0-9&:]/g, " ").trim();
 
       // Call AI API to generate course summary
       const response = await aiAPI.getCourseSummary(formattedCourseName, courseData.courseId, "true");
