@@ -9,7 +9,7 @@ const TABS = {
 };
 
 export function TransactionManagementPage() {
-  const [activeTab, setActiveTab] = useState(TABS.PURCHASED);
+  const [activeTab, setActiveTab] = useState(TABS.TRANSACTION_LIST);
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
@@ -43,7 +43,7 @@ export function TransactionManagementPage() {
 
   return (
     <div className="container max-w-[1200px] mx-auto space-y-8 mb-12">
-      <h1 className="mx-4 text-4xl font-bold text-appPrimary">Transaction Management</h1>
+      <h1 className="mx-4 text-4xl font-bold text-appPrimary">Payment Management</h1>
 
       <div className="space-y-3 justify-items-center">
         {/* Global Search Bar */}
@@ -55,25 +55,24 @@ export function TransactionManagementPage() {
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 max-w-[400px] bg-transparent h-auto p-0 rounded-none">
               <TabsTrigger
-                value={TABS.PURCHASED}
-                className="rounded-none data-[state=active]:shadow-none data-[state=active]:text-appAccent data-[state=active]:border-b-2 data-[state=active]:border-appAccent py-2 px-3 font-semibold text-xl"
-              >
-                Purchases
-              </TabsTrigger>
-              <TabsTrigger
                 value={TABS.TRANSACTION_LIST}
                 className="rounded-none data-[state=active]:shadow-none data-[state=active]:text-appAccent data-[state=active]:border-b-2 data-[state=active]:border-appAccent py-2 px-3 font-semibold text-xl"
               >
-                Transaction List
+                Payments
+              </TabsTrigger>
+              <TabsTrigger
+                value={TABS.PURCHASED}
+                className="rounded-none data-[state=active]:shadow-none data-[state=active]:text-appAccent data-[state=active]:border-b-2 data-[state=active]:border-appAccent py-2 px-3 font-semibold text-xl"
+              >
+                Top Purchases
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value={TABS.PURCHASED} className="">
-              {activeTab === TABS.PURCHASED && renderTabContent()}
-            </TabsContent>
-
             <TabsContent value={TABS.TRANSACTION_LIST} className="">
               {activeTab === TABS.TRANSACTION_LIST && renderTabContent()}
+            </TabsContent>
+            <TabsContent value={TABS.PURCHASED} className="">
+              {activeTab === TABS.PURCHASED && renderTabContent()}
             </TabsContent>
           </Tabs>
         </div>

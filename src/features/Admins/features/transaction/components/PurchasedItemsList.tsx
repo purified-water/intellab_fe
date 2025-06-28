@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Button } from "@/components/ui/Button";
-import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
+// import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
@@ -35,7 +35,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
   const [searchQuery, setSearchQuery] = useState(externalSearchQuery);
   const [selectedType, setSelectedType] = useState<"Free" | "Plan" | "All">("All");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
-  const [dateSortOrder, setDateSortOrder] = useState<"asc" | "desc">("desc");
+  const [dateSortOrder, _setDateSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
@@ -120,7 +120,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
         formattedItems = apiResponse.content.map((item) => ({
           name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
           email: item.user.email,
-          amount: `${(item.amount * 25000).toLocaleString()} VND`, // Convert USD to VND (approximate rate)
+          amount: `${item.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
           date: new Date(item.date).toLocaleDateString(),
           type: item.type?.toUpperCase() === "FREE" || item.type === "Free" ? "Free" : ("Plan" as "Free" | "Plan")
         }));
@@ -169,7 +169,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
           <th className="py-4">
             <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
           </th>
-          <th className="py-4">
+          {/* <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.DATE}</span>
               <Button
@@ -181,7 +181,7 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
                 {dateSortOrder === "asc" ? "↑" : "↓"}
               </Button>
             </div>
-          </th>
+          </th> */}
           <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.AMOUNT}</span>
@@ -223,16 +223,16 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
             <tr key={idx} className="text-base border-b border-gray5">
               <td className="py-1">
                 <div className="flex items-center gap-2">
-                  <Skeleton className="w-8 h-8 rounded-full" />
+                  {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
                   <div className="space-y-1">
                     <Skeleton className="w-32 h-4" />
                     <Skeleton className="w-40 h-3" />
                   </div>
                 </div>
               </td>
-              <td className="py-1">
+              {/* <td className="py-1">
                 <Skeleton className="w-20 h-4" />
-              </td>
+              </td> */}
               <td className="py-1">
                 <Skeleton className="w-16 h-4" />
               </td>
@@ -254,16 +254,16 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
             <tr key={idx} className="text-base border-b border-gray5">
               <td className="py-1">
                 <div className="flex items-center gap-2">
-                  <Avatar className="w-8 h-8">
+                  {/* <Avatar className="w-8 h-8">
                     <AvatarFallback>{item.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  </Avatar> */}
                   <div>
                     <div className="font-medium">{item.name}</div>
                     <div className="text-sm text-muted-foreground">{item.email}</div>
                   </div>
                 </div>
               </td>
-              <td className="py-1">{item.date}</td>
+              {/* <td className="py-1">{item.date}</td> */}
               <td className="py-1 font-semibold">{item.amount}</td>
               <td className="py-1">
                 <div
