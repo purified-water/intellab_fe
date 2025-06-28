@@ -8,7 +8,7 @@ export const EmptyList = ({ message, size = "md", className }: EmptyListProps) =
   return (
     <div className={`flex flex-col items-center justify-center w-full py-8 ${className}`}>
       <img src="/assets/empty.svg" alt="Empty list" className={sizeClass} />
-      <p className="text-base text-muted-foreground">{message}</p>
+      <p className="text-base text-center text-muted-foreground">{message}</p>
     </div>
   )
 }

@@ -139,6 +139,8 @@ export const LoginPage = () => {
         }
         console.error("Login error", error);
       }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 

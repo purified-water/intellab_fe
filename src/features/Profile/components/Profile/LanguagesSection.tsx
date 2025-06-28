@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { userAPI } from "@/lib/api";
 import { TRankLanguages } from "@/types";
 import { useToast } from "@/hooks/use-toast";
@@ -7,10 +7,11 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 type LanguagesSectionProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const LanguagesSection = (props: LanguagesSectionProps) => {
-  const { userId } = props;
+export const LanguagesSection = memo(function LanguagesSection(props: LanguagesSectionProps) {
+  const { userId, isPublic } = props;
 
   const [loading, setLoading] = useState(false);
   const [languages, setLanguages] = useState<TRankLanguages | null>(null);
@@ -35,8 +36,10 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
   };
 
   useEffect(() => {
-    getRankLanguagesAPI();
-  }, [userId]);
+    if (isPublic) {
+      getRankLanguagesAPI();
+    }
+  }, [userId, isPublic]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
@@ -71,7 +74,7 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
   if (loading) {
     content = renderSkeleton();
   } else {
-    if (languages && Object.keys(languages).length > 0) {
+    if (isPublic && languages && Object.keys(languages).length > 0) {
       content = renderStatistic();
     } else {
       content = renderEmpty();
@@ -87,4 +90,4 @@ export const LanguagesSection = (props: LanguagesSectionProps) => {
       </div>
     </>
   );
-};
+});

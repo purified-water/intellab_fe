@@ -25,7 +25,6 @@ import { RootState } from "@/redux/rootReducer";
 import { setCreateCourse, updateLessonQuiz } from "@/redux/createCourse/createCourseSlice";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
-
 interface LessonFormProps {
   onSave: (data: CreateLessonSchema) => void;
   onCancel: () => void;
@@ -50,6 +49,7 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       dispatch(
         updateLessonQuiz({
           lessonId: selectedLesson?.lessonId || "",
+          isQuizVisible: lessonQuizFromServer.isQuizVisible,
           lessonQuiz: lessonQuizFromServer
         })
       );
@@ -78,7 +78,8 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       return {
         ...selectedLesson,
         // Only use quiz data if hasQuiz is true, otherwise set to undefined
-        lessonQuiz: selectedLesson.hasQuiz
+        hasQuiz: !!lessonQuizFromServer?.isQuizVisible,
+        lessonQuiz: lessonQuizFromServer?.isQuizVisible
           ? lessonQuizFromServer || selectedLesson.lessonQuiz || DEFAULT_QUIZ
           : undefined
       };
@@ -96,7 +97,7 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
       lessonProblemId: "",
       lessonOrder: 0
     };
-  }, [lessonActionType, selectedLesson, lessonInCreation.lessonId]);
+  }, [lessonActionType, selectedLesson, lessonInCreation.lessonId, lessonQuizFromServer]);
 
   // Initialize form with Zod validation
   const form = useForm<CreateLessonSchema>({
@@ -123,11 +124,21 @@ export const LessonForm = ({ onSave, onCancel, lessonId, lessonActionType = "cre
     // When hasQuiz is turned off, set lessonQuiz to undefined to avoid validation errors
     if (!hasQuiz) {
       form.setValue("lessonQuiz", undefined);
-    } else if (!form.getValues("lessonQuiz")) {
-      // When hasQuiz is turned on and lessonQuiz is undefined, set default quiz
-      form.setValue("lessonQuiz", DEFAULT_QUIZ);
+    } else {
+      // When hasQuiz is turned on, determine what quiz data to use
+      let quizDataToUse = DEFAULT_QUIZ;
+      console.log("lesson from server", lessonQuizFromServer);
+      // Priority: 1. Quiz from server, 2. Quiz from selected lesson, 3. Default quiz
+      if (lessonQuizFromServer) {
+        quizDataToUse = lessonQuizFromServer;
+      } else if (selectedLesson?.lessonQuiz) {
+        quizDataToUse = selectedLesson.lessonQuiz;
+      }
+
+      // Always set the quiz data when toggling on
+      form.setValue("lessonQuiz", quizDataToUse);
     }
-  }, [hasQuiz, form]);
+  }, [hasQuiz, form, lessonQuizFromServer, selectedLesson?.lessonQuiz]);
 
   // Modified onSubmit handler to process form data before submission
   const handleSubmit = async (data: CreateLessonSchema) => {

@@ -158,6 +158,7 @@ export const adminCourseAPI = {
       totalQuestions: data.questionList.length,
       displayedQuestions: data.questionsPerExercise,
       requiredCorrectQuestions: data.passingQuestions,
+      isQuizVisible: data.isQuizVisible,
       quizQuestions: data.questionList.map((question: QuestionResponse) => ({
         questionId: question.questionId,
         questionTitle: question.questionContent,

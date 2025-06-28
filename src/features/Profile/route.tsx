@@ -21,7 +21,14 @@ const ProfileRoute: RouteObject[] = [
           </ProtectedRoute>
         )
       },
-      { path: "submissions", element: <ViewAllSubmissionPage /> },
+      {
+        path: "submissions",
+        element: (
+          <ProtectedRoute>
+            <ViewAllSubmissionPage />
+          </ProtectedRoute>
+        )
+      },
       {
         path: "update-access-token",
         element: (

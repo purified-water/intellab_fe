@@ -74,7 +74,7 @@ export const AddMarkdownContent = ({
     }
 
     return (
-      <div className="w-full h-[600px] p-2 border rounded-lg max-h-[2000px] overflow-auto bg-gray-50">
+      <div className="w-full h-[600px] p-2 border rounded-lg max-h-[2000px] overflow-auto">
         <RenderMarkdown content={value} />
       </div>
     );

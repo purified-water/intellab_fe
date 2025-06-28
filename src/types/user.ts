@@ -18,6 +18,8 @@ interface IUser {
   userUid?: string;
   premiumType?: string;
   packageDuration?: string;
+
+  public: boolean;
 }
 
 export type { IUser };

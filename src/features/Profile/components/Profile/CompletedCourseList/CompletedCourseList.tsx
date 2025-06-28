@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { courseAPI } from "@/lib/api";
@@ -9,10 +9,11 @@ import { EmptyList, Separator } from "@/components/ui";
 
 type CompletedCourseListProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const CompletedCourseList = (props: CompletedCourseListProps) => {
-  const { userId } = props;
+export const CompletedCourseList = memo(function CompletedCourseList(props: CompletedCourseListProps) {
+  const { userId, isPublic } = props;
 
   const toast = useToast();
 
@@ -40,8 +41,10 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   };
 
   useEffect(() => {
-    getCompletedCourseListMeAPI();
-  }, [userId]);
+    if (isPublic) {
+      getCompletedCourseListMeAPI();
+    }
+  }, [userId, isPublic]);
 
   const renderSkeleton = () => {
     const placeholder = [1, 2, 3];
@@ -72,7 +75,7 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
   let content = null;
   if (loading) {
     content = renderSkeleton();
-  } else if (courses.length > 0) {
+  } else if (isPublic && courses.length > 0) {
     content = renderList();
   } else {
     content = renderEmpty();
@@ -85,4 +88,4 @@ export const CompletedCourseList = (props: CompletedCourseListProps) => {
       {content}
     </div>
   );
-};
+});

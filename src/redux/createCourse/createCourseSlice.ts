@@ -29,11 +29,15 @@ const createCourseSlice = createSlice({
       state,
       action: PayloadAction<{
         lessonId: string;
+        isQuizVisible: boolean;
         lessonQuiz: CreateCourseSchemaWithCurrentStep["courseLessons"][number]["lessonQuiz"];
       }>
     ) => {
       const index = state.courseLessons.findIndex((l) => l.lessonId === action.payload.lessonId);
       if (index !== -1) {
+        if (state.courseLessons[index].lessonQuiz) {
+          state.courseLessons[index].lessonQuiz.isQuizVisible = action.payload.isQuizVisible;
+        }
         state.courseLessons[index].lessonQuiz = action.payload.lessonQuiz;
       }
     },

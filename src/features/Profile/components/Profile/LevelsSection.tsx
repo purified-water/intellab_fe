@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { TProgress } from "@/types";
 import { userAPI } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -7,10 +8,11 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 
 type LevelsSectionProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const LevelsSection = (props: LevelsSectionProps) => {
-  const { userId } = props;
+export const LevelsSection = memo(function LevelsSection(props: LevelsSectionProps) {
+  const { userId, isPublic } = props;
 
   const [loading, setLoading] = useState(false);
   const [level, setLevels] = useState<TProgress | null>(null);
@@ -35,26 +37,24 @@ export const LevelsSection = (props: LevelsSectionProps) => {
   };
 
   useEffect(() => {
-    getProgressProblemAPI();
-  }, [userId]);
+    if (isPublic) {
+      getProgressProblemAPI();
+    }
+  }, [userId, isPublic]);
 
   const renderSkeleton = () => {
     const skeletons = [1, 2, 3]; // Number of skeleton items to render
 
-    return (
-      <>
-        <div className="w-full my-4 border-t-2 border-gray5"></div>
-        <div className="flex flex-col min-w-full">
-          <div className="text-2xl font-semibold text-black1">Levels</div>
-          {skeletons.map((_, index) => (
-            <div key={index} className="flex items-center justify-between pt-3">
-              <Skeleton className="h-6 w-2/3" />
-              <Skeleton className="h-6 w-1/4" />
-            </div>
-          ))}
-        </div>
-      </>
-    );
+    return skeletons.map((_, index) => (
+      <div key={index} className="flex items-center justify-between pt-3">
+        <Skeleton className="h-6 w-2/3" />
+        <Skeleton className="h-6 w-1/4" />
+      </div>
+    ));
+  };
+
+  const renderEmpty = () => {
+    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
   };
 
   const renderStatistic = () => {
@@ -68,29 +68,31 @@ export const LevelsSection = (props: LevelsSectionProps) => {
       { level: "Hard", solved: hard.solved }
     ];
 
-    return (
-      <>
-        <div className="w-full my-4 border-t-2 border-gray5"></div>
-        <div className="flex flex-col min-w-full">
-          <div className="text-xl font-semibold text-black1">Levels</div>
-          {levels.map((item, index) => (
-            <div key={index} className="flex items-center justify-between pt-3 text-base text-black1">
-              <p>{item.level}</p>
-              <p>{item.solved}</p>
-            </div>
-          ))}
-        </div>
-      </>
-    );
+    return levels.map((item, index) => (
+      <div key={index} className="flex items-center justify-between pt-3 text-base text-black1">
+        <p>{item.level}</p>
+        <p>{item.solved}</p>
+      </div>
+    ));
   };
 
   let content = null;
   if (loading) {
     content = renderSkeleton();
   } else {
-    if (level && Object.keys(level).length > 0) {
+    if (isPublic && level && Object.keys(level).length > 0) {
       content = renderStatistic();
+    } else {
+      content = renderEmpty();
     }
   }
-  return content;
-};
+  return (
+    <>
+      <div className="w-full my-4 border-t-2 border-gray5"></div>
+      <div className="flex flex-col min-w-full">
+        <div className="text-xl font-semibold text-black1">Levels</div>
+        {content}
+      </div>
+    </>
+  );
+});

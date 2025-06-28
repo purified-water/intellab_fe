@@ -79,6 +79,7 @@ const DEFAULT_CREATE_COURSE_LESSONS = [
 const DEFAULT_QUIZ: CreateQuizSchema = {
   totalQuestions: 1,
   displayedQuestions: 1,
+  isQuizVisible: true,
   requiredCorrectQuestions: 1,
   quizQuestions: [
     {
