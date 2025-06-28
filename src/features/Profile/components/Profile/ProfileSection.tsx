@@ -156,9 +156,6 @@ export const ProfileSection = memo(function ProfileSection(props: ProfileSection
                 </span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-gray3">
-                  {isPublicProfile ? "Visible to everyone" : "Hidden from public"}
-                </span>
                 <Switch
                   checked={isPublicProfile}
                   onCheckedChange={handleToggleProfileVisibility}

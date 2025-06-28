@@ -72,17 +72,19 @@ export const SubmissionList = memo(function SubmissionList(props: SubmissionList
     );
   };
 
-  const renderEmpty = () => {
-    return <EmptyList message="No submissions yet!" size="sm" />;
+  const renderEmpty = (message: string) => {
+    return <EmptyList message={message} size="sm" />;
   };
 
   let content = null;
   if (loading) {
     content = renderSkeleton();
+  } else if (!isPublic && !loading) {
+    content = renderEmpty("This is a private profile. Submissions are only visible to the user.");
   } else if (isPublic && submissions.length > 0) {
     content = renderList();
   } else {
-    content = renderEmpty();
+    content = renderEmpty("No submissions found. Try solving some problems!");
   }
 
   const renderViewAllSubmissions = () => {

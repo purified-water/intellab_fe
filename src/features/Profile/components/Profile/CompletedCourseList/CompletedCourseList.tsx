@@ -68,17 +68,19 @@ export const CompletedCourseList = memo(function CompletedCourseList(props: Comp
     );
   };
 
-  const renderEmpty = () => {
-    return <EmptyList message="Finish your course to see your accomplishments here!" size="sm" />;
+  const renderEmpty = (message: string) => {
+    return <EmptyList message={message} size="sm" />;
   };
 
   let content = null;
   if (loading) {
     content = renderSkeleton();
+  } else if (!isPublic && !loading) {
+    content = renderEmpty("This is a private profile. Completed courses are only visible to the user.");
   } else if (isPublic && courses.length > 0) {
     content = renderList();
   } else {
-    content = renderEmpty();
+    content = renderEmpty("Finish courses to see them here!");
   }
 
   return (

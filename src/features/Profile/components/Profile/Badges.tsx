@@ -9,14 +9,14 @@ interface BadgesProps {
 }
 
 export const Badges = memo(function Badges({ badges, isLoading, isPublic }: BadgesProps) {
-  const renderEmpty = () => {
-    return <EmptyList message="No badges earned yet. Complete courses and challenges to earn badges!" size="sm" />;
+  const renderEmpty = (message: string) => {
+    return <EmptyList message={message} size="sm" />;
   };
 
   const renderSkeleton = () => {
     return (
       <div className="flex-row flex-wrap items-center justify-start">
-        <Skeleton className="h-20 lg:h-[80px] xl:h-24 rounded-full" />
+        <Skeleton className="size-20 lg:size-[80px] xl:size-24 rounded-full" />
       </div>
     );
   };
@@ -39,12 +39,14 @@ export const Badges = memo(function Badges({ badges, isLoading, isPublic }: Badg
   };
 
   let content = null;
-  if (isLoading === true) {
+  if (isLoading) {
     content = renderSkeleton();
-  } else if (isPublic && badges.length > 0) {
+  } else if (!isPublic) {
+    content = renderEmpty("This is a private profile. Badges are only visible to the user.");
+  } else if (badges.length > 0) {
     content = renderBadges();
   } else {
-    content = renderEmpty();
+    content = renderEmpty("Study and solve problems to earn badges!");
   }
 
   return (

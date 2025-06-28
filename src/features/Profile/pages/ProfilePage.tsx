@@ -17,8 +17,8 @@ const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module
 
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
-  const [isPublicProfile, setIsPublicProfile] = useState(false);
-  const { data: badges = [], isPending: isLoadingBadges, isLoading } = useGetBadges(id!, isPublicProfile);
+  const [isPublicProfile, setIsPublicProfile] = useState(true);
+  const { data: badges = [], isLoading: isLoadingBadges } = useGetBadges(id!, isPublicProfile);
 
   return (
     <div className="bg-gray6/50">
@@ -34,7 +34,7 @@ export const ProfilePage = () => {
         </div>
 
         <div className="flex flex-col w-full min-h-screen ml-0 space-y-2 sm:ml-2 lg:space-y-4 lg:ml-4">
-          <Badges badges={badges} isLoading={isLoadingBadges || isLoading} isPublic={isPublicProfile} />
+          <Badges badges={badges} isLoading={isLoadingBadges} isPublic={isPublicProfile} />
           <SubmissionList userId={id!} isPublic={isPublicProfile} />
           <CompletedCourseList userId={id!} isPublic={isPublicProfile} />
         </div>
