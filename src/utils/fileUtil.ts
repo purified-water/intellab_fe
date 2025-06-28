@@ -10,6 +10,10 @@ const imageURLToFile = async (url: string, fileName = "thumbnail.png"): Promise<
     console.error("--> Error fetching course image:", error);
 
     const fallbackResponse = await fetch(UNAVAILABLE_IMAGE, { cache: "no-store" });
+    if (!fallbackResponse.ok) {
+      console.error("--> Error fetching fallback image:", fallbackResponse.statusText);
+      throw new Error("Failed to fetch fallback image");
+    }
     const fallbackData = await fallbackResponse.blob();
     const mimeType = fallbackData.type || "image/png";
     return new File([fallbackData], fileName, { type: mimeType });

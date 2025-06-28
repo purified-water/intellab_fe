@@ -72,7 +72,6 @@ export const ProfileSection = memo(function ProfileSection(props: ProfileSection
       body: { isPublic: !isPublicProfile },
       onStart: async () => setIsToggling(true), // Set toggling state to true to prevent multiple clicks
       onSuccess: async () => {
-        dispatch(setReduxUser({ ...reduxUser, public: !isPublicProfile }));
         setUser((prevUser) => (prevUser ? { ...prevUser, public: !isPublicProfile } : null));
         dispatch(setReduxUser({ ...reduxUser, public: !isPublicProfile }));
         showToastSuccess({
