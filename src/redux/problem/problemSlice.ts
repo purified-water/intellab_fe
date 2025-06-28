@@ -101,9 +101,14 @@ const userCodeSlice = createSlice({
   }
 });
 
+// Default empty code object - stable reference to prevent unnecessary re-renders
+const DEFAULT_CODE_DATA = { code: "", language: "" };
+
 // Selector to retrieve the code by problemId
-export const selectCodeByProblemId = (state: { userCode: UserCodeState }, problemId: string) =>
-  state.userCode.codeByProblemId[problemId] || { code: "", language: "" };
+export const selectCodeByProblemId = (state: { userCode: UserCodeState }, problemId: string) => {
+  const codeData = state.userCode.codeByProblemId[problemId];
+  return codeData || DEFAULT_CODE_DATA;
+};
 
 export const { setPage, filterProblems, resetFilters } = problemSlice.actions;
 export const { saveCode } = userCodeSlice.actions;

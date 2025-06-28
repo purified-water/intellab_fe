@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   ProfileSection,
@@ -17,6 +18,7 @@ const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module
 export const ProfilePage = () => {
   const { id } = useParams<{ id: string }>();
   const { data: badges = [], isPending: isLoadingBadges, isLoading } = useGetBadges(id!);
+  const [isPublicProfile, setIsPublicProfile] = useState(false);
 
   return (
     <div className="bg-gray6/50">
@@ -24,17 +26,17 @@ export const ProfilePage = () => {
         <div className="flex flex-col space-y-4 items-start w-full lg:w-[470px] h-fit h:full mb-10 lg:mb-20">
           <SubscriptionCard userId={id!} loading={false} />
           <div className="flex flex-col items-start w-full p-6 mb-10 bg-white rounded-lg sm:p-6 h-fit h:full lg:mb-20">
-            <ProfileSection userId={id!} />
-            <StatsSection userId={id!} />
-            <LanguagesSection userId={id!} />
-            <LevelsSection userId={id!} />
+            <ProfileSection userId={id!} onProfileFetched={(isPublic) => setIsPublicProfile(isPublic)} />
+            <StatsSection userId={id!} isPublic={isPublicProfile} />
+            <LanguagesSection userId={id!} isPublic={isPublicProfile} />
+            <LevelsSection userId={id!} isPublic={isPublicProfile} />
           </div>
         </div>
 
         <div className="flex flex-col w-full min-h-screen ml-0 space-y-2 sm:ml-2 lg:space-y-4 lg:ml-4">
-          <Badges badges={badges} isLoading={isLoadingBadges || isLoading} />
-          <SubmissionList userId={id!} />
-          <CompletedCourseList userId={id!} />
+          <Badges badges={badges} isLoading={isLoadingBadges || isLoading} isPublic={isPublicProfile} />
+          <SubmissionList userId={id!} isPublic={isPublicProfile} />
+          <CompletedCourseList userId={id!} isPublic={isPublicProfile} />
         </div>
       </div>
 

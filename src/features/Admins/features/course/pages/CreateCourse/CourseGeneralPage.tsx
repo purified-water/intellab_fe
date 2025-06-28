@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { createCourseSchema } from "../../schemas";
@@ -64,8 +64,6 @@ export const CourseGeneralPage = () => {
   const { goToNextStep } = useCourseWizardStep();
   const { isEditingCourse } = useEditingCourse();
 
-  const [courseThumbnailFile, setCourseThumbnailFile] = useState<File | null>(null);
-
   // Initialize form with Zod validation
   const form = useForm<CourseGeneralSchema>({
     resolver: zodResolver(courseGeneralSchema),
@@ -83,21 +81,15 @@ export const CourseGeneralPage = () => {
     const getCourseThumbnailFile = async () => {
       if (formData.courseThumbnailUrl) {
         const image = await imageURLToFile(formData.courseThumbnailUrl, formData.courseName);
-        setCourseThumbnailFile(image);
+        form.setValue("courseThumbnail", image);
+        dispatch(setCreateCourse({ courseThumbnail: image }));
       }
     };
-    getCourseThumbnailFile();
-  }, []);
 
-  // Handle showing the course thumbnail file in the form when reloading the page
-  useEffect(() => {
-    if (courseThumbnailFile) {
-      if (_.isEmpty(form.getValues("courseThumbnail"))) {
-        form.setValue("courseThumbnail", courseThumbnailFile);
-        dispatch(setCreateCourse({ courseThumbnail: courseThumbnailFile }));
-      }
+    if (!(formData.courseThumbnail instanceof File)) {
+      getCourseThumbnailFile();
     }
-  }, [courseThumbnailFile]);
+  }, []);
 
   const handleEditCourse = async (data: CourseGeneralSchema, formatPayload: CreateCourseGeneralStepPayload) => {
     try {

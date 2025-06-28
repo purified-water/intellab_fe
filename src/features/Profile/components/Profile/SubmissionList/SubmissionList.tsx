@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, memo } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { problemAPI } from "@/lib/api";
@@ -11,10 +11,11 @@ import { EmptyList, Separator } from "@/components/ui";
 
 type SubmissionListProps = {
   userId: string;
+  isPublic: boolean;
 };
 
-export const SubmissionList = (props: SubmissionListProps) => {
-  const { userId } = props;
+export const SubmissionList = memo(function SubmissionList(props: SubmissionListProps) {
+  const { userId, isPublic } = props;
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -27,13 +28,9 @@ export const SubmissionList = (props: SubmissionListProps) => {
   const getSubmissionListMeAPI = async () => {
     setLoading(true);
     try {
-      const response = await problemAPI.getSubmissionListMe(userId);
-      let submissionList: SendSubmissionType[] = [];
-      if (response) {
-        submissionList = response.slice(0, 30);
-      }
-
-      setSubmissions(submissionList);
+      const response = await problemAPI.getSubmissionListMe(userId, 0, 30);
+      const { content } = response;
+      setSubmissions(content);
     } catch (error: unknown) {
       if (error instanceof Error) {
         showToastError({ toast: toast.toast, message: error.message ?? "Error getting submission list" });
@@ -44,8 +41,10 @@ export const SubmissionList = (props: SubmissionListProps) => {
   };
 
   useEffect(() => {
-    getSubmissionListMeAPI();
-  }, [userId]);
+    if (isPublic) {
+      getSubmissionListMeAPI();
+    }
+  }, [userId, isPublic]);
 
   const handleViewAllSubmissionsClick = () => {
     navigate("/profile/submissions");
@@ -80,7 +79,7 @@ export const SubmissionList = (props: SubmissionListProps) => {
   let content = null;
   if (loading) {
     content = renderSkeleton();
-  } else if (submissions.length > 0) {
+  } else if (isPublic && submissions.length > 0) {
     content = renderList();
   } else {
     content = renderEmpty();
@@ -104,4 +103,4 @@ export const SubmissionList = (props: SubmissionListProps) => {
       {content}
     </div>
   );
-};
+});

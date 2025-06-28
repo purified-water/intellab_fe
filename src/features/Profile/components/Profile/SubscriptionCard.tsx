@@ -1,4 +1,4 @@
-import React from "react";
+import { memo } from "react";
 import { cn } from "@/lib/utils";
 import { BookOpen, Code, Crown } from "lucide-react";
 import { useSelector } from "react-redux";
@@ -36,7 +36,7 @@ const planDetails = {
   }
 };
 
-export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, loading }) => {
+export const SubscriptionCard = memo(function SubscriptionCard({ userId, loading }: SubscriptionCardProps) {
   const reduxUser = useSelector((state: RootState) => state.user.user);
   const isMe = userId === reduxUser?.userId;
   const navigate = useNavigate();
@@ -45,7 +45,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
   if (!reduxPremiumStatus || reduxPremiumStatus.planType === PREMIUM_PACKAGES.RESPONSE.FREE) return null;
 
   const userPlan = reduxPremiumStatus?.planType as keyof typeof planDetails;
-  // Get the plan details based on the user's plan
   const { title, color, icon } = planDetails[userPlan] || planDetails["free"];
   const planEndDate = reduxPremiumStatus?.endDate;
 
@@ -68,7 +67,6 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
       <div className={cn("px-4 py-5 bg-gradient-to-tr rounded-t-lg", color)}>
         <div className="flex items-center justify-between pr-2">
           <div className="flex flex-col">
-            {/* <p className={`text-xs ${type === "course" ? "text-appHard" : type === "algorithm" ? "text-appSecondary" : "text-appPrimary"} `}>Current Plan</p> */}
             <p className="text-xs text-gray2">Current Plan</p>
             <h2 className="text-xl font-bold">{title}</h2>
           </div>
@@ -84,4 +82,4 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({ userId, load
       </div>
     </div>
   );
-};
+});

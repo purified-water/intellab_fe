@@ -5,19 +5,29 @@ import { SendSubmissionType } from "@/features/Problem/types/SubmissionType";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, CircleChevronDown } from "lucide-react";
+import { Button } from "@/components/ui";
+import { Spinner } from "@/components/ui";
 
 export function ViewAllSubmissionList() {
   const toast = useToast();
   const userId = getUserIdFromLocalStorage();
 
   const [submissions, setSubmissions] = useState<SendSubmissionType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState<number | undefined>(undefined);
 
-  const getSubmissionListMeAPI = async () => {
+  const getSubmissionListMeAPI = async (page: number) => {
+    setLoading(true);
     try {
-      const response = await problemAPI.getSubmissionListMe(userId);
-      setSubmissions(response.reverse());
+      const response = await problemAPI.getSubmissionListMe(userId, page);
+      const { number, totalPages: fetchedTotalPages, content } = response;
+      setCurrentPage(number);
+      if (totalPages === undefined) {
+        setTotalPages(fetchedTotalPages);
+      }
+      setSubmissions((prev) => [...prev, ...content]);
     } catch (error: unknown) {
       if (error instanceof Error) {
         showToastError({ toast: toast.toast, message: error.message ?? "Error getting submission list" });
@@ -28,28 +38,29 @@ export function ViewAllSubmissionList() {
   };
 
   useEffect(() => {
-    getSubmissionListMeAPI();
+    getSubmissionListMeAPI(currentPage);
   }, []);
-
-  const renderSkeleton = () => {
-    const placeHolders = [1, 2, 3];
-    return placeHolders.map((_, index) => (
-      <ViewAllSubmissionItem key={index} isOdd={index % 2 == 0} submission={null} loading={true} />
-    ));
-  };
 
   const renderList = () => {
     return submissions.map((submission, index) => (
-      <ViewAllSubmissionItem key={index} isOdd={index % 2 == 0} submission={submission} loading={loading} />
+      <ViewAllSubmissionItem key={index} isOdd={index % 2 == 0} submission={submission} loading={false} />
     ));
   };
 
-  let content = null;
-  if (loading) {
-    content = renderSkeleton();
-  } else {
-    content = renderList();
-  }
+  const renderViewMore = () => {
+    if (loading) {
+      return <Spinner loading={loading} />;
+    } else if (totalPages && currentPage + 1 < totalPages) {
+      return (
+        <Button type="button" disabled={loading} onClick={() => getSubmissionListMeAPI(currentPage + 1)}>
+          View more
+          <CircleChevronDown />
+        </Button>
+      );
+    } else {
+      return <p className="text-gray3 text-lg">No more submissions to show!</p>;
+    }
+  };
 
   return (
     <div className="container p-4 mx-auto mt-8">
@@ -72,9 +83,10 @@ export function ViewAllSubmissionList() {
               <th className="px-4 py-3 border-b">Language</th>
             </tr>
           </thead>
-          <tbody>{content}</tbody>
+          <tbody>{renderList()}</tbody>
         </table>
       </div>
+      <div className="flex flex-col items-center space-y-4 mt-4">{renderViewMore()}</div>
     </div>
   );
 }

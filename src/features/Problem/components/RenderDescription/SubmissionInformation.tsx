@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { TestCaseResultWithIO, TestCaseAfterSubmit } from "../../types/TestCaseType";
 import { MdCheckCircleOutline, MdOutlineCancel } from "rocketicons/md";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   ViewTestCaseDetailProps,
@@ -15,7 +15,58 @@ import { useParams } from "react-router-dom";
 import { UserCodeState } from "@/redux/problem/problemType";
 import { RootState } from "@/redux/rootReducer";
 import { problemAPI } from "@/lib/api";
-import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
+import { SubmissionTypeNoProblem, MOSSResult } from "../../types/SubmissionType";
+import { MOSSResultComponent } from "./MOSSResult";
+
+// Mock data generator for MOSS results - remove when API is ready
+const generateMockMOSSResult = (submissionId: string): MOSSResult => {
+  const random = Math.random();
+  const similarityScore = Math.floor(random * 100);
+
+  const mockMatches = [
+    {
+      matchId: "match-1",
+      submissionId: "sub-456",
+      studentName: "Alice Johnson",
+      studentId: "ST001",
+      similarityPercentage: 85,
+      matchedLines: 42,
+      totalLines: 50,
+      codeSnippet: `function fibonacci(n) {
+    if (n <= 1) return n;
+    return fibonacci(n-1) + fibonacci(n-2);
+}`
+    },
+    {
+      matchId: "match-2",
+      submissionId: "sub-789",
+      studentName: "Bob Smith",
+      studentId: "ST002",
+      similarityPercentage: 67,
+      matchedLines: 33,
+      totalLines: 50
+    },
+    {
+      matchId: "match-3",
+      submissionId: "sub-101",
+      studentName: "Carol Davis",
+      studentId: "ST003",
+      similarityPercentage: 52,
+      matchedLines: 26,
+      totalLines: 50
+    }
+  ];
+
+  return {
+    analysisId: `analysis-${submissionId}`,
+    similarityScore,
+    status: similarityScore > 70 ? "flagged" : "analyzed",
+    reportUrl: `https://moss.stanford.edu/results/${submissionId}`,
+    analyzedAt: new Date().toISOString(),
+    matches: similarityScore > 30 ? mockMatches.slice(0, Math.ceil(similarityScore / 30)) : [],
+    threshold: 50
+  };
+};
 
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
@@ -27,16 +78,16 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
       </div>
       <div className="flex flex-col mb-2" key={testCaseDetail.testcaseId}>
         <div className="mb-1 text-sm">Input:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray5">
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6">
           <pre className="text-base">{testCaseDetail.input}</pre>
         </div>
         <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray5">
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6">
           <pre className="text-base">{testCaseDetail.output}</pre>
         </div>
 
         <div className="mt-4 mb-1 text-sm">Actual Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray5">
+        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6">
           <pre className="text-base">
             {testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1].submission_output}
           </pre>
@@ -83,11 +134,13 @@ const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewA
 
 export const SubmissionResults = ({
   isPassed,
+  viewingPage = false,
   onViewAllTestCases,
   submittedCode,
   language,
   submissionResult
 }: SubmissionResultsProps) => {
+  const { problemId } = useParams<{ problemId: string }>();
   const testCases = submissionResult.testCasesOutput as TestCaseAfterSubmit[];
   const totalTestCasesCount = testCases.length;
   const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
@@ -113,6 +166,17 @@ export const SubmissionResults = ({
     fetchTestCaseDetail();
   }, [selectedTestCase]);
 
+  const handleViewMOSSReport = () => {
+    if (submissionResult.mossResult?.reportUrl) {
+      window.open(submissionResult.mossResult.reportUrl, "_blank");
+    }
+  };
+
+  const handleViewDetailedReport = () => {
+    // Navigate to the new submission detail page
+    window.open(`/problems/${problemId}/submission/${submissionResult.submissionId}`, "_blank");
+  };
+
   return (
     <div className="flex-col px-6 py-2">
       <div id="result_header" className="flex items-center justify-between">
@@ -129,6 +193,22 @@ export const SubmissionResults = ({
           All test cases
         </Button>
       </div>
+
+      {/* MOSS Results Section */}
+      {submissionResult.mossResult && (
+        <div className="mt-6 mb-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-medium">Plagiarism Detection</h3>
+            {!viewingPage && (
+              <Button variant="outline" onClick={handleViewDetailedReport}>
+                <ExternalLink className="w-4 h-4 mr-2" />
+                View Full Detail
+              </Button>
+            )}
+          </div>
+          <MOSSResultComponent mossResult={submissionResult.mossResult} onViewFullReport={handleViewMOSSReport} />
+        </div>
+      )}
 
       {!isPassed ? (
         <div className="test-case-content">
@@ -188,7 +268,12 @@ export const SubmissionResults = ({
   );
 };
 
-export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: SubmissionInformationProps) => {
+export const SubmissionInformation = ({
+  isPassed,
+  historyInformation,
+  onBack,
+  viewingPage = false
+}: SubmissionInformationProps) => {
   const [currentPanel, setCurrentPanel] = useState<string>("result");
   const [selectedTestCaseDetail, setSelectedTestCaseDetail] = useState<TestCaseResultWithIO | null>(null);
   const [codeInformation, setCodeInformation] = useState<{ code: string; language: string }>({
@@ -208,18 +293,28 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
     selectCodeByProblemId(state, actualProblemId!)
   ); // Retrieve saved code
   const submissionResultFromRedux = useSelector((state: RootState) => state.submission.submissions[actualProblemId!]);
-
   useEffect(() => {
     // If theres no history, which is recently submitted code, get the code from the store
     const initializeData = async () => {
       if (historyInformation) {
-        setSubmissionResult(historyInformation);
-        setTestCases(historyInformation.testCasesOutput);
-        setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
+        // Add mock MOSS result if not present (for demo purposes)
+        const submissionWithMOSS = {
+          ...historyInformation,
+          mossResult: historyInformation.mossResult || generateMockMOSSResult(historyInformation.submissionId)
+        };
+        setSubmissionResult(submissionWithMOSS);
+        setTestCases(submissionWithMOSS.testCasesOutput);
+        setCodeInformation({ code: submissionWithMOSS.code, language: submissionWithMOSS.programmingLanguage });
       } else if (actualProblemId) {
         if (submissionResultFromRedux && savedCodeData) {
-          setSubmissionResult(submissionResultFromRedux);
-          setTestCases(submissionResultFromRedux.testCasesOutput);
+          // Add mock MOSS result if not present (for demo purposes)
+          const submissionWithMOSS = {
+            ...submissionResultFromRedux,
+            mossResult:
+              submissionResultFromRedux.mossResult || generateMockMOSSResult(submissionResultFromRedux.submissionId)
+          };
+          setSubmissionResult(submissionWithMOSS);
+          setTestCases(submissionWithMOSS.testCasesOutput);
           setCodeInformation({ code: savedCodeData.code, language: savedCodeData.language });
         }
       }
@@ -253,7 +348,7 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
     <div>
       {currentPanel === "result" && submissionResult && (
         <>
-          {historyInformation && (
+          {!viewingPage && historyInformation && (
             <div className="flex items-center mx-4 my-2 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
               <ChevronLeft className="" />
               <div className="text-lg font-medium">Back</div>
@@ -261,6 +356,7 @@ export const SubmissionInformation = ({ isPassed, historyInformation, onBack }: 
           )}
           <SubmissionResults
             isPassed={isPassed}
+            viewingPage={viewingPage}
             onViewAllTestCases={handleViewAllTestCases}
             submittedCode={codeInformation.code}
             language={codeInformation.language}
