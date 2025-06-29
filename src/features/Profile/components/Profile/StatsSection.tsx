@@ -11,12 +11,13 @@ import { RootState } from "@/redux/rootReducer";
 type StatsSectionProps = {
   userId: string;
   isPublic: boolean;
+  profileLoading: boolean;
 };
 
 export const StatsSection = memo(function StatsSection(props: StatsSectionProps) {
-  const { userId, isPublic } = props;
+  const { userId, isPublic, profileLoading } = props;
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState<TProgress | null>(null);
   const toast = useToast();
   const reduxUser = useSelector((state: RootState) => state.user.user);
@@ -44,6 +45,8 @@ export const StatsSection = memo(function StatsSection(props: StatsSectionProps)
   useEffect(() => {
     if (isPublic) {
       getProgressProblemAPI(userId);
+    } else {
+      setLoading(false);
     }
   }, [userId, isPublic]);
 
@@ -59,7 +62,11 @@ export const StatsSection = memo(function StatsSection(props: StatsSectionProps)
   };
 
   const renderEmpty = () => {
-    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
+    return <div className="mt-4 text-base font-normal text-gray3">No data available.</div>;
+  };
+
+  const renderPrivate = () => {
+    return <div className="mt-4 text-base font-normal text-gray3">The user set this data to private.</div>;
   };
 
   const renderStats = () => {
@@ -80,14 +87,14 @@ export const StatsSection = memo(function StatsSection(props: StatsSectionProps)
   };
 
   let content = null;
-  if (loading) {
+  if (loading || profileLoading) {
     content = renderSkeleton();
+  } else if (!isPublic) {
+    content = renderPrivate();
+  } else if (progress && Object.keys(progress).length > 0) {
+    content = renderStats();
   } else {
-    if (isPublic && progress && Object.keys(progress).length > 0) {
-      content = renderStats();
-    } else {
-      content = renderEmpty();
-    }
+    content = renderEmpty();
   }
 
   return (

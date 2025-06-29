@@ -10,10 +10,11 @@ import { EmptyList, Separator } from "@/components/ui";
 type CompletedCourseListProps = {
   userId: string;
   isPublic: boolean;
+  profileLoading: boolean;
 };
 
 export const CompletedCourseList = memo(function CompletedCourseList(props: CompletedCourseListProps) {
-  const { userId, isPublic } = props;
+  const { userId, isPublic, profileLoading } = props;
 
   const toast = useToast();
 
@@ -73,7 +74,7 @@ export const CompletedCourseList = memo(function CompletedCourseList(props: Comp
   };
 
   let content = null;
-  if (loading) {
+  if (loading || profileLoading) {
     content = renderSkeleton();
   } else if (!isPublic && !loading) {
     content = renderEmpty("This is a private profile. Completed courses are only visible to the user.");
