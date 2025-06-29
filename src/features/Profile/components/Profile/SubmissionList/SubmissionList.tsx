@@ -12,10 +12,11 @@ import { EmptyList, Separator } from "@/components/ui";
 type SubmissionListProps = {
   userId: string;
   isPublic: boolean;
+  profileLoading: boolean;
 };
 
 export const SubmissionList = memo(function SubmissionList(props: SubmissionListProps) {
-  const { userId, isPublic } = props;
+  const { userId, isPublic, profileLoading } = props;
 
   const toast = useToast();
   const navigate = useNavigate();
@@ -77,7 +78,7 @@ export const SubmissionList = memo(function SubmissionList(props: SubmissionList
   };
 
   let content = null;
-  if (loading) {
+  if (loading || profileLoading) {
     content = renderSkeleton();
   } else if (!isPublic && !loading) {
     content = renderEmpty("This is a private profile. Submissions are only visible to the user.");
