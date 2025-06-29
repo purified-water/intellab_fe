@@ -9,10 +9,11 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 type LevelsSectionProps = {
   userId: string;
   isPublic: boolean;
+  profileLoading: boolean;
 };
 
 export const LevelsSection = memo(function LevelsSection(props: LevelsSectionProps) {
-  const { userId, isPublic } = props;
+  const { userId, isPublic, profileLoading } = props;
 
   const [loading, setLoading] = useState(false);
   const [level, setLevels] = useState<TProgress | null>(null);
@@ -54,7 +55,7 @@ export const LevelsSection = memo(function LevelsSection(props: LevelsSectionPro
   };
 
   const renderEmpty = () => {
-    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
+    return <div className="mt-4 text-base font-normal text-gray3">No data available.</div>;
   };
 
   const renderStatistic = () => {
@@ -76,16 +77,21 @@ export const LevelsSection = memo(function LevelsSection(props: LevelsSectionPro
     ));
   };
 
+  const renderPrivate = () => {
+    return <div className="mt-4 text-base font-normal text-gray3">The user set this data to private.</div>;
+  };
+
   let content = null;
-  if (loading) {
+  if (loading || profileLoading) {
     content = renderSkeleton();
+  } else if (!isPublic) {
+    content = renderPrivate();
+  } else if (isPublic && level && Object.keys(level).length > 0) {
+    content = renderStatistic();
   } else {
-    if (isPublic && level && Object.keys(level).length > 0) {
-      content = renderStatistic();
-    } else {
-      content = renderEmpty();
-    }
+    content = renderEmpty();
   }
+
   return (
     <>
       <div className="w-full my-4 border-t-2 border-gray5"></div>

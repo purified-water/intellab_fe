@@ -17,11 +17,14 @@ import { setUser as setReduxUser } from "@/redux/user/userSlice";
 
 type ProfileSectionProps = {
   userId: string;
-  onProfileFetched: (isPublic: boolean) => void;
+  onFetchProfileStart: () => void;
+  onFetchProfileSuccess: (isPublic: boolean) => void;
+  onFetchProfileFail: () => void;
+  onFetchProfileEnd: () => void;
 };
 
 export const ProfileSection = memo(function ProfileSection(props: ProfileSectionProps) {
-  const { userId, onProfileFetched } = props;
+  const { userId, onFetchProfileStart, onFetchProfileSuccess, onFetchProfileFail, onFetchProfileEnd } = props;
 
   const dispatch = useDispatch();
   const reduxUser = useSelector((state: RootState) => state.user.user);
@@ -36,14 +39,16 @@ export const ProfileSection = memo(function ProfileSection(props: ProfileSection
 
   const getProfileSinglePublicAPI = async () => {
     setLoading(true);
+    onFetchProfileStart();
     try {
       const response = await userAPI.getProfilePublic(userId);
       const { code, message, result } = response;
       if (code == API_RESPONSE_CODE.SUCCESS) {
         setUser(result);
-        onProfileFetched(result.public || isMe);
+        onFetchProfileSuccess(result.public || isMe);
       } else {
         showToastError({ toast: toast.toast, message: message ?? "Error getting user profile" });
+        onFetchProfileFail();
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
@@ -51,6 +56,7 @@ export const ProfileSection = memo(function ProfileSection(props: ProfileSection
       }
     } finally {
       setLoading(false);
+      onFetchProfileEnd();
     }
   };
 
@@ -58,7 +64,13 @@ export const ProfileSection = memo(function ProfileSection(props: ProfileSection
     if (!isToggling) {
       getProfileSinglePublicAPI();
     }
-  }, [userId, reduxUser]);
+  }, [userId]);
+
+  useEffect(() => {
+    if (!reduxUser) {
+      onFetchProfileSuccess(user?.public || false);
+    }
+  }, [reduxUser]);
 
   useEffect(() => {
     document.title = `${user?.displayName ?? "Loading"} | Intellab`;

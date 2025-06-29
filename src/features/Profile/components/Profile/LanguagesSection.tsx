@@ -8,10 +8,11 @@ import { Skeleton } from "@/components/ui/shadcn/skeleton";
 type LanguagesSectionProps = {
   userId: string;
   isPublic: boolean;
+  profileLoading: boolean;
 };
 
 export const LanguagesSection = memo(function LanguagesSection(props: LanguagesSectionProps) {
-  const { userId, isPublic } = props;
+  const { userId, isPublic, profileLoading } = props;
 
   const [loading, setLoading] = useState(false);
   const [languages, setLanguages] = useState<TRankLanguages | null>(null);
@@ -67,18 +68,22 @@ export const LanguagesSection = memo(function LanguagesSection(props: LanguagesS
   };
 
   const renderEmpty = () => {
-    return <div className="mt-4 text-base font-normal text-gray3">No data available</div>;
+    return <div className="mt-4 text-base font-normal text-gray3">No data available.</div>;
+  };
+
+  const renderPrivate = () => {
+    return <div className="mt-4 text-base font-normal text-gray3">The user set this data to private.</div>;
   };
 
   let content = null;
-  if (loading) {
+  if (loading || profileLoading) {
     content = renderSkeleton();
+  } else if (!isPublic) {
+    content = renderPrivate();
+  } else if (languages && Object.keys(languages).length > 0) {
+    content = renderStatistic();
   } else {
-    if (isPublic && languages && Object.keys(languages).length > 0) {
-      content = renderStatistic();
-    } else {
-      content = renderEmpty();
-    }
+    content = renderEmpty();
   }
 
   return (
