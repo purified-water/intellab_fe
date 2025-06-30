@@ -188,7 +188,13 @@ export function UserGrowthMiniChart({ rangeType, dateRange, selectedMonth, selec
     <div className="w-full pt-5">
       <ResponsiveContainer width="100%" height={250}>
         <AreaChart data={data}>
-          <Area type="monotone" dataKey="users" stroke="#5a3295" fill="#dbeafe" strokeWidth={2} />
+          <defs>
+            <linearGradient id="growthGradientLarge" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />
+              <stop offset="95%" stopColor="#5a3295" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <Area type="monotone" dataKey="users" stroke="#5a3295" fill="url(#growthGradientLarge)" strokeWidth={2} />
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" fontSize={10} />
           <YAxis fontSize={10} width={25} tickMargin={4} />
@@ -312,11 +318,17 @@ export function UserGrowthLargeChart({ rangeType, dateRange, selectedMonth, sele
   return (
     <ResponsiveContainer width="100%" height={400}>
       <AreaChart data={data}>
+        <defs>
+          <linearGradient id="growthGradientLargeChart" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#5a3295" stopOpacity={0.4} />
+            <stop offset="95%" stopColor="#5a3295" stopOpacity={0} />
+          </linearGradient>
+        </defs>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="label" fontSize={10} />
         <YAxis />
         <Tooltip formatter={(value) => [`${value} users`, "User Growth"]} />
-        <Area type="monotone" dataKey="users" stroke="#5a3295" fill="#dbeafe" strokeWidth={3} />
+        <Area type="monotone" dataKey="users" stroke="#5a3295" fill="url(#growthGradientLargeChart)" strokeWidth={3} />
       </AreaChart>
     </ResponsiveContainer>
   );

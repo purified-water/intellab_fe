@@ -286,8 +286,8 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
                 className={`pr-1 overflow-y-auto scrollbar-hide transition-all duration-300 ${isLoadingResponse || errorMessage ? "h-8" : "h-[180px]"}`}
               >
                 {isLoadingResponse ? (
-                  <div className="flex items-center h-full space-x-2">
-                    <Spinner loading={isLoadingResponse} className="text-black size-5" />
+                  <div className="flex items-center h-full gap-x-2">
+                    <Spinner loading={isLoadingResponse} className="text-black size-4" />
                     <span className="text-sm text-gray3">Explaining...</span>
                   </div>
                 ) : errorMessage ? (

@@ -107,14 +107,13 @@ export function CourseListItem(props: CourseListItemProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
           {[
-            DROP_DOWN_MENU_ITEMS.VIEW,
             course.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.EDIT : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
             DROP_DOWN_MENU_ITEMS.DELETE
           ].map((action) => (
             <DropdownMenuItem
               key={action}
               onClick={() => handleDropdownMenuItemClick(action)}
-              className="text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6"
+              className={`text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6 ${action === DROP_DOWN_MENU_ITEMS.DELETE ? "text-appHard" : ""}`}
             >
               {action}
             </DropdownMenuItem>

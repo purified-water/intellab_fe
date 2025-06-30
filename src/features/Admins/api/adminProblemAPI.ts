@@ -28,12 +28,18 @@ import { AxiosError } from "axios";
 
 export const adminProblemAPI = {
   getAdminProblemList: async (params: AdminProblemParams): Promise<GetAdminProblemResponseType> => {
-    const response = await apiClient.get(`problem/admin/problems`, {
-      params: {
+    const filteredParams = Object.fromEntries(
+      Object.entries({
         ...params,
+        // Convert categories array to comma-separated string
+        categories: params.categories && params.categories.length > 0 ? params.categories.join(",") : undefined,
         sortBy: params.sort || "problemName,asc",
         size: params.size || DEFAULT_PAGE_SIZE
-      }
+      }).filter(([_, value]) => value !== null && value !== undefined)
+    );
+
+    const response = await apiClient.get(`problem/admin/problems`, {
+      params: filteredParams
     });
     return response.data;
   },

@@ -142,9 +142,9 @@ export function SubscriptionGrowthMiniChart({ rangeType, dateRange, selectedMont
   if (error && data.length === 0) {
     return (
       <div className="w-full pt-5 h-[250px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load subscription data</div>
+        <div className="mb-2 text-red-500">Failed to load subscription data</div>
         <button
-          className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
           onClick={fetchSubscriptionGrowth}
         >
           Retry
@@ -270,9 +270,9 @@ export function SubscriptionGrowthLargeChart({ rangeType, dateRange, selectedMon
   if (error && data.length === 0) {
     return (
       <div className="w-full h-[400px] flex flex-col items-center justify-center">
-        <div className="text-red-500 mb-2">Failed to load subscription data</div>
+        <div className="mb-2 text-red-500">Failed to load subscription data</div>
         <button
-          className="px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+          className="px-4 py-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
           onClick={fetchSubscriptionGrowth}
         >
           Retry
