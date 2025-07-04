@@ -41,7 +41,7 @@ export function CourseList(props: CourseListProps) {
     } else {
       return courses.filter((course) => {
         const isValid =
-          course.price && course.price >= filter.priceRange!.min && course.price <= filter.priceRange!.max;
+          course.price && course.price >= filter.priceRange!.min! && course.price <= filter.priceRange!.max!;
         return isValid;
       });
     }
