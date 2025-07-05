@@ -102,9 +102,7 @@ export const courseAPI = {
   },
 
   search: async (keyword: string, page: number) => {
-    const response = await apiClient.get(
-      `course/courses/search?keyword=${keyword}&page=${page}&isAvailable=true&isCompletedCreation=true`
-    );
+    const response = await apiClient.get(`course/courses/search?keyword=${keyword}&page=${page}`);
     const data: IGetCoursesResponse = response.data;
     return data;
   },
