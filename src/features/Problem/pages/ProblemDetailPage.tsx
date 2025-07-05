@@ -206,7 +206,7 @@ export const ProblemDetail = () => {
         <RenderAllProblems isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
 
         {/* Bottom bar */}
-        <div className="fixed bottom-0 left-0 flex items-center justify-between w-full p-6 bg-white border-t h-14">
+        <div className="fixed bottom-0 left-0 flex items-center justify-between w-full px-6 bg-white border-t h-14">
           <div className="flex space-x-2">
             <Button
               type="button"
