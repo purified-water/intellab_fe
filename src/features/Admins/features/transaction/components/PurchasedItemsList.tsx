@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { Select, SelectTrigger, SelectContent, SelectItem } from "@/components/ui/shadcn/select";
 import { Button } from "@/components/ui/Button";
-// import { Avatar, AvatarFallback } from "@/components/ui/shadcn/avatar";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { Funnel } from "lucide-react";
 import { transactionAPI } from "@/lib/api";
 import { EmptyList, Pagination } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
-import { mockPurchasedItems, MOCK_CONFIG, simulateDelay } from "../mockData/transactionMockData";
 
 interface PurchasedItem {
   name: string;
@@ -52,84 +50,40 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
     setLoading(true);
     setErrorMessage("");
     try {
-      console.log("Loading purchased items for page:", page);
-
       let formattedItems: PurchasedItem[] = [];
       let paginationInfo = {
         totalPages: 0,
         totalElements: 0
       };
 
-      if (MOCK_CONFIG.USE_MOCK_DATA) {
-        // Use mock data
-        console.log("Using mock data for purchased items");
-        await simulateDelay();
+      const filters = {
+        search: searchQuery || undefined,
+        type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
+        sortBy: dateSortOrder !== "desc" ? "date" : "amount",
+        order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
+      };
 
-        // Apply filters to mock data
-        const filteredMockItems = mockPurchasedItems.filter(
-          (item) =>
-            (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              item.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (selectedType === "All" || item.type === selectedType)
-        );
+      const apiResponse = await transactionAPI.getPurchasedItemsWithMetadata(page, itemsPerPage, filters);
 
-        // Sort items
-        const sortedItems = [...filteredMockItems].sort((a, b) => {
-          if (dateSortOrder !== "desc") {
-            // Sort by date
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateSortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
-          } else {
-            // Sort by amount
-            const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
-            const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
-            return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
-          }
-        });
-
-        // Pagination for mock data
-        const totalPages = Math.ceil(sortedItems.length / itemsPerPage);
-        const startIndex = page * itemsPerPage;
-        const paginatedItems = sortedItems.slice(startIndex, startIndex + itemsPerPage);
-
-        formattedItems = paginatedItems;
-        paginationInfo = {
-          totalPages,
-          totalElements: sortedItems.length
-        };
-      } else {
-        // Use real API
-        const filters = {
-          search: searchQuery || undefined,
-          type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
-          sortBy: dateSortOrder !== "desc" ? "date" : "amount",
-          order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
-        };
-
-        console.log("Calling API with filters:", filters);
-        const apiResponse = await transactionAPI.getPurchasedItemsWithMetadata(page, itemsPerPage, filters);
-
-        if (!apiResponse || apiResponse.content.length === 0) {
-          setErrorMessage("No purchased items found.");
-          setItems([]);
-          setTotalPages(0);
-          return;
-        }
-
-        formattedItems = apiResponse.content.map((item) => ({
-          name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
-          email: item.user.email,
-          amount: `${item.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
-          date: new Date(item.date).toLocaleDateString(),
-          type: item.type?.toUpperCase() === "FREE" || item.type === "Free" ? "Free" : ("Plan" as "Free" | "Plan")
-        }));
-
-        paginationInfo = {
-          totalPages: apiResponse.totalPages,
-          totalElements: apiResponse.totalElements
-        };
+      if (!apiResponse || apiResponse.content.length === 0) {
+        setErrorMessage("No purchased items found.");
+        setItems([]);
+        setTotalPages(0);
+        return;
       }
+
+      formattedItems = apiResponse.content.map((item) => ({
+        name: item.user.displayName || `${item.user.firstName} ${item.user.lastName}`,
+        email: item.user.email,
+        amount: `${item.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
+        date: new Date(item.date).toLocaleDateString(),
+        type: item.type?.toUpperCase() === "FREE" || item.type === "Free" ? "Free" : ("Plan" as "Free" | "Plan")
+      }));
+
+      paginationInfo = {
+        totalPages: apiResponse.totalPages,
+        totalElements: apiResponse.totalElements
+      };
 
       setItems(formattedItems);
       setTotalPages(paginationInfo.totalPages);
@@ -141,9 +95,8 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
     } catch (error) {
       console.error("Failed to fetch purchased items:", error);
       setErrorMessage("Failed to fetch data. Please try again later.");
-      if (!MOCK_CONFIG.USE_MOCK_DATA) {
-        showToastError({ toast: toast.toast, message: "Failed to load purchased items" });
-      }
+
+      showToastError({ toast: toast.toast, title: "Error", message: "Failed to load purchased items." });
     } finally {
       setLoading(false);
     }
@@ -169,19 +122,6 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
           <th className="py-4">
             <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
           </th>
-          {/* <th className="py-4">
-            <div className="flex items-center gap-1">
-              <span>{TABLE_HEADERS.DATE}</span>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-auto p-0 text-xs"
-                onClick={() => setDateSortOrder(dateSortOrder === "asc" ? "desc" : "asc")}
-              >
-                {dateSortOrder === "asc" ? "↑" : "↓"}
-              </Button>
-            </div>
-          </th> */}
           <th className="py-4">
             <div className="flex items-center gap-1">
               <span>{TABLE_HEADERS.AMOUNT}</span>
@@ -293,12 +233,6 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
 
   return (
     <div>
-      {/* {MOCK_CONFIG.USE_MOCK_DATA && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm mb-4">
-          <strong>Mock Mode:</strong> Using simulated data for testing
-        </div>
-      )} */}
-
       <table className="w-full">
         {renderHeader()}
         {renderBody()}

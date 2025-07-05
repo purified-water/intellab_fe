@@ -8,7 +8,6 @@ import { transactionAPI } from "@/lib/api";
 import { EmptyList, Pagination } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
-import { mockTransactions, MOCK_CONFIG, simulateDelay } from "../mockData/transactionMockData";
 
 interface Transaction {
   id: string;
@@ -58,88 +57,49 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     setLoading(true);
     setErrorMessage("");
     try {
-      console.log("Loading transactions for page:", page);
-
       let formattedTransactions: Transaction[] = [];
       let totalPagesCount = 0;
 
-      if (MOCK_CONFIG.USE_MOCK_DATA) {
-        // Use mock data
-        console.log("Using mock data for transactions");
-        await simulateDelay();
+      // Use real API with pagination metadata
+      const filters = {
+        search: searchQuery || undefined,
+        status:
+          selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
+        type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
+        sortBy: dateSortOrder !== "desc" ? "date" : "amount",
+        order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
+      };
+      const apiResponse = await transactionAPI.getTransactionsWithMetadata(page, itemsPerPage, filters);
 
-        // Apply filters to mock data
-        const filteredMockTransactions = mockTransactions.filter(
-          (transaction) =>
-            (transaction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              transaction.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (selectedType === "All" || transaction.type === selectedType) &&
-            (selectedStatus === "All" || transaction.status === selectedStatus)
-        );
-
-        // Sort transactions
-        const sortedTransactions = [...filteredMockTransactions].sort((a, b) => {
-          if (dateSortOrder !== "desc") {
-            // Sort by date
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateSortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
-          } else {
-            // Sort by amount
-            const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
-            const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
-            return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
-          }
-        });
-
-        // Pagination for mock data
-        totalPagesCount = Math.ceil(sortedTransactions.length / itemsPerPage);
-        const startIndex = page * itemsPerPage;
-        formattedTransactions = sortedTransactions.slice(startIndex, startIndex + itemsPerPage);
-      } else {
-        // Use real API with pagination metadata
-        const filters = {
-          search: searchQuery || undefined,
-          status:
-            selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
-          type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
-          sortBy: dateSortOrder !== "desc" ? "date" : "amount",
-          order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
-        };
-
-        console.log("Calling transactions API with filters:", filters);
-        const apiResponse = await transactionAPI.getTransactionsWithMetadata(page, itemsPerPage, filters);
-
-        if (!apiResponse || !apiResponse.content) {
-          setErrorMessage("No transactions found.");
-          setTransactions([]);
-          setTotalPages(0);
-          setCurrentPage(0);
-          return;
-        }
-
-        // Map API response to local format
-        formattedTransactions = apiResponse.content.map((transaction, index) => ({
-          id: `${transaction.user.userId}-${index}-${page}`,
-          paymentId: transaction.paymentId,
-          name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
-          email: transaction.user.email,
-          amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
-          date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status === "00" ? "Success" : "Failed",
-          type:
-            transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
-              ? "Course"
-              : transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan"
-                ? "Plan"
-                : transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem"
-                  ? "Problem"
-                  : ("Course" as "Course" | "Plan" | "Problem")
-        }));
-
-        // Use server-side pagination metadata
-        totalPagesCount = apiResponse.totalPages;
+      if (!apiResponse || !apiResponse.content) {
+        setErrorMessage("No transactions found.");
+        setTransactions([]);
+        setTotalPages(0);
+        setCurrentPage(0);
+        return;
       }
+
+      // Map API response to local format
+      formattedTransactions = apiResponse.content.map((transaction, index) => ({
+        id: `${transaction.user.userId}-${index}-${page}`,
+        paymentId: transaction.paymentId,
+        name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
+        email: transaction.user.email,
+        amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
+        date: new Date(transaction.date).toLocaleDateString(),
+        status: transaction.status === "00" ? "Success" : "Failed",
+        type:
+          transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
+            ? "Course"
+            : transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan"
+              ? "Plan"
+              : transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem"
+                ? "Problem"
+                : ("Course" as "Course" | "Plan" | "Problem")
+      }));
+
+      // Use server-side pagination metadata
+      totalPagesCount = apiResponse.totalPages;
 
       setTransactions(formattedTransactions);
       setTotalPages(totalPagesCount);
@@ -151,9 +111,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
       setErrorMessage("Failed to fetch data. Please try again later.");
-      if (!MOCK_CONFIG.USE_MOCK_DATA) {
-        showToastError({ toast: toast.toast, message: "Failed to load transactions" });
-      }
+      showToastError({ toast: toast.toast, title: "Error", message: "Failed to load transactions" });
     } finally {
       setLoading(false);
     }
@@ -374,12 +332,6 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
 
   return (
     <div>
-      {/* {MOCK_CONFIG.USE_MOCK_DATA && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm mb-4">
-          <strong>Mock Mode:</strong> Using simulated data for testing
-        </div>
-      )} */}
-
       <table className="w-full">
         {renderHeader()}
         {renderBody()}

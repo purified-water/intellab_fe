@@ -165,7 +165,7 @@ export function CourseListItem(props: CourseListItemProps) {
     return (
       <>
         <tr key={course.courseId} className="text-base border-b border-gray5">
-          <td className="py-1 truncate max-w-[300px]">{course.courseName}</td>
+          <td className="py-1 truncate max-w-[320px] w-[300px]">{course.courseName}</td>
           <td
             className={`py-1 font-medium ${
               course.level === "Beginner"
@@ -177,7 +177,7 @@ export function CourseListItem(props: CourseListItemProps) {
           >
             {course.level}
           </td>
-          <td className="py-1">{disPlayPrice}</td>
+          <td className="py-1 w-[150px]">{disPlayPrice}</td>
           {course.isCompletedCreation && (
             <td className="py-1">
               <div className="flex justify-center">
@@ -190,17 +190,17 @@ export function CourseListItem(props: CourseListItemProps) {
             </td>
           )}
           {course.isCompletedCreation && (
-            <td className="py-1 pr-3 text-right">{course.numberOfEnrolledStudents ?? 0}</td>
+            <td className="py-1 pr-4 text-right">{course.numberOfEnrolledStudents ?? 0}</td>
           )}
           {course.isCompletedCreation && (
-            <td className="py-1 justify-items-center">
-              <div className="flex items-center gap-1">
-                <span className="">
-                  {course.averageRating && course.averageRating > 0 ? course.averageRating.toFixed(1) : 0}
-                </span>
-                <Star className="w-4 h-4 fill-appMedium text-appMedium" />
+            <td className="flex items-center justify-center py-1">
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1">
+                  <span>{course.averageRating && course.averageRating > 0 ? course.averageRating.toFixed(1) : 0}</span>
+                  <Star className="w-4 h-4 fill-appMedium text-appMedium" />
+                </div>
+                <span className="text-sm font-light text-gray3">({course.reviewCount ?? 0} reviews)</span>
               </div>
-              <span className="text-sm font-light text-gray3">({course.reviewCount ?? 0} reviews)</span>
             </td>
           )}
           {!course.isCompletedCreation && (

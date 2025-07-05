@@ -51,12 +51,9 @@ export function TransactionsList({
   const itemsPerPage = 10;
 
   const loadTransactions = async (page: number = 0) => {
-    // if (initialTransactions) return;
-
     setIsLoading(true);
     setErrorMessage("");
     try {
-      console.log("Loading transactions for page:", page);
       const apiTransactions = await transactionAPI.getTransactions(page);
 
       if (apiTransactions.length === 0) {
@@ -82,7 +79,6 @@ export function TransactionsList({
 
   // Reload data when page changes
   useEffect(() => {
-    console.log("Current page changed:", currentPage);
     loadTransactions(currentPage - 1); // API uses 0-based indexing
   }, [currentPage, open]);
 
