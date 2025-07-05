@@ -8,3 +8,4 @@ export * from "./Comments/ProblemReply";
 export * from "./ProblemSolution";
 export * from "./LockProblemSolutionOverlay";
 export * from "./MOSSResult";
+export * from "./MOSSSection";

@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { TestCaseResultWithIO, TestCaseAfterSubmit } from "../../types/TestCaseType";
 import { MdCheckCircleOutline, MdOutlineCancel } from "rocketicons/md";
-import { ChevronRight, ChevronLeft, ExternalLink } from "lucide-react";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   ViewTestCaseDetailProps,
@@ -15,58 +15,8 @@ import { useParams } from "react-router-dom";
 import { UserCodeState } from "@/redux/problem/problemType";
 import { RootState } from "@/redux/rootReducer";
 import { problemAPI } from "@/lib/api";
-import { SubmissionTypeNoProblem, MOSSResult } from "../../types/SubmissionType";
-import { MOSSResultComponent } from "./MOSSResult";
-
-// Mock data generator for MOSS results - remove when API is ready
-const generateMockMOSSResult = (submissionId: string): MOSSResult => {
-  const random = Math.random();
-  const similarityScore = Math.floor(random * 100);
-
-  const mockMatches = [
-    {
-      matchId: "match-1",
-      submissionId: "sub-456",
-      studentName: "Alice Johnson",
-      studentId: "ST001",
-      similarityPercentage: 85,
-      matchedLines: 42,
-      totalLines: 50,
-      codeSnippet: `function fibonacci(n) {
-    if (n <= 1) return n;
-    return fibonacci(n-1) + fibonacci(n-2);
-}`
-    },
-    {
-      matchId: "match-2",
-      submissionId: "sub-789",
-      studentName: "Bob Smith",
-      studentId: "ST002",
-      similarityPercentage: 67,
-      matchedLines: 33,
-      totalLines: 50
-    },
-    {
-      matchId: "match-3",
-      submissionId: "sub-101",
-      studentName: "Carol Davis",
-      studentId: "ST003",
-      similarityPercentage: 52,
-      matchedLines: 26,
-      totalLines: 50
-    }
-  ];
-
-  return {
-    analysisId: `analysis-${submissionId}`,
-    similarityScore,
-    status: similarityScore > 70 ? "flagged" : "analyzed",
-    reportUrl: `https://moss.stanford.edu/results/${submissionId}`,
-    analyzedAt: new Date().toISOString(),
-    matches: similarityScore > 30 ? mockMatches.slice(0, Math.ceil(similarityScore / 30)) : [],
-    threshold: 50
-  };
-};
+import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
+import { MOSSSection } from "./MOSSSection";
 
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
@@ -140,10 +90,12 @@ export const SubmissionResults = ({
   language,
   submissionResult
 }: SubmissionResultsProps) => {
-  const { problemId } = useParams<{ problemId: string }>();
   const testCases = submissionResult.testCasesOutput as TestCaseAfterSubmit[];
   const totalTestCasesCount = testCases.length;
   const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
+
+  // Check if all test cases passed for MOSS analysis
+  const isAllCorrect = testCases.every((testCase) => testCase.result_status === "Accepted");
 
   const firstFailedTestCase = testCases.find(
     // One test case may have many submission outputs, so we get the last submission output to check the result status
@@ -167,18 +119,20 @@ export const SubmissionResults = ({
   }, [selectedTestCase]);
 
   const handleViewMOSSReport = () => {
-    if (submissionResult.mossResult?.reportUrl) {
-      window.open(submissionResult.mossResult.reportUrl, "_blank");
-    }
+    // The MOSS report URL would typically come from an API or be generated
+    // For now, we'll create a basic placeholder or implement based on actual requirements
+    console.log("View MOSS report for submission:", submissionResult?.submissionId);
   };
 
   const handleViewDetailedReport = () => {
     // Navigate to the new submission detail page
-    window.open(`/problems/${problemId}/submission/${submissionResult.submissionId}`, "_blank");
+    window.open(`/submissions/${submissionResult.submissionId}`, "_blank");
   };
 
   return (
-    <div className="flex-col px-6 py-2">
+    <div
+      className={`flex-col ${viewingPage ? "h-full" : "h-[calc(100vh-150px)]"} px-6 pt-2 pb-8 overflow-y-scroll scrollbar-hide`}
+    >
       <div id="result_header" className="flex items-center justify-between">
         <div className="flex flex-row items-end gap-x-2">
           <div className={`text-center text-xl font-medium ${isPassed ? "text-appEasy" : "text-appHard"}`}>
@@ -195,20 +149,16 @@ export const SubmissionResults = ({
       </div>
 
       {/* MOSS Results Section */}
-      {submissionResult.mossResult && (
-        <div className="mt-6 mb-4">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-medium">Plagiarism Detection</h3>
-            {!viewingPage && (
-              <Button variant="outline" onClick={handleViewDetailedReport}>
-                <ExternalLink className="w-4 h-4 mr-2" />
-                View Full Detail
-              </Button>
-            )}
-          </div>
-          <MOSSResultComponent mossResult={submissionResult.mossResult} onViewFullReport={handleViewMOSSReport} />
-        </div>
-      )}
+      <MOSSSection
+        isPassed={isPassed}
+        submissionId={submissionResult.submissionId}
+        isAllCorrect={isAllCorrect}
+        language={language}
+        viewingPage={viewingPage}
+        existingMossResults={submissionResult.mossResults}
+        onViewDetailedReport={handleViewDetailedReport}
+        onViewMOSSReport={handleViewMOSSReport}
+      />
 
       {!isPassed ? (
         <div className="test-case-content">
@@ -297,24 +247,13 @@ export const SubmissionInformation = ({
     // If theres no history, which is recently submitted code, get the code from the store
     const initializeData = async () => {
       if (historyInformation) {
-        // Add mock MOSS result if not present (for demo purposes)
-        const submissionWithMOSS = {
-          ...historyInformation,
-          mossResult: historyInformation.mossResult || generateMockMOSSResult(historyInformation.submissionId)
-        };
-        setSubmissionResult(submissionWithMOSS);
-        setTestCases(submissionWithMOSS.testCasesOutput);
-        setCodeInformation({ code: submissionWithMOSS.code, language: submissionWithMOSS.programmingLanguage });
+        setSubmissionResult(historyInformation);
+        setTestCases(historyInformation.testCasesOutput);
+        setCodeInformation({ code: historyInformation.code, language: historyInformation.programmingLanguage });
       } else if (actualProblemId) {
         if (submissionResultFromRedux && savedCodeData) {
-          // Add mock MOSS result if not present (for demo purposes)
-          const submissionWithMOSS = {
-            ...submissionResultFromRedux,
-            mossResult:
-              submissionResultFromRedux.mossResult || generateMockMOSSResult(submissionResultFromRedux.submissionId)
-          };
-          setSubmissionResult(submissionWithMOSS);
-          setTestCases(submissionWithMOSS.testCasesOutput);
+          setSubmissionResult(submissionResultFromRedux);
+          setTestCases(submissionResultFromRedux.testCasesOutput);
           setCodeInformation({ code: savedCodeData.code, language: savedCodeData.language });
         }
       }
