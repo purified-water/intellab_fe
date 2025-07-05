@@ -23,9 +23,10 @@ export function CourseListPage() {
     categories: null,
     rating: null,
     levels: null,
-    prices: null,
-    priceRange: null,
-    isCompletedCreation: true
+    price: null,
+    isCompletedCreation: true,
+    priceFrom: null,
+    priceTo: null
   });
   const navigate = useNavigate();
   const dispatch = useDispatch();

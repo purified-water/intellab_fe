@@ -41,15 +41,28 @@ export function TransactionManagementPage() {
     }
   };
 
+  const renderSearchBar = () => {
+    return (
+      <div className="w-full max-w-[1100px] flex items-center justify-start">
+        <SearchBar
+          value={searchQuery}
+          onSearch={setSearchQuery}
+          width={1100}
+          placeHolderText="Searching with Payment ID"
+        />
+      </div>
+    );
+  };
+
   return (
     <div className="container max-w-[1200px] mx-auto space-y-8 mb-12">
       <h1 className="mx-4 text-4xl font-bold text-appPrimary">Payment Management</h1>
 
       <div className="space-y-3 justify-items-center">
         {/* Global Search Bar */}
-        <div className="w-full max-w-[1100px] flex items-center justify-start">
-          <SearchBar value={searchQuery} onSearch={setSearchQuery} width={1100} />
-        </div>
+        {activeTab === TABS.TRANSACTION_LIST && renderSearchBar()}
+
+        {/* Tabs for Transaction List and Purchased Items */}
 
         <div className="min-w-[1100px]">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
@@ -69,10 +82,10 @@ export function TransactionManagementPage() {
             </TabsList>
 
             <TabsContent value={TABS.TRANSACTION_LIST} className="">
-              {activeTab === TABS.TRANSACTION_LIST && renderTabContent()}
+              {renderTabContent()}
             </TabsContent>
             <TabsContent value={TABS.PURCHASED} className="">
-              {activeTab === TABS.PURCHASED && renderTabContent()}
+              {renderTabContent()}
             </TabsContent>
           </Tabs>
         </div>

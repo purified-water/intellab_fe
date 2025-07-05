@@ -18,6 +18,7 @@ interface Transaction {
   date: string;
   status: string;
   type: "Course" | "Plan" | "Problem";
+  paymentId: string;
 }
 
 interface TransactionsTableListProps {
@@ -25,6 +26,7 @@ interface TransactionsTableListProps {
 }
 
 const TABLE_HEADERS = {
+  PAYMENT_ID: "Payment ID",
   USER: "User",
   DATE: "Date",
   AMOUNT: "Amount",
@@ -119,6 +121,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
         // Map API response to local format
         formattedTransactions = apiResponse.content.map((transaction, index) => ({
           id: `${transaction.user.userId}-${index}-${page}`,
+          paymentId: transaction.paymentId,
           name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
           email: transaction.user.email,
           amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
@@ -173,6 +176,9 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     return (
       <thead className="text-left border-t border-b border-gray5">
         <tr>
+          <th className="py-4">
+            <div className="flex items-center gap-2">{TABLE_HEADERS.PAYMENT_ID}</div>
+          </th>
           <th className="py-4">
             <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
           </th>
@@ -244,92 +250,116 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     );
   };
 
-  const renderBody = () => {
+  const renderSkeleton = () => {
     return (
       <tbody>
-        {loading ? (
-          Array.from({ length: itemsPerPage }).map((_, idx) => (
-            <tr key={idx} className="text-base border-b border-gray5">
-              <td className="py-1">
-                <div className="flex items-center gap-2">
-                  {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
-                  <div className="space-y-1">
-                    <Skeleton className="w-32 h-4" />
-                    <Skeleton className="w-40 h-3" />
-                  </div>
+        {Array.from({ length: itemsPerPage }).map((_, idx) => (
+          <tr key={idx} className="text-base border-b border-gray5">
+            <td className="py-1">
+              <Skeleton className="w-32 h-4" />
+            </td>
+            <td className="py-1">
+              <div className="flex items-center gap-2">
+                {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
+                <div className="space-y-1">
+                  <Skeleton className="w-32 h-4" />
+                  <Skeleton className="w-40 h-3" />
                 </div>
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-20 h-4" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-4" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-6 rounded-full" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-6 rounded-full" />
-              </td>
-            </tr>
-          ))
-        ) : transactions.length === 0 ? (
-          <tr>
-            <td colSpan={5}>
-              <div className="flex justify-center py-8">
-                <EmptyList message={errorMessage || "No transactions found"} />
+              </div>
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-20 h-4" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-4" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-6 rounded-full" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-6 rounded-full" />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    );
+  };
+
+  const renderEmpty = () => {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={6}>
+            <div className="flex justify-center py-8">
+              <EmptyList message={errorMessage || "No transactions found"} />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    );
+  };
+
+  const renderList = () => {
+    return (
+      <tbody>
+        {transactions.map((transaction) => (
+          <tr key={transaction.id} className="text-base border-b border-gray5">
+            <td className="py-1">{transaction.paymentId}</td>
+            <td className="py-1">
+              <div className="flex items-center gap-2">
+                {/* <Avatar className="w-8 h-8">
+                  <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                </Avatar> */}
+                <div>
+                  <div className="font-medium">{transaction.name}</div>
+                  <div className="text-sm text-muted-foreground">{transaction.email}</div>
+                </div>
+              </div>
+            </td>
+            <td className="py-1">
+              {new Date(transaction.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+              })}
+            </td>
+            <td className="py-1 font-semibold">{transaction.amount}</td>
+            <td className="py-1">
+              <div
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  transaction.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                }`}
+              >
+                {transaction.status}
+              </div>
+            </td>
+            <td className="py-1">
+              <div
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  transaction.type === "Course"
+                    ? "bg-blue-100 text-blue-800"
+                    : transaction.type === "Plan"
+                      ? "bg-purple-100 text-purple-800"
+                      : "bg-orange-100 text-orange-800"
+                }`}
+              >
+                {transaction.type}
               </div>
             </td>
           </tr>
-        ) : (
-          transactions.map((transaction) => (
-            <tr key={transaction.id} className="text-base border-b border-gray5">
-              <td className="py-1">
-                <div className="flex items-center gap-2">
-                  {/* <Avatar className="w-8 h-8">
-                    <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
-                  </Avatar> */}
-                  <div>
-                    <div className="font-medium">{transaction.name}</div>
-                    <div className="text-sm text-muted-foreground">{transaction.email}</div>
-                  </div>
-                </div>
-              </td>
-              <td className="py-1">
-                {new Date(transaction.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric"
-                })}
-              </td>
-              <td className="py-1 font-semibold">{transaction.amount}</td>
-              <td className="py-1">
-                <div
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    transaction.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {transaction.status}
-                </div>
-              </td>
-              <td className="py-1">
-                <div
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    transaction.type === "Course"
-                      ? "bg-blue-100 text-blue-800"
-                      : transaction.type === "Plan"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-orange-100 text-orange-800"
-                  }`}
-                >
-                  {transaction.type}
-                </div>
-              </td>
-            </tr>
-          ))
-        )}
+        ))}
       </tbody>
     );
+  };
+
+  const renderBody = () => {
+    if (loading) {
+      return renderSkeleton();
+    } else if (transactions.length === 0) {
+      return renderEmpty();
+    } else {
+      return renderList();
+    }
   };
 
   const renderPagination = () => {

@@ -6,8 +6,9 @@ interface SearchProps {
   width?: number;
   value: string;
   onSearch: (query: string) => void;
+  placeHolderText?: string;
 }
-export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width }) => {
+export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width, placeHolderText }) => {
   const [query, setQuery] = useState(value);
 
   useEffect(() => {
@@ -28,7 +29,7 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width }) => 
           value={query}
           type="text"
           className="w-full h-[40px] p-2 pl-10 border border-gray4 rounded-[10px] bg-white focus-visible:outline-none"
-          placeholder="Search"
+          placeholder={placeHolderText ?? "Search"}
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={handleKeyPress}
         />
@@ -40,5 +41,6 @@ export const SearchBar: React.FC<SearchProps> = ({ value, onSearch, width }) => 
 SearchBar.propTypes = {
   value: PropTypes.string.isRequired,
   onSearch: PropTypes.func.isRequired,
-  width: PropTypes.number
+  width: PropTypes.number,
+  placeHolderText: PropTypes.string
 };

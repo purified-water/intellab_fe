@@ -64,6 +64,10 @@ const problemSlice = createSlice({
       } else {
         state.hasFilter = true;
       }
+    },
+
+    setProblems: (state, action: PayloadAction<Problem[]>) => {
+      state.problems = action.payload;
     }
   },
   extraReducers: (builder) => {
@@ -110,7 +114,7 @@ export const selectCodeByProblemId = (state: { userCode: UserCodeState }, proble
   return codeData || DEFAULT_CODE_DATA;
 };
 
-export const { setPage, filterProblems, resetFilters } = problemSlice.actions;
+export const { setPage, filterProblems, resetFilters, setProblems } = problemSlice.actions;
 export const { saveCode } = userCodeSlice.actions;
 export const userCodeReducer = userCodeSlice.reducer;
 
