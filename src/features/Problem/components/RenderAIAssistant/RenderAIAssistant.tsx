@@ -234,8 +234,19 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
         }
       }
     } catch (error) {
-      setIsLoadingResponse(false);
-      console.error("Error in sending message", error);
+      if (error instanceof Error && error.name !== "AbortError") {
+        setIsLoadingResponse(false);
+        const errorMsg = error.message || "Failed to process your request. Please try again.";
+        dispatch(
+          updateLastMessage({
+            type: "ai",
+            content: errorMsg,
+            timestamp: new Date().toISOString(),
+            metadata: { model: chatModel }
+          })
+        );
+        console.error("Error in sending message", error);
+      }
     } finally {
       setIsLoadingResponse(false);
       setIsStreaming(false);

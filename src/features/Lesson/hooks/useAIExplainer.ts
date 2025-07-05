@@ -74,6 +74,17 @@ export const useAIExplainer = ({ isExplainerToggled }: UseAIExplainerProps) => {
           const selectedContent = selection.toString().trim();
           if (!selectedContent) return;
 
+          // Check if selected text exceeds character limit
+          if (selectedContent.length > 800) {
+            showToastError({
+              toast: toast.toast,
+              message: "Selected text is too long. Please select text with 800 characters or less."
+            });
+            // Clear the selection and don't open the menu
+            selection.removeAllRanges();
+            return;
+          }
+
           const range = selection.getRangeAt(0);
           const rect = range.getBoundingClientRect();
 

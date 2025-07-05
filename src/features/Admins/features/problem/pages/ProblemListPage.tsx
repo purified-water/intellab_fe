@@ -23,11 +23,11 @@ export function ProblemListPage() {
   const [activeTab, setActiveTab] = useState(TABS.CREATED);
   const [showFilter, setShowFilter] = useState(false);
   const [filter, setFilter] = useState<AdminProblemParams>({
-    isComplete: true,
-    searchKey: "",
+    isCompletedCreation: true,
+    keyword: "",
     page: 0
   });
-  const [temporarySearchKey, setTemporarySearchKey] = useState(filter.searchKey || "");
+  const [temporaryKeyword, setTemporaryKeyword] = useState(filter.keyword || "");
 
   const navigate = useNavigate();
   const [totalPages, setTotalPages] = useState(1);
@@ -47,8 +47,8 @@ export function ProblemListPage() {
 
   const renderHeader = () => {
     const handleKeywordSearch = (query: string) => {
-      setTemporarySearchKey(query);
-      setFilter((prev) => ({ ...prev, searchKey: query, page: 0 }));
+      setTemporaryKeyword(query);
+      setFilter((prev) => ({ ...prev, keyword: query, page: 0 }));
     };
 
     const handleCreateProblem = () => {
@@ -61,7 +61,7 @@ export function ProblemListPage() {
         <SEO title="Problem Management | Intellab" />
         <div className="flex items-center">
           <FilterButton onClick={() => setShowFilter(!showFilter)} />
-          <SearchBar value={temporarySearchKey} onSearch={handleKeywordSearch} width={800} />
+          <SearchBar value={temporaryKeyword} onSearch={handleKeywordSearch} width={800} />
           <div className="pl-4 ml-2 border-l border-gray4">
             <Button
               onClick={handleCreateProblem}
@@ -81,7 +81,8 @@ export function ProblemListPage() {
       setActiveTab(tab);
       setFilter((prev) => ({
         ...prev,
-        isComplete: tab === TABS.CREATED ? true : false
+        isCompletedCreation: tab === TABS.CREATED ? true : false,
+        page: 0 // Reset to first page when switching tabs
       }));
     };
 
@@ -117,11 +118,19 @@ export function ProblemListPage() {
   };
 
   const renderFilterDialog = () => {
+    const handleApplyFilter = (newFilter: AdminProblemParams) => {
+      // Preserve the isCompletedCreation based on the current active tab
+      setFilter({
+        ...newFilter,
+        isCompletedCreation: activeTab === TABS.CREATED ? true : false
+      });
+    };
+
     return (
       <AdminProblemFilterDialog
         isVisible={showFilter}
         currentFilter={filter}
-        onApplyFilter={setFilter}
+        onApplyFilter={handleApplyFilter}
         categories={categories || []}
         isLoadingCategories={isLoadingCategories}
       />

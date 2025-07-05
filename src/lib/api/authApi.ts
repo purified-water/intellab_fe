@@ -9,7 +9,7 @@ import {
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
 import { ENVIRONMENT } from "@/constants";
 
-const CALLBACK_URL = ENVIRONMENT.CALLBACK_URL;
+const CALLBACK_URL = ENVIRONMENT.CALLBACK_URL || "https://www.intellab.site";
 
 export const authAPI = {
   login: async (email: string, password: string) => {

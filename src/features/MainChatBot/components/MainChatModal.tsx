@@ -215,7 +215,19 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       updateLastVisit();
       dispatch(setChatDetail(response.data));
     } catch (error) {
-      console.error(error);
+      if (error instanceof Error && error.name !== "AbortError") {
+        setIsLoadingResponse(false);
+        const errorMsg = error.message || "Failed to process your request. Please try again.";
+        dispatch(
+          updateLastMessage({
+            type: "ai",
+            content: errorMsg,
+            timestamp: new Date().toISOString(),
+            metadata: { model: chatModel }
+          })
+        );
+        console.error("Error in sending message", error);
+      }
     }
   };
 

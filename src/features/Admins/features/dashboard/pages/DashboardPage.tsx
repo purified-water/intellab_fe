@@ -132,36 +132,6 @@ export const DashboardPage = () => {
     }
   ];
 
-  // const revenueMonthlyData = [
-  //   { label: "Jan", value: 500 },
-  //   { label: "Feb", value: 700 },
-  //   { label: "Mar", value: 600 },
-  //   { label: "Apr", value: 800 },
-  //   { label: "May", value: 1200 },
-  //   { label: "Jun", value: 900 },
-  //   { label: "Jul", value: 750 },
-  //   { label: "Aug", value: 880 },
-  //   { label: "Sep", value: 730 },
-  //   { label: "Oct", value: 910 },
-  //   { label: "Nov", value: 1100 },
-  //   { label: "Dec", value: 1000 }
-  // ];
-
-  // const completionRateData = [
-  //   { month: "Jan", completionRate: 70 },
-  //   { month: "Feb", completionRate: 72 },
-  //   { month: "Mar", completionRate: 68 },
-  //   { month: "Apr", completionRate: 75 },
-  //   { month: "May", completionRate: 80 },
-  //   { month: "Jun", completionRate: 78 },
-  //   { month: "Jul", completionRate: 82 },
-  //   { month: "Aug", completionRate: 79 },
-  //   { month: "Sep", completionRate: 85 },
-  //   { month: "Oct", completionRate: 83 },
-  //   { month: "Nov", completionRate: 86 },
-  //   { month: "Dec", completionRate: 88 }
-  // ];
-
   return (
     <div className="dashboard-container max-w-[1400px] mx-auto p-6 space-y-8">
       <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Dashboard</h1>
@@ -172,19 +142,19 @@ export const DashboardPage = () => {
           // Loading state for KPIs
           <>
             {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="rounded-lg border p-4 flex flex-col gap-2 shadow animate-pulse">
-                <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                <div className="h-8 bg-gray-200 rounded w-1/3"></div>
-                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div key={item} className="flex flex-col gap-2 p-4 border rounded-lg shadow animate-pulse">
+                <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
+                <div className="w-1/3 h-8 bg-gray-200 rounded"></div>
+                <div className="w-2/3 h-4 bg-gray-200 rounded"></div>
               </div>
             ))}
           </>
         ) : error ? (
           // Error state
-          <div className="col-span-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <div className="col-span-4 p-4 border border-red-200 rounded-lg bg-red-50">
             <p className="text-red-500">Failed to load dashboard data: {error}</p>
             <button
-              className="mt-2 px-4 py-2 bg-red-100 text-red-700 rounded hover:bg-red-200"
+              className="px-4 py-2 mt-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
               onClick={() => {
                 // Retry fetch on button click
                 adminDashboardAPI.getOverviewStats({

@@ -19,7 +19,12 @@ const publicationOptions = [
   { label: "Private", value: false }
 ];
 
-const levelOptions: AdminProblemParams["level"][] = ["easy", "medium", "hard"];
+const levelOptions = [
+  { label: "All", value: null },
+  { label: "Easy", value: "easy" as const },
+  { label: "Medium", value: "medium" as const },
+  { label: "Hard", value: "hard" as const }
+];
 
 export function AdminProblemFilterDialog({
   isVisible,
@@ -31,10 +36,10 @@ export function AdminProblemFilterDialog({
   const [localFilter, setLocalFilter] = useState<AdminProblemParams>(currentFilter);
 
   const handleCategoryClick = (category: TCategory) => {
-    const exists = localFilter.categories?.some((c) => c.categoryId === category.categoryId);
+    const exists = localFilter.categories?.some((c) => c === category.categoryId);
     const newCategories = exists
-      ? localFilter.categories?.filter((c) => c.categoryId !== category.categoryId)
-      : [...(localFilter.categories || []), category];
+      ? localFilter.categories?.filter((c) => c !== category.categoryId)
+      : [...(localFilter.categories || []), category.categoryId];
     setLocalFilter({ ...localFilter, categories: newCategories });
   };
 
@@ -43,8 +48,9 @@ export function AdminProblemFilterDialog({
   };
 
   const handleReset = () => {
-    onApplyFilter({ ...currentFilter, level: "", isPublished: undefined, categories: [] });
-    setLocalFilter({ ...currentFilter, level: "", isPublished: undefined, categories: [] });
+    const resetFilter = { ...currentFilter, level: null, isPublished: undefined, categories: [] };
+    onApplyFilter(resetFilter);
+    setLocalFilter(resetFilter);
   };
 
   return (
@@ -67,15 +73,26 @@ export function AdminProblemFilterDialog({
           <div>
             <h3 className="mb-2 text-lg font-semibold">Level</h3>
             <RadioGroup
-              value={localFilter.level}
-              onValueChange={(value) => setLocalFilter({ ...localFilter, level: value as AdminProblemParams["level"] })}
+              value={localFilter.level ?? "all"}
+              onValueChange={(value) =>
+                setLocalFilter({
+                  ...localFilter,
+                  level: value === "all" ? null : (value as AdminProblemParams["level"])
+                })
+              }
               className="space-y-2"
             >
-              {levelOptions.map((level) => (
-                <div key={level} className="flex items-center gap-2">
-                  <RadioGroupItem value={level ?? ""} id={`level-${level}`} />
-                  <label htmlFor={`level-${level}`} className="capitalize cursor-pointer">
-                    {level}
+              {levelOptions.map((option) => (
+                <div key={String(option.value)} className="flex items-center gap-2">
+                  <RadioGroupItem
+                    value={option.value === null ? "all" : option.value}
+                    id={`level-${option.value === null ? "all" : option.value}`}
+                  />
+                  <label
+                    htmlFor={`level-${option.value === null ? "all" : option.value}`}
+                    className="capitalize cursor-pointer"
+                  >
+                    {option.label}
                   </label>
                 </div>
               ))}
@@ -116,7 +133,7 @@ export function AdminProblemFilterDialog({
             ) : null}
             {!isLoadingCategories &&
               categories.map((category) => {
-                const isSelected = localFilter.categories?.some((c) => c.categoryId === category.categoryId);
+                const isSelected = localFilter.categories?.some((c) => c === category.categoryId);
                 return (
                   <button
                     type="button"

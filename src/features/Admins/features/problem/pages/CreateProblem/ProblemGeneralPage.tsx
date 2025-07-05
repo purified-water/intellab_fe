@@ -179,6 +179,9 @@ export const ProblemGeneralPage = () => {
               <FormControl>
                 <Input type="number" {...field} onChange={(e) => field.onChange(Number(e.target.value))} />
               </FormControl>
+              <FormDescription>
+                Note: Easy should be from 1 to 5, Medium from 6 to 10, Hard from 11 to 20.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
