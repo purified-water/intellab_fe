@@ -122,7 +122,14 @@ export const useCodeSubmission = ({ code, language, problemId, learningId, cours
   };
 
   const handleSubmitCode = async () => {
-    if (!userRedux?.isEmailVerified) {
+    if (!userRedux) {
+      showToastError({
+        toast: toast,
+        title: "Login required",
+        message: "Please log in to submit your code."
+      });
+      return;
+    } else if (!userRedux?.isEmailVerified) {
       showToastError({
         toast: toast,
         title: "Email verification required",

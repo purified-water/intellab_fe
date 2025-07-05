@@ -24,6 +24,7 @@ export interface TransactionItem {
   amount: number;
   status: string;
   type: string;
+  paymentId: string;
 }
 
 export interface PurchasedItem {

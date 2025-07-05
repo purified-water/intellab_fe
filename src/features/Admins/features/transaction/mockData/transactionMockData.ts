@@ -115,7 +115,8 @@ export const mockTransactions = [
     amount: "11,475,000 VND",
     date: "2024-06-14",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-002",
@@ -124,7 +125,8 @@ export const mockTransactions = [
     amount: "7,475,000 VND",
     date: "2024-06-13",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-003",
@@ -133,7 +135,8 @@ export const mockTransactions = [
     amount: "4,975,000 VND",
     date: "2024-06-12",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-004",
@@ -142,7 +145,8 @@ export const mockTransactions = [
     amount: "3,725,000 VND",
     date: "2024-06-11",
     status: "Failed",
-    type: "Problem" as const
+    type: "Problem" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-005",
@@ -151,7 +155,8 @@ export const mockTransactions = [
     amount: "9,475,000 VND",
     date: "2024-06-10",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-006",
@@ -160,7 +165,8 @@ export const mockTransactions = [
     amount: "5,725,000 VND",
     date: "2024-06-09",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-007",
@@ -169,7 +175,8 @@ export const mockTransactions = [
     amount: "8,225,000 VND",
     date: "2024-06-08",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-008",
@@ -178,7 +185,8 @@ export const mockTransactions = [
     amount: "4,725,000 VND",
     date: "2024-06-07",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-009",
@@ -187,7 +195,8 @@ export const mockTransactions = [
     amount: "10,475,000 VND",
     date: "2024-06-06",
     status: "Failed",
-    type: "Problem" as const
+    type: "Problem" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-010",
@@ -196,7 +205,8 @@ export const mockTransactions = [
     amount: "6,475,000 VND",
     date: "2024-06-05",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-011",
@@ -205,7 +215,8 @@ export const mockTransactions = [
     amount: "8,975,000 VND",
     date: "2024-06-04",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-012",
@@ -214,7 +225,8 @@ export const mockTransactions = [
     amount: "4,475,000 VND",
     date: "2024-06-03",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-013",
@@ -223,7 +235,8 @@ export const mockTransactions = [
     amount: "7,475,000 VND",
     date: "2024-06-02",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-014",
@@ -232,7 +245,8 @@ export const mockTransactions = [
     amount: "3,475,000 VND",
     date: "2024-06-01",
     status: "Failed",
-    type: "Problem" as const
+    type: "Problem" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-015",
@@ -241,7 +255,8 @@ export const mockTransactions = [
     amount: "9,725,000 VND",
     date: "2024-05-31",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-016",
@@ -250,7 +265,8 @@ export const mockTransactions = [
     amount: "5,475,000 VND",
     date: "2024-05-30",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-017",
@@ -259,7 +275,8 @@ export const mockTransactions = [
     amount: "8,725,000 VND",
     date: "2024-05-29",
     status: "Success",
-    type: "Course" as const
+    type: "Course" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-018",
@@ -268,7 +285,8 @@ export const mockTransactions = [
     amount: "4,225,000 VND",
     date: "2024-05-28",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-019",
@@ -277,7 +295,8 @@ export const mockTransactions = [
     amount: "10,725,000 VND",
     date: "2024-05-27",
     status: "Failed",
-    type: "Problem" as const
+    type: "Problem" as const,
+    paymentId: "12345678901234567"
   },
   {
     id: "tx-020",
@@ -286,7 +305,8 @@ export const mockTransactions = [
     amount: "4,975,000 VND",
     date: "2024-05-26",
     status: "Success",
-    type: "Plan" as const
+    type: "Plan" as const,
+    paymentId: "12345678901234567"
   }
 ];
 

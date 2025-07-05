@@ -73,6 +73,24 @@ export const FilterComponent: React.FC = () => {
     dispatch(filterProblems());
   };
 
+  const handleReset = () => {
+    dispatch(resetFilters());
+    setSelectedCategories([]);
+    setSelectedLevel("All");
+    setSelectedStatus("All");
+
+    dispatch(
+      fetchPaginatedProblems({
+        keyword: "",
+        page: 0,
+        size: 20,
+        selectedCategories: [],
+        level: null,
+        status: null
+      })
+    );
+  };
+
   return (
     <div
       style={{
@@ -145,12 +163,7 @@ export const FilterComponent: React.FC = () => {
         <Button
           variant="outline"
           className="px-6 py-3 bg-white border rounded-lg border-appPrimary text-appPrimary hover:opacity-70"
-          onClick={() => {
-            dispatch(resetFilters());
-            setSelectedCategories([]);
-            setSelectedLevel("All");
-            setSelectedStatus("All");
-          }}
+          onClick={handleReset}
         >
           Reset
         </Button>

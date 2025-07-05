@@ -62,8 +62,7 @@ export function CourseList(props: CourseListProps) {
             setTotalPages(response.totalPages);
           }
         }
-        const filteredCourses = filterCoursesByPrice(response.content);
-        setCourses(filteredCourses);
+        setCourses(response.content);
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
       onEnd: async () => setLoading(false)

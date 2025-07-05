@@ -454,15 +454,16 @@ export const courseAPI = {
     }
     try {
       const { filter, page } = query!;
-      const { keyword, rating, levels, categories, prices, isCompletedCreation } = filter;
+      const { keyword, rating, levels, categories, isCompletedCreation, priceFrom, priceTo } = filter;
       const categoryIds = categories ? categories.map((category) => category.categoryId) : null;
       const response = await apiClient.get(`/course/admin/courses/search`, {
         params: {
           keyword: keyword,
           ratings: rating ? (parseFloat(rating) > 0 ? parseFloat(rating) : null) : null,
-          price: prices && prices.length > 0 ? prices.some((price) => price === "Paid") : null,
           categories: categoryIds && categoryIds.length > 0 ? categoryIds.join(",") : null,
           levels: levels && levels.length > 0 ? levels.join(",") : null,
+          priceFrom: priceFrom ?? undefined,
+          priceTo: priceTo ?? undefined,
           isCompletedCreation: isCompletedCreation,
           size: DEFAULT_PAGE_SIZE,
           page: page
