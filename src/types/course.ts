@@ -1,5 +1,4 @@
 import { TCategory } from "./category";
-import { PriceRange } from "./price";
 
 export interface ICourse {
   averageRating: number | null;
@@ -40,7 +39,8 @@ export type TCourseFilter = {
   categories: TCategory[] | null;
   rating: string | null;
   levels: string[] | null;
-  prices: string[] | null;
-  priceRange: PriceRange | null;
+  price: string | null;
   isCompletedCreation: boolean | null;
+  priceFrom: number | null;
+  priceTo: number | null;
 };

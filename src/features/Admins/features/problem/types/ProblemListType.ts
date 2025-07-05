@@ -34,11 +34,11 @@ export type GetAdminProblemResponseType = APIResponseCode & {
 };
 
 export type AdminProblemParams = {
-  isComplete: boolean;
-  searchKey?: string;
-  level?: "" | "easy" | "medium" | "hard";
+  isCompletedCreation: boolean;
+  keyword?: string;
+  level?: null | "easy" | "medium" | "hard";
   isPublished?: boolean;
-  categories?: TCategory[];
+  categories?: number[];
   page?: number;
   size?: number;
   sort?: string;

@@ -35,7 +35,7 @@ export const FeaturedCourseCard = ({ course }: GuestCourseCardProps) => {
               : "/src/assets/unavailable_image.jpg"
           }
           alt={course.courseName}
-          className="object-cover w-full h-full"
+          className="object-cover w-full h-full border-b"
           loading="lazy"
           onError={(e) => (e.currentTarget.src = "/src/assets/unavailable_image.jpg")}
         />

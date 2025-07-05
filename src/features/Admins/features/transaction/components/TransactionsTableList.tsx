@@ -8,7 +8,6 @@ import { transactionAPI } from "@/lib/api";
 import { EmptyList, Pagination } from "@/components/ui";
 import { useToast } from "@/hooks/use-toast";
 import { showToastError } from "@/utils/toastUtils";
-import { mockTransactions, MOCK_CONFIG, simulateDelay } from "../mockData/transactionMockData";
 
 interface Transaction {
   id: string;
@@ -18,6 +17,7 @@ interface Transaction {
   date: string;
   status: string;
   type: "Course" | "Plan" | "Problem";
+  paymentId: string;
 }
 
 interface TransactionsTableListProps {
@@ -25,6 +25,7 @@ interface TransactionsTableListProps {
 }
 
 const TABLE_HEADERS = {
+  PAYMENT_ID: "Payment ID",
   USER: "User",
   DATE: "Date",
   AMOUNT: "Amount",
@@ -56,87 +57,49 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     setLoading(true);
     setErrorMessage("");
     try {
-      console.log("Loading transactions for page:", page);
-
       let formattedTransactions: Transaction[] = [];
       let totalPagesCount = 0;
 
-      if (MOCK_CONFIG.USE_MOCK_DATA) {
-        // Use mock data
-        console.log("Using mock data for transactions");
-        await simulateDelay();
+      // Use real API with pagination metadata
+      const filters = {
+        search: searchQuery || undefined,
+        status:
+          selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
+        type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
+        sortBy: dateSortOrder !== "desc" ? "date" : "amount",
+        order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
+      };
+      const apiResponse = await transactionAPI.getTransactionsWithMetadata(page, itemsPerPage, filters);
 
-        // Apply filters to mock data
-        const filteredMockTransactions = mockTransactions.filter(
-          (transaction) =>
-            (transaction.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              transaction.email.toLowerCase().includes(searchQuery.toLowerCase())) &&
-            (selectedType === "All" || transaction.type === selectedType) &&
-            (selectedStatus === "All" || transaction.status === selectedStatus)
-        );
-
-        // Sort transactions
-        const sortedTransactions = [...filteredMockTransactions].sort((a, b) => {
-          if (dateSortOrder !== "desc") {
-            // Sort by date
-            const dateA = new Date(a.date);
-            const dateB = new Date(b.date);
-            return dateSortOrder === "asc" ? dateA.getTime() - dateB.getTime() : dateB.getTime() - dateA.getTime();
-          } else {
-            // Sort by amount
-            const amountA = parseFloat(a.amount.replace(/[VND,\s]/g, ""));
-            const amountB = parseFloat(b.amount.replace(/[VND,\s]/g, ""));
-            return sortOrder === "asc" ? amountA - amountB : amountB - amountA;
-          }
-        });
-
-        // Pagination for mock data
-        totalPagesCount = Math.ceil(sortedTransactions.length / itemsPerPage);
-        const startIndex = page * itemsPerPage;
-        formattedTransactions = sortedTransactions.slice(startIndex, startIndex + itemsPerPage);
-      } else {
-        // Use real API with pagination metadata
-        const filters = {
-          search: searchQuery || undefined,
-          status:
-            selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
-          type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
-          sortBy: dateSortOrder !== "desc" ? "date" : "amount",
-          order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
-        };
-
-        console.log("Calling transactions API with filters:", filters);
-        const apiResponse = await transactionAPI.getTransactionsWithMetadata(page, itemsPerPage, filters);
-
-        if (!apiResponse || !apiResponse.content) {
-          setErrorMessage("No transactions found.");
-          setTransactions([]);
-          setTotalPages(0);
-          setCurrentPage(0);
-          return;
-        }
-
-        // Map API response to local format
-        formattedTransactions = apiResponse.content.map((transaction, index) => ({
-          id: `${transaction.user.userId}-${index}-${page}`,
-          name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
-          email: transaction.user.email,
-          amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
-          date: new Date(transaction.date).toLocaleDateString(),
-          status: transaction.status === "00" ? "Success" : "Failed",
-          type:
-            transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
-              ? "Course"
-              : transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan"
-                ? "Plan"
-                : transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem"
-                  ? "Problem"
-                  : ("Course" as "Course" | "Plan" | "Problem")
-        }));
-
-        // Use server-side pagination metadata
-        totalPagesCount = apiResponse.totalPages;
+      if (!apiResponse || !apiResponse.content) {
+        setErrorMessage("No transactions found.");
+        setTransactions([]);
+        setTotalPages(0);
+        setCurrentPage(0);
+        return;
       }
+
+      // Map API response to local format
+      formattedTransactions = apiResponse.content.map((transaction, index) => ({
+        id: `${transaction.user.userId}-${index}-${page}`,
+        paymentId: transaction.paymentId,
+        name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
+        email: transaction.user.email,
+        amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
+        date: new Date(transaction.date).toLocaleDateString(),
+        status: transaction.status === "00" ? "Success" : "Failed",
+        type:
+          transaction.type?.toUpperCase() === "COURSE" || transaction.type === "Course"
+            ? "Course"
+            : transaction.type?.toUpperCase() === "PLAN" || transaction.type === "Plan"
+              ? "Plan"
+              : transaction.type?.toUpperCase() === "PROBLEM" || transaction.type === "Problem"
+                ? "Problem"
+                : ("Course" as "Course" | "Plan" | "Problem")
+      }));
+
+      // Use server-side pagination metadata
+      totalPagesCount = apiResponse.totalPages;
 
       setTransactions(formattedTransactions);
       setTotalPages(totalPagesCount);
@@ -148,9 +111,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     } catch (error) {
       console.error("Failed to fetch transactions:", error);
       setErrorMessage("Failed to fetch data. Please try again later.");
-      if (!MOCK_CONFIG.USE_MOCK_DATA) {
-        showToastError({ toast: toast.toast, message: "Failed to load transactions" });
-      }
+      showToastError({ toast: toast.toast, title: "Error", message: "Failed to load transactions" });
     } finally {
       setLoading(false);
     }
@@ -173,6 +134,9 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     return (
       <thead className="text-left border-t border-b border-gray5">
         <tr>
+          <th className="py-4">
+            <div className="flex items-center gap-2">{TABLE_HEADERS.PAYMENT_ID}</div>
+          </th>
           <th className="py-4">
             <div className="flex items-center gap-2">{TABLE_HEADERS.USER}</div>
           </th>
@@ -244,92 +208,116 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
     );
   };
 
-  const renderBody = () => {
+  const renderSkeleton = () => {
     return (
       <tbody>
-        {loading ? (
-          Array.from({ length: itemsPerPage }).map((_, idx) => (
-            <tr key={idx} className="text-base border-b border-gray5">
-              <td className="py-1">
-                <div className="flex items-center gap-2">
-                  {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
-                  <div className="space-y-1">
-                    <Skeleton className="w-32 h-4" />
-                    <Skeleton className="w-40 h-3" />
-                  </div>
+        {Array.from({ length: itemsPerPage }).map((_, idx) => (
+          <tr key={idx} className="text-base border-b border-gray5">
+            <td className="py-1">
+              <Skeleton className="w-32 h-4" />
+            </td>
+            <td className="py-1">
+              <div className="flex items-center gap-2">
+                {/* <Skeleton className="w-8 h-8 rounded-full" /> */}
+                <div className="space-y-1">
+                  <Skeleton className="w-32 h-4" />
+                  <Skeleton className="w-40 h-3" />
                 </div>
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-20 h-4" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-4" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-6 rounded-full" />
-              </td>
-              <td className="py-1">
-                <Skeleton className="w-16 h-6 rounded-full" />
-              </td>
-            </tr>
-          ))
-        ) : transactions.length === 0 ? (
-          <tr>
-            <td colSpan={5}>
-              <div className="flex justify-center py-8">
-                <EmptyList message={errorMessage || "No transactions found"} />
+              </div>
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-20 h-4" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-4" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-6 rounded-full" />
+            </td>
+            <td className="py-1">
+              <Skeleton className="w-16 h-6 rounded-full" />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    );
+  };
+
+  const renderEmpty = () => {
+    return (
+      <tbody>
+        <tr>
+          <td colSpan={6}>
+            <div className="flex justify-center py-8">
+              <EmptyList message={errorMessage || "No transactions found"} />
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    );
+  };
+
+  const renderList = () => {
+    return (
+      <tbody>
+        {transactions.map((transaction) => (
+          <tr key={transaction.id} className="text-base border-b border-gray5">
+            <td className="py-1">{transaction.paymentId}</td>
+            <td className="py-1">
+              <div className="flex items-center gap-2">
+                {/* <Avatar className="w-8 h-8">
+                  <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
+                </Avatar> */}
+                <div>
+                  <div className="font-medium">{transaction.name}</div>
+                  <div className="text-sm text-muted-foreground">{transaction.email}</div>
+                </div>
+              </div>
+            </td>
+            <td className="py-1">
+              {new Date(transaction.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric"
+              })}
+            </td>
+            <td className="py-1 font-semibold">{transaction.amount}</td>
+            <td className="py-1">
+              <div
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  transaction.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                }`}
+              >
+                {transaction.status}
+              </div>
+            </td>
+            <td className="py-1">
+              <div
+                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  transaction.type === "Course"
+                    ? "bg-blue-100 text-blue-800"
+                    : transaction.type === "Plan"
+                      ? "bg-purple-100 text-purple-800"
+                      : "bg-orange-100 text-orange-800"
+                }`}
+              >
+                {transaction.type}
               </div>
             </td>
           </tr>
-        ) : (
-          transactions.map((transaction) => (
-            <tr key={transaction.id} className="text-base border-b border-gray5">
-              <td className="py-1">
-                <div className="flex items-center gap-2">
-                  {/* <Avatar className="w-8 h-8">
-                    <AvatarFallback>{transaction.name.charAt(0)}</AvatarFallback>
-                  </Avatar> */}
-                  <div>
-                    <div className="font-medium">{transaction.name}</div>
-                    <div className="text-sm text-muted-foreground">{transaction.email}</div>
-                  </div>
-                </div>
-              </td>
-              <td className="py-1">
-                {new Date(transaction.date).toLocaleDateString("en-GB", {
-                  day: "2-digit",
-                  month: "2-digit",
-                  year: "numeric"
-                })}
-              </td>
-              <td className="py-1 font-semibold">{transaction.amount}</td>
-              <td className="py-1">
-                <div
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    transaction.status === "Success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                  }`}
-                >
-                  {transaction.status}
-                </div>
-              </td>
-              <td className="py-1">
-                <div
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                    transaction.type === "Course"
-                      ? "bg-blue-100 text-blue-800"
-                      : transaction.type === "Plan"
-                        ? "bg-purple-100 text-purple-800"
-                        : "bg-orange-100 text-orange-800"
-                  }`}
-                >
-                  {transaction.type}
-                </div>
-              </td>
-            </tr>
-          ))
-        )}
+        ))}
       </tbody>
     );
+  };
+
+  const renderBody = () => {
+    if (loading) {
+      return renderSkeleton();
+    } else if (transactions.length === 0) {
+      return renderEmpty();
+    } else {
+      return renderList();
+    }
   };
 
   const renderPagination = () => {
@@ -344,12 +332,6 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
 
   return (
     <div>
-      {/* {MOCK_CONFIG.USE_MOCK_DATA && (
-        <div className="bg-yellow-100 border border-yellow-400 text-yellow-800 px-3 py-2 rounded-md text-sm mb-4">
-          <strong>Mock Mode:</strong> Using simulated data for testing
-        </div>
-      )} */}
-
       <table className="w-full">
         {renderHeader()}
         {renderBody()}

@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { CourseState, ReduxCourse } from "./courseType";
-import { PriceRange, TCategory, ICourse } from "@/types";
+import { TCategory, ICourse } from "@/types";
 import { apiClient } from "@/lib/api/apiClient";
 
 const initialState: CourseState = {
@@ -15,29 +15,48 @@ export const fetchExploreCourses = createAsyncThunk(
   async (
     payload: {
       keyword: string;
+      priceFrom?: number | null;
+      priceTo?: number | null;
       selectedCategories: TCategory[];
+      selectedLevels: string[];
       selectedRating: string | null;
-      selectedPrices: string[];
     },
 
-    { dispatch }
+    { dispatch, getState }
   ) => {
     try {
-      const { keyword, selectedCategories, selectedRating, selectedPrices } = payload;
+      const { keyword, selectedCategories, selectedRating, priceFrom, priceTo } = payload;
       const categoryIds = selectedCategories.map((category) => category.categoryId);
 
       const response = await apiClient.get("course/courses/search", {
         params: {
           keyword: keyword,
           categories: categoryIds.join(","),
-          ratings: selectedRating ? (parseFloat(selectedRating) > 0 ? parseFloat(selectedRating) : null) : null,
-          price: selectedPrices.length === 1 && selectedPrices.some((value) => value === "Paid")
+          levels: payload.selectedLevels.join(","),
+          priceFrom: priceFrom ? priceFrom : null,
+          priceTo: priceTo ? priceTo : null,
+          ratings: selectedRating ? (parseFloat(selectedRating) > 0 ? parseFloat(selectedRating) : null) : null
         }
       });
 
       const courses = response.data.result.content;
 
+      // Get the current state
+      const state = getState() as { course: CourseState };
+
+      // Set the explore courses
       dispatch(courseSlice.actions.setExploreCourses(courses));
+
+      // Check if filtering has been applied
+      const hasFilter =
+        courses.length !== state.course.originalExploreCourses.length ||
+        (priceFrom !== null && priceFrom !== 0) ||
+        (priceTo !== null && priceTo !== 1000000) ||
+        selectedCategories.length > 0 ||
+        (selectedRating && selectedRating !== "0");
+
+      // Set the filter state
+      dispatch(courseSlice.actions.updateFilterStatus(Boolean(hasFilter)));
     } catch (error) {
       console.error("Error fetching explore courses:", error);
       throw error;
@@ -50,7 +69,13 @@ const courseSlice = createSlice({
   name: "course",
   initialState,
   reducers: {
-    resetCourseState: () => initialState,
+    resetCourseState: () => {
+      // Ensure we completely reset to initial state
+      return {
+        ...initialState,
+        hasFilter: false
+      };
+    },
 
     // Update or add a course's enrollment status based on courseId
     updateUserEnrolled: (state, action: PayloadAction<{ courseId: string; isEnrolled: boolean }>) => {
@@ -79,6 +104,7 @@ const courseSlice = createSlice({
     getExploreCourse: (state, action: PayloadAction<ICourse[]>) => {
       state.originalExploreCourses = action.payload; // Store the original data
       state.exploreCourses = action.payload; // Display the same data initially
+      state.hasFilter = false; // Reset filter state on initial load
     },
 
     resetFilters: (state) => {
@@ -91,55 +117,8 @@ const courseSlice = createSlice({
       state.exploreCourses = action.payload; // Display the same data initially
     },
 
-    filterCourses: (
-      state,
-      action: PayloadAction<{
-        // selectedType: string;
-        // selectedStatus: string;
-        // selectedCategories: string[];
-        // showCertificationPrep: boolean;
-        // selectedRating: string | null;
-        selectedLevels: string[];
-        selectedPrices: string[];
-        priceRange: PriceRange;
-      }>
-    ) => {
-      {
-        /* NOTE 3/11/2024: Code comments will be utilized later on */
-      }
-      // const { selectedCategories, selectedRating, selectedLevels, selectedPrices, priceRange } = action.payload;
-      const { selectedLevels, selectedPrices, priceRange } = action.payload;
-
-      state.exploreCourses = state.exploreCourses.filter((course: ICourse) => {
-        if (!course) return null;
-        const matchLevels = selectedLevels.length === 0 || selectedLevels.includes(course.level);
-        const matchPrices =
-          selectedPrices.length === 0 ||
-          selectedPrices.some((price) => {
-            if (price === "Paid") {
-              if (priceRange) {
-                return course.price !== null && course.price > priceRange.min && course.price <= priceRange.max;
-              }
-              return course.price !== null && course.price > 0;
-            }
-            if (price === "Free") {
-              return course.price == 0;
-            }
-            return course.price !== null && course.price >= 0;
-          });
-        // return matchCategories && matchRating && matchLevels && matchPrices;
-        return matchLevels && matchPrices;
-      });
-      if (
-        state.exploreCourses.length === state.originalExploreCourses.length
-        // state.originalExploreCourses.length !== 0
-      ) {
-        state.hasFilter = false;
-        // console.log("Explore courses length", state.exploreCourses.length);
-        // console.log("Original courses length", state.originalExploreCourses.length);
-      } else {
-        state.hasFilter = true;
-      }
+    updateFilterStatus: (state, action: PayloadAction<boolean>) => {
+      state.hasFilter = action.payload;
     }
   }
 });
@@ -150,7 +129,8 @@ export const {
   addCourse,
   removeCourse,
   getExploreCourse,
-  filterCourses,
-  resetFilters
+  resetFilters,
+  setExploreCourses,
+  updateFilterStatus
 } = courseSlice.actions;
 export default courseSlice.reducer;

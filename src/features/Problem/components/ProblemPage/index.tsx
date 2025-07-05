@@ -1,4 +1,4 @@
 export * from "./FilterButton";
 export * from "./FilterComponent";
-export * from "./ProblemListItem";
+export * from "./ProblemList";
 export * from "./SearchBar";

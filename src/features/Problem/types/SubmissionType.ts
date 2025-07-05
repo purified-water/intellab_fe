@@ -44,13 +44,13 @@ export interface SendSubmissionType {
 
 // MOSS plagiarism detection types
 export interface MOSSResult {
-  analysisId: string;
-  similarityScore: number;
-  status: "pending" | "analyzed" | "flagged" | "failed";
-  reportUrl?: string;
-  analyzedAt?: string;
-  matches?: MOSSMatch[];
-  threshold: number;
+  matchCode: string;
+  percent: number;
+  submissionId1: string; // User submission
+  submissionId2: string; // Other user submission
+  userId1: string; // User ID of the first submission
+  userId2: string; // User ID of the second submission
+  username2: string; // Username of the second submission
 }
 
 export interface MOSSMatch {
@@ -73,6 +73,6 @@ export interface SubmissionTypeNoProblem {
   scoreAchieved: number;
   userUid: string;
   testCasesOutput: TestCaseAfterSubmit[];
-  mossResult?: MOSSResult;
+  mossResults?: MOSSResult[];
   isSolved: boolean;
 }

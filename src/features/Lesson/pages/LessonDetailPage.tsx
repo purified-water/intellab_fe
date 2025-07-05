@@ -182,22 +182,24 @@ export const LessonDetailPage = () => {
   };
   return (
     <>
-      <div className="grid grid-cols-1 gap-2 p-6 sm:pl-24 lg:grid-cols-5 md:pl-40 md:pr-24">
-        {loading ? (
-          <div className="col-span-1 lg:col-span-4">{renderSkeleton()}</div>
-        ) : (
-          <>
-            <div className="col-span-1 lg:col-span-4">
-              {LessonNav?.renderReturnToCourse()}
-              {renderContent()}
-            </div>
-            <div className="hidden col-span-1 lg:block">
-              <div className="sticky top-5 lg:right-4">
-                <TableOfContents items={tocItems} activeId={activeHeading} />
+      <div className="flex justify-center p-6 sm:pl-24 md:pl-40 md:pr-24">
+        <div className="w-full max-w-[1400px] grid grid-cols-1 gap-2 lg:grid-cols-5">
+          {loading ? (
+            <div className="col-span-1 lg:col-span-4">{renderSkeleton()}</div>
+          ) : (
+            <>
+              <div className="col-span-1 lg:col-span-4">
+                {LessonNav?.renderReturnToCourse()}
+                {renderContent()}
               </div>
-            </div>
-          </>
-        )}
+              <div className="hidden col-span-1 lg:block">
+                <div className="sticky top-5 lg:right-4">
+                  <TableOfContents items={tocItems} activeId={activeHeading} />
+                </div>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       {menuPosition && (

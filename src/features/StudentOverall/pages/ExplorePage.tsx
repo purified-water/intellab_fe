@@ -10,11 +10,12 @@ import { AIOrb } from "@/features/MainChatBot/components/AIOrb";
 import { ScrollableList } from "@/components/ui/HorizontallyListScrollButtons";
 import { Course, FilterComponent, SearchResultComponent } from "../components";
 import { getUserIdFromLocalStorage } from "@/utils";
-import { Button, Spinner } from "@/components/ui";
+import { Button, EmptyList, Spinner } from "@/components/ui";
 import { ArrowRight } from "lucide-react";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { SEO } from "@/components/SEO";
 import React from "react";
+import { useGetFeaturedCourses, useGetFreeCourses } from "../hooks/useHomePage";
 
 const AppFooter = React.lazy(() => import("@/components/AppFooter").then((module) => ({ default: module.AppFooter })));
 
@@ -26,6 +27,9 @@ export const ExplorePage = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const exploreCourses = useSelector((state: RootState) => state.course.exploreCourses);
+  const { data: featuredCourses } = useGetFeaturedCourses();
+  const { data: freeCourses } = useGetFreeCourses();
+
   const hasFilter = useSelector((state: RootState) => state.course.hasFilter);
 
   // Add a ref to track if initial fetch is done
@@ -111,7 +115,7 @@ export const ExplorePage = () => {
   };
 
   const renderEmptyCourse = () => {
-    return <div className="flex items-center justify-center w-full text-2xl text-black">No courses available</div>;
+    return <EmptyList message="No courses found" />;
   };
 
   const renderCourses = (displayingCourses: ICourse[]) => {
@@ -186,9 +190,9 @@ export const ExplorePage = () => {
                   {/* Section for Fundamentals For Beginner */}
                   <div className="flex flex-col mb-8 sm:mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
-                      <div className="text-2xl font-bold text-black sm:text-3xl">Fundamental For Beginner</div>
+                      <div className="text-2xl font-bold text-black sm:text-3xl">Trending Courses</div>
                       {/* NOTE: 26/12/2024 temporarily hide this this button */}
-                      <Link to="/explore/fundamental" state={{ courses: displayedCourses, section: "fundamentals" }}>
+                      <Link to="/explore/all" state={{ courses: displayedCourses, section: "all" }}>
                         <Button type="button" variant="ghost" size="sm" className="gap-1">
                           View all <ArrowRight className="w-4 h-4" />
                         </Button>
@@ -201,14 +205,20 @@ export const ExplorePage = () => {
                   {/* Section for Popular Courses */}
                   <div className="flex flex-col mb-[78px]">
                     <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
-                      <div className="text-2xl font-bold text-black sm:text-3xl">Popular Courses</div>
-                      {/* NOTE: 26/12/2024 temporarily hide this this button */}
-                      {/* <Link to="/explore/popular" state={{ courses: displayedCourses }}>
-                <button className="mr-20 text-lg underline text-black-50">View all &gt;</button>
-              </Link> */}
+                      <div className="text-2xl font-bold text-black sm:text-3xl">Featured Courses</div>
                     </div>
                     {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
-                    {loading && displayedCourses.length === 0 ? renderSkeletonList() : renderCourses(displayedCourses)}
+                    {loading && displayedCourses.length === 0
+                      ? renderSkeletonList()
+                      : renderCourses(featuredCourses || [])}
+                  </div>
+
+                  <div className="flex flex-col mb-[78px]">
+                    <div className="flex items-center justify-between w-full mb-0 sm:mb-8">
+                      <div className="text-2xl font-bold text-black sm:text-3xl">Free Courses</div>
+                    </div>
+                    {!loading && displayedCourses.length === 0 && renderEmptyCourse()}
+                    {loading && displayedCourses.length === 0 ? renderSkeletonList() : renderCourses(freeCourses || [])}
                   </div>
                 </div>
               ) : displayedCourses.length !== 0 ? (

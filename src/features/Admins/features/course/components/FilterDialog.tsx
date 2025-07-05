@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { courseAPI } from "@/lib/api/courseApi";
-import { PriceRange, TCategory, TCourseFilter } from "@/types";
+import { TCategory, TCourseFilter } from "@/types";
 import { motion } from "framer-motion";
 import { showToastError } from "@/utils";
 import { useToast } from "@/hooks";
@@ -9,7 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/shadcn";
 
 interface FilterDialogProps {
   isVisible: boolean;
-  currentFilter: TCourseFilter | null;
+  currentFilter: TCourseFilter;
   onFilter: (filters: TCourseFilter) => void;
 }
 
@@ -19,40 +19,73 @@ export function FilterDialog(props: FilterDialogProps) {
   const [selectedCategories, setSelectedCategories] = useState<TCategory[]>([]);
   const [selectedRating, setSelectedRating] = useState<string | null>("0");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<PriceRange | null>(null);
+  const [priceFilterType, setPriceFilterType] = useState<string | null>(null);
   const [categories, setCategories] = useState<TCategory[]>([]);
+  const [priceFrom, setPriceFrom] = useState<number | null>(null);
+  const [priceTo, setPriceTo] = useState<number | null>(null);
+  const [priceRangeError, setPriceRangeError] = useState<string | null>(null);
+
   const toast = useToast();
 
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await courseAPI.getCategories();
-        if (response?.result) {
-          setCategories(response.result);
-        }
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          showToastError({ toast: toast.toast, message: error.message });
-        }
+  const fetchCategories = async () => {
+    try {
+      const response = await courseAPI.getCategories();
+      if (response?.result) {
+        setCategories(response.result);
       }
-    };
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        showToastError({ toast: toast.toast, message: error.message });
+      }
+    }
+  };
+
+  useEffect(() => {
     fetchCategories();
   }, []);
 
+  const setPriceRange = (from: number | null, to: number | null) => {
+    setPriceFrom(from);
+    setPriceTo(to);
+  };
+
+  useEffect(() => {
+    if (priceFilterType) {
+      if (priceFilterType === "Free") {
+        setPriceRange(0, 0);
+      } else {
+        setPriceRange(0, 200000);
+      }
+    } else {
+      setPriceRange(null, null);
+    }
+  }, [priceFilterType]);
+
+  useEffect(() => {
+    if (priceFilterType === "Paid") {
+      if (priceFrom === null || priceTo === null) {
+        setPriceRangeError("Please enter a valid price range.");
+      } else if (priceFrom > priceTo) {
+        setPriceRangeError("Price From cannot be greater than Price To.");
+      } else {
+        setPriceRangeError(null);
+      }
+    }
+  }, [priceFrom, priceTo]);
+
   const ratings = [
-    { label: "All", value: "0", count: 0 },
-    { label: "4.5 & up", value: "4.5", count: 424 },
-    { label: "4.0 & up", value: "4.0", count: 588 },
-    { label: "3.5 & up", value: "3.5", count: 619 },
-    { label: "3.0 & up", value: "3.0", count: 626 }
+    { label: "All", value: "0" },
+    { label: "4.5 & up", value: "4.5" },
+    { label: "4.0 & up", value: "4.0" },
+    { label: "3.5 & up", value: "3.5" },
+    { label: "3.0 & up", value: "3.0" }
   ];
 
   const levels = ["Beginner", "Intermediate", "Advanced"];
   const prices = ["Free", "Paid"];
 
-  const handlePriceChange = (price: string) => {
-    setSelectedPrices((prev) => (prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]));
+  const handlePriceFilterTypeChange = (price: string) => {
+    setPriceFilterType((prev) => (prev === price ? null : price));
   };
 
   const handleLevelChange = (level: string) => {
@@ -63,39 +96,38 @@ export function FilterDialog(props: FilterDialogProps) {
     setSelectedCategories((prev) => (prev.includes(topic) ? prev.filter((g) => g !== topic) : [...prev, topic]));
   };
 
-  useEffect(() => {
-    if (!selectedPrices.includes("Paid")) {
-      setPriceRange(null);
-    }
-  }, [selectedPrices]);
-
   const handleFilter = () => {
-    const newFilters: TCourseFilter = {
-      categories: selectedCategories,
-      rating: selectedRating,
-      levels: selectedLevels,
-      prices: selectedPrices,
-      priceRange,
-      keyword: currentFilter?.keyword || "",
-      isCompletedCreation: currentFilter?.isCompletedCreation || true
-    };
-    onFilter(newFilters);
+    if (!priceRangeError) {
+      const newFilters: TCourseFilter = {
+        categories: selectedCategories,
+        rating: selectedRating,
+        levels: selectedLevels,
+        price: priceFilterType,
+        keyword: currentFilter.keyword,
+        isCompletedCreation: currentFilter.isCompletedCreation,
+        priceFrom: priceFrom,
+        priceTo: priceTo
+      };
+      onFilter(newFilters);
+    }
   };
 
   const handleResetClick = () => {
     setSelectedCategories([]);
     setSelectedRating("0");
     setSelectedLevels([]);
-    setSelectedPrices([]);
-    setPriceRange(null);
+    setPriceFilterType(null);
+    setPriceFrom(null);
+    setPriceTo(null);
     onFilter({
       categories: [],
-      rating: "0",
+      rating: null,
       levels: [],
-      prices: [],
-      priceRange: null,
-      keyword: currentFilter?.keyword || "",
-      isCompletedCreation: currentFilter?.isCompletedCreation || true
+      price: null,
+      keyword: currentFilter.keyword,
+      isCompletedCreation: currentFilter.isCompletedCreation,
+      priceFrom: null,
+      priceTo: null
     });
   };
 
@@ -164,14 +196,14 @@ export function FilterDialog(props: FilterDialogProps) {
             <input
               type="checkbox"
               value={price}
-              checked={selectedPrices.includes(price)}
-              onChange={() => handlePriceChange(price)}
+              checked={priceFilterType === price}
+              onChange={() => handlePriceFilterTypeChange(price)}
               className="hidden peer"
             />
             <div
               className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary peer-checked:border-appPrimary`}
             >
-              {selectedPrices.includes(price) && (
+              {priceFilterType === price && (
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
@@ -188,32 +220,29 @@ export function FilterDialog(props: FilterDialogProps) {
           </label>
         ))}
       </div>
-      {selectedPrices.includes("Paid") && (
+      {priceFilterType == "Paid" && (
         <div className="flex items-center mt-4 space-x-2">
           <span>From:</span>
           <input
             type="number"
             className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
             placeholder="0"
-            onChange={(e) =>
-              setPriceRange((prev) =>
-                prev ? { ...prev, min: Number(e.target.value) } : { min: Number(e.target.value), max: 0 }
-              )
-            }
+            value={priceFrom ?? ""}
+            onChange={(e) => setPriceFrom(e.target.value ? Number(e.target.value) : null)}
+            required
           />
           <span>To:</span>
           <input
             type="number"
             className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
             placeholder="200,000"
-            onChange={(e) =>
-              setPriceRange((prev) =>
-                prev ? { ...prev, max: Number(e.target.value) } : { min: 0, max: Number(e.target.value) }
-              )
-            }
+            value={priceTo ?? ""}
+            onChange={(e) => setPriceTo(e.target.value ? Number(e.target.value) : null)}
+            required
           />
         </div>
       )}
+      <p className="mt-1 text-xs text-red-500">{priceRangeError}</p>
     </div>
   );
 

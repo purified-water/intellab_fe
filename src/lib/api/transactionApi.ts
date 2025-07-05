@@ -24,6 +24,7 @@ export interface TransactionItem {
   amount: number;
   status: string;
   type: string;
+  paymentId: string;
 }
 
 export interface PurchasedItem {
@@ -166,8 +167,6 @@ export const transactionAPI = {
     filters?: PurchasedItemFilters
   ) => {
     try {
-      console.log("Fetching purchased items with metadata:", { page, size, filters });
-
       // Prepare parameters for the top-purchased endpoint
       const params: Record<string, string | number> = {
         page: page,
@@ -198,7 +197,6 @@ export const transactionAPI = {
         params
       });
       const data: PaginatedPurchasedListResponse = response.data;
-      console.log("Purchased items with metadata API response:", data);
 
       if (apiResponseCodeUtils.isSuccessCode(data.code)) {
         return data.result;
@@ -225,8 +223,6 @@ export const transactionAPI = {
     filters?: TransactionFilters
   ) => {
     try {
-      console.log("Fetching transactions with metadata:", { page, size, filters });
-
       // Build parameters object similar to purchased items
       const params: Record<string, string | number> = {
         page,
@@ -266,7 +262,6 @@ export const transactionAPI = {
         params
       });
       const data: PaginatedTransactionListResponse = response.data;
-      console.log("Transactions with metadata API response:", data);
 
       if (apiResponseCodeUtils.isSuccessCode(data.code)) {
         return data.result;

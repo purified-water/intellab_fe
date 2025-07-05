@@ -101,14 +101,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
           {[
-            DROP_DOWN_MENU_ITEMS.VIEW,
             problem.isCompletedCreation ? DROP_DOWN_MENU_ITEMS.EDIT : DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT,
             DROP_DOWN_MENU_ITEMS.DELETE
           ].map((action) => (
             <DropdownMenuItem
               key={action}
               onClick={() => handleDropdownMenuItemClick(action)}
-              className="text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6"
+              className={`text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6 ${action === DROP_DOWN_MENU_ITEMS.DELETE ? "text-appHard" : ""}`}
             >
               {action}
             </DropdownMenuItem>
@@ -136,7 +135,18 @@ export function ProblemListItem(props: ProblemListItemProps) {
     return (
       <>
         <tr key={problem.problemId} className="text-base border-b border-gray5">
-          <td className="py-1 max-w-[300px] truncate">{problem.problemName}</td>
+          <td className="py-1 w-[320px] max-w-[320px] overflow-hidden pr-2 truncate">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="block truncate">{problem.problemName}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <div className="text-sm">{problem.problemName}</div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </td>
           <td
             className={`py-1 font-medium ${
               problem.problemLevel === "easy"
@@ -167,7 +177,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
                   />
                 </div>
               </td>
-              <td className="px-4 py-1 text-right">
+              <td className="py-1 pr-8 text-right">
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -182,7 +192,9 @@ export function ProblemListItem(props: ProblemListItemProps) {
                   </Tooltip>
                 </TooltipProvider>
               </td>
-              <td className="py-1 text-right">{problem.acceptanceRate}%</td>
+              <td className="py-1 pr-8 text-right">
+                {problem.acceptanceRate !== undefined ? `${problem.acceptanceRate * 100}%` : "0%"}
+              </td>
             </>
           )}
 

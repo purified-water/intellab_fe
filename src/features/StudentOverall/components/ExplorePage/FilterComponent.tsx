@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchExploreCourses, filterCourses, resetFilters } from "@/redux/course/courseSlice";
+import { fetchExploreCourses, resetFilters } from "@/redux/course/courseSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { courseAPI } from "@/lib/api/courseApi";
 import { PriceRange, TCategory } from "@/types";
@@ -13,8 +13,8 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   const [selectedCategories, setSelectedCategories] = useState<TCategory[]>([]);
   const [selectedRating, setSelectedRating] = useState<string | null>("0");
   const [selectedLevels, setSelectedLevels] = useState<string[]>([]);
-  const [selectedPrices, setSelectedPrices] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<PriceRange>({ min: 1, max: 1000000 });
+  const [priceRange, setPriceRange] = useState<PriceRange>({ min: null, max: null });
+  const [priceError, setPriceError] = useState<string>("");
   const dispatch = useAppDispatch();
   const [categories, setCategories] = useState<TCategory[]>([]);
 
@@ -33,19 +33,14 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   }, []);
 
   const ratings = [
-    { label: "All", value: "0", count: 0 },
-    { label: "4.5 & up", value: "4.5", count: 424 },
-    { label: "4.0 & up", value: "4.0", count: 588 },
-    { label: "3.5 & up", value: "3.5", count: 619 },
-    { label: "3.0 & up", value: "3.0", count: 626 }
+    { label: "All", value: "0" },
+    { label: "4.5 & up", value: "4.5" },
+    { label: "4.0 & up", value: "4.0" },
+    { label: "3.5 & up", value: "3.5" },
+    { label: "3.0 & up", value: "3.0" }
   ];
 
   const levels = ["Beginner", "Intermediate", "Advanced"];
-  const prices = ["Free", "Paid"];
-
-  const handlePriceChange = (price: string) => {
-    setSelectedPrices((prev) => (prev.includes(price) ? prev.filter((p) => p !== price) : [...prev, price]));
-  };
 
   const handleLevelChange = (level: string) => {
     setSelectedLevels((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]));
@@ -59,8 +54,30 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
   };
 
   const handleFilter = async () => {
-    await dispatch(fetchExploreCourses({ keyword, selectedCategories, selectedRating, selectedPrices }));
-    dispatch(filterCourses({ selectedLevels, selectedPrices, priceRange }));
+    // Don't allow filtering if there's a price error
+    if (priceError) {
+      return;
+    }
+
+    const priceFrom: number | null = priceRange.min !== undefined ? priceRange.min : null;
+    const priceTo = priceRange.max || null;
+
+    // Final validation before submitting
+    if (priceFrom !== null && priceTo !== null && priceFrom > priceTo) {
+      setPriceError("From price must be less than or equal to To price");
+      return;
+    }
+
+    await dispatch(
+      fetchExploreCourses({
+        keyword,
+        selectedCategories,
+        selectedLevels,
+        selectedRating,
+        priceFrom,
+        priceTo
+      })
+    );
   };
 
   return (
@@ -130,54 +147,56 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
 
           <div className="mt-4">
             <h3 className="mb-2 text-lg font-semibold">Price</h3>
-            <div className="space-y-2">
-              {prices.map((price) => (
-                <label key={price} className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    value={price}
-                    checked={selectedPrices.includes(price)}
-                    onChange={() => handlePriceChange(price)}
-                    className="hidden peer"
-                  />
-                  <div
-                    className={`w-4 h-4 border border-gray-300 rounded-sm flex items-center justify-center peer-checked:bg-appPrimary peer-checked:border-purple-500`}
-                  >
-                    {selectedPrices.includes(price) && (
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        strokeWidth="3"
-                        stroke="white"
-                        className="w-4 h-4"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                  <span>{price}</span>
-                </label>
-              ))}
-            </div>
-            {selectedPrices.includes("Paid") && (
+
+            <div className="flex flex-col">
               <div className="flex items-center mt-4 space-x-2">
                 <span>From:</span>
                 <input
                   type="number"
-                  className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
+                  className={`w-24 p-1 text-black bg-transparent border rounded-md ${priceError ? "border-red-500" : "border-appPrimary"}`}
                   placeholder="0"
-                  onChange={(e) => setPriceRange((prev) => ({ ...prev, min: Number(e.target.value) }))}
+                  value={priceRange.min === null ? "" : priceRange.min}
+                  onChange={(e) => {
+                    const newMin = e.target.value === "" ? null : Number(e.target.value);
+                    setPriceRange((prev) => {
+                      const updatedRange = { ...prev, min: newMin };
+
+                      // Validate price range
+                      if (newMin !== null && prev.max !== null && newMin > prev.max) {
+                        setPriceError("From price must be less than or equal to To price");
+                      } else {
+                        setPriceError("");
+                      }
+
+                      return updatedRange;
+                    });
+                  }}
                 />
                 <span>To:</span>
                 <input
                   type="number"
-                  className="w-24 p-1 text-black bg-transparent border rounded-md border-appPrimary"
-                  placeholder="200,000"
-                  onChange={(e) => setPriceRange((prev) => ({ ...prev, max: Number(e.target.value) }))}
+                  className={`w-24 p-1 text-black bg-transparent border rounded-md ${priceError ? "border-red-500" : "border-appPrimary"}`}
+                  placeholder="500,000"
+                  value={priceRange.max === null ? "" : priceRange.max}
+                  onChange={(e) => {
+                    const newMax = e.target.value === "" ? null : Number(e.target.value);
+                    setPriceRange((prev) => {
+                      const updatedRange = { ...prev, max: newMax };
+
+                      // Validate price range
+                      if (prev.min !== null && newMax !== null && prev.min > newMax) {
+                        setPriceError("From price must be less than or equal to To price");
+                      } else {
+                        setPriceError("");
+                      }
+
+                      return updatedRange;
+                    });
+                  }}
                 />
               </div>
-            )}
+              {priceError && <div className="mt-1 text-xs text-red-500">{priceError}</div>}
+            </div>
           </div>
         </div>
 
@@ -213,7 +232,7 @@ export const FilterComponent: React.FC<SearchKeyword> = ({ keyword }) => {
           onClick={() => {
             dispatch(resetFilters());
             setSelectedLevels([]);
-            setSelectedPrices([]);
+            setPriceRange({ min: null, max: null });
             setSelectedCategories([]);
             setSelectedRating("0");
           }}

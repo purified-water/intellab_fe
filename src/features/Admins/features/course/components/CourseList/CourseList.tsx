@@ -35,18 +35,6 @@ export function CourseList(props: CourseListProps) {
   const toast = useToast();
   const deleteCourseImage = useDeleteCourseImage();
 
-  const filterCoursesByPrice = (courses: ICourse[]) => {
-    if (!filter.priceRange) {
-      return courses;
-    } else {
-      return courses.filter((course) => {
-        const isValid =
-          course.price && course.price >= filter.priceRange!.min && course.price <= filter.priceRange!.max;
-        return isValid;
-      });
-    }
-  };
-
   const getCourseForAdminAPI = async (page: number) => {
     await courseAPI.getCourseForAdmin({
       query: { filter: filter, page },
@@ -62,8 +50,7 @@ export function CourseList(props: CourseListProps) {
             setTotalPages(response.totalPages);
           }
         }
-        const filteredCourses = filterCoursesByPrice(response.content);
-        setCourses(filteredCourses);
+        setCourses(response.content);
       },
       onFail: async (error) => showToastError({ toast: toast.toast, message: error }),
       onEnd: async () => setLoading(false)
