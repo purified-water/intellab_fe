@@ -57,7 +57,6 @@ export function PurchasedItemsList({ searchQuery: externalSearchQuery = "" }: Pu
       };
 
       const filters = {
-        search: searchQuery || undefined,
         type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
         sortBy: dateSortOrder !== "desc" ? "date" : "amount",
         order: dateSortOrder !== "desc" ? dateSortOrder : sortOrder
