@@ -17,7 +17,6 @@ interface Transaction {
   date: string;
   status: string;
   type: "Course" | "Plan" | "Problem";
-  paymentId: string;
 }
 
 interface TransactionsTableListProps {
@@ -62,7 +61,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
 
       // Use real API with pagination metadata
       const filters = {
-        search: searchQuery || undefined,
+        keyword: searchQuery || undefined,
         status:
           selectedStatus !== "All" ? (selectedStatus === "Success" ? "00" : selectedStatus.toLowerCase()) : undefined,
         type: selectedType !== "All" ? selectedType.toLowerCase() : undefined,
@@ -80,9 +79,8 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
       }
 
       // Map API response to local format
-      formattedTransactions = apiResponse.content.map((transaction, index) => ({
-        id: `${transaction.user.userId}-${index}-${page}`,
-        paymentId: transaction.paymentId,
+      formattedTransactions = apiResponse.content.map((transaction) => ({
+        id: transaction.id,
         name: transaction.user.displayName || `${transaction.user.firstName} ${transaction.user.lastName}`,
         email: transaction.user.email,
         amount: `${transaction.amount.toLocaleString()} VND`, // Convert USD to VND (approximate rate)
@@ -262,7 +260,7 @@ export function TransactionsTableList({ searchQuery: externalSearchQuery = "" }:
       <tbody>
         {transactions.map((transaction) => (
           <tr key={transaction.id} className="text-base border-b border-gray5">
-            <td className="py-1">{transaction.paymentId}</td>
+            <td className="py-1">{transaction.id}</td>
             <td className="py-1">
               <div className="flex items-center gap-2">
                 {/* <Avatar className="w-8 h-8">
