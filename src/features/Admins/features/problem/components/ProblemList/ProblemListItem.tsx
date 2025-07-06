@@ -193,7 +193,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
                 </TooltipProvider>
               </td>
               <td className="py-1 pr-8 text-right">
-                {problem.acceptanceRate !== undefined ? `${problem.acceptanceRate * 100}%` : "0%"}
+                {problem.acceptanceRate !== undefined ? `${(problem.acceptanceRate * 100).toFixed(0)}%` : "0%"}
               </td>
             </>
           )}

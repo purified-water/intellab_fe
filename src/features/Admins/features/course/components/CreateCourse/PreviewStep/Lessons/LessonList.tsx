@@ -1,18 +1,48 @@
+import { useState } from "react";
 import LessonListItem from "./LessonListItem";
-import { CreateLessonSchema } from "../../../../schemas";
+import { CreateLessonSchema, CreateCourseSchema } from "../../../../schemas";
+import { LessonPreviewModal } from "../LessonPreviewModal";
 
 interface LessonListProps {
   lessons: CreateLessonSchema[];
+  courseData?: CreateCourseSchema;
 }
 
-export const LessonList = ({ lessons }: LessonListProps) => {
+export const LessonList = ({ lessons, courseData }: LessonListProps) => {
+  const [selectedLesson, setSelectedLesson] = useState<CreateLessonSchema | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handleLessonClick = (lesson: CreateLessonSchema) => {
+    setSelectedLesson(lesson);
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+    setSelectedLesson(null);
+  };
+
   return (
     <div className="overflow-hidden">
       <ul className="list-none">
         {lessons.map((lesson) => (
-          <LessonListItem key={lesson.lessonId} lesson={lesson} />
+          <LessonListItem
+            key={lesson.lessonId}
+            lesson={lesson}
+            courseData={courseData}
+            onLessonClick={handleLessonClick}
+          />
         ))}
       </ul>
+
+      {selectedLesson && courseData && (
+        <LessonPreviewModal
+          isOpen={isModalOpen}
+          onClose={handleCloseModal}
+          lesson={selectedLesson}
+          courseData={courseData}
+        />
+      )}
     </div>
   );
 };

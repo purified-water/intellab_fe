@@ -15,8 +15,8 @@ type Props = {
 
 const publicationOptions = [
   { label: "All", value: undefined },
-  { label: "Public", value: true },
-  { label: "Private", value: false }
+  { label: "Free", value: true },
+  { label: "Premium", value: false }
 ];
 
 const levelOptions = [
