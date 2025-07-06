@@ -24,7 +24,7 @@ export interface TransactionItem {
   amount: number;
   status: string;
   type: string;
-  paymentId: string;
+  id: string;
 }
 
 export interface PurchasedItem {
@@ -67,7 +67,7 @@ const DEFAULT_PAGE_SIZE = 10;
 
 // Search and filter parameters
 export interface TransactionFilters {
-  search?: string;
+  keyword?: string;
   status?: string;
   type?: string;
   sortBy?: string;
@@ -229,9 +229,9 @@ export const transactionAPI = {
         size
       };
 
-      // Add search parameter
-      if (filters?.search) {
-        params.search = filters.search;
+      // Add keyword parameter
+      if (filters?.keyword) {
+        params.keyword = filters.keyword;
       }
 
       // Add type filter

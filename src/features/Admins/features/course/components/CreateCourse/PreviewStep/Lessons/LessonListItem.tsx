@@ -1,28 +1,28 @@
 import { BookOpenText, Code } from "lucide-react";
-import { CreateLessonSchema } from "../../../../schemas";
+import { CreateLessonSchema, CreateCourseSchema } from "../../../../schemas";
 
 interface LessonListItemProps {
   lesson: CreateLessonSchema;
+  courseData?: CreateCourseSchema;
+  onLessonClick?: (lesson: CreateLessonSchema) => void;
 }
 
-export default function LessonListItem({ lesson }: LessonListItemProps) {
+export default function LessonListItem({ lesson, onLessonClick }: LessonListItemProps) {
   const handleExerciseClick = () => {
     // navigateToLesson();
     console.log("Exercise clicked");
   };
 
   const handleProblemClick = () => {
-    // navigate(
-    //   `/problems/${lesson.problemId}?lessonId=${lesson.lessonId}&lessonName=${lesson.lessonName}&courseId=${course.courseId}&courseName=${course.courseName}&learningId=${lesson.learningId}`
-    // );
     console.log("Problem clicked");
   };
 
   const handleLessonClick = () => {
-    // navigate(
-    //   `/lessons/${lesson.lessonId}?courseId=${course.courseId}&courseName=${course.courseName}&learningId=${lesson.learningId}`
-    // );
-    console.log("Lesson clicked", lesson);
+    if (onLessonClick) {
+      onLessonClick(lesson);
+    } else {
+      console.log("Lesson clicked", lesson);
+    }
   };
 
   const renderIcons = () => {
@@ -32,33 +32,11 @@ export default function LessonListItem({ lesson }: LessonListItemProps) {
       </div>
     );
 
-    // const finishedTheoryIcon = (onClick: React.MouseEventHandler) => {
-    //   return (
-    //     <div
-    //       className="w-11 h-11 rounded-[10px] bg-green-100 inline-flex items-center justify-center border-[0.5px] border-appEasy"
-    //       onClick={onClick}
-    //     >
-    //       <BookOpenText className="w-5 h-5 cursor-pointer text-appEasy" onClick={handleExerciseClick} />
-    //     </div>
-    //   );
-    // };
-
     const unfinishedProblemIcon = (
       <div className="w-11 h-11 rounded-[10px] bg-gray5 inline-flex items-center justify-center border-[0.5px] border-gray4">
         <Code className="w-5 h-5 cursor-pointer text-gray3" onClick={handleProblemClick} />
       </div>
     );
-
-    // const finishedProblemIcon = (onClick: React.MouseEventHandler) => {
-    //   return (
-    //     <div
-    //       className="w-11 h-11 rounded-[10px] bg-green-100 inline-flex items-center justify-center border-[0.5px] border-appEasy"
-    //       onClick={onClick}
-    //     >
-    //       <Code className="w-5 h-5 cursor-pointer text-appEasy" onClick={handleProblemClick} />
-    //     </div>
-    //   );
-    // };
 
     // Check if lesson has content to show theory icon
     const hasContent = lesson.lessonContent && lesson.lessonContent.trim() !== "";
@@ -67,7 +45,7 @@ export default function LessonListItem({ lesson }: LessonListItemProps) {
     const hasProblem = lesson.hasProblem && lesson.lessonProblemId;
 
     return (
-      <div className="flex flex-row flex-1 items-start justify-start gap-5 text-gray3">
+      <div className="flex flex-row items-start justify-start flex-1 gap-5 text-gray3">
         {hasContent && unfinishedTheoryIcon}
         {hasProblem && unfinishedProblemIcon}
       </div>

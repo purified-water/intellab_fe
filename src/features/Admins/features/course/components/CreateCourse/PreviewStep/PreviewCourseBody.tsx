@@ -32,7 +32,7 @@ export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
       case TAB_BUTTONS.LESSONS:
         content = (
           <div>
-            <LessonList lessons={course.courseLessons} />
+            <LessonList lessons={course.courseLessons} courseData={course} />
           </div>
         );
         break;
@@ -45,7 +45,7 @@ export const PreviewCourseBody = ({ course }: PreviewCourseBodyProps) => {
 
   return (
     <div className="w-full">
-      <div className="flex gap-10 justify-center my-4 text-xl font-bold">
+      <div className="flex justify-center gap-10 my-4 text-xl font-bold">
         {Object.values(TAB_BUTTONS).map((tab, index) => renderTabButton(tab, index))}
       </div>
       <div className="px-6 justify-items-center">{renderTabContent()}</div>
