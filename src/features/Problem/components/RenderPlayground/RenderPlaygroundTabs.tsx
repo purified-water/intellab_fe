@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger
 } from "@/components/ui/DropdownMenu";
-import { DEFAULT_LANGUAGE_CODE, LanguageCodes } from "../../constants/LanguageCodes";
+import { DEFAULT_LANGUAGE_CODE } from "../../constants/LanguageCodes";
 import { LanguageCodeType } from "../../types/LanguageCodeType";
 import { BoilerplateType } from "../../types/LanguageCodeType";
 import { problemAPI } from "@/lib/api";
@@ -21,6 +21,7 @@ import { AlertDialog, Button, EmptyMessage } from "@/components/ui";
 import { AlignLeft, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 import { useCodeStorage } from "@/hooks";
+import { findLanguageByName } from "@/utils/problemUtils";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
   mode?: "user" | "admin";
@@ -93,14 +94,14 @@ export const RenderPGTabs = ({
   };
 
   useEffect(() => {
-    const languageNameJudge0 = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
+    const languageNameJudge0 = findLanguageByName(language);
     if (languageNameJudge0) {
       setLanguagePackage(languageNameJudge0, code);
     }
   }, [language]);
 
   const matchLanguage = (language: SupportedLanguages) => {
-    const matchingLanguage = LanguageCodes.find((lang) => lang.name.toLowerCase().startsWith(language.toLowerCase()));
+    const matchingLanguage = findLanguageByName(language);
     if (matchingLanguage) {
       setMatchingLanguage(matchingLanguage);
     }
