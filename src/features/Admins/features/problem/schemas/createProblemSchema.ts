@@ -58,7 +58,7 @@ export const createProblemSchema = z.object({
   }),
   problemSolution: z
     .string()
-    .min(1, { message: "Problem solution is required" })
+    .min(0, { message: "Problem solution is required" })
     .max(15000, { message: "Problem solution must be less than 15000 characters" }),
   isCompletedCreation: z.boolean().optional()
 });
