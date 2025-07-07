@@ -3,8 +3,8 @@ import { problemAPI } from "@/lib/api/problemApi";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { RunCodeResponseType, RunCodeTestCase } from "../types";
-import { LanguageCodes } from "../constants/LanguageCodes";
 import { useCatchError } from "@/hooks";
+import { findLanguageByName } from "@/utils/problemUtils";
 
 interface UseCodeRunnerProps {
   code: string;
@@ -92,7 +92,8 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
     if (!submissionValidation()) return;
     setIsRunningCode(true);
 
-    const languageId = LanguageCodes.find((lang) => lang.name === language)?.id;
+    const languageObj = findLanguageByName(language);
+    const languageId = languageObj?.id;
 
     try {
       if (problemId && languageId) {
