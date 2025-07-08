@@ -82,8 +82,6 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
       } catch (error) {
         console.error("Failed to fetch submission update:", error);
         clearInterval(interval);
-      } finally {
-        setIsRunningCode(false);
       }
     }, 4000);
   };
@@ -91,6 +89,8 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
   const handleRunCode = async () => {
     if (!submissionValidation()) return;
     setIsRunningCode(true);
+    // Reset previous run code results when starting a new run
+    setRunCodeResult(null);
 
     const languageObj = findLanguageByName(language);
     const languageId = languageObj?.id;

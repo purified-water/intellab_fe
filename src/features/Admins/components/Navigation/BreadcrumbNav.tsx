@@ -82,6 +82,38 @@ export function BreadcrumbNav({ items: propItems }: BreadcrumbNavProps) {
           active: true
         });
       }
+    } else if (pathname.includes("/quiz-preview/")) {
+      // Add Courses item
+      items.push({
+        label: "Courses",
+        href: "/admin/courses"
+      });
+
+      // Extract lesson name from URL params if available
+      const searchParams = new URLSearchParams(location.search);
+      const lessonName = searchParams.get("lessonName");
+
+      items.push({
+        label: lessonName ? `${lessonName} - Quiz Preview` : "Quiz Preview",
+        href: pathname,
+        active: true
+      });
+    } else if (pathname.includes("/problem-preview/")) {
+      // Add Courses item
+      items.push({
+        label: "Courses",
+        href: "/admin/courses"
+      });
+
+      // Extract lesson name from URL params if available
+      const searchParams = new URLSearchParams(location.search);
+      const lessonName = searchParams.get("lessonName");
+
+      items.push({
+        label: lessonName ? `${lessonName} - Problem Preview` : "Problem Preview",
+        href: pathname,
+        active: true
+      });
     } else {
       // Regular breadcrumb for non-course-creation pages
       if (paths.length > 0) {
