@@ -153,7 +153,7 @@ export const ProblemList = ({ problems, status }: ProblemListProps) => {
     return problems.map((problem, index) => (
       <tr
         key={index}
-        className={`cursor-pointer text-xs sm:text-base ${index % 2 === 0 ? "bg-white" : "bg-gray6/50"} hover:bg-appPrimary/10`}
+        className={`cursor-pointer text-xs sm:text-base transition-color duration-200 ${index % 2 === 0 ? "bg-white" : "bg-gray6/50"} hover:bg-appPrimary/10`}
         onClick={() => handleProblemListItemClicked(problem.problemId)}
       >
         <td className="w-3/6 px-4 py-2 font-medium hover:text-appPrimary">

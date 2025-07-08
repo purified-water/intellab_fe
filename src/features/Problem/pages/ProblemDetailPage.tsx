@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button } from "@/components/ui";
+import { ResizableHandle, ResizablePanel, ResizablePanelGroup, Button, Spinner } from "@/components/ui";
 import {
   RenderDescTabs,
   RenderPGTabs,
@@ -10,7 +10,7 @@ import {
 } from "../components";
 import { MdList } from "rocketicons/md";
 import { HiOutlineSparkles } from "rocketicons/hi2";
-import { FaPlay, FaSpinner, FaUpload } from "rocketicons/fa6";
+import { FaPlay, FaUpload } from "rocketicons/fa6";
 import { useParams } from "react-router-dom";
 import { problemAPI } from "@/lib/api/problemApi";
 import { ProblemType } from "@/types/ProblemType";
@@ -235,7 +235,7 @@ export const ProblemDetail = () => {
               disabled={isRunningCode}
             >
               {isRunningCode ? (
-                <FaSpinner className="inline-block icon-sm animate-spin icon-gray3" />
+                <Spinner className="size-3" loading={true} />
               ) : (
                 <FaPlay className="inline-block icon-sm icon-gray3" />
               )}
@@ -250,7 +250,7 @@ export const ProblemDetail = () => {
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <FaSpinner className="inline-block icon-sm animate-spin icon-white" />
+                <Spinner className="text-white size-3" loading={true} />
               ) : (
                 <FaUpload className="inline-block icon-sm icon-white" />
               )}

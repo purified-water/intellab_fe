@@ -1,12 +1,24 @@
 import { useState } from "react";
 import { RunCodeResponseType } from "../../types/RunCodeType";
 import { EmptyList } from "@/components/ui";
+import { FaSpinner } from "rocketicons/fa";
 
 interface TestCaseResultProps {
   runCodeResult: RunCodeResponseType | null;
+  isRunningCode?: boolean;
 }
 
-export const Output = ({ runCodeResult }: TestCaseResultProps) => {
+export const Output = ({ runCodeResult, isRunningCode = false }: TestCaseResultProps) => {
+  // Show spinner when code is running
+  if (isRunningCode) {
+    return (
+      <div className="flex flex-col items-center justify-center h-full">
+        <FaSpinner className="w-8 h-8 mb-4 animate-spin text-appAccent" />
+        <p className="text-base font-semibold text-gray3">Running your code...</p>
+      </div>
+    );
+  }
+
   if (!runCodeResult) {
     return <EmptyList message="You must run the code first to see the output." size="sm" />;
   }
@@ -37,7 +49,7 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
       return null;
     }
     return (
-      <div className="flex mb-4 gap-x-2 hover:cursor-pointer overflow-x-auto pb-2">
+      <div className="flex pb-2 mb-4 overflow-x-auto gap-x-2 hover:cursor-pointer">
         {runCodeResult.testcases.map((tc, idx) => {
           const isAccepted = tc.status === "Accepted";
           const textColor = isAccepted ? "text-appEasy" : "text-appHard";
@@ -60,6 +72,9 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
     if (!runCodeResult) return;
 
     const selectedTestCase = runCodeResult.testcases[activeTab];
+    const hasError = Boolean(
+      selectedTestCase.error || (selectedTestCase.compileOutput && selectedTestCase.status !== "Accepted")
+    );
 
     return (
       <div className="flex flex-col" key={selectedTestCase.input}>
@@ -74,11 +89,23 @@ export const Output = ({ runCodeResult }: TestCaseResultProps) => {
         </div>
 
         <div className="mt-4 mb-1 text-sm">Actual Output:</div>
-        <div className="w-full px-4 py-1 mb-8 rounded-lg min-h-8 bg-gray6/80">
+        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6/80">
           <pre className="text-base">
-            {selectedTestCase.actualOutput ? selectedTestCase.actualOutput : selectedTestCase.error}
+            {selectedTestCase.actualOutput ? selectedTestCase.actualOutput : selectedTestCase.error || ""}
           </pre>
         </div>
+
+        {/* Only show compile output if there's an error or compilation issue */}
+        {hasError && (
+          <>
+            <div className="mt-4 mb-1 text-sm">Compile Output:</div>
+            <div className="w-full px-4 py-1 mb-8 rounded-lg min-h-8 bg-gray6/80">
+              <pre className="text-base whitespace-pre-wrap">
+                {selectedTestCase.compileOutput ? selectedTestCase.compileOutput : selectedTestCase.error || ""}
+              </pre>
+            </div>
+          </>
+        )}
       </div>
     );
   };

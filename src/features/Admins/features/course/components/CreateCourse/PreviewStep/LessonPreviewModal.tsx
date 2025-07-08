@@ -8,11 +8,18 @@ import { extractTOC, TOCItem } from "@/components/LessonContent/SharedLessonComp
 interface LessonPreviewModalProps {
   isOpen: boolean;
   onClose: () => void;
+  onNextLessonClick?: () => void;
   lesson: CreateLessonSchema;
   courseData: CreateCourseSchema;
 }
 
-export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: LessonPreviewModalProps) => {
+export const LessonPreviewModal = ({
+  isOpen,
+  onClose,
+  lesson,
+  courseData,
+  onNextLessonClick
+}: LessonPreviewModalProps) => {
   const [tocItems, setTocItems] = useState<TOCItem[]>([]);
   const [activeHeading, setActiveHeading] = useState<string>("");
 
@@ -23,6 +30,16 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
       setTocItems(headings);
     }
   }, [lesson.lessonContent]);
+
+  // Reset scroll to top when lesson changes
+  useEffect(() => {
+    if (isOpen) {
+      const modalContent = document.querySelector(".lesson-preview-modal-content");
+      if (modalContent) {
+        modalContent.scrollTop = 0;
+      }
+    }
+  }, [lesson.lessonId, isOpen]);
 
   // Handle scroll to heading
   const scrollToHeading = (id: string) => {
@@ -46,11 +63,17 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
   };
 
   const handleQuizClick = () => {
-    console.log("Quiz clicked for lesson:", lesson.lessonId);
+    if (lesson.lessonId) {
+      const quizUrl = `/admin/quiz-preview/${lesson.lessonId}?lessonName=${encodeURIComponent(lesson.lessonName)}`;
+      window.open(quizUrl, "_blank");
+    }
   };
 
   const handleProblemClick = () => {
-    console.log("Problem clicked for lesson:", lesson.lessonId);
+    if (lesson.lessonProblemId) {
+      const problemUrl = `/admin/problem-preview/${lesson.lessonProblemId}?lessonName=${encodeURIComponent(lesson.lessonName)}`;
+      window.open(problemUrl, "_blank");
+    }
   };
 
   const renderQuizButton = () => {
@@ -105,7 +128,7 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
         {/* Content */}
         <div className="flex flex-1">
           {/* Main content */}
-          <div className="flex-1 p-8 overflow-y-auto">
+          <div className="flex-1 p-8 overflow-y-auto lesson-preview-modal-content">
             {/* Header */}
             <div className="py-4 mb-6 space-y-2 border-b border-gray4">
               <p className="text-4xl font-bold">{lesson.lessonName}</p>
@@ -124,7 +147,10 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
               {renderProblemButton()}
 
               {nextLesson && (
-                <div className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4">
+                <div
+                  onClick={onNextLessonClick}
+                  className="flex items-center max-w-5xl gap-2 px-3 py-3 cursor-pointer border-y border-gray4"
+                >
                   <p>Continue to next Lesson:</p>
                   <p className="font-bold">{nextLesson.lessonName}</p>
                   <div className="ml-auto">
@@ -144,7 +170,7 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
 
           {/* Table of Contents */}
           {tocItems.length > 0 && (
-            <div className="p-6 overflow-y-auto border-l border-gray-200 rounded-r-lg w-80 bg-gray-50">
+            <div className="w-64 p-6 overflow-y-auto border-l rounded-r-lg">
               <h3 className="mb-4 text-lg font-bold">Table of Contents</h3>
               <nav className="space-y-1">
                 {tocItems.map((item) => (
@@ -152,7 +178,7 @@ export const LessonPreviewModal = ({ isOpen, onClose, lesson, courseData }: Less
                     type="button"
                     key={item.id}
                     onClick={() => scrollToHeading(item.id)}
-                    className={`block w-full text-left px-3 py-2 text-sm rounded transition-colors ${
+                    className={`block w-full text-left px-3 py-2 text-xs rounded line-clamp-1 transition-colors ${
                       activeHeading === item.id
                         ? "border-l-appPrimary text-appPrimary font-semibold"
                         : "border-l-transparent hover:border-l-gray-300 text-gray2 hover:text-appPrimary"

@@ -3,8 +3,8 @@ import { problemAPI } from "@/lib/api/problemApi";
 import { useToast } from "@/hooks/use-toast";
 import { getUserIdFromLocalStorage } from "@/utils";
 import { RunCodeResponseType, RunCodeTestCase } from "../types";
-import { LanguageCodes } from "../constants/LanguageCodes";
 import { useCatchError } from "@/hooks";
+import { findLanguageByName } from "@/utils/problemUtils";
 
 interface UseCodeRunnerProps {
   code: string;
@@ -82,8 +82,6 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
       } catch (error) {
         console.error("Failed to fetch submission update:", error);
         clearInterval(interval);
-      } finally {
-        setIsRunningCode(false);
       }
     }, 4000);
   };
@@ -91,8 +89,11 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
   const handleRunCode = async () => {
     if (!submissionValidation()) return;
     setIsRunningCode(true);
+    // Reset previous run code results when starting a new run
+    setRunCodeResult(null);
 
-    const languageId = LanguageCodes.find((lang) => lang.name === language)?.id;
+    const languageObj = findLanguageByName(language);
+    const languageId = languageObj?.id;
 
     try {
       if (problemId && languageId) {
