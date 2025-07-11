@@ -30,6 +30,7 @@ export const isTestcasesStepValid = (state: RootState): boolean => {
   return state.createProblem.problemTestcases.length > 0;
 };
 
-export const isSolutionStepValid = (state: RootState): boolean => {
-  return !!state.createProblem.problemSolution;
+export const isSolutionStepValid = (_state: RootState): boolean => {
+  // return !!state.createProblem.problemSolution;
+  return true;
 };

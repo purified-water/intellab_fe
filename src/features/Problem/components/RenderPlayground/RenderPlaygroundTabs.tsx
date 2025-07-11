@@ -245,7 +245,7 @@ export const RenderPGTabs = ({
 
             <Tooltip>
               <TooltipTrigger asChild>
-                <Button variant="ghost" size="sm" onClick={() => playgroundRef.current?.codeFormat()}>
+                <Button type="button" variant="ghost" size="sm" onClick={() => playgroundRef.current?.codeFormat()}>
                   <AlignLeft />
                 </Button>
               </TooltipTrigger>

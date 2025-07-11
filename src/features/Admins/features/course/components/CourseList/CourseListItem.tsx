@@ -47,7 +47,7 @@ export function CourseListItem(props: CourseListItemProps) {
   };
 
   const handleEdit = async () => {
-    showToastDefault({ toast: toast.toast, title: "Loading", message: "Loading course data, please wait a bit." });
+    showToastDefault({ toast: toast.toast, title: "Loading", message: "Fetching the course data..." });
     let thumbnailFile = null;
     if (course.courseImage) {
       thumbnailFile = await imageURLToFile(course.courseImage, course.courseName);

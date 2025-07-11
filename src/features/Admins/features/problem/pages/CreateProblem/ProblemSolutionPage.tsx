@@ -74,7 +74,7 @@ export const ProblemSolutionPage = () => {
   }
 
   const actualCheckTestcasesStepValid = (state: RootState) => {
-    if (isEditingProblem && !_.isEmpty(formData.problemSolution)) {
+    if (isEditingProblem) {
       return true; // In case testcases list is fetching from api, making the testcase step invalid
     } else {
       return isTestcasesStepValid(state);
@@ -100,7 +100,7 @@ export const ProblemSolutionPage = () => {
             render={({ field }) => (
               <FormItem>
                 <FormLabel>
-                  <RequiredInputLabel label="Problem Solution" />
+                  <RequiredInputLabel label="Problem Solution" required={false} />
                 </FormLabel>
                 <FormControl>
                   <AddMarkdownContent

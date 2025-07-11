@@ -94,9 +94,6 @@ export const SubmissionResults = ({
   const totalTestCasesCount = testCases.length;
   const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
 
-  // Check if all test cases passed for MOSS analysis
-  const isAllCorrect = testCases.every((testCase) => testCase.result_status === "Accepted");
-
   const firstFailedTestCase = testCases.find(
     // One test case may have many submission outputs, so we get the last submission output to check the result status
     (testCase) => testCase.result_status !== "Accepted"
@@ -150,9 +147,7 @@ export const SubmissionResults = ({
 
       {/* MOSS Results Section */}
       <MOSSSection
-        isPassed={isPassed}
         submissionId={submissionResult.submissionId}
-        isAllCorrect={isAllCorrect}
         language={language}
         viewingPage={viewingPage}
         existingMossResults={submissionResult.mossResults}
@@ -206,14 +201,13 @@ export const SubmissionResults = ({
                 KB
               </pre>
             </div>
-
-            <div className="mt-4 mb-1 text-sm">Code | {language}</div>
-            <div className="w-full px-4 py-2 overflow-x-auto rounded-lg bg-gray6">
-              <pre className="text-base whitespace-pre-wrap">{submittedCode}</pre>
-            </div>
           </div>
         </div>
       )}
+      <div className="mt-4 mb-1 text-sm">Code | {language}</div>
+      <div className="w-full px-4 py-2 overflow-x-auto rounded-lg bg-gray6">
+        <pre className="text-base whitespace-pre-wrap">{submittedCode}</pre>
+      </div>
     </div>
   );
 };

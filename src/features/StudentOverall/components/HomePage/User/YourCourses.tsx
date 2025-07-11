@@ -20,7 +20,7 @@ export const YourCourseCard = (courseDetail: ICourse) => {
       className="flex items-stretch w-full overflow-hidden border rounded-lg cursor-pointer"
     >
       {/* Left: Image */}
-      <div className="max-w-[320px] min-w-2/5 h-full overflow-hidden border-r border-muted">
+      <div className="max-w-[320px] w-[320px] min-w-2/5 h-full overflow-hidden border-r border-muted">
         <img
           src={
             courseDetail.courseImage

@@ -6,9 +6,7 @@ import { useGetMossResult } from "../../hooks/useMoss";
 import { MOSSResult } from "../../types/SubmissionType";
 
 interface MOSSSectionProps {
-  isPassed: boolean;
   submissionId: string;
-  isAllCorrect: boolean;
   language: string;
   viewingPage?: boolean;
   existingMossResults?: MOSSResult[];
@@ -17,9 +15,7 @@ interface MOSSSectionProps {
 }
 
 export const MOSSSection = ({
-  isPassed,
   submissionId,
-  isAllCorrect,
   language,
   viewingPage = false,
   existingMossResults,
@@ -27,77 +23,54 @@ export const MOSSSection = ({
   onViewMOSSReport
 }: MOSSSectionProps) => {
   // Use MOSS hook for passed submissions
-  const { data: mossResults, isLoading: isMossLoading } = useGetMossResult(submissionId, isAllCorrect && isPassed);
+  const { data: mossResults, isLoading: isMossLoading } = useGetMossResult(submissionId);
 
-  // For passed submissions, show live MOSS analysis
-  if (isPassed) {
-    return (
-      <div className="mt-6 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Plagiarism Detection</h3>
-          {!viewingPage && onViewDetailedReport && (
-            <Button variant="outline" onClick={onViewDetailedReport}>
-              <ExternalLink className="w-4 h-4 mr-2" />
-              View Full Detail
-            </Button>
-          )}
-        </div>
-
-        {isMossLoading ? (
-          <div className="p-6 text-center border rounded-lg bg-purple-50">
-            <div className="flex items-center justify-center space-x-3">
-              <div>
-                <Spinner className="w-5 h-5 text-appPrimary" loading={isMossLoading} />
-                <div className="font-medium text-appPrimary">Analyzing for Plagiarism</div>
-                <div className="text-sm text-appPrimary">
-                  Please wait while we check your submission for similarities. This may take a few moments.
-                </div>
-              </div>
-            </div>
-          </div>
-        ) : mossResults && mossResults.length > 0 ? (
-          <MOSSResultComponent
-            mossResults={mossResults}
-            programmingLanguage={language}
-            onViewFullReport={onViewMOSSReport}
-          />
-        ) : (
-          <div className="p-6 border rounded-lg border-appEasy bg-green-50">
-            <div className="flex flex-col items-center">
-              <CheckCircle className="w-8 h-8 text-appEasy" />
-              <div className="font-medium text-appEasy">No Plagiarism Detected</div>
-              <div className="text-sm text-appEasy/80">
-                Your submission appears to be original. No similarities found.
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-    );
+  if (!mossResults && !existingMossResults && !isMossLoading) {
+    // If no MOSS results and not loading, return null
+    return null;
   }
 
-  // For failed submissions, show existing MOSS results if available
-  if (existingMossResults && existingMossResults.length > 0) {
-    return (
-      <div className="mt-6 mb-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-medium">Plagiarism Detection</h3>
-          {!viewingPage && onViewDetailedReport && (
-            <Button variant="outline" onClick={onViewDetailedReport}>
-              <ExternalLink className="w-4 h-4 mr-2" />
-              View Full Detail
-            </Button>
-          )}
+  return (
+    <div className="mt-6 mb-4">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-medium">Plagiarism Detection</h3>
+        {!viewingPage && onViewDetailedReport && (
+          <Button variant="outline" onClick={onViewDetailedReport}>
+            <ExternalLink className="w-4 h-4 mr-2" />
+            View Full Detail
+          </Button>
+        )}
+      </div>
+
+      {isMossLoading ? (
+        <div className="p-6 text-center border rounded-lg bg-purple-50">
+          <div className="flex items-center justify-center space-x-3">
+            <div>
+              <Spinner className="w-5 h-5 text-appPrimary" loading={isMossLoading} />
+              <div className="font-medium text-appPrimary">Analyzing for Plagiarism</div>
+              <div className="text-sm text-appPrimary">
+                Please wait while we check your submission for similarities. This may take a few moments.
+              </div>
+            </div>
+          </div>
         </div>
+      ) : mossResults && mossResults.length > 0 ? (
         <MOSSResultComponent
-          mossResults={existingMossResults}
+          mossResults={mossResults}
           programmingLanguage={language}
           onViewFullReport={onViewMOSSReport}
         />
-      </div>
-    );
-  }
-
-  // Don't render anything if no MOSS data is available
-  return null;
+      ) : (
+        <div className="p-6 border rounded-lg border-appEasy bg-green-50">
+          <div className="flex flex-col items-center">
+            <CheckCircle className="w-8 h-8 text-appEasy" />
+            <div className="font-medium text-appEasy">No Plagiarism Detected</div>
+            <div className="text-sm text-appEasy/80">
+              Your submission appears to be original. No similarities found.
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 };

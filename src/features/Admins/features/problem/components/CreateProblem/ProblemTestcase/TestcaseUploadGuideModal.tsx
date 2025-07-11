@@ -97,12 +97,12 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
         <p className="font-medium text-base text-black1">Example File Format:</p>
         <div className="border border-gray4 rounded-sm p-4 font-light text-sm">
           <p>input</p>
-          <p>"abcyy"</p>
+          <p>abcyy</p>
           <p>2</p>
           <p>26</p>
           <p>1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2</p>
           <p>output</p>
-          <p>"cdeabab"</p>
+          <p>cdeabab</p>
         </div>
       </div>
       <div className="bg-greenBackground bg-opacity-15 p-4 space-y-2">
@@ -111,7 +111,7 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
           <li>
             <strong>input:</strong>
             <ul className="list-disc pl-6">
-              <li>"abcxy": An input with string data type.</li>
+              <li>abcxy: An input with string data type.</li>
               <li>2: An input with integer data type.</li>
               <li>
                 26: A number indicating the list's length must appear right before the list itself and all elements of
@@ -122,7 +122,7 @@ export const TestcaseUploadGuideModal = (props: TestcaseUploadGuideModalProps) =
           <li>
             <strong>output:</strong>
             <ul className="list-disc pl-6">
-              <li>"cdeabab" → Output with string data type.</li>
+              <li>cdeabab → Output with string data type.</li>
             </ul>
           </li>
         </ul>

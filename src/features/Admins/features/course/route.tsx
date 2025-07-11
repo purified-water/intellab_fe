@@ -16,6 +16,13 @@ const CoursePreviewPage = lazy(() =>
   import("./pages/CreateCourse").then((module) => ({ default: module.CoursePreviewPage }))
 );
 
+const AdminQuizPreview = lazy(() =>
+  import("./components/AdminQuizPreview").then((module) => ({ default: module.AdminQuizPreview }))
+);
+const AdminProblemPreview = lazy(() =>
+  import("./components/AdminProblemPreview").then((module) => ({ default: module.AdminProblemPreview }))
+);
+
 const CourseRoute: RouteObject[] = [
   {
     path: "courses",
@@ -39,6 +46,14 @@ const CourseRoute: RouteObject[] = [
         ]
       }
     ]
+  },
+  {
+    path: "quiz-preview/:lessonId",
+    element: <AdminQuizPreview />
+  },
+  {
+    path: "problem-preview/:problemId",
+    element: <AdminProblemPreview />
   }
 ];
 

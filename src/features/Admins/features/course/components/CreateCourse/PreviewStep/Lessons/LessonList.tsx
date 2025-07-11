@@ -22,6 +22,22 @@ export const LessonList = ({ lessons, courseData }: LessonListProps) => {
     setSelectedLesson(null);
   };
 
+  const handleNextLessonClick = () => {
+    if (selectedLesson && courseData) {
+      const lessons = courseData.courseLessons || [];
+      const nextLessonIndex = lessons.findIndex(
+        (lessonItem) => lessonItem.lessonOrder === (selectedLesson.lessonOrder ?? 0) + 1
+      );
+
+      if (nextLessonIndex !== -1) {
+        const nextLesson = lessons[nextLessonIndex];
+        setSelectedLesson(nextLesson);
+      } else {
+        handleCloseModal();
+      }
+    }
+  };
+
   return (
     <div className="overflow-hidden">
       <ul className="list-none">
@@ -41,6 +57,7 @@ export const LessonList = ({ lessons, courseData }: LessonListProps) => {
           onClose={handleCloseModal}
           lesson={selectedLesson}
           courseData={courseData}
+          onNextLessonClick={handleNextLessonClick}
         />
       )}
     </div>
