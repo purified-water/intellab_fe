@@ -45,7 +45,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const chatDetail = useSelector((state: RootState) => state.mainChatbot.chatDetail);
 
   const [modelChangeOpen, setModelChangeOpen] = useState(false);
-  const [chatModel, setChatModel] = useState(CHATBOT_MODELS["groq-llama-3.3-70b"].value); // Default model
+  const [chatModel, setChatModel] = useState(CHATBOT_MODELS["gemini-2_5-flash"].value); // Default model
   // Handle data stream signals
   const [isLoadingResponse, setIsLoadingResponse] = useState(false); // When waiting for response
   const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream

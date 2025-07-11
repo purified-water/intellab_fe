@@ -59,7 +59,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
 
       {/* Content */}
       <div className="relative flex flex-col items-center w-full px-4 pt-10 pb-5 z-8">
-        <div className="flex flex-row items-center w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
+        <div className="flex flex-row items-start w-full max-w-6xl gap-5 p-10 bg-white shadow-md rounded-2xl">
           {/* Left: Cover Image */}
           <div className="w-96 h-72 rounded-[10px] overflow-hidden shadow-md">
             <img
@@ -91,7 +91,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                   {showFullDescription ? "Show less" : "View more"}
                 </button>
               )}
-              <div className="flex items-center gap-2 mt-5 mb-2">
+              <div className="flex items-center gap-2 mt-5 mb-2 flex-wrap">
                 <span
                   className={clsx("rounded-lg bg-gray5 px-2 py-1 text-xs font-medium", {
                     "text-appEasy":
@@ -117,12 +117,12 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                 <span className="flex items-center gap-1">
                   <div className="flex items-center justify-start space-x-1">
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <span key={star} className={`cursor-pointer ${5 >= star ? "text-yellow-500" : "text-gray-300"}`}>
+                      <span key={star} className={`cursor-pointer ${"text-gray-300"}`}>
                         ★
                       </span>
                     ))}
                   </div>
-                  <span className="font-bold text-black1">5</span>
+                  <span className="font-bold text-black1">0</span>
                   <span>
                     ({0} {"review"})
                   </span>
@@ -130,7 +130,7 @@ export const PreviewCourseHeader = ({ course }: PreviewCourseHeaderProps) => {
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
                   <span>
-                    <span className="font-bold text-black1">{110}</span> {"students"}
+                    <span className="font-bold text-black1">{0}</span> {"student"}
                   </span>
                 </span>
                 <span className="flex items-center gap-1">
