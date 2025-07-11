@@ -211,7 +211,8 @@ export const CourseDetailPage = () => {
         setIsEnrolled(true);
         setCourse((prevCourse) => ({
           ...prevCourse!,
-          userEnrolled: true
+          userEnrolled: true,
+          numberOfEnrolledStudents: prevCourse!.numberOfEnrolledStudents! + 1
         }));
         showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {
@@ -326,6 +327,9 @@ export const CourseDetailPage = () => {
                 courseTitle={course?.courseName ?? ""}
                 courseId={course?.courseId ?? ""}
                 isReviewTab={false}
+                onReviewSubmitted={() => {
+                  setCourse((prevCourse) => ({ ...prevCourse!, reviewCount: prevCourse!.reviewCount! + 1 }));
+                }}
               />
             )}
           </div>
