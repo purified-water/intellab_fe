@@ -1,5 +1,7 @@
 import ReactMarkdown from "react-markdown";
+import rehypeKatex from "rehype-katex";
 import remarkGfm from "remark-gfm";
+import remarkMath from "remark-math";
 
 interface MarkdownRenderProps {
   content: string;
@@ -15,7 +17,8 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
   return (
     <ReactMarkdown
       className="mb-12 markdown"
-      remarkPlugins={[remarkGfm]}
+      remarkPlugins={[remarkGfm, remarkMath]}
+      rehypePlugins={[rehypeKatex]}
       components={{
         code: ({ children, className, ...rest }: CodeProps) => {
           const isInline = !className; // Check if inline code
@@ -29,7 +32,7 @@ export const MarkdownRender = (props: MarkdownRenderProps) => {
           }
 
           return (
-            <div className="overflow-x-auto max-w-[100%]">
+            <div className="w-full overflow-x-auto">
               <pre>
                 <code className={className} {...rest}>
                   {children}
