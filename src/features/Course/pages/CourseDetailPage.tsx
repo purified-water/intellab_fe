@@ -169,11 +169,11 @@ export const CourseDetailPage = () => {
     if (redirectedCommentId) {
       setActiveTab(TAB_BUTTONS.COMMENTS);
     }
-  }, [id]); // Only depend on course ID to prevent infinite re-renders
+  }, [id, isAuthenticated]);
 
   // Separate effect for review prompt to avoid circular dependencies
   useEffect(() => {
-    if (course?.progressPercent === 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
+    if (isAuthenticated && course?.progressPercent === 100 && shouldShowReviewPrompt(course?.courseId, userId ?? "")) {
       openModal();
     }
   }, [course?.progressPercent, course?.courseId, userId]); // Only run when course completion changes
@@ -211,7 +211,8 @@ export const CourseDetailPage = () => {
         setIsEnrolled(true);
         setCourse((prevCourse) => ({
           ...prevCourse!,
-          userEnrolled: true
+          userEnrolled: true,
+          numberOfEnrolledStudents: prevCourse!.numberOfEnrolledStudents! + 1
         }));
         showToastSuccess({ toast: toast.toast, message: "Enrolled successfully" });
       } else {
@@ -326,6 +327,7 @@ export const CourseDetailPage = () => {
                 courseTitle={course?.courseName ?? ""}
                 courseId={course?.courseId ?? ""}
                 isReviewTab={false}
+                onReviewSubmitted={getCourseDetail} // Refresh course details to get updated review status
               />
             )}
           </div>
