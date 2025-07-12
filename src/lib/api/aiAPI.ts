@@ -1,6 +1,6 @@
 import { apiClient } from "./apiClient";
 import { ChatbotMessageInputType } from "@/features/MainChatBot/types/ChatbotMessageType";
-import { AI_AGENT, CHATBOT_MODELS } from "@/constants";
+import { AI_AGENT, CHATBOT_MODELS, SUMMARY_MODEL } from "@/constants";
 import { ChatbotHistoryItemType, ChatTitleGeneratorPayload } from "@/features/MainChatBot/types";
 import { removeChatTitleQuotes } from "@/utils";
 
@@ -11,7 +11,7 @@ export const aiAPI = {
   getCourseSummary: async (courseName: string, courseId: string, regenereate: "true" | "false") => {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenereate}`,
-      model: CHATBOT_MODELS["gpt-4o-mini"].value
+      model: SUMMARY_MODEL["gpt-4o-mini"].value
     };
     const response = await apiClient.post(`/ai/invoke/${AI_AGENT.SUMMARIZE_ASSISTANT}`, bodyParams);
     return response.data;
@@ -27,7 +27,7 @@ export const aiAPI = {
     const bodyParams = {
       message: `course name: ${courseName}, id: ${courseId}, regenerate: ${regenerate}`,
       user_id: userId,
-      model: CHATBOT_MODELS["gpt-4o-mini"].value
+      model: SUMMARY_MODEL["gpt-4o-mini"].value
     };
 
     try {
@@ -126,7 +126,7 @@ export const aiAPI = {
   postChatbotMessage: async (
     agent: "global_chatbot" | "problem_chatbot",
     message: string,
-    model: string = CHATBOT_MODELS["qwen3-14b"].value,
+    model: string = CHATBOT_MODELS["gemini-2_5-flash"].value,
     userId: string,
     threadId?: string | null
   ) => {
@@ -146,10 +146,12 @@ export const aiAPI = {
     message: string,
     userId: string,
     threadId: string,
-    problemId?: string
+    problemId?: string,
+    model: string = CHATBOT_MODELS["gemini-2_5-flash"].value
   ) => {
     const bodyParams: ChatTitleGeneratorPayload = {
       message: message,
+      model: model,
       user_id: userId,
       thread_id: threadId
     };
@@ -181,7 +183,7 @@ export const aiAPI = {
   postChatbotMessageStream: async (
     agent: "global_chatbot" | "problem_chatbot" | "lesson_chatbot",
     message: string,
-    model: string = CHATBOT_MODELS["qwen3-14b"].value,
+    model: string = CHATBOT_MODELS["gemini-2_5-flash"].value,
     userId: string,
     controller: AbortController, // Added controller parameter
     thread_id?: string | null
