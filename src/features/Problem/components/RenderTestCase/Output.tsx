@@ -79,18 +79,18 @@ export const Output = ({ runCodeResult, isRunningCode = false }: TestCaseResultP
     return (
       <div className="flex flex-col" key={selectedTestCase.input}>
         <div className="mb-1 text-sm">Input:</div>
-        <div className="w-full px-4 py-1 rounded-lg min-h-8 h-fit bg-gray6/80">
-          <pre className="text-base">{selectedTestCase.input}</pre>
+        <div className="w-full max-h-[400px] overflow-y-scroll px-4 py-1 rounded-lg min-h-8 h-fit bg-gray6/80">
+          <pre className="text-base whitespace-pre-wrap">{selectedTestCase.input}</pre>
         </div>
 
         <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6/80">
-          <pre className="text-base">{selectedTestCase.expectedOutput}</pre>
+        <div className="w-full max-h-[200px] overflow-y-scroll px-4 py-1 rounded-lg min-h-8 bg-gray6/80">
+          <pre className="text-base whitespace-pre-wrap">{selectedTestCase.expectedOutput}</pre>
         </div>
 
         <div className="mt-4 mb-1 text-sm">Actual Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6/80">
-          <pre className="text-base">
+        <div className="w-full px-4 py-1 rounded-lg min-h-8 max-h-[200px] overflow-y-scroll bg-gray6/80">
+          <pre className="text-base whitespace-pre-wrap">
             {selectedTestCase.actualOutput ? selectedTestCase.actualOutput : selectedTestCase.error || ""}
           </pre>
         </div>

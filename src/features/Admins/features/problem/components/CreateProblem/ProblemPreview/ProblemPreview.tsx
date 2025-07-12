@@ -35,7 +35,7 @@ export const ProblemPreview = ({ problemDetail }: ProblemPreviewProps) => {
       <div className="flex flex-col h-[calc(100vh-20px)] p-4 border rounded-lg border-muted">
         <div className="flex-grow overflow-hidden">
           <ResizablePanelGroup direction="horizontal" className="w-full h-full pb-10 mb-12">
-            <ResizablePanel order={1} defaultSize={40} minSize={10} id="description" className="bg-white rounded-t-lg">
+            <ResizablePanel order={1} defaultSize={45} minSize={10} id="description" className="bg-white rounded-t-lg">
               <AdminRenderDescTabs problemDetail={problemDetail} isPassed={isSubmissionPassed} />
             </ResizablePanel>
 
@@ -49,7 +49,7 @@ export const ProblemPreview = ({ problemDetail }: ProblemPreviewProps) => {
               className="overflow-y-auto bg-white rounded-t-lg"
             >
               <ResizablePanelGroup direction="vertical" className="h-full">
-                <ResizablePanel order={3} defaultSize={60} minSize={40} className="bg-white">
+                <ResizablePanel order={3} defaultSize={55} minSize={40} className="bg-white">
                   {/* Re-use component from the original problem detail */}
                   <RenderPGTabs
                     setLanguagePackage={(langJudge0, code) => {
