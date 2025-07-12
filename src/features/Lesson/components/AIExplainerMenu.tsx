@@ -44,7 +44,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
     const isProcessingRef = useRef<boolean>(false);
 
     // For streaming response
-    const [chatModel] = useState(CHATBOT_MODELS["gpt-4o-mini"].value);
+    const [chatModel] = useState(CHATBOT_MODELS["gemini-2_5-flash"].value);
     // const [chatModel] = useState(CHATBOT_MODELS["gpt-4o-mini"].value);
     const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
 

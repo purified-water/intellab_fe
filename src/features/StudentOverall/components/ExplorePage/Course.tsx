@@ -131,7 +131,7 @@ export function Course(props: CourseProps) {
           <div className="flex items-center px-2 py-1 mb-5 overflow-hidden text-xs text-white rounded-lg bg-black/40 backdrop-blur-md whitespace-nowrap text-ellipsis">
             {`${amountTransformer(detailCourse?.reviewCount ?? 0)} review${(detailCourse?.reviewCount ?? 0) !== 1 ? "s" : ""}`}{" "}
             • <img className="w-3 h-3 mx-[6px]" src={rateIcon} alt="Rating" />
-            {detailCourse?.averageRating != 0 && detailCourse?.averageRating ? detailCourse?.averageRating : 0}
+            {detailCourse?.averageRating ? detailCourse.averageRating.toFixed(1) : 0}
           </div>
         </div>
       </div>

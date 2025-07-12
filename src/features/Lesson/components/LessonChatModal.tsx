@@ -39,7 +39,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
   const chatDetail = useSelector((state: RootState) => state.lessonChatbot.chatDetail);
   const [isLoadingResponse, setIsLoadingResponse] = useState(false);
   // const [modelChangeOpen, setModelChangeOpen] = useState(false);
-  const [chatModel] = useState(CHATBOT_MODELS["qwen3-14b"].value);
+  const [chatModel] = useState(CHATBOT_MODELS["gemini-2_5-flash"].value);
   // Handle data stream signals
   const [isStreaming, setIsStreaming] = useState(false); // When is receiving data stream
   const [abortController, setAbortController] = useState<AbortController | null>(null);

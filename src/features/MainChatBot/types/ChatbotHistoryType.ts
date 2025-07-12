@@ -22,6 +22,7 @@ export interface ChatbotHistoryDetailType {
 export interface ChatTitleGeneratorPayload {
   message: string;
   user_id: string;
+  model: string;
   thread_id: string;
   problem_title?: string;
   problem_id?: string;

@@ -350,7 +350,7 @@ export const Header = (props: HeaderProps) => {
                   {showFullDescription ? "Show less" : "View more"}
                 </button>
               )}
-              <div className="flex items-center gap-2 mt-2 mb-2">
+              <div className="flex items-center gap-2 mt-2 mb-2 flex-wrap">
                 <span
                   className={clsx("rounded-lg bg-gray5 px-2 py-1 text-xs font-medium", {
                     "text-appEasy":
