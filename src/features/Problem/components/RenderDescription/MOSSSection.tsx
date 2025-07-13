@@ -11,7 +11,6 @@ interface MOSSSectionProps {
   viewingPage?: boolean;
   existingMossResults?: MOSSResult[];
   onViewDetailedReport?: () => void;
-  onViewMOSSReport?: () => void;
 }
 
 export const MOSSSection = ({
@@ -19,8 +18,7 @@ export const MOSSSection = ({
   language,
   viewingPage = false,
   existingMossResults,
-  onViewDetailedReport,
-  onViewMOSSReport
+  onViewDetailedReport
 }: MOSSSectionProps) => {
   // Use MOSS hook for passed submissions
   const { data: mossResults, isLoading: isMossLoading } = useGetMossResult(submissionId);
@@ -29,6 +27,14 @@ export const MOSSSection = ({
     // If no MOSS results and not loading, return null
     return null;
   }
+
+  const handleViewMossReport = () => {
+    if (mossResults && mossResults.length > 0) {
+      window.open(mossResults[0].reportUrl, "_blank");
+    } else if (existingMossResults && existingMossResults.length > 0) {
+      window.open(existingMossResults[0].reportUrl, "_blank");
+    }
+  };
 
   return (
     <div className="mt-6 mb-4">
@@ -58,7 +64,7 @@ export const MOSSSection = ({
         <MOSSResultComponent
           mossResults={mossResults}
           programmingLanguage={language}
-          onViewFullReport={onViewMOSSReport}
+          onViewFullReport={handleViewMossReport}
         />
       ) : (
         <div className="p-6 border rounded-lg border-appEasy bg-green-50">

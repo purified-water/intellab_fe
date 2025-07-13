@@ -51,6 +51,7 @@ export interface MOSSResult {
   userId1: string; // User ID of the first submission
   userId2: string; // User ID of the second submission
   username2: string; // Username of the second submission
+  reportUrl: string; // URL to the MOSS report
 }
 
 export interface MOSSMatch {

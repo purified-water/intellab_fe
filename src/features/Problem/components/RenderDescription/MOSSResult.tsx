@@ -162,7 +162,7 @@ export const MOSSResultComponent = ({
 
           <div className="space-y-3">
             {displayedMatches.map((match, index) => (
-              <MOSSMatchCard key={match.matchCode || index} match={match} />
+              <MOSSMatchCard key={index} match={match} />
             ))}
           </div>
 
