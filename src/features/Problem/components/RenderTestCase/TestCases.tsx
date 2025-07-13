@@ -10,7 +10,7 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
 
   const renderTabs = () => {
     return (
-      <div className="flex mb-4 gap-x-2 text-gray3 overflow-x-auto pb-2">
+      <div className="flex pb-2 mb-4 overflow-x-auto gap-x-2 text-gray3">
         {testCases.map((_tc, idx) => (
           <div
             key={idx}
@@ -34,12 +34,12 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
       <div className="test-case-content">
         <div className="flex flex-col mb-2" key={selectedTestCase.testCaseId}>
           <div className="mb-1 text-sm">Input:</div>
-          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80">
-            <pre className="text-base">{selectedTestCase.input}</pre>
+          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 max-h-[400px] overflow-y-scroll">
+            <pre className="text-base whitespace-pre-wrap">{selectedTestCase.input}</pre>
           </div>
           <div className="mt-4 mb-1 text-sm">Output:</div>
-          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80">
-            <pre className="text-base">{selectedTestCase.output}</pre>
+          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 max-h-[200px] overflow-y-scroll">
+            <pre className="text-base whitespace-pre-wrap">{selectedTestCase.output}</pre>
           </div>
         </div>
       </div>

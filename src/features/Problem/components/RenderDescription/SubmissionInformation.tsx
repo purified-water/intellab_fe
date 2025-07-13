@@ -21,24 +21,24 @@ import { MOSSSection } from "./MOSSSection";
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
   return (
-    <div className="flex-col px-4">
+    <div className="flex flex-col h-[calc(100vh-150px)] pb-12 px-4 overflow-y-auto scrollbar-hide">
       <div className="flex items-center my-2 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
         <ChevronLeft />
         <div className="text-lg font-medium">Back</div>
       </div>
       <div className="flex flex-col mb-2" key={testCaseDetail.testcaseId}>
         <div className="mb-1 text-sm">Input:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-          <pre className="text-base">{testCaseDetail.input}</pre>
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[500px] overflow-y-auto">
+          <pre className="text-base whitespace-pre-wrap">{testCaseDetail.input}</pre>
         </div>
         <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-          <pre className="text-base">{testCaseDetail.output}</pre>
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[200px] overflow-y-auto">
+          <pre className="text-base whitespace-pre-wrap">{testCaseDetail.output}</pre>
         </div>
 
         <div className="mt-4 mb-1 text-sm">Actual Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6">
-          <pre className="text-base">
+        <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6 max-h-[200px] overflow-y-auto">
+          <pre className="text-base whitespace-pre-wrap">
             {testCaseDetail?.submitOutputs[testCaseDetail.submitOutputs.length - 1].submission_output}
           </pre>
         </div>
@@ -49,7 +49,7 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
 
 const ViewAllTestCaseResultList = ({ testCases, onTestCaseClick, onBack }: ViewAllTestCaseResultListProps) => {
   return (
-    <div className="flex-col px-4">
+    <div className="flex flex-col px-4 h-[calc(100vh-150px)]">
       <div className="flex items-center mt-2 mb-4 cursor-pointer text-gray3 hover:text-gray2" onClick={onBack}>
         <ChevronLeft className="" />
         <div className="text-lg font-medium">Back</div>
@@ -115,16 +115,17 @@ export const SubmissionResults = ({
     fetchTestCaseDetail();
   }, [selectedTestCase]);
 
-  const handleViewMOSSReport = () => {
-    // The MOSS report URL would typically come from an API or be generated
-    // For now, we'll create a basic placeholder or implement based on actual requirements
-    console.log("View MOSS report for submission:", submissionResult?.submissionId);
-  };
-
-  const handleViewDetailedReport = () => {
+  const handleViewSubmissionDetail = () => {
     // Navigate to the new submission detail page
     window.open(`/submissions/${submissionResult.submissionId}`, "_blank");
   };
+
+  const notPassedOrFailed = selectedTestCaseDetail
+    ? selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].result_status !==
+        "Accepted" &&
+      selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].result_status !==
+        "Wrong Answer"
+    : false;
 
   return (
     <div
@@ -132,7 +133,7 @@ export const SubmissionResults = ({
     >
       <div id="result_header" className="flex items-center justify-between">
         <div className="flex flex-row items-end gap-x-2">
-          <div className={`text-center text-xl font-medium ${isPassed ? "text-appEasy" : "text-appHard"}`}>
+          <div className={`text-center text-lg font-medium ${isPassed ? "text-appEasy" : "text-appHard"}`}>
             {isPassed ? "Accepted" : "Wrong Answer"}
           </div>
           <div className="text-sm text-center text-gray3">
@@ -151,40 +152,53 @@ export const SubmissionResults = ({
         language={language}
         viewingPage={viewingPage}
         existingMossResults={submissionResult.mossResults}
-        onViewDetailedReport={handleViewDetailedReport}
-        onViewMOSSReport={handleViewMOSSReport}
+        onViewDetailedReport={handleViewSubmissionDetail}
       />
 
       {!isPassed ? (
-        <div className="test-case-content">
+        <div className="overflow-y-auto test-case-content">
           <div className="flex flex-col mb-2" key={selectedTestCaseDetail?.testcaseId}>
             <div className="mb-1 text-sm">Input:</div>
-            <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-              <pre className="text-base">{selectedTestCaseDetail?.input}</pre>
+            <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[500px] overflow-y-auto">
+              <pre className="text-base whitespace-pre-wrap">{selectedTestCaseDetail?.input}</pre>
             </div>
 
             <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-            <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-              <pre className="text-base">{selectedTestCaseDetail?.output}</pre>
+            <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[200px] overflow-y-auto">
+              <pre className="text-base whitespace-pre-wrap">{selectedTestCaseDetail?.output}</pre>
             </div>
 
             <div className="mt-4 mb-1 text-sm">Actual Output:</div>
-            <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6">
-              <pre className="text-base">
+            <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6 max-h-[200px] overflow-y-auto">
+              <pre className="text-base whitespace-pre-wrap">
                 {
                   selectedTestCaseDetail?.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1]
                     .submission_output
                 }
               </pre>
             </div>
+
+            {notPassedOrFailed && (
+              <>
+                <div className="mt-4 mb-1 text-sm">Result Status:</div>
+                <div className="w-full px-4 py-1 rounded-lg min-h-8 bg-gray6/80">
+                  <pre className="text-base whitespace-pre-wrap">
+                    {
+                      selectedTestCaseDetail?.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1]
+                        .result_status
+                    }
+                  </pre>
+                </div>
+              </>
+            )}
           </div>
         </div>
       ) : (
-        <div className="test-case-content">
+        <div className="overflow-y-auto test-case-content">
           <div className="flex flex-col mb-2">
             <div className="mb-1 text-sm">Run time =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-              <pre className="text-base">
+              <pre className="text-base whitespace-pre-wrap">
                 {selectedTestCaseDetail?.submitOutputs &&
                   selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].runtime * 1000}
                 ms
@@ -193,7 +207,7 @@ export const SubmissionResults = ({
             {/* MISSING MEMORY */}
             <div className="mt-4 mb-1 text-sm">Memory =</div>
             <div className="w-full px-4 py-1 rounded-lg bg-gray6">
-              <pre className="text-base">
+              <pre className="text-base whitespace-pre-wrap">
                 {(
                   selectedTestCaseDetail?.submitOutputs &&
                   selectedTestCaseDetail.submitOutputs[selectedTestCaseDetail.submitOutputs.length - 1].memory / 1000
@@ -205,7 +219,7 @@ export const SubmissionResults = ({
         </div>
       )}
       <div className="mt-4 mb-1 text-sm">Code | {language}</div>
-      <div className="w-full px-4 py-2 overflow-x-auto rounded-lg bg-gray6">
+      <div className="w-full px-4 py-2 overflow-auto rounded-lg bg-gray6 max-h-[300px]">
         <pre className="text-base whitespace-pre-wrap">{submittedCode}</pre>
       </div>
     </div>
