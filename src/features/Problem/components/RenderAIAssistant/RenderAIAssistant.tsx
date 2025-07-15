@@ -30,9 +30,15 @@ interface RenderAIAssistantProps {
   isAIAssistantOpen: boolean;
   setIsAIAssistantOpen: (isAIAssistantOpen: boolean) => void;
   problem: ProblemType | null;
+  code: string;
 }
 
-export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, problem }: RenderAIAssistantProps) => {
+export const RenderAIAssistant = ({
+  isAIAssistantOpen,
+  setIsAIAssistantOpen,
+  problem,
+  code
+}: RenderAIAssistantProps) => {
   const [input, setInput] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
@@ -134,8 +140,13 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
       return;
     }
 
-    const formatAIMessageInputContent = (problemDescription: string, problemId: string, userInput: string) => {
-      return `Problem: ${problemDescription} Problem_id: ${problemId} Question: ${userInput}`;
+    const formatAIMessageInputContent = (
+      problemDescription: string,
+      problemId: string,
+      userInput: string,
+      code: string
+    ) => {
+      return `Problem: ${problemDescription} Problem_id: ${problemId} Code: ${code} Question: ${userInput}`;
     };
 
     updateLastVisit();
@@ -173,7 +184,7 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
 
     try {
       if (!problem) return;
-      const formattedInput = formatAIMessageInputContent(problem?.description, problem?.problemId, input);
+      const formattedInput = formatAIMessageInputContent(problem?.description, problem?.problemId, input, code);
 
       // Has to format input with the following: "Problem: <problem> Question: <question>"
       const responseStream = await aiAPI.postChatbotMessageStream(
