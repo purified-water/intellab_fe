@@ -123,7 +123,7 @@ export const ProblemsPage = () => {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={(page: number) =>
+          onPageChange={(page: number) => {
             dispatch(
               fetchPaginatedProblems({
                 keyword: query,
@@ -133,8 +133,8 @@ export const ProblemsPage = () => {
                 status: null,
                 level: null
               })
-            )
-          }
+            );
+          }}
         />
       )
     );

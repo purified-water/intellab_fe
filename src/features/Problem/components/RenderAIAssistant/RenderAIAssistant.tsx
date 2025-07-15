@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui";
+import { Button, Spinner } from "@/components/ui";
 
 import { ChatbotMessageResponseType } from "@/features/MainChatBot/types/ChatbotMessageType";
 import { aiAPI } from "@/lib/api";
@@ -55,10 +55,17 @@ export const RenderAIAssistant = ({
   const [abortController, setAbortController] = useState<AbortController | null>(null);
   const [remainingMessageCount, setRemainingMessageCount] = useState(0);
   const [isChatbotUnlimited, setIsChatbotUnlimited] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
 
   useEffect(() => {
-    fetchChatHistory();
-    getChabotUsage();
+    const initializeChat = async () => {
+      setIsInitialLoading(true);
+      await fetchChatHistory();
+      await getChabotUsage();
+      setIsInitialLoading(false);
+    };
+
+    initializeChat();
   }, []);
 
   useEffect(() => {
@@ -314,7 +321,15 @@ export const RenderAIAssistant = ({
         </div>
       </div>
       <div id="chat-messages" className="flex flex-col flex-grow max-h-screen overflow-hidden">
-        {chatDetail?.messages.length === 0 ? renderWelcomeChat() : renderChat()}
+        {isInitialLoading ? (
+          <div className="flex items-center justify-center flex-grow">
+            <Spinner loading={true} size="medium" />
+          </div>
+        ) : chatDetail?.messages.length === 0 ? (
+          renderWelcomeChat()
+        ) : (
+          renderChat()
+        )}
       </div>
 
       <ProblemChatInput

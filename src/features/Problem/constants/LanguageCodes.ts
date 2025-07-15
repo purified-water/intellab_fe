@@ -39,7 +39,7 @@ export const LanguageCodes: LanguageCodeType[] = [
   },
   {
     id: 91,
-    name: "Java (OpenJDK 17.0.6)",
+    name: "Java (JDK 17.0.6)",
     is_archived: false
   }
 ];

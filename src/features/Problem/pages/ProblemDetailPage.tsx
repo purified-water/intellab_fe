@@ -34,6 +34,7 @@ export const ProblemDetail = () => {
   // #region State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
+  const [isLoadingProblemDetail, setIsLoadingProblemDetail] = useState(true);
   const [testCases, setTestCases] = useState<TestCaseType[]>([]);
   const { problemId } = useParams<{ problemId: string }>();
   const [code, setCode] = useState("");
@@ -87,6 +88,8 @@ export const ProblemDetail = () => {
         return;
       }
       showToastError({ toast: toast, message: "Failed to fetch problem detail" });
+    } finally {
+      setIsLoadingProblemDetail(false);
     }
   };
   // #endregion
@@ -139,6 +142,7 @@ export const ProblemDetail = () => {
             >
               <RenderDescTabs
                 problemDetail={problemDetail}
+                isLoadingProblemDetail={isLoadingProblemDetail}
                 courseId={courseId}
                 courseName={courseName}
                 lessonId={lessonId}

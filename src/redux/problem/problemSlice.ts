@@ -82,6 +82,7 @@ const problemSlice = createSlice({
           state.originalExploreProblems = state.problems;
         }
         state.totalPages = action.payload.totalPages;
+        state.currentPage = action.payload.number; // Update currentPage with the returned page number
       })
       .addCase(fetchPaginatedProblems.rejected, (state) => {
         state.status = "failed";
