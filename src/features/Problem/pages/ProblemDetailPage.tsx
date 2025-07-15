@@ -196,6 +196,7 @@ export const ProblemDetail = () => {
                   isAIAssistantOpen={true}
                   setIsAIAssistantOpen={setIsAIAssistantOpen}
                   problem={problemDetail}
+                  code={code}
                 />
               </ResizablePanel>
             )}

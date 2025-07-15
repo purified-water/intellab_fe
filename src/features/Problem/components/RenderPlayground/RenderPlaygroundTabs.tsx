@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { Playground } from "./Playground";
 import { SupportedLanguages } from "@/features/Problem/constants/SupportedLanguages";
 import { BsCode } from "rocketicons/bs";
@@ -22,6 +22,7 @@ import { AlignLeft, RotateCcw } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/shadcn/tooltip";
 import { useCodeStorage } from "@/hooks";
 import { findLanguageByName } from "@/utils/problemUtils";
+import { debounce } from "lodash";
 interface RenderPGTabsProps {
   setLanguagePackage: (langJudge0: LanguageCodeType, code: string) => void;
   mode?: "user" | "admin";
@@ -92,6 +93,24 @@ export const RenderPGTabs = ({
       }
     }
   };
+
+  // Debounced function for code changes
+  const debouncedSetLanguagePackage = useCallback(
+    debounce((langJudge0: LanguageCodeType, code: string) => {
+      setLanguagePackage(langJudge0, code);
+    }, 300), // 300ms debounce
+    []
+  );
+
+  // Handle code changes with debounce
+  useEffect(() => {
+    if (code) {
+      const languageNameJudge0 = findLanguageByName(language);
+      if (languageNameJudge0) {
+        debouncedSetLanguagePackage(languageNameJudge0, code);
+      }
+    }
+  }, [code, debouncedSetLanguagePackage]); // Only depend on code
 
   useEffect(() => {
     const languageNameJudge0 = findLanguageByName(language);
