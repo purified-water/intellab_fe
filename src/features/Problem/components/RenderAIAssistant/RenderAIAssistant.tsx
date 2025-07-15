@@ -33,7 +33,12 @@ interface RenderAIAssistantProps {
   code: string;
 }
 
-export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, problem, code }: RenderAIAssistantProps) => {
+export const RenderAIAssistant = ({
+  isAIAssistantOpen,
+  setIsAIAssistantOpen,
+  problem,
+  code
+}: RenderAIAssistantProps) => {
   const [input, setInput] = useState("");
   const textAreaRef = useRef<HTMLTextAreaElement | null>(null);
   const chatContentRef = useRef<HTMLDivElement | null>(null);
@@ -135,7 +140,12 @@ export const RenderAIAssistant = ({ isAIAssistantOpen, setIsAIAssistantOpen, pro
       return;
     }
 
-    const formatAIMessageInputContent = (problemDescription: string, problemId: string, userInput: string, code: string) => {
+    const formatAIMessageInputContent = (
+      problemDescription: string,
+      problemId: string,
+      userInput: string,
+      code: string
+    ) => {
       return `Problem: ${problemDescription} Problem_id: ${problemId} Code: ${code} Question: ${userInput}`;
     };
 
