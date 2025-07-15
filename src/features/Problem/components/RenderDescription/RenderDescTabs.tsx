@@ -7,8 +7,10 @@ import { SubmissionHistory } from "./SubmissionHistory";
 import { ProblemCommentSection } from "./Comments/ProblemCommentSection";
 import { ProblemSolution } from "./ProblemSolution";
 import { useCommentContext } from "@/hooks";
+import { Spinner } from "@/components/ui";
 interface RenderDescTabsProps {
   problemDetail: ProblemType | null;
+  isLoadingProblemDetail?: boolean;
   courseId: string | null;
   courseName: string | null;
   lessonId: string | null;
@@ -19,7 +21,7 @@ interface RenderDescTabsProps {
 }
 
 export const RenderDescTabs = (props: RenderDescTabsProps) => {
-  const { problemDetail, courseId, courseName, lessonId, lessonName, isPassed } = props;
+  const { problemDetail, isLoadingProblemDetail, courseId, courseName, lessonId, lessonName, isPassed } = props;
   const initialTab = isPassed !== null ? (isPassed ? "Passed" : "Failed") : "Description";
   const [desActive, setDesActive] = useState(initialTab);
 
@@ -50,7 +52,18 @@ export const RenderDescTabs = (props: RenderDescTabsProps) => {
     );
   };
 
+  const renderLoadingProblem = () => {
+    return (
+      <div className="flex items-center justify-center w-full h-full">
+        <Spinner loading={true} />
+      </div>
+    );
+  };
+
   const renderDescriptionTabContent = () => {
+    if (isLoadingProblemDetail) {
+      return renderLoadingProblem();
+    }
     if (!problemDetail) return null;
 
     switch (desActive) {
