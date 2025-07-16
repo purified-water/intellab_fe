@@ -1,10 +1,34 @@
 type TInputStructure = {
-  type: "string" | "float" | "int" | "bool" | "list<int>" | "list<float>" | "list<string>" | "list<bool>";
+  type:
+    | "string"
+    | "float"
+    | "int"
+    | "bool"
+    | "list<int>"
+    | "list<float>"
+    | "list<string>"
+    | "list<bool>"
+    | "list<list<int>>"
+    | "list<list<float>>"
+    | "list<list<string>>"
+    | "list<list<bool>>";
   name: string;
 };
 
 type TOutputStructure = {
-  type: "string" | "float" | "int" | "bool" | "list<int>" | "list<float>" | "list<string>" | "list<bool>";
+  type:
+    | "string"
+    | "float"
+    | "int"
+    | "bool"
+    | "list<int>"
+    | "list<float>"
+    | "list<string>"
+    | "list<bool>"
+    | "list<list<int>>"
+    | "list<list<float>>"
+    | "list<list<string>>"
+    | "list<list<bool>>";
   name: string;
 };
 

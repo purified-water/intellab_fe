@@ -24,13 +24,15 @@ export function EmailVerifiedBlock(props: EmailVerifiedBlock) {
         <p className="text-center">
           Congratulations! You have successfully verified your email address. You can continue using the application.
         </p>
-        <Button
-          type="button"
-          className="font-bold mt-14 bg-appPrimary hover:bg-appPrimary/80"
-          onClick={handleBackHomePageClick}
-        >
-          Back to Home Page
-        </Button>
+        <div>
+          <Button
+            type="button"
+            className="font-bold mt-14 bg-appPrimary hover:bg-appPrimary/80"
+            onClick={handleBackHomePageClick}
+          >
+            Back to Home Page
+          </Button>
+        </div>
       </div>
     );
   };

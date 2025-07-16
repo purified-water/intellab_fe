@@ -189,7 +189,8 @@ export const problemAPI = {
     const queryParams = {
       UserUid,
       page,
-      size
+      size,
+      sort: "createdAt,desc"
     };
     const response = await apiClient.get(`problem/problem-submissions/submitList/me`, { params: queryParams });
     const data: TGetSubmissionListMeResponse = response.data;
