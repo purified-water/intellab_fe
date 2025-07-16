@@ -134,7 +134,7 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
       console.log(error);
       toast({
         title: "Failed to reply",
-        description: "An error occured",
+        description: "An error occurred",
         variant: "destructive"
       });
     }
@@ -220,12 +220,21 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
 
           <textarea
             placeholder="Type your reply..."
-            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 text-justify focus:outline-none"
+            className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-hidden bg-white border-gray4/60 text-justify focus:outline-none"
             rows={1}
             value={mainReplyContent}
             onInput={(e) => {
               e.currentTarget.style.height = "auto";
-              e.currentTarget.style.height = `${e.currentTarget.scrollHeight}px`;
+              const newHeight = e.currentTarget.scrollHeight;
+              const maxHeight = 300; // 300px to match max-h-[300px]
+
+              if (newHeight <= maxHeight) {
+                e.currentTarget.style.height = `${newHeight}px`;
+                e.currentTarget.style.overflowY = "hidden";
+              } else {
+                e.currentTarget.style.height = `${maxHeight}px`;
+                e.currentTarget.style.overflowY = "auto";
+              }
             }}
             onChange={(e) => setMainReplyContent(e.currentTarget.value)}
             onKeyDown={(e) => {
@@ -239,7 +248,10 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
         <div>
           <div className="flex justify-end space-x-2">
             <Button
-              onClick={() => setIsReplying(false)}
+              onClick={() => {
+                setIsReplying(false);
+                setMainReplyContent("");
+              }}
               variant="outline"
               className="px-4 py-2 mt-2 rounded-lg text-appPrimary border-appPrimary"
             >
@@ -288,14 +300,30 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
         {isEditing ? (
           <div className="mt-2">
             <textarea
-              className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-scroll bg-white border-gray4/60 focus:outline-none"
+              className="w-full text-sm p-2 border rounded-lg resize-none max-h-[300px] overflow-y-hidden bg-white border-gray4/60 focus:outline-none"
               value={editedContent}
               onChange={(e) => setEditedContent(e.target.value)}
+              onInput={(e) => {
+                e.currentTarget.style.height = "auto";
+                const newHeight = e.currentTarget.scrollHeight;
+                const maxHeight = 300;
+
+                if (newHeight <= maxHeight) {
+                  e.currentTarget.style.height = `${newHeight}px`;
+                  e.currentTarget.style.overflowY = "hidden";
+                } else {
+                  e.currentTarget.style.height = `${maxHeight}px`;
+                  e.currentTarget.style.overflowY = "auto";
+                }
+              }}
               rows={2}
             />
             <div className="flex justify-end mt-2 space-x-2">
               <Button
-                onClick={() => setIsEditing(false)}
+                onClick={() => {
+                  setIsEditing(false);
+                  setEditedContent(comment.content);
+                }}
                 variant="outline"
                 className="px-4 py-2 rounded-lg text-appPrimary border-appPrimary"
               >

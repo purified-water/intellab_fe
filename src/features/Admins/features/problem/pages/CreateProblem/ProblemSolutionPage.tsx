@@ -53,6 +53,21 @@ export const ProblemSolutionPage = () => {
       formData.currentCreationStep > CREATE_PROBLEM_STEP_NUMBERS.SOLUTION;
     //console.log("--> Editing in Problem Solution Page:", editingProblem);
 
+    // No solution when creating a new problem
+    if (_.isEmpty(formData.problemSolution) && _.isEmpty(data.problemSolution)) {
+      goToNextStep();
+      return;
+    }
+
+    // Editing a problem that has already had a solution, but leaving the current solution text input empty
+    if (!_.isEmpty(formData.problemSolution) && _.isEmpty(data.problemSolution)) {
+      showToastError({
+        toast: toast.toast,
+        message: "You have already provided a solution for this problem. You can't leave it empty."
+      });
+      return;
+    }
+
     await adminProblemAPI.createProblemSolutionStep({
       query: { isUpdate: editingProblem && !_.isEmpty(formData.problemSolution) },
       body: {
@@ -106,7 +121,7 @@ export const ProblemSolutionPage = () => {
                   <AddMarkdownContent
                     value={field.value}
                     onChange={field.onChange}
-                    placeholder="Write a detailed solution including the approach, source code, and complexity analysis. You can also add examples or test cases to clarify the solution."
+                    placeholder="Write a detailed solution including the approach, source code, and complexity analysis. You can also add examples or test cases to clarify the solution. Note that you can still create a problem without a solution."
                   />
                 </FormControl>
                 <FormMessage />
