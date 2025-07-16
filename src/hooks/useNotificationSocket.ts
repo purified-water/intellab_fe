@@ -1,5 +1,5 @@
 import useWebSocket from "react-use-websocket";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { addNotification } from "@/redux/notifications/notificationsSlice";
 import { NotificationType } from "@/features/Notification/types/NotificationType";
@@ -14,6 +14,9 @@ export const useNotificationSocket = () => {
   const toast = useToast();
   const userId = getUserIdFromLocalStorage();
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
+  
+  // Keep track of notification IDs that have already been shown as toast
+  const shownNotificationIds = useRef(new Set<string>());
 
   const { lastMessage } = useWebSocket(`${import.meta.env.VITE_SOCKET_URL}/identity/ws/notification?userId=${userId}`, {
     shouldReconnect: () => true, // Automatically try to reconnect
@@ -25,21 +28,49 @@ export const useNotificationSocket = () => {
     if (!userId || !isAuthenticated || lastMessage === null) return;
 
     if (lastMessage !== null) {
+      // Check if the message is a welcome/connection message
+      if (typeof lastMessage.data === 'string' && lastMessage.data.startsWith('Welcome')) {
+        console.log("WebSocket connection established:", lastMessage.data);
+        return;
+      }
+
       try {
         const parsed = JSON.parse(lastMessage.data);
-        // Optionally check if parsed has expected fields
-        if (parsed && parsed.redirectType && parsed.message) {
-          dispatch(addNotification(parsed as NotificationType));
-          showToastDefault({
-            toast: toast.toast,
-            title: "New Notification",
-            message: parsed.title,
-            duration: 5000
-          });
+        
+        // Validate that this is a proper notification with required fields
+        if (parsed && 
+            parsed.id && 
+            parsed.title && 
+            parsed.message && 
+            parsed.redirectType && 
+            typeof parsed.timestamp === 'number') {
+          
+          const notification = parsed as NotificationType;
+          
+          // Add notification to Redux store
+          dispatch(addNotification(notification));
+          
+          // Only show toast if this notification hasn't been shown before
+          if (!shownNotificationIds.current.has(notification.id)) {
+            shownNotificationIds.current.add(notification.id);
+            showToastDefault({
+              toast: toast.toast,
+              title: "New Notification",
+              message: notification.title,
+              duration: 4000
+            });
+          }
         }
       } catch (err) {
         console.warn("Received non-JSON or invalid message:", lastMessage.data);
       }
     }
-  }, [lastMessage, dispatch]);
+  }, [lastMessage, dispatch, toast.toast, userId, isAuthenticated]);
+
+  // Clear shown notification IDs when user logs out
+  useEffect(() => {
+    if (!isAuthenticated) {
+      shownNotificationIds.current.clear();
+    }
+  }, [isAuthenticated]);
 };

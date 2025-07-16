@@ -84,7 +84,6 @@ export function CompletionRateMiniChart({ rangeType, dateRange, selectedMonth, s
   const [error, setError] = useState<string | null>(null);
 
   const fetchCompletionRate = useCallback(() => {
-    console.log("Fetching completion rate data", rangeType, dateRange);
     // Convert rangeType to the expected API parameter
     let period: "monthly" | "yearly" | "custom" = "monthly";
     const query: { period?: "monthly" | "yearly" | "custom"; start_date?: string; end_date?: string } = {};

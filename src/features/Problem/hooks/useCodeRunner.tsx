@@ -65,7 +65,6 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
                 variant: "destructive",
                 description: "Run code timeout. Please try again later."
               });
-              setIsRunningCode(false);
             } else {
               toast({
                 description: "Run code completed!"
@@ -74,14 +73,19 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
               // Handle final results
               setRunCodeResult(updateResponse);
             }
+
+            // Set isRunningCode to false only when polling is complete
+            setIsRunningCode(false);
           }
         } else {
           console.error(`Error in polling: ${response.status} ${response.statusText}`);
           clearInterval(interval);
+          setIsRunningCode(false);
         }
       } catch (error) {
         console.error("Failed to fetch submission update:", error);
         clearInterval(interval);
+        setIsRunningCode(false);
       }
     }, 4000);
   };
@@ -110,7 +114,6 @@ export const useCodeRunner = ({ code, language, problemId }: UseCodeRunnerProps)
         variant: "destructive",
         description: errorMessage
       });
-    } finally {
       setIsRunningCode(false);
     }
   };

@@ -14,6 +14,7 @@ import { useParams } from "react-router-dom";
 import { RootState } from "@/redux/rootReducer";
 import { useNavigate } from "react-router-dom";
 import { useCommentContext, useParentCommentContext } from "@/hooks";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 interface ProblemCommentProps {
   comment: ProblemCommentType;
@@ -270,7 +271,12 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-full bg-gray5">
               {comment.userAvatar ? (
-                <img src={comment.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+                <img
+                  src={comment.userAvatar}
+                  alt="Avatar"
+                  className="object-cover w-full h-full rounded-full"
+                  onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+                />
               ) : null}
             </div>
             <p onClick={handleUsernameClick} className="text-lg font-semibold cursor-pointer hover:text-appPrimary">

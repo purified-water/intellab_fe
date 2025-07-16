@@ -17,7 +17,7 @@ import { ProfileMenu } from "./ProfileMenu";
 import { PremiumStatus } from "./PremiumStatus";
 import { Button } from "@/components/ui";
 import { Bell } from "lucide-react";
-import { selectHasUnread } from "@/redux/notifications/notificationsSlice";
+import { selectHasUnread, clearNotifications } from "@/redux/notifications/notificationsSlice";
 import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 interface NavbarProps {
@@ -52,6 +52,7 @@ const Navbar = ({ isDarkMode, toggleDarkMode }: NavbarProps) => {
     dispatch(clearPremiumStatus());
     dispatch(clearUser());
     dispatch(clearLoginStreak()); // Clear cached login streak data
+    dispatch(clearNotifications()); // Clear notifications
     dispatch(logoutSuccess());
 
     userLocalStorageCleanUp();

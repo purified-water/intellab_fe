@@ -22,6 +22,7 @@ export const SubmissionHistory = () => {
 
   const getSubmissionHistory = async (append = false) => {
     if (!problemId) return;
+    setIsLoading(true);
     try {
       const response = await problemAPI.getSubmissionHistory(problemId, currentPage);
 
@@ -49,6 +50,8 @@ export const SubmissionHistory = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -92,7 +95,11 @@ export const SubmissionHistory = () => {
   };
 
   if (isLoading) {
-    return <Spinner loading={isLoading} overlay />;
+    return (
+      <div className="flex items-center justify-center h-full">
+        <Spinner loading={true} />
+      </div>
+    );
   }
 
   return (

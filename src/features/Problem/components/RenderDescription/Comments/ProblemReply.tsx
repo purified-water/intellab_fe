@@ -13,6 +13,7 @@ import { RootState } from "@/redux/rootReducer";
 import { AvatarIcon } from "@/components/ui";
 import { useNavigate } from "react-router-dom";
 import { useCommentContext } from "@/hooks";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 interface ProblemReplyProps {
   reply: ProblemCommentType;
   updateCommentList: () => void;
@@ -195,7 +196,12 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
       >
         <div className="flex-shrink-0 w-8 h-8 rounded-full bg-gray5">
           {reply.userAvatar ? (
-            <img src={reply.userAvatar} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+            <img
+              src={reply.userAvatar}
+              alt="Avatar"
+              className="object-cover w-full h-full rounded-full"
+              onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
+            />
           ) : null}
         </div>
 

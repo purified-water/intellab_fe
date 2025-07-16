@@ -10,9 +10,10 @@ import { RunCodeResponseType } from "../../types/RunCodeType";
 interface RenderTCTabsProps {
   testCases: TestCaseType[];
   runCodeResult?: RunCodeResponseType | null;
+  isRunningCode?: boolean;
 }
 
-export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) => {
+export const RenderTCTabs = ({ testCases, runCodeResult, isRunningCode }: RenderTCTabsProps) => {
   const initialTab = runCodeResult ? "Output" : "Testcase";
   const [testCaseActive, setTestCaseActive] = useState(initialTab);
 
@@ -58,7 +59,7 @@ export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) =>
           </div>
         );
       case "Output":
-        return <Output runCodeResult={runCodeResult ?? null} />;
+        return <Output runCodeResult={runCodeResult ?? null} isRunningCode={isRunningCode} />;
     }
   };
 
@@ -75,7 +76,7 @@ export const RenderTCTabs = ({ testCases, runCodeResult }: RenderTCTabsProps) =>
       </div>
 
       {/* Test case Content */}
-      <div id="testcase-content" className="overflow-y-scroll">
+      <div id="testcase-content" className="mb-4 overflow-y-scroll">
         {renderTestcaseContent()}
       </div>
     </div>

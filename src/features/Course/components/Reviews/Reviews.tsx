@@ -117,7 +117,7 @@ export function Reviews({
             ].map((rating, index) => (
               <div key={index} className="inline-flex items-center mt-3 space-x-2 w-72">
                 <span className="font-bold">{5 - index} stars</span>
-                <div className="w-40 h-2 overflow-hidden bg-gray-200 rounded">
+                <div className="w-40 h-2 overflow-hidden rounded bg-gray6">
                   <motion.div
                     className="h-full rounded bg-appPrimary"
                     initial={{ width: 0 }}
@@ -130,7 +130,7 @@ export function Reviews({
             ))}
           </div>
         </div>
-        <div className="flex flex-col items-start flex-auto w-full ml-4">
+        <div className="flex flex-col items-start w-full ml-4">
           <div className="flex items-end justify-between w-full">
             <ComboboxDemo
               open={ratingFilterOpen}
@@ -167,17 +167,17 @@ export function Reviews({
               }}
             />
           )}
-          <div className="mt-2 space-y-4 overflow-y-auto max-h-[500px]">
+          <div className="mt-2 space-y-4 overflow-y-auto max-h-[800px] w-full">
             {reviews.map((review, index) => (
-              <Card key={review.reviewId} className="w-full pt-4 pb-4 pl-4 pr-5 mt-4 border border-gray4">
+              <Card key={review.reviewId} className="w-full p-4 mt-4 border">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 rounded-full">
+                  <div className="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
                     {review.photoUrl ? (
                       <img src={review.photoUrl} alt="Avatar" className="object-cover w-full h-full rounded-full" />
                     ) : null}
                   </div>
-                  <div>
-                    <h4 className="font-semibold">{review.displayName ? review.displayName : "Tester"}</h4>
+                  <div className="flex-1 min-w-0">
+                    <h4 className="font-semibold truncate">{review.displayName ? review.displayName : "Tester"}</h4>
                     <div className="flex items-center space-x-1 text-gray-500">
                       <div className="flex items-center">
                         <div className="text-yellow-500">
@@ -197,7 +197,7 @@ export function Reviews({
                   </div>
                 </div>
                 <p
-                  className={`mt-2 text-gray-700 w-[750px] break-words text-sm ${expandedReview === index ? "" : "line-clamp-3"}`}
+                  className={`mt-2 text-gray-700 w-full break-words text-sm ${expandedReview === index ? "" : "line-clamp-3"}`}
                 >
                   {review.comment}
                 </p>
