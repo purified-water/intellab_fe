@@ -17,6 +17,7 @@ import { RootState } from "@/redux/rootReducer";
 import { problemAPI } from "@/lib/api";
 import { SubmissionTypeNoProblem } from "../../types/SubmissionType";
 import { MOSSSection } from "./MOSSSection";
+import { USER_ROLES } from "@/constants";
 
 const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps) => {
   if (!testCaseDetail) return;
@@ -93,6 +94,7 @@ export const SubmissionResults = ({
   const testCases = submissionResult.testCasesOutput as TestCaseAfterSubmit[];
   const totalTestCasesCount = testCases.length;
   const acceptedTestCasesCount = testCases.filter((testCase) => testCase.result_status === "Accepted").length;
+  const isAdmin = useSelector((state: RootState) => state.user.user?.role === USER_ROLES.ADMIN);
 
   const firstFailedTestCase = testCases.find(
     // One test case may have many submission outputs, so we get the last submission output to check the result status
@@ -147,13 +149,15 @@ export const SubmissionResults = ({
       </div>
 
       {/* MOSS Results Section */}
-      <MOSSSection
-        submissionId={submissionResult.submissionId}
-        language={language}
-        viewingPage={viewingPage}
-        existingMossResults={submissionResult.mossResults}
-        onViewDetailedReport={handleViewSubmissionDetail}
-      />
+      {!isAdmin && (
+        <MOSSSection
+          submissionId={submissionResult.submissionId}
+          language={language}
+          viewingPage={viewingPage}
+          existingMossResults={submissionResult.mossResults}
+          onViewDetailedReport={handleViewSubmissionDetail}
+        />
+      )}
 
       {!isPassed ? (
         <div className="overflow-y-auto test-case-content">
@@ -268,7 +272,14 @@ export const SubmissionInformation = ({
     };
 
     initializeData();
-  }, [historyInformation, actualProblemId]);
+  }, [historyInformation, actualProblemId, submissionResultFromRedux, savedCodeData]);
+
+  // Reset to result panel when new submission comes in
+  useEffect(() => {
+    if (submissionResultFromRedux && !historyInformation) {
+      setCurrentPanel("result");
+    }
+  }, [submissionResultFromRedux, historyInformation]);
 
   const handleViewAllTestCases = () => setCurrentPanel("allTestCases");
 

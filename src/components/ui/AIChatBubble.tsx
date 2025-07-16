@@ -14,7 +14,7 @@ interface ChatBubbleProps {
 
 const variantClasses: Record<string, string> = {
   mainAI: "text-base",
-  problemAI: "text-sm"
+  problemAI: "text-xs"
 };
 
 export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingResponse, variant = "mainAI" }) => {
@@ -47,10 +47,10 @@ export const ChatBubble: React.FC<ChatBubbleProps> = ({ message, isLoadingRespon
         )}
       >
         {message.type === "user" ? (
-          <p className="prose-sm prose md:prose-base">{message.content}</p>
+          <p className={variant === "problemAI" ? "prose-sm" : "prose"}>{message.content}</p>
         ) : (
           <ReactMarkdown
-            className="prose-sm prose md:prose-base markdown"
+            className={`${variant === "problemAI" ? "prose-sm" : "prose"} markdown`}
             remarkPlugins={[remarkGfm]}
             components={{
               code({ className, children, ...props }) {

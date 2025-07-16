@@ -1,19 +1,18 @@
 import { useState } from "react";
 import { RunCodeResponseType } from "../../types/RunCodeType";
-import { EmptyList } from "@/components/ui";
-import { FaSpinner } from "rocketicons/fa";
+import { EmptyList, Spinner } from "@/components/ui";
 
 interface TestCaseResultProps {
   runCodeResult: RunCodeResponseType | null;
   isRunningCode?: boolean;
 }
 
-export const Output = ({ runCodeResult, isRunningCode = false }: TestCaseResultProps) => {
+export const Output = ({ runCodeResult, isRunningCode }: TestCaseResultProps) => {
   // Show spinner when code is running
   if (isRunningCode) {
     return (
       <div className="flex flex-col items-center justify-center h-full">
-        <FaSpinner className="w-8 h-8 mb-4 animate-spin text-appAccent" />
+        <Spinner className="w-8 h-8 mt-4" loading={true} />
         <p className="text-base font-semibold text-gray3">Running your code...</p>
       </div>
     );

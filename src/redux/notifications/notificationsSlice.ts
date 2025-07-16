@@ -28,7 +28,6 @@ export const fetchNotifications = createAsyncThunk(
       // Set the current page and total pages in the state
       const { number: currentPage, totalPages } = response.result;
       return { ...response.result, currentPage, totalPages };
-      return response.result; // assuming it includes totalPages and content
     } catch (error) {
       if (error instanceof Error) {
         return rejectWithValue(error.message);
@@ -43,7 +42,11 @@ const notificationSlice = createSlice({
   initialState,
   reducers: {
     addNotification(state, action: PayloadAction<NotificationType>) {
-      state.list.unshift(action.payload);
+      // Check if notification already exists to prevent duplicates
+      const existingNotification = state.list.find((notif) => notif.id === action.payload.id);
+      if (!existingNotification) {
+        state.list.unshift(action.payload);
+      }
     },
     setNotifications(state, action: PayloadAction<NotificationType[]>) {
       state.list = action.payload;

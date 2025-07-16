@@ -180,7 +180,7 @@ export const ProblemDetail = () => {
                   minSize={20}
                   className="overflow-y-auto bg-white"
                 >
-                  <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} />
+                  <RenderTCTabs testCases={testCases} runCodeResult={runCodeResult} isRunningCode={isRunningCode} />
                 </ResizablePanel>
               </ResizablePanelGroup>
             </ResizablePanel>
@@ -237,7 +237,7 @@ export const ProblemDetail = () => {
             <Button
               className={`font-semibold text-gray3 bg-gray5 gap-x-1 hover:bg-gray4 ${isRunningCode ? "cursor-not-allowed" : ""}`}
               onClick={handleRunCode}
-              disabled={isRunningCode}
+              disabled={isRunningCode || isSubmitting}
             >
               {isRunningCode ? (
                 <Spinner className="size-3" loading={true} />
@@ -252,7 +252,7 @@ export const ProblemDetail = () => {
               className={`font-semibold text-white bg-appPrimary gap-x-1 hover:bg-appPrimary/80 ${
                 isSubmitting ? "cursor-not-allowed" : ""
               }`}
-              disabled={isSubmitting}
+              disabled={isSubmitting || isRunningCode}
             >
               {isSubmitting ? (
                 <Spinner className="text-white size-3" loading={true} />
