@@ -125,7 +125,7 @@ export const AIExplainerMenu = forwardRef<HTMLDivElement, AIExplainerMenuProps>(
           ? `Explain this text in simple terms that a beginner would understand: "${userInput}"`
           : `Explain this text concisely: "${userInput}"`;
 
-      return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${prompt}`;
+      return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${prompt} Chatbot: false`;
     };
 
     const handleSendMessageStream = async (inputType: string = "explain") => {

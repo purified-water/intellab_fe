@@ -92,7 +92,7 @@ export const LessonChatbotModal = ({ isOpen, onClose, lesson }: LessonChatbotMod
   }, [dispatch]);
 
   const formatAIMessageInputContent = (lessonDescription: string, lessonId: string, userInput: string) => {
-    return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${userInput}`;
+    return `Lesson: ${lessonDescription} Lesson_id: ${lessonId} Question: ${userInput} Chatbot: true`;
   };
 
   const handleSendMessageStream = async () => {
