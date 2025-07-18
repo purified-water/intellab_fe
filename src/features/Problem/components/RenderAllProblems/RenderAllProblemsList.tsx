@@ -5,6 +5,10 @@ import { useAppDispatch } from "@/redux/hooks";
 import { fetchPaginatedProblems } from "@/redux/problem/problemSlice";
 import { RootState } from "@/redux/rootReducer";
 import { useSelector } from "react-redux";
+import { Button, Spinner } from "@/components/ui";
+import { CircleChevronDown } from "lucide-react";
+
+const PAGE_SIZE = 20;
 
 interface RenderAllProblemsProps {
   isOpen: boolean;
@@ -17,7 +21,7 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
   const status = useSelector((state: RootState) => state.problem.status);
   const totalPages = useSelector((state: RootState) => state.problem.totalPages);
   const [visible, setVisible] = useState(isOpen);
-  const [page, setPage] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const sidebarRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -28,8 +32,15 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
 
   useEffect(() => {
     dispatch(
-      fetchPaginatedProblems({ keyword: "", page: 0, size: 20, selectedCategories: null, status: null, level: null })
-    ); // Fetch first page initially
+      fetchPaginatedProblems({
+        keyword: "",
+        page: 0,
+        size: PAGE_SIZE,
+        selectedCategories: null,
+        status: null,
+        level: null
+      })
+    );
   }, [dispatch]);
 
   const handleClose = () => {
@@ -47,20 +58,44 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
   const handleScroll = () => {
     if (sidebarRef.current) {
       const { scrollTop, scrollHeight, clientHeight } = sidebarRef.current;
-      // Added this to call infinite scroll when user reaches near the bottom using redux
-      if (scrollTop + clientHeight >= scrollHeight - 10 && status !== "loading" && page < totalPages - 1) {
-        setPage((prevPage) => prevPage + 1);
+      if (scrollTop + clientHeight >= scrollHeight - 10 && status !== "loading" && currentPage < totalPages - 1) {
+        setCurrentPage((prevPage) => prevPage + 1);
       }
     }
   };
 
   useEffect(() => {
-    if (page > 0) {
+    if (currentPage > 0) {
       dispatch(
-        fetchPaginatedProblems({ keyword: "", page, size: 20, selectedCategories: null, status: null, level: null })
+        fetchPaginatedProblems({
+          keyword: "",
+          page: 0,
+          size: (currentPage + 1) * PAGE_SIZE,
+          selectedCategories: null,
+          status: null,
+          level: null
+        })
       );
     }
-  }, [page, dispatch]);
+  }, [currentPage, dispatch]);
+
+  const renderViewMore = () => {
+    const isLoading = status === "loading";
+    let content = null;
+    if (isLoading) {
+      content = <Spinner loading={isLoading} />;
+    } else if (totalPages && currentPage + 1 < totalPages) {
+      content = (
+        <Button type="button" disabled={isLoading} onClick={handleScroll}>
+          View more
+          <CircleChevronDown />
+        </Button>
+      );
+    } else {
+      content = <p className="text-gray3 text-lg">No more problems to show!</p>;
+    }
+    return <div className="flex flex-col items-center space-y-4 mt-4">{content}</div>;
+  };
 
   return (
     <div
@@ -75,11 +110,11 @@ export const RenderAllProblems = ({ isOpen, toggleSidebar }: RenderAllProblemsPr
           visible ? "translate-x-0" : "-translate-x-full"
         } sidebar-content overflow-y-auto`}
         onClick={(e) => e.stopPropagation()}
-        onScroll={handleScroll}
       >
         <div className="p-4">
           <h2 className="text-lg font-semibold">All Problems</h2>
           <AllProblemsListItem problems={problems} toggleSidebar={handleClose} />
+          {renderViewMore()}
         </div>
         <button type="button" className="absolute text-gray-500 top-4 right-4" onClick={handleClose}>
           <MdClose className="icon-lg" />
