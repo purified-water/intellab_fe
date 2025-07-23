@@ -34,11 +34,11 @@ export const TestCases = ({ testCases }: TestCasesProps) => {
       <div className="test-case-content">
         <div className="flex flex-col mb-2" key={selectedTestCase.testCaseId}>
           <div className="mb-1 text-sm">Input:</div>
-          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 max-h-[400px] overflow-y-scroll">
+          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 min-h-8 max-h-[400px] overflow-y-scroll">
             <pre className="text-base whitespace-pre-wrap">{selectedTestCase.input}</pre>
           </div>
           <div className="mt-4 mb-1 text-sm">Output:</div>
-          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 max-h-[200px] overflow-y-scroll">
+          <div className="w-full px-4 py-1 rounded-lg bg-gray6/80 min-h-8 max-h-[200px] overflow-y-scroll">
             <pre className="text-base whitespace-pre-wrap">{selectedTestCase.output}</pre>
           </div>
         </div>

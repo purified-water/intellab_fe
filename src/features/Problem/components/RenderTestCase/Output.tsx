@@ -13,7 +13,7 @@ export const Output = ({ runCodeResult, isRunningCode }: TestCaseResultProps) =>
     return (
       <div className="flex flex-col items-center justify-center h-full">
         <Spinner className="w-8 h-8 mt-4" loading={true} />
-        <p className="text-base font-semibold text-gray3">Running your code...</p>
+        <p className="text-base text-gray3">Running your code...</p>
       </div>
     );
   }

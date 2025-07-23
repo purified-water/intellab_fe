@@ -111,7 +111,8 @@ export const DashboardPage = () => {
       value: overviewStats.find((stat) => stat.title === "Subscriptions")?.value?.toString() || "0",
       icon: Users,
       change: overviewStats.find((stat) => stat.title === "Subscriptions")?.change || "0",
-      changeNote: overviewStats.find((stat) => stat.title === "Subscriptions")?.changeNote || "new users this month",
+      changeNote:
+        overviewStats.find((stat) => stat.title === "Subscriptions")?.changeNote || "new users since last month",
       changeType: overviewStats.find((stat) => stat.title === "Subscriptions")?.changeType || "neutral"
     },
     {
@@ -136,203 +137,218 @@ export const DashboardPage = () => {
     <div className="dashboard-container max-w-[1400px] mx-auto p-6 space-y-8">
       <h1 className="text-4xl font-bold tracking-tight text-appPrimary">Dashboard</h1>
 
-      {/* Overview Cards - Moved to top */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {isLoading ? (
-          // Loading state for KPIs
-          <>
-            {[1, 2, 3, 4].map((item) => (
-              <div key={item} className="flex flex-col gap-2 p-4 border rounded-lg shadow animate-pulse">
-                <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
-                <div className="w-1/3 h-8 bg-gray-200 rounded"></div>
-                <div className="w-2/3 h-4 bg-gray-200 rounded"></div>
-              </div>
-            ))}
-          </>
-        ) : error ? (
-          // Error state
-          <div className="col-span-4 p-4 border border-red-200 rounded-lg bg-red-50">
-            <p className="text-red-500">Failed to load dashboard data: {error}</p>
-            <button
-              className="px-4 py-2 mt-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
-              onClick={() => {
-                // Retry fetch on button click
-                adminDashboardAPI.getOverviewStats({
-                  onStart: async () => {
-                    setIsLoading(true);
-                    setError(null);
-                  },
-                  onSuccess: async (data) => {
-                    setOverviewStats(data.result);
-                  },
-                  onFail: async (errorMessage) => {
-                    setError(errorMessage);
-                  },
-                  onEnd: async () => {
-                    setIsLoading(false);
-                  }
-                });
-              }}
-            >
-              Retry
-            </button>
-          </div>
-        ) : (
-          // Normal data display
-          topStats.map((stat, idx) => (
-            <TopStatCard
-              key={idx}
-              title={stat.title}
-              value={stat.value}
-              icon={stat.icon}
-              change={stat.change}
-              changeNote={stat.changeNote}
-              changeType={stat.changeType}
-            />
-          ))
-        )}
+      {/* Top Stats Section - Fixed to Current Month */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">This Month Overview</h2>
+          <span className="px-3 py-1 text-sm rounded-full text-gray3 bg-muted">Fixed to current month</span>
+        </div>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {isLoading ? (
+            <>
+              {[1, 2, 3, 4].map((item) => (
+                <div key={item} className="flex flex-col gap-2 p-4 border rounded-lg shadow animate-pulse">
+                  <div className="w-1/2 h-4 bg-gray-200 rounded"></div>
+                  <div className="w-1/3 h-8 bg-gray-200 rounded"></div>
+                  <div className="w-2/3 h-4 bg-gray-200 rounded"></div>
+                </div>
+              ))}
+            </>
+          ) : error ? (
+            // Error state
+            <div className="col-span-4 p-4 border border-red-200 rounded-lg bg-red-50">
+              <p className="text-red-500">Failed to load dashboard data: {error}</p>
+              <button
+                className="px-4 py-2 mt-2 text-red-700 bg-red-100 rounded hover:bg-red-200"
+                onClick={() => {
+                  // Retry fetch on button click
+                  adminDashboardAPI.getOverviewStats({
+                    onStart: async () => {
+                      setIsLoading(true);
+                      setError(null);
+                    },
+                    onSuccess: async (data) => {
+                      setOverviewStats(data.result);
+                    },
+                    onFail: async (errorMessage) => {
+                      setError(errorMessage);
+                    },
+                    onEnd: async () => {
+                      setIsLoading(false);
+                    }
+                  });
+                }}
+              >
+                Retry
+              </button>
+            </div>
+          ) : (
+            // Normal data display
+            topStats.map((stat, idx) => (
+              <TopStatCard
+                key={idx}
+                title={stat.title}
+                value={stat.value}
+                icon={stat.icon}
+                change={stat.change}
+                changeNote={stat.changeNote}
+                changeType={stat.changeType}
+              />
+            ))
+          )}
+        </div>
       </div>
-      {/* Filter Controls - Moved below charts */}
-      <div className="flex items-center gap-2">
-        {/* Select time range */}
-        <Select value={rangeType} onValueChange={(val: "Month" | "Year" | "Custom") => setRangeType(val)}>
-          <SelectTrigger className="w-[150px]">
-            <SelectValue placeholder="Month" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="Month">Month</SelectItem>
-            <SelectItem value="Year">Year</SelectItem>
-            <SelectItem value="Custom">Custom Range</SelectItem>
-          </SelectContent>
-        </Select>
 
-        {/* Month/Year Picker for Month and Year filters */}
-        {(rangeType === "Month" || rangeType === "Year") && (
-          <MonthYearPicker
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            onMonthYearChange={handleMonthYearChange}
-            rangeType={rangeType}
-          />
-        )}
-
-        {/* Date Picker for Custom range with constraints */}
-        {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={handleDateRangeChange} />}
-      </div>
-      {/* Charts Section */}
+      {/* Charts Section with Filters */}
       <div className="space-y-6">
-        {/* Khối 2: Biểu đồ nhỏ */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
-          <ZoomableChartCard
-            title="Revenue"
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            setRangeType={setRangeType}
-            setDateRange={setDateRange}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedYear={setSelectedYear}
-            largeChart={
-              <RevenueLargeBarChart
-                rangeType={rangeType}
-                dateRange={dateRange}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-              />
-            }
-          >
-            <RevenueMiniBarChart
-              rangeType={rangeType}
-              dateRange={dateRange}
-              selectedMonth={selectedMonth}
-              selectedYear={selectedYear}
-            />
-          </ZoomableChartCard>
-
-          <ZoomableChartCard
-            title="User Growth"
-            largeChart={
-              <UserGrowthLargeChart
-                rangeType={rangeType}
-                dateRange={dateRange}
-                selectedMonth={selectedMonth}
-                selectedYear={selectedYear}
-              />
-            }
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            setRangeType={setRangeType}
-            setDateRange={setDateRange}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedYear={setSelectedYear}
-          >
-            <UserGrowthMiniChart
-              rangeType={rangeType}
-              dateRange={dateRange}
-              selectedMonth={selectedMonth}
-              selectedYear={selectedYear}
-            />
-          </ZoomableChartCard>
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-semibold">Analytics</h2>
+          <span className="px-3 py-1 text-sm rounded-full text-gray3 bg-muted">Filtered by selected date range</span>
         </div>
 
-        {/* Khối 3: Revenue Chart + Completion Rate Chart */}
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-          <ZoomableChartCard
-            title="Subscription Growth"
-            largeChart={
-              <SubscriptionGrowthLargeChart
+        {/* Filter Controls */}
+        <div className="flex items-center gap-2">
+          {/* Select time range */}
+          <Select value={rangeType} onValueChange={(val: "Month" | "Year" | "Custom") => setRangeType(val)}>
+            <SelectTrigger className="w-[150px]">
+              <SelectValue placeholder="Month" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="Month">Month</SelectItem>
+              <SelectItem value="Year">Year</SelectItem>
+              <SelectItem value="Custom">Custom Range</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Month/Year Picker for Month and Year filters */}
+          {(rangeType === "Month" || rangeType === "Year") && (
+            <MonthYearPicker
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              onMonthYearChange={handleMonthYearChange}
+              rangeType={rangeType}
+            />
+          )}
+
+          {/* Date Picker for Custom range with constraints */}
+          {rangeType === "Custom" && <DatePickerWithRange date={dateRange} setDate={handleDateRangeChange} />}
+        </div>
+
+        {/* Charts Grid */}
+        <div className="space-y-6">
+          {/* Khối 2: Biểu đồ nhỏ */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-2">
+            <ZoomableChartCard
+              title="Revenue"
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              setRangeType={setRangeType}
+              setDateRange={setDateRange}
+              setSelectedMonth={setSelectedMonth}
+              setSelectedYear={setSelectedYear}
+              largeChart={
+                <RevenueLargeBarChart
+                  rangeType={rangeType}
+                  dateRange={dateRange}
+                  selectedMonth={selectedMonth}
+                  selectedYear={selectedYear}
+                />
+              }
+            >
+              <RevenueMiniBarChart
                 rangeType={rangeType}
                 dateRange={dateRange}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
               />
-            }
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            setRangeType={setRangeType}
-            setDateRange={setDateRange}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedYear={setSelectedYear}
-          >
-            <SubscriptionGrowthMiniChart
+            </ZoomableChartCard>
+
+            <ZoomableChartCard
+              title="User Growth"
+              largeChart={
+                <UserGrowthLargeChart
+                  rangeType={rangeType}
+                  dateRange={dateRange}
+                  selectedMonth={selectedMonth}
+                  selectedYear={selectedYear}
+                />
+              }
               rangeType={rangeType}
               dateRange={dateRange}
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
-            />
-          </ZoomableChartCard>
-          {/* Completion Rate Chart */}
-          <ZoomableChartCard
-            title="Course Completion Rate"
-            rangeType={rangeType}
-            dateRange={dateRange}
-            selectedMonth={selectedMonth}
-            selectedYear={selectedYear}
-            setRangeType={setRangeType}
-            setDateRange={setDateRange}
-            setSelectedMonth={setSelectedMonth}
-            setSelectedYear={setSelectedYear}
-            largeChart={
-              <CompletionRateLargeChart
+              setRangeType={setRangeType}
+              setDateRange={setDateRange}
+              setSelectedMonth={setSelectedMonth}
+              setSelectedYear={setSelectedYear}
+            >
+              <UserGrowthMiniChart
                 rangeType={rangeType}
                 dateRange={dateRange}
                 selectedMonth={selectedMonth}
                 selectedYear={selectedYear}
               />
-            }
-          >
-            <CompletionRateMiniChart
+            </ZoomableChartCard>
+          </div>
+
+          {/* Khối 3: Revenue Chart + Completion Rate Chart */}
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <ZoomableChartCard
+              title="Subscription Growth"
+              largeChart={
+                <SubscriptionGrowthLargeChart
+                  rangeType={rangeType}
+                  dateRange={dateRange}
+                  selectedMonth={selectedMonth}
+                  selectedYear={selectedYear}
+                />
+              }
               rangeType={rangeType}
               dateRange={dateRange}
               selectedMonth={selectedMonth}
               selectedYear={selectedYear}
-            />
-          </ZoomableChartCard>
+              setRangeType={setRangeType}
+              setDateRange={setDateRange}
+              setSelectedMonth={setSelectedMonth}
+              setSelectedYear={setSelectedYear}
+            >
+              <SubscriptionGrowthMiniChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            </ZoomableChartCard>
+            {/* Completion Rate Chart */}
+            <ZoomableChartCard
+              title="Course Completion Rate"
+              rangeType={rangeType}
+              dateRange={dateRange}
+              selectedMonth={selectedMonth}
+              selectedYear={selectedYear}
+              setRangeType={setRangeType}
+              setDateRange={setDateRange}
+              setSelectedMonth={setSelectedMonth}
+              setSelectedYear={setSelectedYear}
+              largeChart={
+                <CompletionRateLargeChart
+                  rangeType={rangeType}
+                  dateRange={dateRange}
+                  selectedMonth={selectedMonth}
+                  selectedYear={selectedYear}
+                />
+              }
+            >
+              <CompletionRateMiniChart
+                rangeType={rangeType}
+                dateRange={dateRange}
+                selectedMonth={selectedMonth}
+                selectedYear={selectedYear}
+              />
+            </ZoomableChartCard>
+          </div>
         </div>
       </div>
     </div>

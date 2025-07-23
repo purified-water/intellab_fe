@@ -24,6 +24,7 @@ import {
 } from "@/redux/mainChatbot/mainChatbotSlice";
 import { isUserInactive, updateLastVisit } from "@/utils/inactivityChecker";
 import { CHATBOT_MODELS } from "@/constants/chatbotModels";
+import { CHATBOT_SUGGESTIONS, SUGGESTION_ROTATION_INTERVAL } from "@/constants/chatbotSuggestions";
 import { AI_AGENT } from "@/constants/enums/aiAgents";
 import { FaSpinner, FaSquare } from "rocketicons/fa6";
 interface ChatbotModalProps {
@@ -39,6 +40,7 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const chatContentRef = useRef<HTMLDivElement | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [chatHistoryItems, setChatHistoryItems] = useState<ChatbotHistoryItemType[]>([]);
+  const [currentSuggestionIndex, setCurrentSuggestionIndex] = useState(0);
   const userId = getUserIdFromLocalStorage();
   // Redux state and dispatch
   const dispatch = useDispatch();
@@ -79,6 +81,18 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
       document.body.style.overflow = ""; // Ensure scrolling is reset when component unmounts
     };
   }, [isOpen, isMinimized]);
+
+  // Rotate suggestion messages in welcome screen
+  useEffect(() => {
+    // Only rotate when showing welcome screen (no messages)
+    if (chatDetail?.messages.length === 0) {
+      const interval = setInterval(() => {
+        setCurrentSuggestionIndex((prevIndex) => (prevIndex + 1) % CHATBOT_SUGGESTIONS.length);
+      }, SUGGESTION_ROTATION_INTERVAL);
+
+      return () => clearInterval(interval);
+    }
+  }, [chatDetail?.messages.length]);
 
   // Fetch chat history on component mount
   const fetchChatHistory = async () => {
@@ -244,13 +258,22 @@ export const ChatbotModal = ({ isOpen, onClose }: ChatbotModalProps) => {
   const renderWelcomeChat = () => {
     return (
       <div className="flex flex-col items-center justify-center flex-grow text-center">
-        <div className="w-24 h-24 mb-4">
+        <div className="mb-4 size-20">
           <img src={aiOrbLogo} alt="AI Orb Logo" className="object-cover w-full h-full" />
         </div>
         <h1 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-tr from-appAIFrom to-appAITo">
           Welcome to Intellab AI!
         </h1>
-        <p className="mt-2 text-gray-600">Ask me anything about Intellab.</p>
+
+        {/* Rotating suggestion messages */}
+        <div className="relative flex items-center justify-center max-w-xl px-2 mx-auto">
+          <div
+            key={currentSuggestionIndex}
+            className="flex items-center justify-center w-full px-6 py-4 animate-fade-in"
+          >
+            <p className="leading-relaxed text-center text-gray2">{CHATBOT_SUGGESTIONS[currentSuggestionIndex]}</p>
+          </div>
+        </div>
       </div>
     );
   };

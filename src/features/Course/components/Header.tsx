@@ -337,6 +337,13 @@ export const Header = (props: HeaderProps) => {
             <div>
               <h1 className="mb-2 text-3xl font-bold text-gray-900">{course.courseName}</h1>
 
+              {/* Reference text - conditionally displayed */}
+              {course.templateCode && (
+                <div className="mb-3 text-sm italic text-gray-600">
+                  This course is referenced from GeeksforGeeks for educational and demo purposes.
+                </div>
+              )}
+
               <span className={`text-gray2 text-base max-w-2xl ${showFullDescription ? "" : "line-clamp-2"}`}>
                 {course.description}
               </span>
@@ -350,7 +357,7 @@ export const Header = (props: HeaderProps) => {
                   {showFullDescription ? "Show less" : "View more"}
                 </button>
               )}
-              <div className="flex items-center gap-2 mt-2 mb-2 flex-wrap">
+              <div className="flex flex-wrap items-center gap-2 mt-2 mb-2">
                 <span
                   className={clsx("rounded-lg bg-gray5 px-2 py-1 text-xs font-medium", {
                     "text-appEasy":
