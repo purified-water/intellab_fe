@@ -3,6 +3,8 @@ import { AlertDialog, EmptyList, Spinner } from "@/components/ui";
 import { ProblemListItem } from "./ProblemListItem";
 import { AdminProblemParams, GetAdminProblem } from "../../types/ProblemListType";
 import { useDeleteProblem, usePutProblemPublication } from "../../hooks";
+import _ from "lodash";
+
 interface ProblemListProps {
   problems: GetAdminProblem[];
   filter: AdminProblemParams;
@@ -50,61 +52,51 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
   };
 
   const renderBody = () => {
-    return (
-      <tbody>
-        {isLoading ? (
-          Array.from({ length: 5 }).map((_, i) => (
-            <ProblemListItem
-              key={i}
-              isLoading={true}
-              problem={{} as GetAdminProblem}
-              onDeleteProblem={() => {}}
-              onToggleProblemPublication={() => {}}
-            />
-          ))
-        ) : problems.length === 0 ? (
-          <tr>
-            <td
-              colSpan={
-                TABLE_HEADERS.common.length +
-                (tab === "created" ? TABLE_HEADERS.created.length : TABLE_HEADERS.draft.length) +
-                1
-              }
-            >
-              <div className="flex justify-center py-8">
-                <EmptyList message="No problems found." />
-              </div>
-            </td>
-          </tr>
-        ) : (
-          problems.map((problem) => (
-            <ProblemListItem
-              key={problem.problemId}
-              problem={problem}
-              isLoading={isLoading}
-              onDeleteProblem={handleDeleteProblem}
-              onToggleProblemPublication={handleToggleProblemPublication}
-            />
-          ))
-        )}
-      </tbody>
-    );
+    let content = null;
+
+    if (isLoading) {
+      content = Array.from({ length: 5 }).map((_, i) => (
+        <ProblemListItem
+          key={i}
+          isLoading={true}
+          problem={{} as GetAdminProblem}
+          onDeleteProblem={() => {}}
+          onToggleProblemPublication={() => {}}
+        />
+      ));
+    } else if (_.isEmpty(problems)) {
+      content = (
+        <tr>
+          <td
+            colSpan={
+              TABLE_HEADERS.common.length +
+              (tab === "created" ? TABLE_HEADERS.created.length : TABLE_HEADERS.draft.length) +
+              1
+            }
+          >
+            <div className="flex justify-center py-8">
+              <EmptyList message="No problems found." />
+            </div>
+          </td>
+        </tr>
+      );
+    } else {
+      content = problems.map((problem) => (
+        <ProblemListItem
+          key={problem.problemId}
+          problem={problem}
+          isLoading={isLoading}
+          onDeleteProblem={handleDeleteProblem}
+          onToggleProblemPublication={handleToggleProblemPublication}
+        />
+      ));
+    }
+
+    return <tbody>{content}</tbody>;
   };
-  if (isDeletingProblem) {
+
+  const renderDeleteProblemDialog = () => {
     return (
-      <div className="flex justify-center py-8">
-        <Spinner loading overlay={true} />
-      </div>
-    );
-  }
-
-  return (
-    <div>
-      <table className="w-full">
-        {renderHeader()}
-        {renderBody()}
-      </table>
-
       <AlertDialog
         open={isDeleteDialogOpen}
         title="You are about to delete the problem"
@@ -118,7 +110,29 @@ export function ProblemList({ problems, isLoading, tab }: ProblemListProps) {
           });
         }}
         onCancel={() => setIsDeleteDialogOpen(false)}
+        processing={isDeletingProblem}
       />
+    );
+  };
+
+  const renderSpinner = () => {
+    if (isDeletingProblem) {
+      return (
+        <div className="flex justify-center py-8">
+          <Spinner loading />
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div>
+      <table className="w-full">
+        {renderHeader()}
+        {renderBody()}
+      </table>
+      {renderDeleteProblemDialog()}
+      {renderSpinner()}
     </div>
   );
 }

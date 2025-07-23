@@ -22,7 +22,9 @@ export const mapCreateProblemSchemaToProblemType = (createProblem: CreateProblem
     })),
     problemName: createProblem.problemName,
     description: createProblem.problemDescription,
-    problemLevel: createProblem.problemLevel.toLowerCase() as "easy" | "medium" | "hard",
+    problemLevel: createProblem.problemLevel
+      ? (createProblem.problemLevel.toLowerCase() as "easy" | "medium" | "hard")
+      : undefined,
     score: createProblem.problemScore,
     acceptanceRate: 0,
     isAvailable: true,

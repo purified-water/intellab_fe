@@ -120,6 +120,16 @@ type TDeleteTestCaseParams = TPostApiParams<
   boolean
 >;
 
+type TImportProblemFromPolygonResponse = TApiResponse<TAdminProblem>;
+
+type TImportProblemFromPolygonParams = TPostApiParams<
+  undefined,
+  {
+    file: File;
+  },
+  TAdminProblem
+>;
+
 export type {
   TCreateProblemGeneralStepResponse,
   TCreateProblemDescriptionStepResponse,
@@ -140,5 +150,7 @@ export type {
   TGetTestcasesOfProblemResponse,
   TGetTestcasesOfProblemParams,
   TDeleteTestCaseResponse,
-  TDeleteTestCaseParams
+  TDeleteTestCaseParams,
+  TImportProblemFromPolygonResponse,
+  TImportProblemFromPolygonParams
 };

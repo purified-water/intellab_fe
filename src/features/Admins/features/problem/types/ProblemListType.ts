@@ -11,7 +11,7 @@ export type GetAdminProblem = {
   problemId: string;
   problemName: string;
   description: string | undefined;
-  problemLevel: "easy" | "medium" | "hard";
+  problemLevel?: "easy" | "medium" | "hard";
   categories: TCategory[];
   score: number;
   acceptanceRate: number | undefined;

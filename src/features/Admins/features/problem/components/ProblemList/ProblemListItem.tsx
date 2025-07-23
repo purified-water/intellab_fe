@@ -10,7 +10,6 @@ import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { CREATE_PROBLEM_STEP_NUMBERS, steps } from "../../constants";
 
 const DROP_DOWN_MENU_ITEMS = {
-  VIEW: "View",
   EDIT: "Edit",
   CONTINUE_EDIT: "Continue Edit",
   DELETE: "Delete"
@@ -32,10 +31,6 @@ export function ProblemListItem(props: ProblemListItemProps) {
     onToggleProblemPublication(problem.problemId, !problem.isPublished);
   };
 
-  const handleViewDetails = () => {
-    console.log("View Details clicked for item:");
-  };
-
   const handleDeleteProblem = () => {
     onDeleteProblem(problem);
   };
@@ -45,8 +40,10 @@ export function ProblemListItem(props: ProblemListItemProps) {
       setCreateProblem({
         problemId: problem.problemId,
         problemName: problem.problemName,
-        problemDescription: problem.description || "",
-        problemLevel: capitalizeFirstLetter(problem.problemLevel) as "Easy" | "Medium" | "Hard",
+        problemDescription: problem.description,
+        problemLevel: problem.problemLevel
+          ? (capitalizeFirstLetter(problem.problemLevel) as "Easy" | "Medium" | "Hard")
+          : "Easy",
         problemScore: problem.score,
         problemIsPublished: problem.isPublished,
         problemCategories: problem.categories,
@@ -60,9 +57,13 @@ export function ProblemListItem(props: ProblemListItemProps) {
                 return { outputName: output.name, outputType: output.type };
               })
             }
-          : undefined,
+          : {
+              functionName: "",
+              inputStructure: [],
+              outputStructure: [{ outputName: "result", outputType: "int" }]
+            },
         problemTestcases: [],
-        problemSolution: problem.solution ? problem.solution.content : "",
+        problemSolution: problem.solution ? (problem.solution.content ?? "<Your solution goes here>") : undefined,
         currentCreationStep: problem.currentCreationStep,
         isCompletedCreation: problem.isCompletedCreation
       })
@@ -77,9 +78,6 @@ export function ProblemListItem(props: ProblemListItemProps) {
   const renderDropdownMenu = () => {
     const handleDropdownMenuItemClick = async (action: string) => {
       switch (action) {
-        case DROP_DOWN_MENU_ITEMS.VIEW:
-          handleViewDetails();
-          break;
         case DROP_DOWN_MENU_ITEMS.EDIT:
         case DROP_DOWN_MENU_ITEMS.CONTINUE_EDIT:
           handleEdit();
@@ -124,7 +122,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
           .fill(null)
           .map((_, index) => (
             <td key={index} className="py-1">
-              <Skeleton className={index === 5 ? "w-1/4 h-4" : index === 6 ? "size-4" : "w-[80%] h-4"} />
+              <Skeleton className={index === 5 ? "w-1/4 h-8" : index === 6 ? "size-4" : "w-[80%] h-8"} />
             </td>
           ))}
       </tr>
@@ -147,17 +145,19 @@ export function ProblemListItem(props: ProblemListItemProps) {
               </Tooltip>
             </TooltipProvider>
           </td>
-          <td
-            className={`py-1 font-medium ${
-              problem.problemLevel === "easy"
-                ? "text-appEasy"
-                : problem.problemLevel === "medium"
-                  ? "text-appMedium"
-                  : "text-appHard"
-            }`}
-          >
-            {capitalizeFirstLetter(problem.problemLevel)}
-          </td>
+          {problem.problemLevel && (
+            <td
+              className={`py-1 font-medium ${
+                problem.problemLevel === "easy"
+                  ? "text-appEasy"
+                  : problem.problemLevel === "medium"
+                    ? "text-appMedium"
+                    : "text-appHard"
+              }`}
+            >
+              {capitalizeFirstLetter(problem.problemLevel)}
+            </td>
+          )}
           <td className="py-1">
             <div
               className="truncate max-w-[200px]"

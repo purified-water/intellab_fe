@@ -14,7 +14,7 @@ export type ProblemType = {
   categories: ProblemCategoryType[];
   problemName: string;
   description: string;
-  problemLevel: "easy" | "medium" | "hard";
+  problemLevel?: "easy" | "medium" | "hard";
   score: number;
   acceptanceRate: number;
   isAvailable: boolean;
