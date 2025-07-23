@@ -29,11 +29,11 @@ const ViewTestCaseDetail = ({ testCaseDetail, onBack }: ViewTestCaseDetailProps)
       </div>
       <div className="flex flex-col mb-2" key={testCaseDetail.testcaseId}>
         <div className="mb-1 text-sm">Input:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[500px] overflow-y-auto">
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[500px] min-h-8 overflow-y-auto">
           <pre className="text-base whitespace-pre-wrap">{testCaseDetail.input}</pre>
         </div>
         <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[200px] overflow-y-auto">
+        <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[200px] min-h-8 overflow-y-auto">
           <pre className="text-base whitespace-pre-wrap">{testCaseDetail.output}</pre>
         </div>
 
@@ -163,12 +163,12 @@ export const SubmissionResults = ({
         <div className="overflow-y-auto test-case-content">
           <div className="flex flex-col mb-2" key={selectedTestCaseDetail?.testcaseId}>
             <div className="mb-1 text-sm">Input:</div>
-            <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[500px] overflow-y-auto">
+            <div className="w-full px-4 py-1 rounded-lg bg-gray6 min-h-8 max-h-[500px] overflow-y-auto">
               <pre className="text-base whitespace-pre-wrap">{selectedTestCaseDetail?.input}</pre>
             </div>
 
             <div className="mt-4 mb-1 text-sm">Expected Output:</div>
-            <div className="w-full px-4 py-1 rounded-lg bg-gray6 max-h-[200px] overflow-y-auto">
+            <div className="w-full px-4 py-1 rounded-lg bg-gray6 min-h-8 max-h-[200px] overflow-y-auto">
               <pre className="text-base whitespace-pre-wrap">{selectedTestCaseDetail?.output}</pre>
             </div>
 
