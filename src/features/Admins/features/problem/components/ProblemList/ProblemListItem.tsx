@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { CREATE_PROBLEM_STEP_NUMBERS, steps } from "../../constants";
+import _ from "lodash";
 
 const DROP_DOWN_MENU_ITEMS = {
   EDIT: "Edit",
@@ -145,7 +146,7 @@ export function ProblemListItem(props: ProblemListItemProps) {
               </Tooltip>
             </TooltipProvider>
           </td>
-          {problem.problemLevel && (
+          {problem.problemLevel ? (
             <td
               className={`py-1 font-medium ${
                 problem.problemLevel === "easy"
@@ -157,15 +158,21 @@ export function ProblemListItem(props: ProblemListItemProps) {
             >
               {capitalizeFirstLetter(problem.problemLevel)}
             </td>
+          ) : (
+            <td className="py-1">{NA_VALUE}</td>
           )}
-          <td className="py-1">
-            <div
-              className="truncate max-w-[200px]"
-              title={problem.categories?.map((category) => category.name).join(", ") ?? ""}
-            >
-              {problem.categories?.map((category) => category.name).join(", ") ?? ""}
-            </div>
-          </td>
+          {_.isEmpty(problem.categories) ? (
+            <td className="py-1">{NA_VALUE}</td>
+          ) : (
+            <td className="py-1">
+              <div
+                className="truncate max-w-[200px]"
+                title={problem.categories?.map((category) => category.name).join(", ") ?? ""}
+              >
+                {problem.categories?.map((category) => category.name).join(", ") ?? ""}
+              </div>
+            </td>
+          )}
           {problem.isCompletedCreation && (
             <>
               <td className="py-1">
