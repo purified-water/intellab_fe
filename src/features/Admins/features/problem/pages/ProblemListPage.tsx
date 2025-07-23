@@ -3,16 +3,14 @@ import { Plus } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/shadcn/tabs";
 import { FilterButton, SearchBar } from "@/features/Problem/components";
 import { ProblemList } from "../components";
-import { useNavigate } from "react-router-dom";
 import { Button, Pagination } from "@/components/ui";
 import { useGetAdminProblemList } from "../hooks";
 import { AdminProblemParams } from "../types/ProblemListType";
 import { APIMetaData } from "@/types";
 import { useCourseCategories } from "../../course/hooks";
-import { useDispatch } from "react-redux";
-import { resetCreateProblem } from "@/redux/createProblem/createProblemSlice";
 import { AdminProblemFilterDialog } from "../components/AdminProblemFilterDialog";
 import { SEO } from "@/components/SEO";
+import { CreateProblemModal } from "../components/CreateProblem";
 
 const TABS = {
   CREATED: "created",
@@ -28,15 +26,30 @@ export function ProblemListPage() {
     page: 0
   });
   const [temporaryKeyword, setTemporaryKeyword] = useState(filter.keyword || "");
+  const [showCreateProblemModal, setShowCreateProblemModal] = useState(false);
 
-  const navigate = useNavigate();
   const [totalPages, setTotalPages] = useState(1);
-  const dispatch = useDispatch();
 
   const { data: categories, isLoading: isLoadingCategories } = useCourseCategories();
-  const { data, isLoading: loadingProblems } = useGetAdminProblemList(filter);
+  const { data, isLoading: loadingProblems, refetch: refetchProblems } = useGetAdminProblemList(filter);
   const problems = data?.result.content || [];
   const meta = data?.result || ({} as APIMetaData);
+
+  const handleCloseCreateProblemModal = () => {
+    setShowCreateProblemModal(false);
+  };
+
+  const handleImportProblemFromPolygonSuccess = () => {
+    setShowCreateProblemModal(false);
+    setFilter((prev) => ({ ...prev, isCompletedCreation: false, page: 0 }));
+    setTemporaryKeyword("");
+
+    if (activeTab === TABS.CREATED) {
+      setActiveTab(TABS.DRAFT);
+    } else {
+      refetchProblems();
+    }
+  };
 
   useEffect(() => {
     if (meta) {
@@ -52,8 +65,7 @@ export function ProblemListPage() {
     };
 
     const handleCreateProblem = () => {
-      dispatch(resetCreateProblem());
-      navigate("/admin/problems/create/general");
+      setShowCreateProblemModal(true);
     };
 
     return (
@@ -137,6 +149,16 @@ export function ProblemListPage() {
     );
   };
 
+  const renderCreateProblemModal = () => {
+    return (
+      <CreateProblemModal
+        open={showCreateProblemModal}
+        onClose={handleCloseCreateProblemModal}
+        onImportProblemSuccess={handleImportProblemFromPolygonSuccess}
+      />
+    );
+  };
+
   return (
     <div className="container max-w-[1200px] mx-auto space-y-8 mb-12">
       <h1 className="mx-4 text-4xl font-bold text-appPrimary">Problem Management</h1>
@@ -145,6 +167,7 @@ export function ProblemListPage() {
         {renderFilterDialog()}
         {renderProblemList()}
       </div>
+      {renderCreateProblemModal()}
     </div>
   );
 }

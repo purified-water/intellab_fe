@@ -64,7 +64,7 @@ type TAdminTestCase = {
 };
 
 type TAdminProblemSolution = {
-  content: string;
+  content?: string;
   problemId: string;
   authorId: string;
 };

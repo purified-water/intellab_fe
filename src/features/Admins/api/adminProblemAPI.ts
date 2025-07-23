@@ -21,7 +21,9 @@ import {
   TGetTestcasesOfProblemResponse,
   TGetTestcasesOfProblemParams,
   TDeleteTestCaseResponse,
-  TDeleteTestCaseParams
+  TDeleteTestCaseParams,
+  TImportProblemFromPolygonResponse,
+  TImportProblemFromPolygonParams
 } from "../features/problem/types";
 import { apiResponseCodeUtils } from "@/utils";
 import { AxiosError } from "axios";
@@ -416,6 +418,38 @@ export const adminProblemAPI = {
       if (onEnd) {
         onEnd();
       }
+    }
+  },
+
+  importProblemFromPolygon: async ({ body, onStart, onSuccess, onFail, onEnd }: TImportProblemFromPolygonParams) => {
+    const DEFAULT_ERROR = "Error importing problem from Polygon";
+
+    const handleResponseData = async (data: TImportProblemFromPolygonResponse) => {
+      const { code, result, message } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
+    onStart?.();
+    try {
+      const { file } = body!;
+      const formData = new FormData();
+      formData.append("file", file);
+      const response = await apiClient.post(`problem/admin/problems/polygon`, formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      await handleResponseData(response.data as TImportProblemFromPolygonResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TImportProblemFromPolygonResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      onEnd?.();
     }
   }
 };

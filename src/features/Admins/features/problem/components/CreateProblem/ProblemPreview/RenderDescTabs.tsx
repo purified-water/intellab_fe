@@ -63,7 +63,10 @@ export const AdminRenderDescTabs = (props: AdminRenderDescTabsProps) => {
         className="flex items-center justify-around w-full px-4 py-3 space-x-2 overflow-x-scroll border-b max-h-18 scrollbar-hide shrink-0"
       >
         {renderDescriptionTabButton("Description")}
-        {renderDescriptionTabButton("Solutions")}
+        {problemDetail &&
+          problemDetail.solution &&
+          problemDetail.solution.content &&
+          renderDescriptionTabButton("Solutions")}
         {isPassed !== null && (isPassed ? renderDescriptionTabButton("Passed") : renderDescriptionTabButton("Failed"))}
       </div>
       {renderDescriptionTabContent()}
