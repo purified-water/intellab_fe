@@ -5,15 +5,6 @@
       "destination": "/"
     }
   ],
-  "routes": [
-    {
-      "src": "/site.webmanifest",
-      "dest": "/site.webmanifest",
-      "headers": {
-        "Content-Type": "application/manifest+json"
-      }
-    }
-  ],
   "headers": [
     {
       "source": "/assets/(.*)",
@@ -45,6 +36,10 @@
     {
       "source": "/site.webmanifest",
       "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/manifest+json"
+        },
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600"
