@@ -17,7 +17,7 @@ import { ProblemType } from "@/types/ProblemType";
 import { useSearchParams } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { TestCaseType } from "../types";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "@/redux/rootReducer";
 import { CommentContext } from "@/hooks";
 import { AxiosError } from "axios";
@@ -25,8 +25,11 @@ import { useCodeSubmission } from "../hooks/useCodeSubmission";
 import { useCodeRunner } from "../hooks/useCodeRunner";
 import { showToastError } from "@/utils";
 import { SEO } from "@/components/SEO";
+import { userAPI } from "@/lib/api";
+import { setPoint } from "@/redux/user/userSlice";
 
 export const ProblemDetail = () => {
+  const dispatch = useDispatch();
   // #region State
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [problemDetail, setProblemDetail] = useState<ProblemType | null>(null);
@@ -89,12 +92,27 @@ export const ProblemDetail = () => {
   };
   // #endregion
 
+  const getMyPointAPI = async () => {
+    await userAPI.getMyPoint({
+      onSuccess: async (point) => {
+        dispatch(setPoint(point));
+      },
+      onFail: async (message) => showToastError({ toast: toast, message })
+    });
+  };
+
   useEffect(() => {
     //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
     if (problemId != null && problemId !== "null") {
       fetchProblemDetail();
     }
   }, [problemId, redirectedCommentId]);
+
+  useEffect(() => {
+    if (isSubmissionPassed) {
+      getMyPointAPI();
+    }
+  }, [isSubmissionPassed]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

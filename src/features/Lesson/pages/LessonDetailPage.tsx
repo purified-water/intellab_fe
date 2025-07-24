@@ -1,8 +1,8 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { courseAPI } from "@/lib/api";
+import { courseAPI, userAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/types";
-import { getUserIdFromLocalStorage } from "@/utils";
+import { getUserIdFromLocalStorage, showToastError } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 import { LessonNavigation, TOCItem, TableOfContents } from "../components";
@@ -10,6 +10,10 @@ import { useAIExplainer } from "../hooks/useAIExplainer";
 import { useLessonProgress, useTableOfContents } from "../hooks";
 import React from "react";
 import { Spinner } from "@/components/ui";
+import { setPoint } from "@/redux/user/userSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useToast } from "@/hooks";
+import { RootState } from "@/redux/rootReducer";
 
 // Dynamic imports for conditionally rendered components
 const AIExplainerMenu = React.lazy(() =>
@@ -32,7 +36,10 @@ const AppFooter = lazy(() =>
 );
 
 export const LessonDetailPage = () => {
+  const toast = useToast();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
+
   const [lesson, setLesson] = useState<ILesson | null>(null);
   const [course, setCourse] = useState<ICourse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -42,6 +49,7 @@ export const LessonDetailPage = () => {
   const [searchParams] = useSearchParams();
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   // AI Explainer state
   const [isExplainerToggled, setIsExplainerToggled] = useState(false);
@@ -49,7 +57,7 @@ export const LessonDetailPage = () => {
   const [isOpenChatbox, setIsOpenChatbox] = useState(false);
 
   // Custom hooks
-  const { resetProgress } = useLessonProgress({ lesson, userId });
+  const { isLessonDone, resetProgress } = useLessonProgress({ lesson, userId });
   const { activeHeading } = useTableOfContents({ tocItems });
   const {
     menuRef,
@@ -87,6 +95,22 @@ export const LessonDetailPage = () => {
     getCourseDetail();
     getLessonDetail();
   }, [id]);
+
+  const getMyPointAPI = async () => {
+    await userAPI.getMyPoint({
+      onSuccess: async (point) => {
+        dispatch(setPoint(point));
+      },
+      onFail: async (message) => showToastError({ toast: toast.toast, message })
+    });
+  };
+
+  // Get user point after finishing a course (no next lesson)
+  useEffect(() => {
+    if (isAuthenticated && lesson && lesson?.nextLessonId == undefined && isLessonDone) {
+      getMyPointAPI();
+    }
+  }, [isLessonDone, isAuthenticated, lesson]);
 
   const getCourseDetail = async () => {
     if (courseId) {
