@@ -1,20 +1,15 @@
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { courseAPI, userAPI } from "@/lib/api";
+import { courseAPI } from "@/lib/api";
 import { ILesson, ICourse } from "@/types";
-import { getUserIdFromLocalStorage, showToastError } from "@/utils";
+import { getUserIdFromLocalStorage } from "@/utils";
 import { Skeleton } from "@/components/ui/shadcn/skeleton";
 import { RenderLessonMarkdown } from "../components/RenderLessonContent";
 import { LessonNavigation, TOCItem, TableOfContents } from "../components";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState } from "@/redux/rootReducer";
-import { setPoint } from "@/redux/user/userSlice";
 import { useAIExplainer } from "../hooks/useAIExplainer";
 import { useLessonProgress, useTableOfContents } from "../hooks";
-import { useToast } from "@/hooks";
 import React from "react";
 import { Spinner } from "@/components/ui";
-import { DELAY_TIMES } from "@/constants";
 
 // Dynamic imports for conditionally rendered components
 const AIExplainerMenu = React.lazy(() =>
@@ -48,17 +43,13 @@ export const LessonDetailPage = () => {
   const learningId = searchParams.get("learningId");
   const courseId = searchParams.get("courseId");
 
-  const dispatch = useDispatch();
-  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
-  const toast = useToast();
-
   // AI Explainer state
   const [isExplainerToggled, setIsExplainerToggled] = useState(false);
   const [isTutorialOpen, setIsTutorialOpen] = useState(localStorage.getItem("hasViewedExplainerTutorial") !== "true");
   const [isOpenChatbox, setIsOpenChatbox] = useState(false);
 
   // Custom hooks
-  const { isLessonDone, resetProgress } = useLessonProgress({ lesson, userId });
+  const { resetProgress } = useLessonProgress({ lesson, userId });
   const { activeHeading } = useTableOfContents({ tocItems });
   const {
     menuRef,
@@ -96,24 +87,6 @@ export const LessonDetailPage = () => {
     getCourseDetail();
     getLessonDetail();
   }, [id]);
-
-  const getMyPointAPI = async () => {
-    await userAPI.getMyPoint({
-      onSuccess: async (point) => {
-        dispatch(setPoint(point));
-      },
-      onFail: async (message) => showToastError({ toast: toast.toast, message })
-    });
-  };
-
-  // Get user point after finishing a course (no next lesson)
-  useEffect(() => {
-    if (isAuthenticated && lesson && lesson?.nextLessonId == undefined && isLessonDone) {
-      setTimeout(() => {
-        getMyPointAPI();
-      }, DELAY_TIMES.SLOW);
-    }
-  }, [isLessonDone, isAuthenticated, lesson]);
 
   const getCourseDetail = async () => {
     if (courseId) {

@@ -11,7 +11,9 @@ import {
   TGetMyPointResponse,
   TGetMyPointParams,
   TSetPublicProfileParams,
-  TSetPublicProfileResponse
+  TSetPublicProfileResponse,
+  TGetMyCompletedCourseCountResponse,
+  TGetMyCompletedCourseCountParams
 } from "@/features/Profile/types/apiType";
 import { TGetUsersForAdminResponse, TGetUsersForAdminParams } from "@/features/Admins/features/user/types/apiType";
 import { API_RESPONSE_CODE, HTTPS_STATUS_CODE } from "@/constants";
@@ -221,6 +223,37 @@ export const userAPI = {
     } catch (error: unknown) {
       if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
         await handleResponseData(error.response?.data as TSetPublicProfileResponse);
+      } else if (error instanceof Error) {
+        await onFail(error.message ?? DEFAULT_ERROR);
+      }
+    } finally {
+      if (onEnd) {
+        onEnd();
+      }
+    }
+  },
+
+  getMyCompletedCourseCount: async ({ onStart, onSuccess, onFail, onEnd }: TGetMyCompletedCourseCountParams) => {
+    const DEFAULT_ERROR = "Error getting user completed course count";
+
+    const handleResponseData = async (data: TGetMyCompletedCourseCountResponse) => {
+      const { code, message, result } = data;
+      if (apiResponseCodeUtils.isSuccessCode(code)) {
+        await onSuccess(result);
+      } else {
+        await onFail(message ?? DEFAULT_ERROR);
+      }
+    };
+
+    if (onStart) {
+      await onStart();
+    }
+    try {
+      const response = await apiClient.get("/course/courses/me/completedCoursesCount");
+      await handleResponseData(response.data as TGetMyCompletedCourseCountResponse);
+    } catch (error: unknown) {
+      if (error instanceof AxiosError && apiResponseCodeUtils.isAcceptedErrorCode(error.response?.status)) {
+        await handleResponseData(error.response?.data as TGetMyCompletedCourseCountResponse);
       } else if (error instanceof Error) {
         await onFail(error.message ?? DEFAULT_ERROR);
       }
