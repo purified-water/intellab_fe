@@ -214,7 +214,9 @@ export const ProblemReply = ({ reply, updateCommentList, refreshCommentReplies }
               className="object-cover w-full h-full rounded-full"
               onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
             />
-          ) : null}
+          ) : (
+            <img src={DEFAULT_AVATAR} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+          )}
         </div>
 
         <div className="flex-col w-full gap-y-4">

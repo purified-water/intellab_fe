@@ -7,6 +7,7 @@ import RatingModal from "./RatingModal";
 import { IReview, ReviewStatsResult } from "@/features/StudentOverall/types";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 export default function Reviews({
   courseTitle,
@@ -150,8 +151,17 @@ export default function Reviews({
                 <div className="flex items-center space-x-3">
                   <div className="w-10 h-10 bg-gray-300 rounded-full">
                     {review.photoUrl ? (
-                      <img src={review.photoUrl} alt="Avatar" className="object-cover w-full h-full rounded-full" />
-                    ) : null}
+                      <img
+                        src={review.photoUrl}
+                        alt="Avatar"
+                        className="object-cover w-full h-full rounded-full"
+                        onError={(e) => {
+                          e.currentTarget.src = DEFAULT_AVATAR;
+                        }}
+                      />
+                    ) : (
+                      <img src={DEFAULT_AVATAR} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+                    )}
                   </div>
                   <div>
                     <h4 className="font-semibold">{review.displayName}</h4>

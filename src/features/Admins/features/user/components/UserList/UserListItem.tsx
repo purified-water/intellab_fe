@@ -1,16 +1,7 @@
 import { IUser } from "@/types";
-// import { MoreHorizontal } from "lucide-react";
-// import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Button } from "@/components/ui";
 import { Skeleton } from "@/components/ui/shadcn";
-import { capitalizeFirstLetter, shortenDate } from "@/utils";
+import { shortenDate } from "@/utils";
 import { NA_VALUE } from "@/constants";
-
-// const DROP_DOWN_MENU_ITEMS = {
-//   VIEW: "View",
-//   EDIT: "Edit",
-//   DELETE: "Delete"
-// };
-
 interface UserListItemProps {
   user: IUser;
   loading: boolean;
@@ -19,56 +10,25 @@ interface UserListItemProps {
 export function UserListItem(props: UserListItemProps) {
   const { user, loading } = props;
 
-  // const handleViewDetails = () => {
-  //   console.log("--> handleViewDetails called for user:", user);
-  // };
+  const createPremiumBadge = (text: string, colorClasses: string) => {
+    return <span className={`px-2 py-1 text-xs font-medium rounded-full ${colorClasses}`}>{text}</span>;
+  };
 
-  // const handleEditUser = () => {
-  //   console.log("--> handleEditUser called for user:", user);
-  // };
+  const renderUserPremium = (userPremiumType: string | null | undefined) => {
+    if (!userPremiumType) {
+      return createPremiumBadge(NA_VALUE, "bg-gray-100 text-gray-600");
+    }
 
-  // const handleDeleteUser = () => {
-  //   console.log("--> handleDeleteUser called for user:", user);
-  // };
-
-  // const renderDropdownMenu = () => {
-  //   const handleDropdownMenuItemClick = async (action: string) => {
-  //     switch (action) {
-  //       case DROP_DOWN_MENU_ITEMS.VIEW:
-  //         handleViewDetails();
-  //         break;
-  //       case DROP_DOWN_MENU_ITEMS.EDIT:
-  //         handleEditUser();
-  //         break;
-  //       case DROP_DOWN_MENU_ITEMS.DELETE:
-  //         handleDeleteUser();
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   };
-
-  //   return (
-  //     <DropdownMenu>
-  //       <DropdownMenuTrigger asChild>
-  //         <Button type="button" variant="ghost" className="w-8 h-8 p-0">
-  //           <MoreHorizontal className="w-5 h-5" />
-  //         </Button>
-  //       </DropdownMenuTrigger>
-  //       <DropdownMenuContent align="end" className="w-24 min-w-[130px] shadow-lg">
-  //         {[DROP_DOWN_MENU_ITEMS.VIEW, DROP_DOWN_MENU_ITEMS.EDIT, DROP_DOWN_MENU_ITEMS.DELETE].map((action) => (
-  //           <DropdownMenuItem
-  //             key={action}
-  //             onClick={() => handleDropdownMenuItemClick(action)}
-  //             className="text-sm py-1.5 px-3 cursor-pointer  focus:bg-gray6"
-  //           >
-  //             {action}
-  //           </DropdownMenuItem>
-  //         ))}
-  //       </DropdownMenuContent>
-  //     </DropdownMenu>
-  //   );
-  // };
+    switch (userPremiumType.toLowerCase()) {
+      case "free":
+        return createPremiumBadge("Free", "bg-green-100 text-green-700");
+      case "premium_plan":
+      case "premium":
+        return createPremiumBadge("Premium", "bg-purple-100 text-purple-700");
+      default:
+        return createPremiumBadge(NA_VALUE, "bg-gray-100 text-gray-600");
+    }
+  };
 
   const renderLoading = () => {
     return (
@@ -88,9 +48,6 @@ export function UserListItem(props: UserListItemProps) {
         <td className="px-2 py-1">
           <Skeleton className="w-16 h-4" />
         </td>
-        <td className="px-2 py-1">
-          <Skeleton className="w-8 h-8 rounded-full" />
-        </td>
       </tr>
     );
   };
@@ -103,7 +60,7 @@ export function UserListItem(props: UserListItemProps) {
           <td className="px-2 py-2 max-w-[200px]">{user.displayName}</td>
           <td className="px-2 py-2 max-w-[350px]">{shortenDate(user.creationTimestamp!)}</td>
           <td className="px-2 py-2 max-w-[350px]">{shortenDate(user.lastSignInTimestamp!)}</td>
-          <td className="px-2 py-2 max-w-[100px]">{capitalizeFirstLetter(user.premiumType ?? NA_VALUE)}</td>
+          <td className="px-2 py-2 max-w-[100px]">{renderUserPremium(user.premiumType)}</td>
           {/* <td className="px-2 py-1">{renderDropdownMenu()}</td> */}
         </tr>
       </>

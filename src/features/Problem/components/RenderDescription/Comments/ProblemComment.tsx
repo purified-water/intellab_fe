@@ -289,7 +289,9 @@ export const ProblemComment = ({ comment, updateCommentList, refreshCommentRepli
                   className="object-cover w-full h-full rounded-full"
                   onError={(e) => (e.currentTarget.src = DEFAULT_AVATAR)}
                 />
-              ) : null}
+              ) : (
+                <img src={DEFAULT_AVATAR} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+              )}
             </div>
             <p onClick={handleUsernameClick} className="text-lg font-semibold cursor-pointer hover:text-appPrimary">
               {comment.username ? comment.username : "User"}

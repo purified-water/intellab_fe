@@ -8,6 +8,7 @@ import { IReview, ReviewStatsResult } from "@/features/StudentOverall/types";
 import { courseAPI } from "@/lib/api/courseApi";
 import { Spinner } from "@/components/ui";
 import ComboboxDemo from "../ComboboxDemo";
+import DEFAULT_AVATAR from "@/assets/default_avatar.png";
 
 export function Reviews({
   courseTitle,
@@ -171,10 +172,19 @@ export function Reviews({
             {reviews.map((review, index) => (
               <Card key={review.reviewId} className="w-full p-4 mt-4 border">
                 <div className="flex items-center space-x-3">
-                  <div className="flex-shrink-0 w-10 h-10 bg-gray-300 rounded-full">
+                  <div className="flex-shrink-0 w-10 h-10 rounded-full">
                     {review.photoUrl ? (
-                      <img src={review.photoUrl} alt="Avatar" className="object-cover w-full h-full rounded-full" />
-                    ) : null}
+                      <img
+                        src={review.photoUrl}
+                        alt="Avatar"
+                        className="object-cover w-full h-full rounded-full"
+                        onError={(e) => {
+                          e.currentTarget.src = DEFAULT_AVATAR;
+                        }}
+                      />
+                    ) : (
+                      <img src={DEFAULT_AVATAR} alt="Avatar" className="object-cover w-full h-full rounded-full" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <h4 className="font-semibold truncate">{review.displayName ? review.displayName : "Tester"}</h4>

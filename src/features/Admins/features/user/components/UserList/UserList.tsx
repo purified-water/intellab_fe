@@ -71,7 +71,7 @@ export function UserList(props: UserListProps) {
     return (
       <tr className="text-base font-normal text-gray3">
         <td colSpan={8} className="py-5 text-center">
-          No courses found
+          No users found
         </td>
       </tr>
     );
