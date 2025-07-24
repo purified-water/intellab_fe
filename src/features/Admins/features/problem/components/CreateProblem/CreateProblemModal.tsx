@@ -112,12 +112,12 @@ export function CreateProblemModal({ open, onClose, onImportProblemSuccess }: Cr
             {loading ? (
               <>
                 <Spinner className="w-6 h-6" loading={loading} />
-                Importing problems
+                Importing problem
               </>
             ) : (
               <>
                 <Files className="mr-2 size-4" />
-                Import Problems From Polygon
+                Import From Polygon
               </>
             )}
           </Button>
