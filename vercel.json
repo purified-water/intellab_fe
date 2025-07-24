@@ -5,6 +5,15 @@
       "destination": "/"
     }
   ],
+  "routes": [
+    {
+      "src": "/site.webmanifest",
+      "dest": "/site.webmanifest",
+      "headers": {
+        "Content-Type": "application/manifest+json"
+      }
+    }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
