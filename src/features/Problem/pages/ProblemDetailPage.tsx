@@ -24,11 +24,7 @@ import { AxiosError } from "axios";
 import { useCodeSubmission } from "../hooks/useCodeSubmission";
 import { useCodeRunner } from "../hooks/useCodeRunner";
 import { showToastError } from "@/utils";
-import { userAPI } from "@/lib/api";
-import { setPoint } from "@/redux/user/userSlice";
-import { useDispatch } from "react-redux";
 import { SEO } from "@/components/SEO";
-import { DELAY_TIMES } from "@/constants";
 
 export const ProblemDetail = () => {
   // #region State
@@ -48,7 +44,6 @@ export const ProblemDetail = () => {
   const lessonName = searchParams.get("lessonName");
   const learningId = searchParams.get("learningId");
   const { toast } = useToast();
-  const dispatch = useDispatch();
 
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
@@ -94,29 +89,12 @@ export const ProblemDetail = () => {
   };
   // #endregion
 
-  const getMyPointAPI = async () => {
-    await userAPI.getMyPoint({
-      onSuccess: async (point) => {
-        dispatch(setPoint(point));
-      },
-      onFail: async (message) => showToastError({ toast: toast, message })
-    });
-  };
-
   useEffect(() => {
     //NOTE: I don't know why the passing problemId if it null then its value is "null" instead of null
     if (problemId != null && problemId !== "null") {
       fetchProblemDetail();
     }
   }, [problemId, redirectedCommentId]);
-
-  useEffect(() => {
-    if (isSubmissionPassed) {
-      setTimeout(() => {
-        getMyPointAPI();
-      }, DELAY_TIMES.SLOW);
-    }
-  }, [isSubmissionPassed]);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);

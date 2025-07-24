@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { UserState } from "./userType";
 
 const initialState: UserState = {
@@ -38,6 +38,11 @@ const userSlice = createSlice({
     clearLoginStreak(state) {
       state.loginStreak = null;
       state.loginStreakLastFetched = null;
+    },
+    setUserCourseCount(state, action: PayloadAction<number>) {
+      if (state.user) {
+        state.user.courseCount = action.payload;
+      }
     }
   }
 });
@@ -49,7 +54,8 @@ export const {
   setEmailVerified,
   setPoint,
   setLoginStreak,
-  clearLoginStreak
+  clearLoginStreak,
+  setUserCourseCount
 } = userSlice.actions;
 export default userSlice.reducer;
 

@@ -41,6 +41,10 @@ type TSetPublicProfileParams = TPostApiParams<null, { isPublic: boolean }, IUser
 
 type TSetPublicProfileResponse = TApiResponse<IUser>;
 
+type TGetMyCompletedCourseCountResponse = TApiResponse<number>;
+
+type TGetMyCompletedCourseCountParams = TGetApiParams<undefined, number>;
+
 export type {
   TGetProfilePublicResponse,
   TUploadProfilePhotoResponse,
@@ -55,5 +59,7 @@ export type {
   TGetMyPointResponse,
   TGetMyPointParams,
   TSetPublicProfileParams,
-  TSetPublicProfileResponse
+  TSetPublicProfileResponse,
+  TGetMyCompletedCourseCountResponse,
+  TGetMyCompletedCourseCountParams
 };
