@@ -1,6 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 
-const DEFAULT_DURATION = 5000;
+const DEFAULT_DURATION = 2500;
 
 type TParameters = {
   toast: typeof toast;

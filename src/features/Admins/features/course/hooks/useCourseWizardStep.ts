@@ -1,18 +1,24 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { steps } from "../constants";
 import { useEditingCourse } from ".";
+import { useDispatch } from "react-redux";
+import { resetCreateCourse } from "@/redux/createCourse/createCourseSlice";
 
 // Separate the wizard navigation and data management logic from UI
 export const useCourseWizardStep = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const currentStepIndex = steps.findIndex((step) => location.pathname.includes(step.path));
   const currentStep = steps[currentStepIndex];
   const { isEditingCourse } = useEditingCourse();
 
   const escapeForm = () => {
-    navigate("/admin/courses/", { replace: true });
+    // Clear the Redux state first to prevent StepGuard redirects
+    dispatch(resetCreateCourse());
+    // Navigate to courses list and ensure we don't carry over any query parameters
+    navigate("/admin/courses", { replace: true });
   };
 
   const goToStep = (index: number) => {
